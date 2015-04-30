@@ -71,3 +71,38 @@ swiftmailer:
     username:  "%mailer_user%"
     password:  "%mailer_password%"
     spool:     { type: memory }
+
+fos_rest:
+    view:
+        view_response_listener: force
+        formats:
+            json: true
+    routing_loader:
+        default_format: json
+    exception:
+        codes:
+            'Symfony\Component\Security\Core\Exception\InsufficientAuthenticationException': 401
+
+jms_serializer:
+    handlers:
+        datetime:
+            default_format: Y-m-d H:i:s
+            default_timezone: UTC
+
+    property_naming:
+        separator:  _
+        lower_case: true
+
+    metadata:
+        cache: file
+        debug: %kernel.debug%
+        file_cache:
+            dir: %kernel.cache_dir%/serializer
+
+        # Using auto-detection, the mapping files for each bundle will be
+        # expected in the Resources/config/serializer directory.
+        #
+        # Example:
+        # class: My\FooBundle\Entity\User
+        # expected path: @MyFooBundle/Resources/config/serializer/Entity.User.(yml|xml|php)
+        auto_detection: true
