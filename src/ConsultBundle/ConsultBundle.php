@@ -6,11 +6,11 @@
  * Time: 12:42
  */
 
-namespace ConsultORMBundle;
+namespace ConsultBundle;
 
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-class ConsultORMBundle extends Bundle {
+class ConsultBundle extends Bundle {
 
 }
