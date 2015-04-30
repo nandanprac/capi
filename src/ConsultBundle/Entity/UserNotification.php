@@ -37,5 +37,4 @@ class userNotification extends BaseEntity
      * @ORM\Column(type="smallint", name="is_viewed")
      */
     protected $isViewed;
-
 }

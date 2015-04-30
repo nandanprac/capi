@@ -15,8 +15,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="question_bookmarks")
  * @ORM\HasLifecycleCallbacks()
  */
-class QuestionBookmark extends BaseEntity {
-
+class QuestionBookmark extends BaseEntity
+{
     /**
      * @ORM\ManyToOne(targetEntity = "Question", inversedBy ="bookmarks")
      * @ORM\JoinColumn(name = "question_id", referencedColumnName = "id")

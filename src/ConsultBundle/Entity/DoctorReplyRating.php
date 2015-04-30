@@ -14,8 +14,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity(repositoryClass="ConsultBundle\Repository\DoctorReplyRatingRepository")
  * @ORM\Table(name="reply_ratings")
  */
-class DoctorReplyRating extends BaseEntity{
-
+class DoctorReplyRating extends BaseEntity
+{
     /**
      * @ORM\Column(name="practo_account_id", type="integer")
      */

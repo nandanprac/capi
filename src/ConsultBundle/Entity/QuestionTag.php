@@ -15,9 +15,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="question_tags")
  * @ORM\HasLifecycleCallbacks()
  */
-class QuestionTag extends BaseEntity{
-
-
+class QuestionTag extends BaseEntity
+{
     /**
      * @ORM\ManyToOne(targetEntity = "Question", inversedBy = "doctorQuestions")
      * @ORM\JoinColumn(name = "question_id", referencedColumnName = "id")

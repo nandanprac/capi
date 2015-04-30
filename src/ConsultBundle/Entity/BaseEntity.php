@@ -9,8 +9,8 @@ namespace ConsultBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 
-class BaseEntity {
-
+class BaseEntity
+{
     /**
      * @ORM\Id
      * @ORM\Column(type="integer")
@@ -39,7 +39,7 @@ class BaseEntity {
      */
     public function setCreatedAtValue()
     {
-        $this->$createdAt = new \DateTime();
+        $this->createdAt = new \DateTime();
         $this->modifiedAt = new \DateTime();
     }
 
@@ -50,5 +50,4 @@ class BaseEntity {
     {
         $this->modifiedAt = new \DateTime();
     }
-
 }
