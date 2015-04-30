@@ -6,13 +6,13 @@
  * Time: 15:18
  */
 
-namespace ConsultORMBundle\Entity;
+namespace ConsultBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="ConsultORMBundle\Repository\DoctorNotificationRepository")
- * @ORM\Table(name=Doctor_Notification)
+ * @ORM\Entity(repositoryClass="ConsultBundle\Repository\DoctorNotificationRepository")
+ * @ORM\Table(name="doctor_notifications")
  * @ORM\HasLifecycleCallbacks()
  */
 class DoctorNotification extends BaseEntity {
@@ -23,18 +23,18 @@ class DoctorNotification extends BaseEntity {
     protected $doctor_id;
 
     /**
-     *  @ManyToOne(targetEntity="QuestionEntity", inversedBy="$doctorNotifications")
-     * @JoinColumn(name="question_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="Question", inversedBy="$doctorNotifications")
+     * @ORM\JoinColumn(name="question_id", referencedColumnName="id")
      */
     protected $question;
 
     /**
-     * @ORM\Column(name="Notification_txt")
+     * @ORM\Column(name="notification_text")
      */
     protected $notificationText;
 
     /**
-     * @ORM\Column(type="byte")
+     * @ORM\Column(type="smallint", name="is_viewed")
      */
-    protected $isViewed;
+    protected $isViewed=0;
 }

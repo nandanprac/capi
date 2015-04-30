@@ -5,7 +5,8 @@
  * Time: 13:25
  */
 
-namespace ConsultORMBundle\Entity;
+namespace ConsultBundle\Entity;
+use Doctrine\ORM\Mapping as ORM;
 
 
 class BaseEntity {
@@ -18,18 +19,18 @@ class BaseEntity {
     protected $id;
 
     /**
-     * @ORM\Column(type="datetime" name="created_at")
+     * @ORM\Column(type="datetime", name="created_at")
      */
     protected $createdAt;
 
     /**
-     * @ORM\Column(type="datetime" name="modified_at")
+     * @ORM\Column(type="datetime", name="modified_at")
      */
     protected $modifiedAt;
 
 
     /**
-     * @ORM\Column(type="smallint" name="soft_delete")
+     * @ORM\Column(type="smallint", name="soft_delete")
      */
     protected $softDelete = 0;
 

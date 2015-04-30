@@ -6,28 +6,31 @@
  * Time: 13:35
  */
 
-namespace ConsultORMBundle\Entity;
+namespace ConsultBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="ConsultORMBundle\Repository\QuestionTagsRepository")
- * @ORM\Table(name=Question_Tags)
+ * @ORM\Entity(repositoryClass="ConsultBundle\Repository\QuestionTagsRepository")
+ * @ORM\Table(name="question_tags")
  * @ORM\HasLifecycleCallbacks()
  */
 class QuestionTags extends BaseEntity{
 
 
     /**
-     * @ORM\ManyToOne(targetEntity = "QuestionEntity", inversedBy ="doctorQuestions")
+     * @ORM\ManyToOne(targetEntity = "Question", inversedBy ="doctorQuestions")
      * @ORM\JoinColumn(name = "question_id", referencedColumnName = "id")
      */
     protected $questions;
 
+    /**
+     * @ORM\Column(type="string")
+     */    
     protected $tag;
 
     /**
-     * @ORM\(type="smallint")
+     * @ORM\Column(type="smallint", name="is_user_defined")
      */
     protected $isUserDefined =0;
 

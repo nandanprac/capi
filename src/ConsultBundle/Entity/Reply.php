@@ -6,21 +6,20 @@
  * Time: 15:49
  */
 
-namespace ConsultORMBundle\Entity;
+namespace ConsultBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="ConsultORMBundle\Repository\ReplyRepository")
- * @ORM\Table(name=Reply)
+ * @ORM\Entity(repositoryClass="ConsultBundle\Repository\ReplyRepository")
+ * @ORM\Table(name="replies")
  */
 class Reply extends BaseEntity{
 
-  /**
-   * @ORM\OneToOne(targetEntity="DoctorQuestions" inversedBy = "reply")
-   */
-
-  protected $doctorQuestion;
+   /**
+    * @ORM\OneToOne(targetEntity="DoctorQuestions", inversedBy = "reply")
+    */
+    protected $doctorQuestion;
 
     /**
      * @ORM\Column(type="text", name="answer_text")
@@ -39,7 +38,7 @@ class Reply extends BaseEntity{
     protected $viewedAt;
 
     /**
-     * @ORM\OneToMany(targetEntity="ReplyRatings" mappedBy="reply")
+     * @ORM\OneToMany(targetEntity="ReplyRatings", mappedBy="reply")
      */
     protected $ratings;
 

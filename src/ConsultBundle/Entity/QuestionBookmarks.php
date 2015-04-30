@@ -6,19 +6,19 @@
  * Time: 13:35
  */
 
-namespace ConsultORMBundle\Entity;
+namespace ConsultBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="ConsultORMBundle\Repository\QuestionBookmarksRepository")
- * @ORM\Table(name=Question_Bookmarks)
+ * @ORM\Entity(repositoryClass="ConsultBundle\Repository\QuestionBookmarksRepository")
+ * @ORM\Table(name="question_bookmarks")
  * @ORM\HasLifecycleCallbacks()
  */
 class QuestionBookmarks extends BaseEntity {
 
     /**
-     * @ORM\ManyToOne(targetEntity = "QuestionEntity", inversedBy ="bookmarks")
+     * @ORM\ManyToOne(targetEntity = "Question", inversedBy ="bookmarks")
      * @ORM\JoinColumn(name = "question_id", referencedColumnName = "id")
      */
     protected $questions;

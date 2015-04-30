@@ -6,13 +6,13 @@
  * Time: 15:49
  */
 
-namespace ConsultORMBundle\Entity;
+namespace ConsultBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="ConsultORMBundle\Repository\ReplyRatingsRepository")
- * @ORM\Table(name=Reply_Ratings)
+ * @ORM\Entity(repositoryClass="ConsultBundle\Repository\ReplyRatingsRepository")
+ * @ORM\Table(name="reply_ratings")
  */
 class ReplyRatings extends BaseEntity{
 
@@ -22,13 +22,13 @@ class ReplyRatings extends BaseEntity{
     protected $userId;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Reply" inversedBy="ratings")
-     * @ORM\JoinColumn(name="reply_id" refrencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="Reply", inversedBy="ratings")
+     * @ORM\JoinColumn(name="reply_id", referencedColumnName="id")
      */
     protected $reply;
 
     /**
-     * @Column(type="smallint")
+     * @ORM\Column(type="smallint")
      */
     protected $rating;
 }

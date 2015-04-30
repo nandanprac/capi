@@ -6,19 +6,19 @@
  * Time: 15:15
  */
 
-namespace ConsultORMBundle\Entity;
+namespace ConsultBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="ConsultORMBundle\Repository\PatientAdditionalInfoRepository")
- * @ORM\Table(name=Patient_Additional_Info)
+ * @ORM\Entity(repositoryClass="ConsultBundle\Repository\PatientAdditionalInfoRepository")
+ * @ORM\Table(name="patient_additional_info")
  * @ORM\HasLifecycleCallbacks()
  */
-class PatientAdditionalInfo extends BaseEntity{
-
+class PatientAdditionalInfo extends BaseEntity
+{
     /**
-     * @Column(type="integer")
+     * @ORM\Column(type="integer")
      */
     protected $user_id;
     /**

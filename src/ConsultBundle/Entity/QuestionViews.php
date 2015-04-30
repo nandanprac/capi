@@ -5,20 +5,20 @@
  * Time: 13:36
  */
 
-namespace ConsultORMBundle\Entity;
+namespace ConsultBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="ConsultORMBundle\Repository\QuestionViewsRepository")
- * @ORM\Table(name=Question_Views)
+ * @ORM\Entity(repositoryClass="ConsultBundle\Repository\QuestionViewsRepository")
+ * @ORM\Table(name="question_views")
  * @ORM\HasLifecycleCallbacks()
  */
 class QuestionViews extends BaseEntity{
 
 
     /**
-     * @ORM\ManyToOne(targetEntity = "QuestionEntity", inversedBy ="doctorQuestions")
+     * @ORM\ManyToOne(targetEntity = "Question", inversedBy ="doctorQuestions")
      * @ORM\JoinColumn(name = "question_id", referencedColumnName = "id")
      */
     protected $questions;
