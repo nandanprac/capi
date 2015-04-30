@@ -15,7 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity(repositoryClass="ConsultORMBundle\Repository\DoctorQuestionsRepository")
  * @ORM\Table(name=Doctor_Question)
  */
-class DoctorQuestions extends ConsultEntity {
+class DoctorQuestions extends BaseEntity {
 
     /**
      * @ORM\ManyToOne(targetEntity = "QuestionEntity", inversedBy ="doctorQuestions")
@@ -42,7 +42,12 @@ protected $reply;
    protected $rejection_reason;
 
     /**
-     * @ORM\Column(type="datetime", nullable=true)
+     * @ORM\Column(name="rejection_at", type="datetime", nullable=true)
      */
-   protected $rejection_dttm;
+   protected $rejectionAt;
+
+    /**
+     * @ORM\Column(name="viewed_at", type="datetime", nullable=true)
+     */
+    protected $viewedAt;
 }

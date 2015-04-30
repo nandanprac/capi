@@ -15,7 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name=Question_Bookmarks)
  * @ORM\HasLifecycleCallbacks()
  */
-class QuestionBookmarks extends ConsultEntity {
+class QuestionBookmarks extends BaseEntity {
 
     /**
      * @ORM\ManyToOne(targetEntity = "QuestionEntity", inversedBy ="bookmarks")
@@ -28,9 +28,6 @@ class QuestionBookmarks extends ConsultEntity {
      */
     protected $user_id;
 
-    /**
-     * @ORM\Column(type="smallint")
-     */
-    protected $isDeleted;
+
 
 }

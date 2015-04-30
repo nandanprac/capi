@@ -8,7 +8,7 @@
 namespace ConsultORMBundle\Entity;
 
 
-class ConsultEntity {
+class BaseEntity {
 
     /**
      * @ORM\Id
@@ -18,22 +18,28 @@ class ConsultEntity {
     protected $id;
 
     /**
-     * @ORM\Column(type="datetime" name="created_dttm")
+     * @ORM\Column(type="datetime" name="created_at")
      */
-    protected $createdDttm;
+    protected $createdAt;
 
     /**
-     * @ORM\Column(type="datetime" name="modified_dttm")
+     * @ORM\Column(type="datetime" name="modified_at")
      */
-    protected $modifiedDttm;
+    protected $modifiedAt;
+
+
+    /**
+     * @ORM\Column(type="smallint" name="soft_delete")
+     */
+    protected $softDelete = 0;
 
     /**
      * @ORM\PrePersist
      */
     public function setCreatedAtValue()
     {
-        $this->$createdDttm = new \DateTime();
-        $this->modifiedDttm = new \DateTime();
+        $this->$createdAt = new \DateTime();
+        $this->modifiedAt = new \DateTime();
     }
 
     /**
@@ -41,7 +47,7 @@ class ConsultEntity {
      */
     public function setModifiedDate()
     {
-        $this->modifiedDttm = new \DateTime();
+        $this->modifiedAt = new \DateTime();
     }
 
 }

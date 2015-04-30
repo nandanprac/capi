@@ -13,7 +13,7 @@ namespace ConsultORMBundle\Entity;
  * @ORM\Table(name=Patient_Notification)
  * @ORM\HasLifecycleCallbacks()
  */
-class PatientNotification extends ConsultEntity{
+class PatientNotification extends BaseEntity{
 
     /**
      * @ORM\Column(type="integer")

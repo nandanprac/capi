@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name=Question_Views)
  * @ORM\HasLifecycleCallbacks()
  */
-class QuestionViews extends ConsultEntity{
+class QuestionViews extends BaseEntity{
 
 
     /**
@@ -22,5 +22,12 @@ class QuestionViews extends ConsultEntity{
      * @ORM\JoinColumn(name = "question_id", referencedColumnName = "id")
      */
     protected $questions;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    protected $user_id;
+
+
 
 }

@@ -15,7 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name=Doctor_Notification)
  * @ORM\HasLifecycleCallbacks()
  */
-class DoctorNotification extends ConsultEntity {
+class DoctorNotification extends BaseEntity {
 
     /**
      * @ORM\Column(type="integer")

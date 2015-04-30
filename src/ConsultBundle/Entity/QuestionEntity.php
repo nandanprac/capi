@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name=Question)
  * @ORM\HasLifecycleCallbacks()
  */
-class QuestionEntity extends ConsultEntity {
+class QuestionEntity extends BaseEntity {
 
 
 
@@ -32,6 +32,11 @@ class QuestionEntity extends ConsultEntity {
      * @ORM\Column(length=5)
      */
     protected $state;
+
+    /**
+     * @ORM\Column(type="smallint")
+     */
+    protected $isUserAnonymous;
 
 
 

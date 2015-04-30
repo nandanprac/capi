@@ -15,7 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name=Question_Tags)
  * @ORM\HasLifecycleCallbacks()
  */
-class QuestionTags extends ConsultEntity{
+class QuestionTags extends BaseEntity{
 
 
     /**
@@ -23,4 +23,12 @@ class QuestionTags extends ConsultEntity{
      * @ORM\JoinColumn(name = "question_id", referencedColumnName = "id")
      */
     protected $questions;
+
+    protected $tag;
+
+    /**
+     * @ORM\(type="smallint")
+     */
+    protected $isUserDefined =0;
+
 }

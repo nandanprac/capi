@@ -15,7 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name=Question_Images)
  * @ORM\HasLifecycleCallbacks()
  */
-class QuestionImages extends ConsultEntity{
+class QuestionImages extends BaseEntity{
 
 
     /**
@@ -23,5 +23,9 @@ class QuestionImages extends ConsultEntity{
      * @ORM\JoinColumn(name = "question_id", referencedColumnName = "id")
      */
     protected $questions;
+
+    protected $url;
+
+
 
 }

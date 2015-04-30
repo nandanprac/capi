@@ -15,19 +15,31 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name=Patient_Additional_Info)
  * @ORM\HasLifecycleCallbacks()
  */
-class PatientAdditionalInfo extends ConsultEntity{
+class PatientAdditionalInfo extends BaseEntity{
 
     /**
      * @Column(type="integer")
      */
     protected $user_id;
-
+    /**
+     * @ORM\Column(type="text")
+     */
     protected $allergies;
 
+    /**
+     * @ORM\Column(type="text")
+     */
     protected $medication;
 
+    /**
+     * @ORM\Column(name="prev_diagnosed_conditions", type="text")
+     */
     protected $prevDiagnosedConditions;
 
+
+    /**
+     * @ORM\Column(name="additional_details", type="text")
+     */
     protected $additionalDetails;
 
 }
