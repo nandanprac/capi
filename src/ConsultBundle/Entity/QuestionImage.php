@@ -11,11 +11,11 @@ namespace ConsultBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="ConsultBundle\Repository\QuestionImagesRepository")
+ * @ORM\Entity(repositoryClass="ConsultBundle\Repository\QuestionImageRepository")
  * @ORM\Table(name="question_images")
  * @ORM\HasLifecycleCallbacks()
  */
-class QuestionImages extends BaseEntity{
+class QuestionImage extends BaseEntity{
 
 
     /**
@@ -24,6 +24,9 @@ class QuestionImages extends BaseEntity{
      */
     protected $questions;
 
+    /**
+     * @ORM\Column(name="url", type="text")
+     */
     protected $url;
 
 

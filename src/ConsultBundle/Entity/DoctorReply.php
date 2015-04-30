@@ -11,13 +11,13 @@ namespace ConsultBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="ConsultBundle\Repository\ReplyRepository")
- * @ORM\Table(name="replies")
+ * @ORM\Entity(repositoryClass="ConsultBundle\Repository\DoctorReplyRepository")
+ * @ORM\Table(name="doctor_replies")
  */
-class Reply extends BaseEntity{
-
+class DoctorReply extends BaseEntity
+{
    /**
-    * @ORM\OneToOne(targetEntity="DoctorQuestions", inversedBy = "reply")
+    * @ORM\OneToOne(targetEntity="DoctorQuestion", inversedBy = "doctorReply")
     */
     protected $doctorQuestion;
 
@@ -25,7 +25,6 @@ class Reply extends BaseEntity{
      * @ORM\Column(type="text", name="answer_text")
      */
     protected $answerText;
-
 
     /**
      * @ORM\Column(type="smallint", name="is_selected")
@@ -38,8 +37,7 @@ class Reply extends BaseEntity{
     protected $viewedAt;
 
     /**
-     * @ORM\OneToMany(targetEntity="ReplyRatings", mappedBy="reply")
+     * @ORM\OneToMany(targetEntity="DoctorReplyRating", mappedBy="doctorReply")
      */
     protected $ratings;
-
 }

@@ -17,9 +17,9 @@ use Doctrine\ORM\Mapping as ORM;
 class Question extends BaseEntity
 {
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", name="practo_account_id")
      */
-    protected $user_id;
+    protected $practo_account_id;
 
     /**
      * @ORM\Column(length=360, name="question_text")
@@ -32,39 +32,39 @@ class Question extends BaseEntity
     protected $state;
 
     /**
-     * @ORM\Column(type="smallint")
+     * @ORM\Column(type="smallint", name="is_user_anonymous")
      */
     protected $isUserAnonymous;
 
    /**
-    * @ORM\OneToMany(targetEntity="QuestionImages", mappedBy="question")
+    * @ORM\OneToMany(targetEntity="QuestionImage", mappedBy="question")
     */
     protected $images;
 
     /**
-     * @ORM\OneToMany(targetEntity="DoctorQuestions", mappedBy="question")
+     * @ORM\OneToMany(targetEntity="DoctorQuestion", mappedBy="question")
      */
     protected $doctorQuestions;
 
     /**
-     * @ORM\OneToMany(targetEntity="QuestionTags", mappedBy="question")
+     * @ORM\OneToMany(targetEntity="QuestionTag", mappedBy="question")
      */
     protected $tags;
 
     /**
-     * @ORM\OneToMany(targetEntity="QuestionBookmarks", mappedBy="question")
+     * @ORM\OneToMany(targetEntity="QuestionBookmark", mappedBy="question")
      */
     protected $bookmarks;
 
     /**
-     * @ORM\OneToMany(targetEntity="QuestionViews", mappedBy="question")
+     * @ORM\OneToMany(targetEntity="QuestionView", mappedBy="question")
      */
     protected $views;
 
     /**
-     * @ORM\OneToMany(targetEntity="PatientNotification", mappedBy="question")
+     * @ORM\OneToMany(targetEntity="UserNotification", mappedBy="question")
      */
-    protected $patientNotifications;
+    protected $userNotifications;
 
     /**
      * @ORM\OneToMany(targetEntity="DoctorNotification", mappedBy="question")
@@ -72,22 +72,20 @@ class Question extends BaseEntity
     protected $doctorNotifications;
 
     /**
-     * @ORM\ManyToOne(targetEntity="PatientAdditionalInfo")
-     * @ORM\JoinColumn(name="patient_additional_info_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="UserInfo")
+     * @ORM\JoinColumn(name="user_info_id", referencedColumnName="id")
      */
-    protected $patientAdditionalInfo;
+    protected $patientInfo;
 
 
-    public function _construct(){
+    public function _construct()
+    {
         $this->images = new ArrayCollection();
         $this->doctorQuestions = new ArrayCollection();
         $this->tags = new ArrayCollection();
         $this->bookmarks = new ArrayCollection();
         $this->views = new ArrayCollection();
-        $this->patientNotifications = new ArrayCollection();
+        $this->userNotifications = new ArrayCollection();
         $this->doctorNotifications = new ArrayCollection();
     }
-
-
-
 }

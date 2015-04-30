@@ -18,9 +18,9 @@ use Doctrine\ORM\Mapping as ORM;
 class DoctorNotification extends BaseEntity {
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", name="practo_account_id")
      */
-    protected $doctor_id;
+    protected $practoAccountId;
 
     /**
      * @ORM\ManyToOne(targetEntity="Question", inversedBy="$doctorNotifications")

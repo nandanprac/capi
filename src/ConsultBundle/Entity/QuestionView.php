@@ -14,9 +14,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="question_views")
  * @ORM\HasLifecycleCallbacks()
  */
-class QuestionViews extends BaseEntity{
-
-
+class QuestionView extends BaseEntity
+{
     /**
      * @ORM\ManyToOne(targetEntity = "Question", inversedBy ="doctorQuestions")
      * @ORM\JoinColumn(name = "question_id", referencedColumnName = "id")
@@ -24,10 +23,7 @@ class QuestionViews extends BaseEntity{
     protected $questions;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", name="practo_account_id")
      */
-    protected $user_id;
-
-
-
+    protected $practoAccountId;
 }

@@ -11,27 +11,27 @@ namespace ConsultBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="ConsultBundle\Repository\QuestionTagsRepository")
+ * @ORM\Entity(repositoryClass="ConsultBundle\Repository\QuestionTagRepository")
  * @ORM\Table(name="question_tags")
  * @ORM\HasLifecycleCallbacks()
  */
-class QuestionTags extends BaseEntity{
+class QuestionTag extends BaseEntity{
 
 
     /**
-     * @ORM\ManyToOne(targetEntity = "Question", inversedBy ="doctorQuestions")
+     * @ORM\ManyToOne(targetEntity = "Question", inversedBy = "doctorQuestions")
      * @ORM\JoinColumn(name = "question_id", referencedColumnName = "id")
      */
     protected $questions;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", length=127)
      */    
     protected $tag;
 
     /**
      * @ORM\Column(type="smallint", name="is_user_defined")
      */
-    protected $isUserDefined =0;
+    protected $isUserDefined = 0;
 
 }

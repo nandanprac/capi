@@ -11,11 +11,11 @@ namespace ConsultBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="ConsultBundle\Repository\QuestionBookmarksRepository")
+ * @ORM\Entity(repositoryClass="ConsultBundle\Repository\QuestionBookmarkRepository")
  * @ORM\Table(name="question_bookmarks")
  * @ORM\HasLifecycleCallbacks()
  */
-class QuestionBookmarks extends BaseEntity {
+class QuestionBookmark extends BaseEntity {
 
     /**
      * @ORM\ManyToOne(targetEntity = "Question", inversedBy ="bookmarks")
@@ -24,10 +24,7 @@ class QuestionBookmarks extends BaseEntity {
     protected $questions;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", name="practo_account_id")
      */
-    protected $user_id;
-
-
-
+    protected $practoAccountId;
 }

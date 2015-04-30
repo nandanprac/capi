@@ -15,7 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity(repositoryClass="ConsultBundle\Repository\DoctorQuestionsRepository")
  * @ORM\Table(name="doctor_questions")
  */
-class DoctorQuestions extends BaseEntity {
+class DoctorQuestion extends BaseEntity {
 
     /**
      * @ORM\ManyToOne(targetEntity = "Question", inversedBy ="doctorQuestions")
@@ -24,14 +24,14 @@ class DoctorQuestions extends BaseEntity {
     protected $question;
 
     /**
-     * @ORM\OnetoOne(targetEntity = "Reply", mappedBy = "doctorQuestion")
+     * @ORM\OnetoOne(targetEntity = "DoctorReply", mappedBy = "doctorQuestion")
      */
-    protected $reply;
+    protected $doctorReply;
 
     /**
      * @ORM\Column(type="integer")
      */
-    protected $doctor_id;
+    protected $practo_account_id;
 
     /**
      * @ORM\Column(length=10)

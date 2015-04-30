@@ -11,23 +11,23 @@ namespace ConsultBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="ConsultBundle\Repository\PatientAdditionalInfoRepository")
- * @ORM\Table(name="patient_additional_info")
+ * @ORM\Entity(repositoryClass="ConsultBundle\Repository\userInfoRepository")
+ * @ORM\Table(name="user_info")
  * @ORM\HasLifecycleCallbacks()
  */
-class PatientAdditionalInfo extends BaseEntity
+class UserInfo extends BaseEntity
 {
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", name="practo_account_id")
      */
-    protected $user_id;
+    protected $practoAccountId;
     /**
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="text", name="allergies")
      */
     protected $allergies;
 
     /**
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="text", name="medication")
      */
     protected $medication;
 
@@ -35,7 +35,6 @@ class PatientAdditionalInfo extends BaseEntity
      * @ORM\Column(name="prev_diagnosed_conditions", type="text")
      */
     protected $prevDiagnosedConditions;
-
 
     /**
      * @ORM\Column(name="additional_details", type="text")

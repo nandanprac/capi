@@ -11,30 +11,30 @@ namespace ConsultBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="ConsultBundle\Repository\PatientNotificationRepository")
+ * @ORM\Entity(repositoryClass="ConsultBundle\Repository\UserNotificationRepository")
  * @ORM\Table(name="patient_notifications")
  * @ORM\HasLifecycleCallbacks()
  */
-class PatientNotification extends BaseEntity{
-
+class userNotification extends BaseEntity
+{
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", name="practo_account_id")
      */
-    protected $patient_ids;
+    protected $practoAccountId;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Question", inversedBy="$patientNotifications")
+     * @ORM\ManyToOne(targetEntity="Question", inversedBy="userNotifications")
      * @ORM\JoinColumn(name="question_id", referencedColumnName="id")
      */
     protected $question;
 
     /**
-     * @ORM\Column(name="Notification_txt")
+     * @ORM\Column(name="notification_txt", type="text")
      */
     protected $notificationText;
 
     /**
-     * @ORM\Column(type="smallint")
+     * @ORM\Column(type="smallint", name="is_viewed")
      */
     protected $isViewed;
 
