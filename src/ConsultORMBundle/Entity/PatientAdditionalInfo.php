@@ -17,4 +17,17 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class PatientAdditionalInfo extends ConsultEntity{
 
+    /**
+     * @Column(type="integer")
+     */
+    protected $user_id;
+
+    protected $allergies;
+
+    protected $medication;
+
+    protected $prevDiagnosedConditions;
+
+    protected $additionalDetails;
+
 }

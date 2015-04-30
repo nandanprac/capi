@@ -32,7 +32,7 @@ class PatientNotification extends ConsultEntity{
     protected $notificationText;
 
     /**
-     * @ORM\Column(type="byte")
+     * @ORM\Column(type="smallint")
      */
     protected $isViewed;
 

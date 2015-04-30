@@ -17,4 +17,10 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class QuestionTags extends ConsultEntity{
 
+
+    /**
+     * @ORM\ManyToOne(targetEntity = "QuestionEntity", inversedBy ="doctorQuestions")
+     * @ORM\JoinColumn(name = "question_id", referencedColumnName = "id")
+     */
+    protected $questions;
 }

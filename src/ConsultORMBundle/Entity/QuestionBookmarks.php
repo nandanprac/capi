@@ -17,4 +17,20 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class QuestionBookmarks extends ConsultEntity {
 
+    /**
+     * @ORM\ManyToOne(targetEntity = "QuestionEntity", inversedBy ="bookmarks")
+     * @ORM\JoinColumn(name = "question_id", referencedColumnName = "id")
+     */
+    protected $questions;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    protected $user_id;
+
+    /**
+     * @ORM\Column(type="smallint")
+     */
+    protected $isDeleted;
+
 }

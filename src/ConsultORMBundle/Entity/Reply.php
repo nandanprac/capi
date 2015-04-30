@@ -8,7 +8,18 @@
 
 namespace ConsultORMBundle\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * @ORM\Entity(repositoryClass="ConsultORMBundle\Repository\ReplyRepository")
+ * @ORM\Table(name=Reply)
+ */
 class Reply extends ConsultEntity{
+
+  /**
+   * @ORM\OneToOne(targetEntity="DoctorQuestions" inversedBy = "reply")
+   */
+
+  protected $doctorQuestion;
 
 }
