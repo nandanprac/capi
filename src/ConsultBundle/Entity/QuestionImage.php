@@ -81,4 +81,103 @@ class QuestionImage extends BaseEntity
 
         return null;
     }
+    /**
+     * @var integer
+     */
+    private $id;
+
+    /**
+     * @var \DateTime
+     */
+    private $createdAt;
+
+    /**
+     * @var \DateTime
+     */
+    private $modifiedAt;
+
+    /**
+     * @var integer
+     */
+    private $softDeleted;
+
+
+    /**
+     * Get id
+     *
+     * @return integer 
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     * @return QuestionImage
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return \DateTime 
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set modifiedAt
+     *
+     * @param \DateTime $modifiedAt
+     * @return QuestionImage
+     */
+    public function setModifiedAt($modifiedAt)
+    {
+        $this->modifiedAt = $modifiedAt;
+
+        return $this;
+    }
+
+    /**
+     * Get modifiedAt
+     *
+     * @return \DateTime 
+     */
+    public function getModifiedAt()
+    {
+        return $this->modifiedAt;
+    }
+
+    /**
+     * Set softDeleted
+     *
+     * @param integer $softDeleted
+     * @return QuestionImage
+     */
+    public function setSoftDeleted($softDeleted)
+    {
+        $this->softDeleted = $softDeleted;
+
+        return $this;
+    }
+
+    /**
+     * Get softDeleted
+     *
+     * @return integer 
+     */
+    public function getSoftDeleted()
+    {
+        return $this->softDeleted;
+    }
 }
