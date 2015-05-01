@@ -4,9 +4,10 @@ namespace ConsultBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\View\View;
-use FOS\Rest\Util\Codes;
+use FOS\RestBundle\Util\Codes;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use ConsultBundle\Manager\ValidationError;
 
 /**
  * Questions Controller
@@ -26,15 +27,16 @@ class QuestionsController extends Controller
 
         try {
             $question = $questionManager->add($postData);
-        } catch (AccessDeniedException $e) {
-            return View::create($e->getMessage(), Codes::HTTP_FORBIDDEN);
+        } catch (ValidationError $e) {
+            return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
         }
 
         //$router = $this->get('router');
         //$patientGrowthURL = $router->generate('get_patientgrowth', array(
         //    'patientGrowthId' => $patientGrowth->getId()), true);
 
-        return View::create($question,
+        return View::create(
+            $question,
             Codes::HTTP_CREATED);
     }
 }

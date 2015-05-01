@@ -30,7 +30,7 @@ class BaseEntity
 
 
     /**
-     * @ORM\Column(type="smallint", name="soft_delete")
+     * @ORM\Column(type="smallint", name="soft_deleted")
      */
     protected $softDeleted = 0;
 
@@ -83,7 +83,7 @@ class BaseEntity
     public function setAttributes($attributes)
     {
         foreach ($attributes as $attrSnake => $value) {
-            if ($this->isEditableAttribute($attrSnake)) {
+            //if ($this->isEditableAttribute($attrSnake)) {
                 $attrCamel = str_replace(' ', '', ucwords(str_replace('_', ' ', $attrSnake)));
                 $setter = 'set' . $attrCamel;
                 try {
@@ -98,9 +98,9 @@ class BaseEntity
                 } catch (\Exception $e) {
                     throw new BadAttributeException($attrSnake);
                 }
-            } else {
-                throw new BadAttributeException($attrSnake);
-            }
+            //} else {
+            //    throw new BadAttributeException($attrSnake);
+            //}
         }
 
         return true;
@@ -122,6 +122,36 @@ class BaseEntity
             $this->$field = null;
         } else {
             $this->$field = ('true' === $value);
+        }
+    }
+
+    /**
+     * Set Integer
+     *
+     * @param string $field - Field Name
+     * @param mixed  $value - Value
+     */
+    public function setInt($field, $value)
+    {
+        if (is_numeric($value)) {
+            $this->$field = intval($value);
+        } else {
+            $this->$field = $value;
+        }
+    }
+
+    /**
+     * Set String
+     *
+     * @param string $field - field name
+     * @param mixed  $value - Value
+     */
+    public function setString($field, $value)
+    {
+        if (is_string($value)) {
+            $this->$field = trim($value);
+        } else {
+            $this->$field = $value;
         }
     }
 }
