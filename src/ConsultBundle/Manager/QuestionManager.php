@@ -10,6 +10,7 @@ use Symfony\Component\Validator\ValidatorInterface;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Constraints\Email as EmailConstraint;
+use ConsultBundle\Entity\QuestionImage;
 
 /**
  * Question Manager
@@ -18,6 +19,7 @@ class QuestionManager
 {
     protected $doctrine;
     protected $validator;
+    protected $questionImageManager;
 
     /**
      * Constructor
@@ -25,10 +27,12 @@ class QuestionManager
      * @param Doctrine                 $doctrine           - Doctrine
      * @param ValidatorInterface       $validator          - Validator
      */
-    public function __construct(Doctrine $doctrine, ValidatorInterface $validator)
+    public function __construct(Doctrine $doctrine, ValidatorInterface $validator,
+        QuestionImageManager $questionImageManager)
     {
         $this->doctrine = $doctrine;
         $this->validator = $validator;
+        $this->questionImageManager = $questionImageManager;
     }
 
     /**
@@ -42,6 +46,39 @@ class QuestionManager
     public function updateFields($question, $requestParams)
     {
         $errors = array();
+
+        if (array_key_exists('images', $requestParams)) {
+            $images = $requestParams['images'];
+            if (!is_array($images)) {
+                @$errors['images'][] = 'This must be an array';
+            } else {
+                if ($question->getImages()) {
+                    foreach ($question->getImages() as $image) {
+                        $this->em->remove($image);
+                    }
+                }
+                $question->clearImages();
+                foreach ($images as $index => $imageData) {
+                    if (!is_array($imageData)) {
+                        @$errors['images'][$index + 1] = 'This must be an array';
+                    } else {
+                        if (array_key_exists('id', $imageData)) {
+                            unset($imageData['id']);
+                        }
+                        $questionImage = new QuestionImage;
+                        $questionImage->setQuestion($question);
+                        try {
+                            $this->questionImageManager->updateFields($questionImage, $imageData);
+                            $question->addImage($questionImage);
+                        } catch (ValidationError $e) {
+                            @$errors['images'][$index + 1] = json_decode($e->getMessage(), true);
+                        }
+                    }
+                }
+            }
+            unset($requestParams['images']);
+        }
+
         $question->setAttributes($requestParams);
         $question->setModifiedAt(new \DateTime('now'));
 

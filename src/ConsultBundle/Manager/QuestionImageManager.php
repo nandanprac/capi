@@ -5,6 +5,7 @@ namespace ConsultBundle\Manager;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 use Symfony\Component\Validator\ValidatorInterface;
 use ConsultBundle\Manager\ValidationError;
+use ConsultBundle\Entity\QuestionImage;
 
 /**
  * Question Image Manager

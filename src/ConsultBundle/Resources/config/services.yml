@@ -7,6 +7,7 @@ services:
         arguments:
           - @doctrine
           - @validator
+          - @consult.question_image_manager
     consult.question_image_manager:
         class: ConsultBundle\Manager\QuestionImageManager
         arguments:

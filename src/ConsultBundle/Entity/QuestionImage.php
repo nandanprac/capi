@@ -21,10 +21,64 @@ class QuestionImage extends BaseEntity
      * @ORM\ManyToOne(targetEntity = "Question", inversedBy ="doctorQuestions")
      * @ORM\JoinColumn(name = "question_id", referencedColumnName = "id")
      */
-    protected $questions;
+    protected $question;
 
     /**
-     * @ORM\Column(name="url", type="text")
+     * @ORM\Column(name="url", type="text", name="url")
      */
     protected $url;
+
+    /**
+     * Get Url
+     *
+     * @return string
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
+
+    /**
+     * Set Url
+     *
+     * @param string $url - URl
+     */
+    public function setUrl($url)
+    {
+        $this->setString('url', $url);
+    }
+
+    /**
+     * Set Question
+     *
+     * @param Question $question - Question
+     */
+    public function setQuestion($question)
+    {
+        $this->question = $question;
+    }
+
+    /**
+     * Get Question
+     *
+     * @return Question
+     */
+    public function getQuestion()
+    {
+        return $this->question;
+    }
+
+    /**
+     * Get QuestionId
+     *
+     * @return integer
+     */
+    public function getQuestionId()
+    {
+        if ($this->question) {
+            return $this->question->getId();
+        }
+
+        return null;
+    }
 }
