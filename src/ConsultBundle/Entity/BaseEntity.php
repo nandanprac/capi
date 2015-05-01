@@ -32,12 +32,12 @@ class BaseEntity
     /**
      * @ORM\Column(type="smallint", name="soft_delete")
      */
-    protected $softDelete = 0;
+    protected $softDeleted = 0;
 
     /**
      * @ORM\PrePersist
      */
-    public function setCreatedAtValue()
+    public function setCreatedAt()
     {
         $this->createdAt = new \DateTime();
         $this->modifiedAt = new \DateTime();
@@ -46,8 +46,82 @@ class BaseEntity
     /**
      * @ORM\PreUpdate
      */
-    public function setModifiedDate()
+    public function setModifiedAt()
     {
         $this->modifiedAt = new \DateTime();
+    }
+
+    /**
+     * Set softDeleted
+     *
+     * @param boolean $softDeleted - Soft Deleted
+     *
+     * @return boolean
+     */
+    public function setSoftDeleted($softDeleted)
+    {
+        $this->setBoolean('softDeleted', $softDeleted);
+    }
+
+    /**
+     * Is softDeleted
+     *
+     * @return boolean
+     */
+    public function isSoftDeleted()
+    {
+        return $this->softDeleted;
+    }
+
+    /**
+     * Set attributes from snake_cased array of key-value pairs
+     *
+     * @param array $attributes - Attributes
+     *
+     * @return boolean
+     */
+    public function setAttributes($attributes)
+    {
+        foreach ($attributes as $attrSnake => $value) {
+            if ($this->isEditableAttribute($attrSnake)) {
+                $attrCamel = str_replace(' ', '', ucwords(str_replace('_', ' ', $attrSnake)));
+                $setter = 'set' . $attrCamel;
+                try {
+                    if ('' === $value) {
+                        $value = null;
+                    }
+                    $this->$setter($value);
+                } catch (NumberParseException $e) {
+                    throw new ValidationError(array('mobile' => array('This value is not a valid mobile number')));
+                } catch (BadAttributeException $e) {
+                    throw $e;
+                } catch (\Exception $e) {
+                    throw new BadAttributeException($attrSnake);
+                }
+            } else {
+                throw new BadAttributeException($attrSnake);
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Set field as Boolean (Helper)
+     *
+     * @param string $field - field name
+     * @param mixed  $value - string
+     */
+    public function setBoolean($field, $value)
+    {
+        if (is_bool($value)) {
+            $this->$field = $value;
+        } else if (is_numeric($value)) {
+            $this->$field = (bool) $value;
+        } else if (null === $value || '' === $value) {
+            $this->$field = null;
+        } else {
+            $this->$field = ('true' === $value);
+        }
     }
 }

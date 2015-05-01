@@ -15,7 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="patient_notifications")
  * @ORM\HasLifecycleCallbacks()
  */
-class userNotification extends BaseEntity
+class UserNotification extends BaseEntity
 {
     /**
      * @ORM\Column(type="integer", name="practo_account_id")

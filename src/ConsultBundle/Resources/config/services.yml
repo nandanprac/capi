@@ -1,0 +1,9 @@
+parameters:
+    # Overriding Security Bundle's Access Listener class to provide detailed
+    # error message
+services:
+    consult.question_manager:
+        class: ConsultBundle\Manager\QuestionManager
+        arguments:
+          - @doctrine
+          - @validator

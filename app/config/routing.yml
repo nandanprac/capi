@@ -1,0 +1,3 @@
+questions:
+    resource: ConsultBundle\Controller\QuestionsController
+    type:     rest

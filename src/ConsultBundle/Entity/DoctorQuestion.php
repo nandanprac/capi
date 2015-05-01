@@ -18,20 +18,20 @@ use Doctrine\ORM\Mapping as ORM;
 class DoctorQuestion extends BaseEntity
 {
     /**
-     * @ORM\ManyToOne(targetEntity = "Question", inversedBy ="doctorQuestions")
+     * @ORM\ManyToOne(targetEntity = "Question", inversedBy ="doctorQuestion")
      * @ORM\JoinColumn(name = "question_id", referencedColumnName = "id")
      */
     protected $question;
 
     /**
-     * @ORM\OnetoOne(targetEntity = "DoctorReply", mappedBy = "doctorQuestion")
+     * @ORM\OneToOne(targetEntity = "DoctorReply", mappedBy = "doctorQuestion")
      */
     protected $doctorReply;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(name="practo_account_id", type="integer")
      */
-    protected $practo_account_id;
+    protected $practoAccountId;
 
     /**
      * @ORM\Column(length=10)
@@ -39,14 +39,14 @@ class DoctorQuestion extends BaseEntity
     protected $state;
 
     /**
-     * @ORM\Column(length=10, nullable=true)
+     * @ORM\Column(name="rejection_reason", length=10, nullable=true)
      */
-    protected $rejection_reason;
+    protected $rejectionReason;
 
     /**
-     * @ORM\Column(name="rejection_at", type="datetime", nullable=true)
+     * @ORM\Column(name="rejected_at", type="datetime", nullable=true)
      */
-    protected $rejectionAt;
+    protected $rejectedAt;
 
     /**
      * @ORM\Column(name="viewed_at", type="datetime", nullable=true)

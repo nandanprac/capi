@@ -24,7 +24,7 @@ class QuestionTag extends BaseEntity
     protected $questions;
 
     /**
-     * @ORM\Column(type="string", length=127)
+     * @ORM\Column(type="string", length=127, name="tag")
      */    
     protected $tag;
 

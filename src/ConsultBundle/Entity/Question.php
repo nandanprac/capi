@@ -19,7 +19,7 @@ class Question extends BaseEntity
     /**
      * @ORM\Column(type="integer", name="practo_account_id")
      */
-    protected $practo_account_id;
+    protected $practoAccountId;
 
     /**
      * @ORM\Column(length=360, name="question_text")
@@ -27,9 +27,10 @@ class Question extends BaseEntity
     protected $questionText;
 
     /**
-     * @ORM\Column(length=5)
+     * @ORM\Column(length=5, name="state")
      */
     protected $state;
+    //TODO: put asserts on what states are allowed
 
     /**
      * @ORM\Column(type="smallint", name="is_user_anonymous")
@@ -75,7 +76,7 @@ class Question extends BaseEntity
      * @ORM\ManyToOne(targetEntity="UserInfo")
      * @ORM\JoinColumn(name="user_info_id", referencedColumnName="id")
      */
-    protected $patientInfo;
+    protected $userInfo;
 
 
     public function _construct()

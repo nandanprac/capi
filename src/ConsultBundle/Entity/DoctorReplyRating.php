@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="ConsultBundle\Repository\DoctorReplyRatingRepository")
- * @ORM\Table(name="reply_ratings")
+ * @ORM\Table(name="doctor_reply_ratings")
  */
 class DoctorReplyRating extends BaseEntity
 {
@@ -28,7 +28,7 @@ class DoctorReplyRating extends BaseEntity
     protected $doctorReply;
 
     /**
-     * @ORM\Column(type="smallint", name="ratings")
+     * @ORM\Column(type="smallint", name="rating")
      */
     protected $rating;
 }
