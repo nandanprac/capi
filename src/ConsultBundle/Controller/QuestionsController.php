@@ -39,4 +39,31 @@ class QuestionsController extends Controller
             $question,
             Codes::HTTP_CREATED);
     }
+
+    /**
+     * Get Question Action
+     *
+     * @param integer $question
+     *
+     *
+     * @return Array
+     *
+     */
+    public function getQuestionAction($questionId)
+    {
+        $questionManager = $this->get('consult.question_manager');
+        $request = $this->getRequest();
+        try {
+            $question = $questionManager->load($questionId);
+        } catch (AccessDeniedException $e) {
+            return View::create($e->getMessage(), Codes::HTTP_FORBIDDEN);
+        }
+        if (null === $question) {
+            return View::create(null, Codes::HTTP_NOT_FOUND);
+        } else if ($question->isSoftDeleted()) {
+            return View::create(null, Codes::HTTP_GONE);
+        }
+
+        return $question;
+    }
 }

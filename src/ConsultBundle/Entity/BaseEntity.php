@@ -6,10 +6,18 @@
  */
 
 namespace ConsultBundle\Entity;
+
+
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 
-class BaseEntity
+/**
+ * ConsultBundle\Entity\BaseEntity
+ *
+ * @ORM\MappedSuperclass
+ */
+abstract class BaseEntity
 {
     /**
      * @ORM\Id

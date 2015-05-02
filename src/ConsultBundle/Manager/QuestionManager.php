@@ -21,6 +21,7 @@ class QuestionManager
     protected $doctrine;
     protected $validator;
     protected $questionImageManager;
+    protected $questionBookmarkManager;
 
     /**
      * Constructor
@@ -140,6 +141,26 @@ class QuestionManager
         $em = $this->doctrine->getManager();
         $em->persist($question);
         $em->flush();
+
+        return $question;
+    }
+
+    /**
+     * Load Question By Id
+     *
+     * @param integer $questionId - Question Id
+     *
+     * @return Question
+     */
+    public function load($questionId)
+    {
+        $er = $this->doctrine->getManager()->getRepository('ConsultBundle:Question');
+        $question = $er->findOneById($questionId);
+
+
+        if (is_null($question)) {
+            return null;
+        }
 
         return $question;
     }
