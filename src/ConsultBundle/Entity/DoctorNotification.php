@@ -93,12 +93,106 @@ class DoctorNotification extends BaseEntity
     protected $question;
 
     /**
-     * @ORM\Column(name="notification_text", type="text")
+     * @ORM\Column(name="text", type="text")
      */
-    protected $notificationText;
+    protected $text;
 
     /**
-     * @ORM\Column(type="smallint", name="is_viewed")
+     * @ORM\Column(type="smallint", name="viewed")
      */
-    protected $isViewed=0;
+    protected $viewed=0;
+
+    /**
+     * Get PractoAccountId
+     *
+     * @return integer
+     */
+    public function getPractoAccountId()
+    {
+        return $this->practoAccountId;
+    }
+
+    /**
+     * Set PractoAccountId
+     *
+     * @param integer $practoAccountId - PractoAccountId
+     */
+    public function setPractoAccountId($practoAccountId)
+    {
+        $this->setInt('practoAccountId', $practoAccountId);
+    }
+
+    /**
+     * Set Question
+     *
+     * @param Question $question - Question
+     */
+    public function setQuestion($question)
+    {
+        $this->question = $question;
+    }
+
+    /**
+     * Get Question
+     *
+     * @return Question
+     */
+    public function getQuestion()
+    {
+        return $this->question;
+    }
+
+    /**
+     * Get QuestionId
+     *
+     * @return integer
+     */
+    public function getQuestionId()
+    {
+        if ($this->question) {
+            return $this->question->getId();
+        }
+
+        return null;
+    }
+
+    /**
+     * Is Viewed
+     *
+     * @return boolean
+     */
+    public function isViewed()
+    {
+        return $this->viewed;
+    }
+
+    /**
+     * Set viewed
+     *
+     * @param boolean $viewed - Viewed
+     */
+    public function setViewed($viewed)
+    {
+        $this->setBoolean('viewed', $viewed);
+    }
+
+    /**
+     * Get text
+     *
+     * @return string
+     */
+    public function getText()
+    {
+        return $this->text;
+    }
+
+    /**
+     * Set Text
+     *
+     * @param string $text - Text
+     */
+    public function setText($text)
+    {
+        $this->setString('text', $text);
+    }
 }
