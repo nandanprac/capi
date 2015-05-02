@@ -32,8 +32,15 @@ class DoctorReplyRating extends BaseEntity
      */
     protected $rating;
 
+    public function _construct()
+    {
+        $this->doctorReply = new ArrayCollection();
+    }
+
     /**
-     * @return mixed
+     * Get PractoAccountId
+     *
+     * @return integer
      */
     public function getPractoAccountId()
     {
@@ -41,31 +48,19 @@ class DoctorReplyRating extends BaseEntity
     }
 
     /**
-     * @param mixed $practoAccountId
+     * Set PractoAccountId
+     *
+     * @param integer $practoAccountId - PractoAccountId
      */
     public function setPractoAccountId($practoAccountId)
     {
-        $this->practoAccountId = $practoAccountId;
+        $this->setInt('practoAccountId', $practoAccountId);
     }
 
     /**
-     * @return mixed
-     */
-    public function getDoctorReply()
-    {
-        return $this->doctorReply;
-    }
-
-    /**
-     * @param mixed $doctorReply
-     */
-    public function setDoctorReply($doctorReply)
-    {
-        $this->doctorReply = $doctorReply;
-    }
-
-    /**
-     * @return mixed
+     * Get Rating
+     *
+     * @return integer
      */
     public function getRating()
     {
@@ -73,12 +68,40 @@ class DoctorReplyRating extends BaseEntity
     }
 
     /**
-     * @param mixed $rating
+     * Set Rating
+     *
+     * @param integer $rating - Rating
      */
     public function setRating($rating)
     {
-        $this->rating = $rating;
+        $this->setInt('rating', $rating);
     }
 
+    /**
+     * Get Doctor Reply
+     *
+     * @return ArrayCollection
+     */
+    public function getDoctorReplies()
+    {
+        return $this->doctorReply;
+    }
 
+    /**
+     * Add Doctor Reply
+     *
+     * @param DoctorReply $doctorReply - Doctor Reply
+     */
+    public function addDoctorReply(DoctorReply $doctorReply)
+    {
+        $this->doctorReply[] = $doctorReply;
+    }
+
+    /**
+     * Clear Doctor Reply
+     */
+    public function clearDoctorReplies()
+    {
+        $this->doctorReply = new ArrayCollection();
+    }
 }

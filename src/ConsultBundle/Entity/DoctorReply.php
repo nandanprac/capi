@@ -22,14 +22,14 @@ class DoctorReply extends BaseEntity
     protected $doctorQuestion;
 
     /**
-     * @ORM\Column(type="text", name="answer_text")
+     * @ORM\Column(type="text", name="text")
      */
-    protected $answerText;
+    protected $text;
 
     /**
-     * @ORM\Column(type="smallint", name="is_selected")
+     * @ORM\Column(type="smallint", name="selected")
      */
-    protected $isSelected = 0;
+    protected $selected = 0;
 
     /**
      * @ORM\Column(type="datetime", name="viewed_at", nullable=true)
@@ -41,16 +41,15 @@ class DoctorReply extends BaseEntity
      */
     protected $ratings;
 
-    /**
-     * @return mixed
-     */
-    public function getDoctorQuestion()
+    public function _construct()
     {
-        return $this->doctorQuestion;
+        $this->ratings = new ArrayCollection();
     }
 
     /**
-     * @param mixed $doctorQuestion
+     * Set Doctor Question
+     *
+     * @param DoctorQuestion $doctorQuestion - Doctor Question
      */
     public function setDoctorQuestion($doctorQuestion)
     {
@@ -58,39 +57,73 @@ class DoctorReply extends BaseEntity
     }
 
     /**
-     * @return mixed
+     * Get Doctor Question
+     *
+     * @return DoctorQuestion
      */
-    public function getAnswerText()
+    public function getDoctorQuestion()
     {
-        return $this->answerText;
+        return $this->doctorQuestion;
     }
 
     /**
-     * @param mixed $answerText
+     * Get DoctorQuestionId
+     *
+     * @return integer
      */
-    public function setAnswerText($answerText)
+    public function getDoctorQuestionId()
     {
-        $this->answerText = $answerText;
+        if ($this->doctorQuestion) {
+            return $this->doctorQuestion->getId();
+        }
+
+        return null;
     }
 
     /**
-     * @return mixed
+     * Get text
+     *
+     * @return string
      */
-    public function getIsSelected()
+    public function getText()
     {
-        return $this->isSelected;
+        return $this->text;
     }
 
     /**
-     * @param mixed $isSelected
+     * Set Text
+     *
+     * @param string $text - Text
      */
-    public function setIsSelected($isSelected)
+    public function setText($text)
     {
-        $this->isSelected = $isSelected;
+        $this->setString('text', $text);
     }
 
     /**
-     * @return mixed
+     * Is Selected
+     *
+     * @return boolean
+     */
+    public function isSelected()
+    {
+        return $this->selected;
+    }
+
+    /**
+     * Set selected
+     *
+     * @param boolean $selected - Selected
+     */
+    public function setSelected($selected)
+    {
+        $this->setBoolean('selected', $selected);
+    }
+
+    /**
+     * Get viewedAt
+     *
+     * @return DateTime
      */
     public function getViewedAt()
     {
@@ -98,15 +131,29 @@ class DoctorReply extends BaseEntity
     }
 
     /**
-     * @param mixed $viewedAt
+     * Get viewedAtStr
+     *
+     * @return string
      */
-    public function setViewedAt($viewedAt)
+    public function getViewedAtStr()
     {
-        $this->viewedAt = $viewedAt;
+        return $this->getDateTimeStr('viewedAt');
     }
 
     /**
-     * @return mixed
+     * Set ViewedAt
+     *
+     * @param mixed $viewedAt - string or DateTime object
+     */
+    public function setViewedAt($viewedAt)
+    {
+        $this->setDateTime('viewedAt', $viewedAt);
+    }
+
+    /**
+     * Get ratings
+     *
+     * @return ArrayCollection
      */
     public function getRatings()
     {
@@ -114,11 +161,20 @@ class DoctorReply extends BaseEntity
     }
 
     /**
-     * @param mixed $ratings
+     * Add Ratings
+     *
+     * @param DoctorReplyRating $rating - Doctor Reply Rating
      */
-    public function setRatings($ratings)
+    public function addRating(DoctorReplyRating $rating)
     {
-        $this->ratings = $ratings;
+        $this->ratings[] = $rating;
     }
 
+    /**
+     * Clear Ratings
+     */
+    public function clearRatings()
+    {
+        $this->ratings = new ArrayCollection();
+    }
 }

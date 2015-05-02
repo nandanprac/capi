@@ -8,7 +8,12 @@ services:
           - @doctrine
           - @validator
           - @consult.question_image_manager
+          - @consult.question_bookmark_manager
     consult.question_image_manager:
         class: ConsultBundle\Manager\QuestionImageManager
+        arguments:
+          - @validator
+    consult.question_bookmark_manager:
+        class: ConsultBundle\Manager\QuestionBookmarkManager
         arguments:
           - @validator

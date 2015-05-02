@@ -35,6 +35,16 @@ class BaseEntity
     protected $softDeleted = 0;
 
     /**
+     * Get id
+     *
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
      * @ORM\PrePersist
      */
     public function setCreatedAt()

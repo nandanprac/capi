@@ -20,7 +20,7 @@ class QuestionView extends BaseEntity
      * @ORM\ManyToOne(targetEntity = "Question", inversedBy ="doctorQuestions")
      * @ORM\JoinColumn(name = "question_id", referencedColumnName = "id")
      */
-    protected $questions;
+    protected $question;
 
     /**
      * @ORM\Column(type="integer", name="practo_account_id")
@@ -28,23 +28,43 @@ class QuestionView extends BaseEntity
     protected $practoAccountId;
 
     /**
-     * @return mixed
+     * Set Question
+     *
+     * @param Question $question - Question
      */
-    public function getQuestions()
+    public function setQuestion($question)
     {
-        return $this->questions;
+        $this->question = $question;
     }
 
     /**
-     * @param mixed $questions
+     * Get Question
+     *
+     * @return Question
      */
-    public function setQuestions($questions)
+    public function getQuestion()
     {
-        $this->questions = $questions;
+        return $this->question;
     }
 
     /**
-     * @return mixed
+     * Get QuestionId
+     *
+     * @return integer
+     */
+    public function getQuestionId()
+    {
+        if ($this->question) {
+            return $this->question->getId();
+        }
+
+        return null;
+    }
+
+    /**
+     * Get PractoAccountId
+     *
+     * @return integer
      */
     public function getPractoAccountId()
     {
@@ -52,12 +72,12 @@ class QuestionView extends BaseEntity
     }
 
     /**
-     * @param mixed $practoAccountId
+     * Set PractoAccountId
+     *
+     * @param integer $practoAccountId - PractoAccountId
      */
     public function setPractoAccountId($practoAccountId)
     {
-        $this->practoAccountId = $practoAccountId;
+        $this->setInt('practoAccountId', $practoAccountId);
     }
-
-
 }

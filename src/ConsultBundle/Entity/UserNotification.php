@@ -29,17 +29,19 @@ class UserNotification extends BaseEntity
     protected $question;
 
     /**
-     * @ORM\Column(name="notification_txt", type="text")
+     * @ORM\Column(name="text", type="text")
      */
-    protected $notificationText;
+    protected $text;
 
     /**
-     * @ORM\Column(type="smallint", name="is_viewed")
+     * @ORM\Column(type="smallint", name="viewed")
      */
-    protected $isViewed;
+    protected $viewed = 0;
 
     /**
-     * @return mixed
+     * Get PractoAccountId
+     *
+     * @return integer
      */
     public function getPractoAccountId()
     {
@@ -47,23 +49,19 @@ class UserNotification extends BaseEntity
     }
 
     /**
-     * @param mixed $practoAccountId
+     * Set PractoAccountId
+     *
+     * @param integer $practoAccountId - PractoAccountId
      */
     public function setPractoAccountId($practoAccountId)
     {
-        $this->practoAccountId = $practoAccountId;
+        $this->setInt('practoAccountId', $practoAccountId);
     }
 
     /**
-     * @return mixed
-     */
-    public function getQuestion()
-    {
-        return $this->question;
-    }
-
-    /**
-     * @param mixed $question
+     * Set Question
+     *
+     * @param Question $question - Question
      */
     public function setQuestion($question)
     {
@@ -71,36 +69,66 @@ class UserNotification extends BaseEntity
     }
 
     /**
-     * @return mixed
+     * Get Question
+     *
+     * @return Question
      */
-    public function getNotificationText()
+    public function getQuestion()
     {
-        return $this->notificationText;
+        return $this->question;
     }
 
     /**
-     * @param mixed $notificationText
+     * Get QuestionId
+     *
+     * @return integer
      */
-    public function setNotificationText($notificationText)
+    public function getQuestionId()
     {
-        $this->notificationText = $notificationText;
+        if ($this->question) {
+            return $this->question->getId();
+        }
+
+        return null;
     }
 
     /**
-     * @return mixed
+     * Is Viewed
+     *
+     * @return boolean
      */
-    public function getIsViewed()
+    public function isViewed()
     {
-        return $this->isViewed;
+        return $this->viewed;
     }
 
     /**
-     * @param mixed $isViewed
+     * Set viewed
+     *
+     * @param boolean $viewed - Viewed
      */
-    public function setIsViewed($isViewed)
+    public function setViewed($viewed)
     {
-        $this->isViewed = $isViewed;
+        $this->setBoolean('viewed', $viewed);
     }
 
+    /**
+     * Get text
+     *
+     * @return string
+     */
+    public function getText()
+    {
+        return $this->text;
+    }
 
+    /**
+     * Set Text
+     *
+     * @param string $text - Text
+     */
+    public function setText($text)
+    {
+        $this->setString('text', $text);
+    }
 }

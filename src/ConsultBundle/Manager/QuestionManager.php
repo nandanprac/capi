@@ -11,6 +11,7 @@ use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Constraints\Email as EmailConstraint;
 use ConsultBundle\Entity\QuestionImage;
+use ConsultBundle\Entity\QuestionBookmark;
 
 /**
  * Question Manager
@@ -28,11 +29,13 @@ class QuestionManager
      * @param ValidatorInterface       $validator          - Validator
      */
     public function __construct(Doctrine $doctrine, ValidatorInterface $validator,
-        QuestionImageManager $questionImageManager)
+        QuestionImageManager $questionImageManager, QuestionBookmarkManager $questionBookmarkManager )
     {
         $this->doctrine = $doctrine;
         $this->validator = $validator;
         $this->questionImageManager = $questionImageManager;
+        $this->questionBookmarkManager = $questionBookmarkManager;
+
     }
 
     /**
@@ -77,6 +80,25 @@ class QuestionManager
                 }
             }
             unset($requestParams['images']);
+        }
+
+        if (array_key_exists('bookmark', $requestParams)) {
+            if ($requestParams['bookmark']) {
+                $data['bookmark'] = $requestParams['bookmark'];
+                $data['practo_account_id'] = $requestParams['practo_account_id'];
+
+                $questionBookmark = new questionBookmark;
+                $questionBookmark->setQuestion($question);
+                try {
+                    $this->questionBookmarkManager->updateFields($questionBookmark, $data);
+                    $question->addBookmark($questionBookmark);
+                } catch (ValidationError $e) {
+                    @$errors['bookmark'][$index + 1] = json_decode($e->getMessage(), true);
+                }
+                unset($requestParams['bookmark']);
+            } else {
+                //todo
+            }
         }
 
         $question->setAttributes($requestParams);

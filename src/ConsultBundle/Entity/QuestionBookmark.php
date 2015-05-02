@@ -21,7 +21,7 @@ class QuestionBookmark extends BaseEntity
      * @ORM\ManyToOne(targetEntity = "Question", inversedBy ="bookmarks")
      * @ORM\JoinColumn(name = "question_id", referencedColumnName = "id")
      */
-    protected $questions;
+    protected $question;
 
     /**
      * @ORM\Column(type="integer", name="practo_account_id")
@@ -29,23 +29,9 @@ class QuestionBookmark extends BaseEntity
     protected $practoAccountId;
 
     /**
-     * @return mixed
-     */
-    public function getQuestions()
-    {
-        return $this->questions;
-    }
-
-    /**
-     * @param mixed $questions
-     */
-    public function setQuestions($questions)
-    {
-        $this->questions = $questions;
-    }
-
-    /**
-     * @return mixed
+     * Get PractoAccountId
+     *
+     * @return integer
      */
     public function getPractoAccountId()
     {
@@ -53,12 +39,46 @@ class QuestionBookmark extends BaseEntity
     }
 
     /**
-     * @param mixed $practoAccountId
+     * Set PractoAccountId
+     *
+     * @param integer $practoAccountId - PractoAccountId
      */
     public function setPractoAccountId($practoAccountId)
     {
-        $this->practoAccountId = $practoAccountId;
+        $this->setInt('practoAccountId', $practoAccountId);
     }
 
+    /**
+     * Set Question
+     *
+     * @param Question $question - Question
+     */
+    public function setQuestion($question)
+    {
+        $this->question = $question;
+    }
 
+    /**
+     * Get Question
+     *
+     * @return Question
+     */
+    public function getQuestion()
+    {
+        return $this->question;
+    }
+
+    /**
+     * Get QuestionId
+     *
+     * @return integer
+     */
+    public function getQuestionId()
+    {
+        if ($this->question) {
+            return $this->question->getId();
+        }
+
+        return null;
+    }
 }

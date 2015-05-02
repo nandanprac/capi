@@ -24,22 +24,17 @@ class DoctorQuestion extends BaseEntity
     protected $question;
 
     /**
-     * @ORM\OneToOne(targetEntity = "DoctorReply", mappedBy = "doctorQuestion")
-     */
-    protected $doctorReply;
-
-    /**
      * @ORM\Column(name="practo_account_id", type="integer")
      */
     protected $practoAccountId;
 
     /**
-     * @ORM\Column(length=10)
+     * @ORM\Column(length=10, name="state")
      */
     protected $state;
 
     /**
-     * @ORM\Column(name="rejection_reason", length=10, nullable=true)
+     * @ORM\Column(name="rejection_reason", length=100, nullable=true)
      */
     protected $rejectionReason;
 
@@ -54,39 +49,15 @@ class DoctorQuestion extends BaseEntity
     protected $viewedAt;
 
     /**
-     * @return mixed
+     * @ORM\OneToOne(targetEntity = "DoctorReply", mappedBy = "doctorQuestion")
      */
-    public function getQuestion()
-    {
-        return $this->question;
-    }
+    protected $doctorReply;
+
 
     /**
-     * @param mixed $question
-     */
-    public function setQuestion($question)
-    {
-        $this->question = $question;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getDoctorReply()
-    {
-        return $this->doctorReply;
-    }
-
-    /**
-     * @param mixed $doctorReply
-     */
-    public function setDoctorReply($doctorReply)
-    {
-        $this->doctorReply = $doctorReply;
-    }
-
-    /**
-     * @return mixed
+     * Get PractoAccountId
+     *
+     * @return integer
      */
     public function getPractoAccountId()
     {
@@ -94,47 +65,53 @@ class DoctorQuestion extends BaseEntity
     }
 
     /**
-     * @param mixed $practoAccountId
+     * Set PractoAccountId
+     *
+     * @param integer $practoAccountId - PractoAccountId
      */
     public function setPractoAccountId($practoAccountId)
     {
-        $this->practoAccountId = $practoAccountId;
+        $this->setInt('practoAccountId', $practoAccountId);
     }
 
     /**
-     * @return mixed
+     * Set Question
+     *
+     * @param Question $question - Question
      */
-    public function getState()
+    public function setQuestion($question)
     {
-        return $this->state;
+        $this->question = $question;
     }
 
     /**
-     * @param mixed $state
+     * Get Question
+     *
+     * @return Question
      */
-    public function setState($state)
+    public function getQuestion()
     {
-        $this->state = $state;
+        return $this->question;
     }
 
     /**
-     * @return mixed
+     * Get QuestionId
+     *
+     * @return integer
      */
-    public function getRejectionReason()
+    public function getQuestionId()
     {
-        return $this->rejectionReason;
+        if ($this->question) {
+            return $this->question->getId();
+        }
+
+        return null;
     }
 
     /**
-     * @param mixed $rejectionReason
-     */
-    public function setRejectionReason($rejectionReason)
-    {
-        $this->rejectionReason = $rejectionReason;
-    }
-
-    /**
-     * @return mixed
+     * Get rejectedAt
+     *
+     * @return DateTime
      */
     public function getRejectedAt()
     {
@@ -142,15 +119,29 @@ class DoctorQuestion extends BaseEntity
     }
 
     /**
-     * @param mixed $rejectedAt
+     * Get rejectedAtStr
+     *
+     * @return string
      */
-    public function setRejectedAt($rejectedAt)
+    public function getRejectedAtStr()
     {
-        $this->rejectedAt = $rejectedAt;
+        return $this->getDateTimeStr('rejectedAt');
     }
 
     /**
-     * @return mixed
+     * Set rejectedAt
+     *
+     * @param mixed $rejectedAt - string or DateTime object
+     */
+    public function setRejectedAt($rejectedAt)
+    {
+        $this->setDateTime('rejectedAt', $rejectedAt);
+    }
+
+    /**
+     * Get viewedAt
+     *
+     * @return DateTime
      */
     public function getViewedAt()
     {
@@ -158,12 +149,95 @@ class DoctorQuestion extends BaseEntity
     }
 
     /**
-     * @param mixed $viewedAt
+     * Get viewedAtStr
+     *
+     * @return string
+     */
+    public function getViewedAtStr()
+    {
+        return $this->getDateTimeStr('viewedAt');
+    }
+
+    /**
+     * Set ViewedAt
+     *
+     * @param mixed $viewedAt - string or DateTime object
      */
     public function setViewedAt($viewedAt)
     {
-        $this->viewedAt = $viewedAt;
+        $this->setDateTime('viewedAt', $viewedAt);
     }
 
+    /**
+     * Get state
+     *
+     * @return string
+     */
+    public function getState()
+    {
+        return $this->state;
+    }
 
+    /**
+     * Set State
+     *
+     * @param string $state - State
+     */
+    public function setState($state)
+    {
+        $this->setString('state', $state);
+    }
+
+    /**
+     * Get Rejection Reason
+     *
+     * @return string
+     */
+    public function getRejectionReason()
+    {
+        return $this->rejectionReason;
+    }
+
+    /**
+     * Set Rejection Reason
+     *
+     * @param string $rejectionReason - Rejection Reason
+     */
+    public function setRejectionReason($rejectionReason)
+    {
+        $this->setString('rejectionReason', $state);
+    }
+
+    public function _construct()
+    {
+        $this->doctorReply = new ArrayCollection();
+    }
+
+    /**
+     * Get Doctor Reply
+     *
+     * @return ArrayCollection
+     */
+    public function getDoctorReplies()
+    {
+        return $this->doctorReply;
+    }
+
+    /**
+     * Add Doctor Reply
+     *
+     * @param DoctorReply $doctorReply - Doctor Reply
+     */
+    public function addDoctorReply(DoctorReply $doctorReply)
+    {
+        $this->doctorReply[] = $doctorReply;
+    }
+
+    /**
+     * Clear Doctor Reply
+     */
+    public function clearDoctorReplies()
+    {
+        $this->doctorReply = new ArrayCollection();
+    }
 }

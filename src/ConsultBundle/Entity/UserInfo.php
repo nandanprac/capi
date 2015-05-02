@@ -27,9 +27,9 @@ class UserInfo extends BaseEntity
     protected $allergies;
 
     /**
-     * @ORM\Column(type="text", name="medication")
+     * @ORM\Column(type="text", name="medications")
      */
-    protected $medication;
+    protected $medications;
 
     /**
      * @ORM\Column(name="prev_diagnosed_conditions", type="text")
@@ -42,7 +42,9 @@ class UserInfo extends BaseEntity
     protected $additionalDetails;
 
     /**
-     * @return mixed
+     * Get PractoAccountId
+     *
+     * @return integer
      */
     public function getPractoAccountId()
     {
@@ -50,15 +52,19 @@ class UserInfo extends BaseEntity
     }
 
     /**
-     * @param mixed $practoAccountId
+     * Set PractoAccountId
+     *
+     * @param integer $practoAccountId - PractoAccountId
      */
     public function setPractoAccountId($practoAccountId)
     {
-        $this->practoAccountId = $practoAccountId;
+        $this->setInt('practoAccountId', $practoAccountId);
     }
 
     /**
-     * @return mixed
+     * Get allergies
+     *
+     * @return string
      */
     public function getAllergies()
     {
@@ -66,31 +72,39 @@ class UserInfo extends BaseEntity
     }
 
     /**
-     * @param mixed $allergies
+     * Set Medication
+     *
+     * @param string $medications - Allergies
      */
     public function setAllergies($allergies)
     {
-        $this->allergies = $allergies;
+        $this->setString('allergies', $allergies);
     }
 
     /**
-     * @return mixed
+     * Get medications
+     *
+     * @return string
      */
-    public function getMedication()
+    public function getMedications()
     {
-        return $this->medication;
+        return $this->medications;
     }
 
     /**
-     * @param mixed $medication
+     * Set Medications
+     *
+     * @param string $medications - Medications
      */
-    public function setMedication($medication)
+    public function setMedications($medications)
     {
-        $this->medication = $medication;
+        $this->setString('medications', $medications);
     }
 
     /**
-     * @return mixed
+     * Get Prev Diagnosed Conditions
+     *
+     * @return string
      */
     public function getPrevDiagnosedConditions()
     {
@@ -98,15 +112,19 @@ class UserInfo extends BaseEntity
     }
 
     /**
-     * @param mixed $prevDiagnosedConditions
+     * Set Prev Diagnosed Conditions
+     *
+     * @param string $prevDiagnosedConditions - Prev Diagnosed Conditions
      */
     public function setPrevDiagnosedConditions($prevDiagnosedConditions)
     {
-        $this->prevDiagnosedConditions = $prevDiagnosedConditions;
+        $this->setString('prevDiagnosedConditions', $prevDiagnosedConditions);
     }
 
     /**
-     * @return mixed
+     * Get Additional Details
+     *
+     * @return string
      */
     public function getAdditionalDetails()
     {
@@ -114,13 +132,12 @@ class UserInfo extends BaseEntity
     }
 
     /**
-     * @param mixed $additionalDetails
+     * Set Additional Details
+     *
+     * @param string $additionalDetails - Additional Details
      */
     public function setAdditionalDetails($additionalDetails)
     {
-        $this->additionalDetails = $additionalDetails;
+        $this->setString('additionalDetails', $additionalDetails);
     }
-
-
-
 }
