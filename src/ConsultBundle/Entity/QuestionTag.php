@@ -33,4 +33,54 @@ class QuestionTag extends BaseEntity
      */
     protected $isUserDefined = 0;
 
+    /**
+     * @return mixed
+     */
+    public function getQuestions()
+    {
+        return $this->questions;
+    }
+
+    /**
+     * @param mixed $questions
+     */
+    public function setQuestions($questions)
+    {
+        $this->questions = $questions;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTag()
+    {
+        return $this->tag;
+    }
+
+    /**
+     * @param mixed $tag
+     */
+    public function setTag($tag)
+    {
+        $this->tag = $tag;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIsUserDefined()
+    {
+        return $this->isUserDefined;
+    }
+
+    /**
+     * @param mixed $isUserDefined
+     */
+    public function setIsUserDefined($isUserDefined)
+    {
+        $this->isUserDefined = $isUserDefined;
+    }
+
+
+
 }

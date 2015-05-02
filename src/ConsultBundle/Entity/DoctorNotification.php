@@ -18,6 +18,70 @@ use Doctrine\ORM\Mapping as ORM;
 class DoctorNotification extends BaseEntity
 {
     /**
+     * @return mixed
+     */
+    public function getPractoAccountId()
+    {
+        return $this->practoAccountId;
+    }
+
+    /**
+     * @param mixed $practoAccountId
+     */
+    public function setPractoAccountId($practoAccountId)
+    {
+        $this->practoAccountId = $practoAccountId;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getQuestion()
+    {
+        return $this->question;
+    }
+
+    /**
+     * @param mixed $question
+     */
+    public function setQuestion($question)
+    {
+        $this->question = $question;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getNotificationText()
+    {
+        return $this->notificationText;
+    }
+
+    /**
+     * @param mixed $notificationText
+     */
+    public function setNotificationText($notificationText)
+    {
+        $this->notificationText = $notificationText;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIsViewed()
+    {
+        return $this->isViewed;
+    }
+
+    /**
+     * @param mixed $isViewed
+     */
+    public function setIsViewed($isViewed)
+    {
+        $this->isViewed = $isViewed;
+    }
+
+    /**
      * @ORM\Column(type="integer", name="practo_account_id")
      */
     protected $practoAccountId;

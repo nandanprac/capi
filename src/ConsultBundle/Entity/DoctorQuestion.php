@@ -52,4 +52,118 @@ class DoctorQuestion extends BaseEntity
      * @ORM\Column(name="viewed_at", type="datetime", nullable=true)
      */
     protected $viewedAt;
+
+    /**
+     * @return mixed
+     */
+    public function getQuestion()
+    {
+        return $this->question;
+    }
+
+    /**
+     * @param mixed $question
+     */
+    public function setQuestion($question)
+    {
+        $this->question = $question;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDoctorReply()
+    {
+        return $this->doctorReply;
+    }
+
+    /**
+     * @param mixed $doctorReply
+     */
+    public function setDoctorReply($doctorReply)
+    {
+        $this->doctorReply = $doctorReply;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPractoAccountId()
+    {
+        return $this->practoAccountId;
+    }
+
+    /**
+     * @param mixed $practoAccountId
+     */
+    public function setPractoAccountId($practoAccountId)
+    {
+        $this->practoAccountId = $practoAccountId;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getState()
+    {
+        return $this->state;
+    }
+
+    /**
+     * @param mixed $state
+     */
+    public function setState($state)
+    {
+        $this->state = $state;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRejectionReason()
+    {
+        return $this->rejectionReason;
+    }
+
+    /**
+     * @param mixed $rejectionReason
+     */
+    public function setRejectionReason($rejectionReason)
+    {
+        $this->rejectionReason = $rejectionReason;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRejectedAt()
+    {
+        return $this->rejectedAt;
+    }
+
+    /**
+     * @param mixed $rejectedAt
+     */
+    public function setRejectedAt($rejectedAt)
+    {
+        $this->rejectedAt = $rejectedAt;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getViewedAt()
+    {
+        return $this->viewedAt;
+    }
+
+    /**
+     * @param mixed $viewedAt
+     */
+    public function setViewedAt($viewedAt)
+    {
+        $this->viewedAt = $viewedAt;
+    }
+
+
 }

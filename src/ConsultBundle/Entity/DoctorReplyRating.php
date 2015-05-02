@@ -31,4 +31,54 @@ class DoctorReplyRating extends BaseEntity
      * @ORM\Column(type="smallint", name="rating")
      */
     protected $rating;
+
+    /**
+     * @return mixed
+     */
+    public function getPractoAccountId()
+    {
+        return $this->practoAccountId;
+    }
+
+    /**
+     * @param mixed $practoAccountId
+     */
+    public function setPractoAccountId($practoAccountId)
+    {
+        $this->practoAccountId = $practoAccountId;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDoctorReply()
+    {
+        return $this->doctorReply;
+    }
+
+    /**
+     * @param mixed $doctorReply
+     */
+    public function setDoctorReply($doctorReply)
+    {
+        $this->doctorReply = $doctorReply;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRating()
+    {
+        return $this->rating;
+    }
+
+    /**
+     * @param mixed $rating
+     */
+    public function setRating($rating)
+    {
+        $this->rating = $rating;
+    }
+
+
 }

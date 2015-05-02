@@ -41,4 +41,86 @@ class UserInfo extends BaseEntity
      */
     protected $additionalDetails;
 
+    /**
+     * @return mixed
+     */
+    public function getPractoAccountId()
+    {
+        return $this->practoAccountId;
+    }
+
+    /**
+     * @param mixed $practoAccountId
+     */
+    public function setPractoAccountId($practoAccountId)
+    {
+        $this->practoAccountId = $practoAccountId;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAllergies()
+    {
+        return $this->allergies;
+    }
+
+    /**
+     * @param mixed $allergies
+     */
+    public function setAllergies($allergies)
+    {
+        $this->allergies = $allergies;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMedication()
+    {
+        return $this->medication;
+    }
+
+    /**
+     * @param mixed $medication
+     */
+    public function setMedication($medication)
+    {
+        $this->medication = $medication;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPrevDiagnosedConditions()
+    {
+        return $this->prevDiagnosedConditions;
+    }
+
+    /**
+     * @param mixed $prevDiagnosedConditions
+     */
+    public function setPrevDiagnosedConditions($prevDiagnosedConditions)
+    {
+        $this->prevDiagnosedConditions = $prevDiagnosedConditions;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAdditionalDetails()
+    {
+        return $this->additionalDetails;
+    }
+
+    /**
+     * @param mixed $additionalDetails
+     */
+    public function setAdditionalDetails($additionalDetails)
+    {
+        $this->additionalDetails = $additionalDetails;
+    }
+
+
+
 }

@@ -40,4 +40,85 @@ class DoctorReply extends BaseEntity
      * @ORM\OneToMany(targetEntity="DoctorReplyRating", mappedBy="doctorReply")
      */
     protected $ratings;
+
+    /**
+     * @return mixed
+     */
+    public function getDoctorQuestion()
+    {
+        return $this->doctorQuestion;
+    }
+
+    /**
+     * @param mixed $doctorQuestion
+     */
+    public function setDoctorQuestion($doctorQuestion)
+    {
+        $this->doctorQuestion = $doctorQuestion;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAnswerText()
+    {
+        return $this->answerText;
+    }
+
+    /**
+     * @param mixed $answerText
+     */
+    public function setAnswerText($answerText)
+    {
+        $this->answerText = $answerText;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIsSelected()
+    {
+        return $this->isSelected;
+    }
+
+    /**
+     * @param mixed $isSelected
+     */
+    public function setIsSelected($isSelected)
+    {
+        $this->isSelected = $isSelected;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getViewedAt()
+    {
+        return $this->viewedAt;
+    }
+
+    /**
+     * @param mixed $viewedAt
+     */
+    public function setViewedAt($viewedAt)
+    {
+        $this->viewedAt = $viewedAt;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRatings()
+    {
+        return $this->ratings;
+    }
+
+    /**
+     * @param mixed $ratings
+     */
+    public function setRatings($ratings)
+    {
+        $this->ratings = $ratings;
+    }
+
 }
