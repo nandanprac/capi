@@ -2,26 +2,15 @@
 
 namespace ConsultBundle\Manager;
 
-use Symfony\Component\Security\Core\SecurityContextInterface;
-use Symfony\Component\Validator\ValidatorInterface;
-use ConsultBundle\Manager\ValidationError;
+
 
 /**
  * Question Image Manager
  */
-class QuestionImageManager
+class QuestionImageManager extends BaseManager
 {
-    private $validator;
 
-    /**
-     * Constructor
-     *
-     * @param ValidatorInterface $validator - Validator
-     */
-    public function __construct(ValidatorInterface $validator)
-    {
-        $this->validator = $validator;
-    }
+
 
     /**
      * Update Fields
@@ -36,7 +25,7 @@ class QuestionImageManager
         $errors = array();
         $questionImage->setAttributes($data);
 
-        $validationErrors = $this->validator->validate($questionImage);
+        $validationErrors = $this->validate($questionImage);
 
         if (0 < count($validationErrors)) {
             foreach ($validationErrors as $validationError) {

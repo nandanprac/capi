@@ -11,17 +11,7 @@ use ConsultBundle\Manager\ValidationError;
  */
 class QuestionBookmarkManager
 {
-    private $validator;
 
-    /**
-     * Constructor
-     *
-     * @param ValidatorInterface $validator - Validator
-     */
-    public function __construct(ValidatorInterface $validator)
-    {
-        $this->validator = $validator;
-    }
 
     /**
      * Update Fields
@@ -39,7 +29,7 @@ class QuestionBookmarkManager
             $questionBookmark->setAttributes($data);            
         }
 
-        $validationErrors = $this->validator->validate($questionBookmark);
+        $validationErrors = $this->validate($questionBookmark);
 
         if (0 < count($validationErrors)) {
             foreach ($validationErrors as $validationError) {

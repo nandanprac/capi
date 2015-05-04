@@ -2,18 +2,42 @@ parameters:
     # Overriding Security Bundle's Access Listener class to provide detailed
     # error message
 services:
+
+    consult.questionValidator:
+        class: ConsultBundle\Validator\QuestionValidator
+
+    consult.questionImageValidator:
+         class: ConsultBundle\Validator\QuestionImageValidator
+
+    consult.questionBookmarkValidator:
+                 class: ConsultBundle\Validator\QuestionBookmarkValidator
+
+    consult.cacheUtil:
+        class: ConsultBundle\Utility\CacheUtils
+
+    consult.helper:
+        class: ConsultBundle\Helper\Helper
+        arguments:
+        - @doctrine
+        - @consult.cacheUtil
+
     consult.question_manager:
         class: ConsultBundle\Manager\QuestionManager
+        calls:
+          - [setValidator, ["@consult.questionValidator"]]
+          - [setHelper, ["@consult.helper"]]
         arguments:
-          - @doctrine
-          - @validator
           - @consult.question_image_manager
           - @consult.question_bookmark_manager
+
     consult.question_image_manager:
         class: ConsultBundle\Manager\QuestionImageManager
-        arguments:
-          - @validator
+        calls:
+                  - [setValidator, ["@consult.questionImageValidator"]]
+                  - [setHelper, ["@consult.helper"]]
+
     consult.question_bookmark_manager:
         class: ConsultBundle\Manager\QuestionBookmarkManager
-        arguments:
-          - @validator
+        calls:
+                  - [setValidator, ["@consult.questionBookmarkValidator"]]
+                  - [setHelper, ["@consult.helper"]]

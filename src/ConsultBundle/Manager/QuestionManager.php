@@ -2,24 +2,19 @@
 
 namespace ConsultBundle\Manager;
 
+use ConsultBundle\Constants\ConsultConstants;
 use Doctrine\Bundle\DoctrineBundle\Registry as Doctrine;
 use ConsultBundle\Entity\Question;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-use Symfony\Component\Security\Core\SecurityContextInterface;
 use Symfony\Component\Validator\ValidatorInterface;
-use Symfony\Component\Validator\ConstraintViolation;
-use Symfony\Component\Validator\ConstraintViolationList;
-use Symfony\Component\Validator\Constraints\Email as EmailConstraint;
 use ConsultBundle\Entity\QuestionImage;
 use ConsultBundle\Entity\QuestionBookmark;
 
 /**
  * Question Manager
  */
-class QuestionManager
+class QuestionManager extends BaseManager
 {
-    protected $doctrine;
-    protected $validator;
+
     protected $questionImageManager;
     protected $questionBookmarkManager;
 
@@ -29,11 +24,9 @@ class QuestionManager
      * @param Doctrine                 $doctrine           - Doctrine
      * @param ValidatorInterface       $validator          - Validator
      */
-    public function __construct(Doctrine $doctrine, ValidatorInterface $validator,
+    public function __construct(
         QuestionImageManager $questionImageManager, QuestionBookmarkManager $questionBookmarkManager )
     {
-        $this->doctrine = $doctrine;
-        $this->validator = $validator;
         $this->questionImageManager = $questionImageManager;
         $this->questionBookmarkManager = $questionBookmarkManager;
 
@@ -138,9 +131,8 @@ class QuestionManager
         $question->setSoftDeleted(false);
 
         $this->updateFields($question, $requestParams);
-        $em = $this->doctrine->getManager();
-        $em->persist($question);
-        $em->flush();
+        $this->helper->persist($question, "true");
+
 
         return $question;
     }
@@ -154,8 +146,8 @@ class QuestionManager
      */
     public function load($questionId)
     {
-        $er = $this->doctrine->getManager()->getRepository('ConsultBundle:Question');
-        $question = $er->findOneById($questionId);
+
+        $question = $this->helper->loadById($questionId, ConsultConstants::$QUESTION_ENTITY_NAME);
 
 
         if (is_null($question)) {
