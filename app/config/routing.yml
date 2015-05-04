@@ -1,3 +1,5 @@
-questions:
-    resource: ConsultBundle\Controller\QuestionsController
-    type:     rest
+consult_api:
+     type:     rest
+     resource: "@ConsultBundle/Resources/config/consult_routes.yml"
+
+

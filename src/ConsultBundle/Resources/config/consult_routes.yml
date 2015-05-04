@@ -1,0 +1,21 @@
+questions:
+    resource: ConsultBundle\Controller\QuestionsController
+    type:     rest
+
+
+
+doctorQuestions:
+   resource: ConsultBundle\Controller\DoctorQuestionsController
+     parent: questions
+       type: rest
+
+
+reply:
+    resources: ConsultBundle\Controller\DoctorReplyController
+       parent: doctorQuestions
+         type: rest
+
+
+users:
+    resources: ConsultBundle\Controller\UserController
+         type: rest
