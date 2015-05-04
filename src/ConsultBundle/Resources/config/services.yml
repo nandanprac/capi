@@ -12,6 +12,12 @@ services:
     consult.questionBookmarkValidator:
                  class: ConsultBundle\Validator\QuestionBookmarkValidator
 
+    consult.doctorReplyValidator:
+         class: ConsultBundle\Validator\DoctorReplyValidator
+
+    consult.doctorQuestionValidator:
+         class: ConsultBundle\Validator\DoctorQuestionValidator
+
     consult.cacheUtil:
         class: ConsultBundle\Utility\CacheUtils
 
@@ -44,7 +50,24 @@ services:
         arguments:
           - @validator
 
-    consult.queue:
+
+
+
+    consult.doctorReplyManager:
+        class: ConsultBundle\Manager\DoctorReplyManager
+        calls:
+                          - [setValidator, ["@consult.doctorReplyValidator"]]
+                          - [setHelper, ["@consult.helper"]]
+
+    consult.doctorQuestionManager:
+        class: ConsultBundle\Manager\DoctorQuestionManager
+        calls:
+                          - [setValidator, ["@consult.doctorQuestionValidator"]]
+                          - [setHelper, ["@consult.helper"]]
+
+
+
+consult.queue:
         class: ConsultBundle\Queue\AbstractQueue
         factory_service: consult.queue_factory
         factory_method: get
@@ -54,4 +77,3 @@ services:
         class: ConsultBundle\Queue\QueueFactory
         calls:
             - [ setContainer, [ @service_container ]]
-

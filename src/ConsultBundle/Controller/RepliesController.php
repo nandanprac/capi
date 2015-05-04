@@ -19,12 +19,14 @@ class RepliesController extends FOSRestController
      * @param $doctorId
      * @param $questionId
      * @param $practoAccntId
+     * @param $answerText
      *
      * @View()
      */
-     public function postDoctorReplyAction($doctorId, $questionId, $practoAccntId)
+     public function postDoctorReplyAction($doctorId, $questionId, $practoAccntId, $answerText)
      {
-         //TODO
+         $doctorReplyManager = $this->get('consult.doctorReplyManager');
+         $doctorReplyManager->replyToAQuestion($doctorId, $questionId, $practoAccntId, $answerText);
      }
 
     /**

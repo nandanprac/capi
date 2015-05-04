@@ -17,7 +17,7 @@ abstract class BaseManager {
      protected $validator;
 
     /**
-     * @param mixed $validator
+     * @param  $validator
      */
     public function setValidator(Validator $validator)
     {
@@ -25,7 +25,7 @@ abstract class BaseManager {
     }
 
     /**
-     * @param mixed $helper
+     * @param  $helper
      */
     public function setHelper(Helper $helper)
     {
