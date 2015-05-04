@@ -18,3 +18,21 @@ parameters:
 
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt
+    queue.uri: 'beanstalk://localhost/dev-'
+    elastic_queue_host: 127.0.0.1
+    elastic_search_hosts:
+        -
+            host: localhost
+            port: 9200
+    elastic_index_name: fabric_search_new
+    elastic_place_index_name: fabric_place_search
+    sentry.dsn: 'udp://a:b@localhost:12345/c'
+    queue.uri: 'beanstalk://localhost/dev-'
+    elastic_queue_host: 127.0.0.1
+    elastic_search_hosts:
+        -
+            host: localhost
+            port: 9200
+    elastic_index_name: fabric_search_new
+    elastic_place_index_name: fabric_place_search
+
