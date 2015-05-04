@@ -6,16 +6,14 @@ questions:
 
 doctorQuestions:
    resource: ConsultBundle\Controller\DoctorQuestionsController
-     parent: questions
-       type: rest
+   type:     rest
 
 
-reply:
-    resources: ConsultBundle\Controller\DoctorReplyController
-       parent: doctorQuestions
-         type: rest
+replies:
+    resource: ConsultBundle\Controller\RepliesController
+    type:      rest
 
 
 users:
-    resources: ConsultBundle\Controller\UserController
-         type: rest
+    resource: ConsultBundle\Controller\UserController
+    type:      rest
