@@ -224,7 +224,7 @@ class Question extends BaseEntity
      */
     public function addBookmark(QuestionBookmark $bookmark)
     {
-        $this->bookmarks.add($bookmark) ;
+        $this->bookmarks->add($bookmark) ;
     }
 
     /**

@@ -2,9 +2,11 @@
 
 namespace ConsultBundle\Manager;
 
+use ConsultBundle\Constants\ConsultConstants;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 use Symfony\Component\Validator\ValidatorInterface;
 use ConsultBundle\Manager\ValidationError;
+use ConsultBundle\Entity\QuestionBookmark;
 
 /**
  * Question Bookmark Manager
@@ -47,5 +49,17 @@ class QuestionBookmarkManager extends BaseManager
         }
 
         return;
+    }
+
+    public function createBookmarkForAQuestion($practoAccountId, $questionId)
+    {
+         $questionBookmark = new QuestionBookmark();
+        $questionBookmark->setPractoAccountId($practoAccountId);
+
+        $question = $this->helper->loadById($questionId, ConsultConstants::$QUESTION_ENTITY_NAME);
+
+        $questionBookmark->setQuestion($question);
+
+        $this->helper->persist($questionBookmark, true);
     }
 }
