@@ -65,5 +65,10 @@ services:
                           - [setValidator, ["@consult.doctorQuestionValidator"]]
                           - [setHelper, ["@consult.helper"]]
 
+    consult.user_manager:
+        class: ConsultBundle\Manager\UserManager
+        calls:
+              - [setHelper, ["@consult.helper"]]
+
 
 

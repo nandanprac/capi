@@ -10,54 +10,77 @@ namespace ConsultBundle\Controller;
 
 
 use FOS\RestBundle\Controller\FOSRestController;
-use FOS\RestBundle\Controller\Annotations\View;
+use FOS\RestBundle\View\View;
+use FOS\RestBundle\Util\Codes;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use ConsultBundle\Manager\ValidationError;
 
 class UserController extends FOSRestController{
 
     /**
-     * @param $userId
-     * @param $questionId
-     * @param $hasChanged
-     * @param $allergies
-     * @param $medications
-     * @param $diagnosedConditions
+     * Additional info of user addition
      *
-     * @View()
      */
-    public function postAdditionalUserInfoAction($userId, $questionId, $hasChanged, $allergies, $medications, $diagnosedConditions)
+    public function postUserConsultinfoAction()
     {
-        //TODO By Sahana
+        $postData = $this->getRequest()->request->all();
+        $userManager = $this->get('consult.user_manager');
+
+        try {
+            $userConsultEntry = $userManager->add($postData);
+        } catch (ValidationError $e) {
+            return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
+        }
+        return View::create(
+            $userConsultEntry,
+            Codes::HTTP_CREATED);
     }
 
     /**
-     * @param $userId
+     * User profile updation
      *
-     * @View()
+     * @return View
      */
-    public function getAdditionalUserInfoAction($userId)
+    public function postUserAction()
     {
-        //TODO By Sahana
+        
     }
 
     /**
-     * @param $userId
-     * @param $changes
+     * Load additional info of a User
      *
-     * @View()
+     * @param interger $practoId
+     *
+     * @return View
      */
-    public function postUserProfileAction($userId, $changes)
+    public function getUserConsultinfoAction($practoId)
     {
-        //TODO By Sahana
+        $userManager = $this->get('consult.user_manager');
+        try {
+            $userConsultEntry = $userManager->load($practoId);
+        } catch (AccessDeniedException $e) {
+            return View::create($e->getMessage(), Codes::HTTP_FORBIDDEN);
+        }
+        if (null === $userConsultEntry) {
+            return View::create(null, Codes::HTTP_NOT_FOUND);
+        } else if ($userConsultEntry->isSoftDeleted()) {
+            return View::create(null, Codes::HTTP_GONE);
+        }
+
+        return $userConsultEntry;
+
     }
 
     /**
-     * @param $userId
+     * Load User profile details
      *
-     * @View()
+     * @param interger $practoId
+     *
+     * @return View
      */
-    public function getUserProfileAction($userId)
+    public function getUserAction($practoId)
     {
-        //TODO By Sahana
+        
     }
 
 }
