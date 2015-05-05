@@ -74,7 +74,7 @@ namespace ConsultBundle\Helper;
          * @param $entity
          * @return mixed
          */
-        protected function persist($entity, $flush)
+        public function persist($entity, $flush)
         {
             if($entity != null){
                 $this->entityManager->persist($entity);
