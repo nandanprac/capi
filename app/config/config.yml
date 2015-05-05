@@ -1,5 +1,6 @@
 imports:
     - { resource: parameters.yml }
+  #  - { resource: queueServices.yml }
     - { resource: security.yml }
     - { resource: @ConsultBundle/Resources/config/services.yml }
 

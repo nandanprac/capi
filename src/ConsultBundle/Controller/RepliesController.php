@@ -9,6 +9,7 @@
 namespace ConsultBundle\Controller;
 
 
+use ConsultBundle\Entity\DoctorReply;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations\View;
 
@@ -23,10 +24,13 @@ class RepliesController extends FOSRestController
      *
      * @View()
      */
-     public function postDoctorReplyAction($doctorId, $questionId, $practoAccntId, $answerText)
+     public function postDoctorReplyAction($doctorQuestionId,  $practoAccntId, $answerText)
      {
-         $doctorReplyManager = $this->get('consult.doctorReplyManager');
-         $doctorReplyManager->replyToAQuestion($doctorId, $questionId, $practoAccntId, $answerText);
+         $doctorReply  = new DoctorReply();
+         $doctorReply->setText($answerText);
+         return $doctorReply;
+         //$doctorReplyManager = $this->get('consult.doctorReplyManager');
+         //$doctorReplyManager->replyToAQuestion($doctorQuestionId, $practoAccntId, $answerText);
      }
 
     /**

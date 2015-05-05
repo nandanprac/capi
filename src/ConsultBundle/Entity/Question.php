@@ -90,7 +90,7 @@ class Question extends BaseEntity
      */
     protected $userInfo;
 
-    public function _construct()
+    public function __construct()
     {
         $this->images = new ArrayCollection();
         $this->doctorQuestions = new ArrayCollection();

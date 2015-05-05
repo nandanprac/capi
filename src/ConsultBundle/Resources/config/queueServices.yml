@@ -1,0 +1,12 @@
+consult.queue:
+           class: ConsultBundle\Queue\AbstractQueue
+ factory_service: consult.queue_factory
+  factory_method: get
+           calls:
+          - [ setFabricDomain, ['@?consult.fabric_domain=']]
+
+
+    consult.queue_factory:
+        class: ConsultBundle\Queue\QueueFactory
+        calls:
+            - [ setContainer, [ @service_container ]]

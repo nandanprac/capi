@@ -9,7 +9,7 @@ use ConsultBundle\Manager\ValidationError;
 /**
  * Question Bookmark Manager
  */
-class QuestionBookmarkManager
+class QuestionBookmarkManager extends BaseManager
 {
 
 

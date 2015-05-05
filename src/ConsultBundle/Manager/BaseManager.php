@@ -8,7 +8,7 @@
 
 namespace ConsultBundle\Manager;
 
-use ConsultBundle\Helper;
+use ConsultBundle\Helper\Helper;
 use ConsultBundle\Validator\Validator;
 
 

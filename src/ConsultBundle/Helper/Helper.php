@@ -14,7 +14,7 @@ namespace ConsultBundle\Helper;
   use Doctrine\ORM\EntityManager;
   use Doctrine\ORM\EntityRepository;
 
-  abstract  class Helper {
+    class Helper {
 
       /**
        * @var EntityManager
