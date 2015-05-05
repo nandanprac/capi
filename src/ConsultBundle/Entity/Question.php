@@ -34,13 +34,34 @@ class Question extends BaseEntity
     /**
      * @ORM\Column(length=5, name="state")
      */
-    protected $state;
+    protected $state="NEW";
     //TODO: put asserts on what states are allowed
 
     /**
      * @ORM\Column(type="smallint", name="user_anonymous")
      */
-    protected $userAnonymous;
+    protected $userAnonymous=1;
+
+    /**
+     * @ORM\Column(type="datetime", name="viewed_at", nullable=true)
+     */
+    protected $viewedAt;
+
+    /**
+     * @return mixed
+     */
+    public function getViewedAt()
+    {
+        return $this->viewedAt;
+    }
+
+    /**
+     * @param mixed $viewedAt
+     */
+    public function setViewedAt(\DateTime $viewedAt)
+    {
+        $this->viewedAt = $viewedAt;
+    }
 
    /**
     * @ORM\OneToMany(targetEntity="QuestionImage", mappedBy="question", cascade={"persist", "remove"})
@@ -99,6 +120,7 @@ class Question extends BaseEntity
         $this->views = new ArrayCollection();
         $this->userNotifications = new ArrayCollection();
         $this->doctorNotifications = new ArrayCollection();
+        //$this->de
     }
 
     /**
@@ -142,11 +164,11 @@ class Question extends BaseEntity
     /**
      * Add Doctor Question
      *
-     * @param QuestionDoctor $questionDoctor - Question Doctor
+     * @param DoctorQuestion $questionDoctor - Question Doctor
      */
-    public function addQuestionDoctor(QuestionDoctor $questionDoctor)
+    public function addQuestionDoctor(DoctorQuestion $questionDoctor)
     {
-        $this->questionDoctors[] = $questionDoctor;
+        $this->$doctorQuestions->add($questionDoctor);
     }
 
     /**
@@ -154,7 +176,7 @@ class Question extends BaseEntity
      */
     public function clearDoctorQuestion()
     {
-        $this->questionDoctors = new ArrayCollection();
+        $this->$doctorQuestions = new ArrayCollection();
     }
 
     /**
@@ -174,7 +196,7 @@ class Question extends BaseEntity
      */
     public function addTag(QuestionTag $tag)
     {
-        $this->tags[] = $tag;
+        $this->tags->add($tag);
     }
 
     /**
@@ -202,7 +224,7 @@ class Question extends BaseEntity
      */
     public function addBookmark(QuestionBookmark $bookmark)
     {
-        $this->bookmarks[] = $bookmark;
+        $this->bookmarks.add($bookmark) ;
     }
 
     /**
@@ -230,7 +252,7 @@ class Question extends BaseEntity
      */
     public function addView(QuestionView $view)
     {
-        $this->views[] = $view;
+        $this->views->add($view);
     }
 
     /**
@@ -258,7 +280,7 @@ class Question extends BaseEntity
      */
     public function addUserNotification(UserNotification $notification)
     {
-        $this->userNotifications[] = $notification;
+        $this->userNotifications->add($notification);
     }
 
     /**
@@ -282,11 +304,12 @@ class Question extends BaseEntity
     /**
      * Add Doctor Notification
      *
-     * @param DoctorNotification $doctorNotification - Doctor Notification
+     * @param DoctorNotification $notification
+     * @internal param DoctorNotification $doctorNotification - Doctor Notification
      */
     public function addDoctorNotification(DoctorNotification $notification)
     {
-        $this->doctorNotifications[] = $notification;
+        $this->doctorNotifications->add($notification);
     }
 
     /**
@@ -382,18 +405,18 @@ class Question extends BaseEntity
      *
      * @return ArrayCollection
      */
-    public function getDetails()
+   /* public function getDetails()
     {
         return $this->details;
-    }
+    }*/
 
     /**
      * Add Payment Detail
      *
      * @param PaymentDetail $paymentDetail - Payment Detail
      */
-    public function addDetail(PaymentDetail $paymentDetail)
+    /*public function addDetail(PaymentDetail $paymentDetail)
     {
-        $this->details[] = $paymentDetail;
-    }
+        $this->details->add($paymentDetail);
+    }*/
 }

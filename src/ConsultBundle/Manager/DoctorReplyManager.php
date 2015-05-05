@@ -13,7 +13,6 @@ namespace ConsultBundle\Manager;
 
 use ConsultBundle\Constants\ConsultConstants;
 use ConsultBundle\Entity\DoctorReply;
-use Symfony\Component\Config\Definition\Exception\Exception;
 
 class DoctorReplyManager extends BaseManager {
 
@@ -26,21 +25,24 @@ class DoctorReplyManager extends BaseManager {
   {
       $doctorReply = new DoctorReply();
 
-      $doctorQuestion = $this->helper->findById($doctorQuestionId, ConsultConstants::$DOCTOR_QUESTION_ENTITY_NAME);
+      $doctorQuestion = $this->helper->loadById($doctorQuestionId, ConsultConstants::$DOCTOR_QUESTION_ENTITY_NAME);
 
-      $doctorReply.setDoctorQuestion($doctorQuestion);
+      $doctorReply->setDoctorQuestion($doctorQuestion);
+      $doctorReply->setText($answerText);
 
-
+/*
       try {
           $this->validate($doctorReply);
 
-      }catch(Exception $e)
+      }catch(\Exception $e)
       {
           //To be implemented
           throw new Exception($e, $e->getMessage());
-      }
+      }*/
 
-      $this->helper->persist($doctorReply, "true");
+      $this->helper->persist($doctorReply, true);
+
+      return $doctorReply;
 
 
   }

@@ -12,25 +12,30 @@ namespace ConsultBundle\Controller;
 use ConsultBundle\Entity\DoctorReply;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations\View;
+use Symfony\Component\HttpFoundation\Request;
 
 class RepliesController extends FOSRestController
 
 {
+
     /**
-     * @param $doctorId
-     * @param $questionId
-     * @param $practoAccntId
-     * @param $answerText
+     * @param Request $request
+     * @return DoctorReply
      *
      * @View()
      */
-     public function postDoctorReplyAction($doctorQuestionId,  $practoAccntId, $answerText)
+     public function postDoctorReplyAction(Request $request)
      {
-         $doctorReply  = new DoctorReply();
-         $doctorReply->setText($answerText);
+         $answerText = $request->request->get("answerText");
+         $practoAccountId  = $request->request->get("practoAccountId");
+         $doctorQuestionId = $request->request->get("doctorQuestionId");
+         //$doctorReply  = new DoctorReply();
+         //$doctorReply->setText($answerText);
+         //return $doctorReply;
+         $doctorReplyManager = $this->get('consult.doctorReplyManager');
+         $doctorReply = $doctorReplyManager->replyToAQuestion($doctorQuestionId, $practoAccountId, $answerText);
+
          return $doctorReply;
-         //$doctorReplyManager = $this->get('consult.doctorReplyManager');
-         //$doctorReplyManager->replyToAQuestion($doctorQuestionId, $practoAccntId, $answerText);
      }
 
     /**

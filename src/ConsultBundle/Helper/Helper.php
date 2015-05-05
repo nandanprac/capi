@@ -31,6 +31,7 @@ namespace ConsultBundle\Helper;
 
         /**
          * @param $id
+         * @param $entityName
          * @return mixed
          */
         public function  loadById($id, $entityName)

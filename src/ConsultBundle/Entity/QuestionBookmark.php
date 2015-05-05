@@ -29,6 +29,27 @@ class QuestionBookmark extends BaseEntity
     protected $practoAccountId;
 
     /**
+     * @ORM\Column(type="datetime", name="viewed_at", nullable=true)
+     */
+    protected $viewedAt;
+
+    /**
+     * @return mixed
+     */
+    public function getViewedAt()
+    {
+        return $this->viewedAt;
+    }
+
+    /**
+     * @param mixed $viewedAt
+     */
+    public function setViewedAt(\DateTime $viewedAt)
+    {
+        $this->viewedAt = $viewedAt;
+    }
+
+    /**
      * Get PractoAccountId
      *
      * @return integer

@@ -9,9 +9,11 @@
 namespace ConsultBundle\Validator;
 
 
+use ConsultBundle\Entity\BaseEntity;
+
 interface Validator {
 
-    public function validate($baseEntity);
+    public function validate(BaseEntity $baseEntity);
 
 
 }

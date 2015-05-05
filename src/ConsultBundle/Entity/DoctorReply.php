@@ -11,8 +11,9 @@ namespace ConsultBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="ConsultBundle\Repository\DoctorReplyRepository")
+ * @ORM\Entity
  * @ORM\Table(name="doctor_replies")
+ * @ORM\HasLifecycleCallbacks()
  */
 class DoctorReply extends BaseEntity
 {
