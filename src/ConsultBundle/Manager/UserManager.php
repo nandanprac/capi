@@ -56,7 +56,11 @@ class UserManager extends BaseManager
      */
     public function load($userId)
     {
-        $userEntry = $this->helper->loadById($userId, ConsultConstants::$USER_ENTITY_NAME);
+        //$userEntry = $this->helper->loadById($userId, ConsultConstants::$USER_ENTITY_NAME);
+        $userEntry = $this->helper->getRepository(
+                                    ConsultConstants::$USER_ENTITY_NAME)->findOneBy(
+                                                                        array('practoAccountId' => $userId),
+                                                                        array('createdAt' => 'DESC'));
 
         if (is_null($userEntry)) {
             return null;
