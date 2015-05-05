@@ -156,4 +156,25 @@ class QuestionManager extends BaseManager
 
         return $question;
     }
+
+    /**
+     * Load Questions By UserId
+     *
+     * @param integer $practoId - PractoId
+     *
+     * @return array of Question
+     */
+    public function loadByUserID($practoId)
+    {
+
+        $questionList = $this->helper->getRepository(
+                                    ConsultConstants::$QUESTION_ENTITY_NAME)->findBy(
+                                                                        array('practoAccountId' => $practoId,
+                                                                              'softDeleted' => 0));
+        if (is_null($questionList)) {
+            return null;
+        }
+
+        return $questionList;
+    }
 }

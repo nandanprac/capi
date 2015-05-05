@@ -66,4 +66,29 @@ class QuestionsController extends Controller
 
         return $question;
     }
+
+    /**
+     * Get Question by UserID Action
+     *
+     * @param integer $practoid
+     *
+     *
+     * @return Array
+     *
+     */
+    public function getQuestionUseridAction($practoId)
+    {
+        $questionManager = $this->get('consult.question_manager');
+        $request = $this->getRequest();
+        try {
+            $questionList = $questionManager->loadByUserID($practoId);
+        } catch (AccessDeniedException $e) {
+            return View::create($e->getMessage(), Codes::HTTP_FORBIDDEN);
+        }
+        if (null === $questionList) {
+            return View::create(null, Codes::HTTP_NOT_FOUND);
+        } 
+
+        return $questionList;
+    }
 }
