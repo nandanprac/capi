@@ -68,7 +68,11 @@ services:
     consult.user_manager:
         class: ConsultBundle\Manager\UserManager
         calls:
-              - [setHelper, ["@consult.helper"]]
+            - [setHelper, ["@consult.helper"]]
 
-
+    elasticsearch:
+        class: Elasticsearch\Client
+        arguments:
+            - hosts: %elasticsearch_hosts%
+              logPath: %kernel.logs_dir%/elasticsearch.log
 
