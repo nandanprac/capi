@@ -37,16 +37,6 @@ class UserController extends FOSRestController{
     }
 
     /**
-     * User profile updation
-     *
-     * @return View
-     */
-    public function postUserAction()
-    {
-        
-    }
-
-    /**
      * Load additional info of a User
      *
      * @param interger $practoId
@@ -69,18 +59,6 @@ class UserController extends FOSRestController{
 
         return $userConsultEntry;
 
-    }
-
-    /**
-     * Load User profile details
-     *
-     * @param interger $practoId
-     *
-     * @return View
-     */
-    public function getUserAction($practoId)
-    {
-        
     }
 
 }
