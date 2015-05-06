@@ -86,7 +86,6 @@ class DoctorAssigmentCommand extends ContainerAwareCommand
               array_push($doctorIds,$result["_source"]["doctor_id"]);
           }
         }
-        var_dump($doctorIds);
         return $doctorIds;
     }
 
