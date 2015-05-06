@@ -26,7 +26,11 @@ class DoctorReplyManager extends BaseManager {
       $doctorReply = new DoctorReply();
 
       $doctorQuestion = $this->helper->loadById($doctorQuestionId, ConsultConstants::$DOCTOR_QUESTION_ENTITY_NAME);
-
+      if(is_null($doctorQuestion))
+      {
+         return "Error:Doctor has not been assigned the question";
+      }
+      $doctorQuestion->setState("ANSWERED");
       $doctorReply->setDoctorQuestion($doctorQuestion);
       $doctorReply->setText($answerText);
 

@@ -10,6 +10,7 @@ namespace ConsultBundle\Controller;
 
 
 use ConsultBundle\Entity\DoctorQuestion;
+use Doctrine\Common\Collections\ArrayCollection;
 use FOS\RestBundle\Controller\FOSRestController;
 use Symfony\Component\HttpFoundation\Request;
 use FOS\RestBundle\Controller\Annotations\View;
@@ -43,6 +44,39 @@ class DoctorQuestionsController extends FOSRestController
       // $doctorQuestionManager = $this->get('consult.doctorQuestionManager');
       // $doctorQuestionManager->
    }
+
+    /**
+     * @param $doctorId
+     * @return ArrayCollection
+     *
+     * @View()
+     */
+    public function getDoctorQuestionsAction($doctorId)
+    {
+
+        $doctorQuestionManager = $this->get('consult.doctorQuestionManager');
+        $questions = $doctorQuestionManager->getDoctorQuestionsForDoctor($doctorId);
+
+        return $questions;
+
+
+    }
+
+    /**
+     * @param $doctorId
+     * @return mixed
+     *
+     * @View()
+     */
+    public function getAnsweredDoctorQuestionsAction($doctorId)
+    {
+     $doctorQuestionManager = $this->get('consult.doctorQuestionManager');
+
+       $questions =  $doctorQuestionManager->getAnsweredDoctorQuestionsForDoctor($doctorId);
+
+        return $questions;
+
+    }
 
 
 }

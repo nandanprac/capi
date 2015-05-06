@@ -66,16 +66,16 @@ namespace ConsultBundle\Helper;
          * @param $params
          * @return mixed
          */
-        protected function update($entity, $params)
+        public function update($entity, $params)
         {
             // TODO: Implement update() method.
         }
 
         /**
          * @param $entity
-         * @return mixed
+         * @param $flush
          */
-        public function persist($entity, $flush)
+        public function persist($entity, $flush=null)
         {
             if($entity != null){
                 $this->entityManager->persist($entity);

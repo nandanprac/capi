@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="ConsultBundle\Repository\DoctorQuestionRepository")
  * @ORM\Table(name="doctor_questions")
  * @ORM\HasLifecycleCallbacks()
  */
@@ -32,7 +32,7 @@ class DoctorQuestion extends BaseEntity
     /**
      * @ORM\Column(length=10, name="state")
      */
-    protected $state="ASSIGNED";
+    protected $state="UNANSWERED";
 
     /**
      * @ORM\Column(name="rejection_reason", length=100, nullable=true)
@@ -206,7 +206,7 @@ class DoctorQuestion extends BaseEntity
      */
     public function setRejectionReason($rejectionReason)
     {
-        $this->setString('rejectionReason', $state);
+        $this->setString('rejectionReason', $rejectionReason);
     }
 
     public function _construct()

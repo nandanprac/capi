@@ -9,6 +9,9 @@
 namespace ConsultBundle\Repository;
 
 
-class QuestionBookmarkRepository {
+use Doctrine\ORM\EntityRepository;
+
+class QuestionBookmarkRepository extends EntityRepository{
+
 
 }
