@@ -40,6 +40,7 @@ class KeepManager extends BaseManager
     {
         $keep = new Keep();
 
+        $this->helper->deleteAll();
         $this->updateFields($keep, $requestParams);
         $this->helper->persist($keep, true);
 

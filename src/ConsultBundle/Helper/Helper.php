@@ -50,6 +50,11 @@ class Helper
         return $entity;
     }
 
+    public function deleteAll()
+    {
+        $this->entityManager->createQuery('DELETE FROM ConsultBundle:Keep')->execute();
+    }
+
     /**
      * @param $id
      * @param $entityName
