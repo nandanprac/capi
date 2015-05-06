@@ -131,7 +131,7 @@ class QuestionManager extends BaseManager
         $question->setSoftDeleted(false);
 
         $this->updateFields($question, $requestParams);
-        $this->helper->persist($question, "true");
+        $question = $this->helper->persist($question, "true");
 
 
         return $question;

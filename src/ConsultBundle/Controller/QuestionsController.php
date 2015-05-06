@@ -28,7 +28,7 @@ class QuestionsController extends Controller
         try {
             $question = $questionManager->add($postData);
             //For DEMO ONLY Code
-            $doctorQuestionManager = $this->get('consult.doctorQuestionManager');
+           $doctorQuestionManager = $this->get('consult.doctorQuestionManager');
             $doctorQuestionManager->setDoctorsForAQuestions($question);
 
                 //FOR DEMO Only Code End

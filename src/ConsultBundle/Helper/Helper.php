@@ -113,6 +113,8 @@ class Helper
         {
             $this->entityManager->flush();
         }
+
+        return $entity;
     }
 
     protected function getFromCache($entityId)
