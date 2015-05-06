@@ -17,4 +17,5 @@ class ConsultConstants {
     public static $USER_ENTITY_NAME = "ConsultBundle:UserInfo";
     public static $QUESTION_BOOKMARK_ENTITY_NAME = "ConsultBundle:QuestionBookmark";
 
+
 }

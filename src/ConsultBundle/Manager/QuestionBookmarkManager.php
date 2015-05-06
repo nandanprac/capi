@@ -7,6 +7,7 @@ use Symfony\Component\Security\Core\SecurityContextInterface;
 use Symfony\Component\Validator\ValidatorInterface;
 use ConsultBundle\Manager\ValidationError;
 use ConsultBundle\Entity\QuestionBookmark;
+use Doctrine\Common\Persistence\ObjectRepository;
 
 /**
  * Question Bookmark Manager
@@ -79,6 +80,7 @@ class QuestionBookmarkManager extends BaseManager
         $this->helper->persist($questionBookmark, true);
     }
 
+
     /**
      * Load Bookmark By Id
      *
@@ -119,6 +121,7 @@ class QuestionBookmarkManager extends BaseManager
 
         return $questionList;
     }
+
 
 }
 
