@@ -32,7 +32,7 @@ class Question extends BaseEntity
     protected $text;
 
     /**
-     * @ORM\Column(length=5, name="state")
+     * @ORM\Column(length=10, name="state")
      */
     protected $state="NEW";
     //TODO: put asserts on what states are allowed

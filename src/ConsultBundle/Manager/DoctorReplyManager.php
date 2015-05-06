@@ -31,6 +31,7 @@ class DoctorReplyManager extends BaseManager {
          return "Error:Doctor has not been assigned the question";
       }
       $doctorQuestion->setState("ANSWERED");
+      $doctorQuestion->getQuestion()->setState("ANSWERED");
       $doctorReply->setDoctorQuestion($doctorQuestion);
       $doctorReply->setText($answerText);
 

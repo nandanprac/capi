@@ -22,13 +22,15 @@ class DoctorQuestionManager extends BaseManager{
     public function getDoctorQuestionsForDoctor($doctorId){
 
 
-        $answeredQuestions = $this->getAnsweredDoctorQuestionsForDoctor($doctorId);
+        /*$answeredQuestions = $this->getAnsweredDoctorQuestionsForDoctor($doctorId);
         $unAnsweredQuestions = $this->getUnansweredDoctorQuestionsForDoctor($doctorId);
         $rejectedQuestions = $this->getRejectedDoctorQuestionsForDoctor($doctorId);
 
         $questions= array('AnsweredQuestions'=>$answeredQuestions,
             'UnAnsweredQuestions'=>$unAnsweredQuestions,
-            'RejectedQuestions'=>$rejectedQuestions);
+            'RejectedQuestions'=>$rejectedQuestions);*/
+
+        $questions = $this->getDoctorQuestionsForStateAndDoctor($doctorId);
 
         return $questions;
 
@@ -78,7 +80,12 @@ class DoctorQuestionManager extends BaseManager{
 
     }
 
-    private function getDoctorQuestionsForStateAndDoctor($doctorId, $state)
+    /**
+     * @param $doctorId
+     * @param null $state
+     * @return mixed
+     */
+    private function getDoctorQuestionsForStateAndDoctor($doctorId, $state=null)
     {
         $er =  $this->getRepository();
 
