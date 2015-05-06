@@ -15,12 +15,10 @@ replies:
     resource: ConsultBundle\Controller\RepliesController
     type:      rest
 
-
 users:
     resource: ConsultBundle\Controller\UserController
     type:      rest
 
-
-key:
-    resource: ConsultBundle\Controller\KeyController
+keep:
+    resource: ConsultBundle\Controller\KeepController
     type:      rest

@@ -70,8 +70,8 @@ services:
         calls:
             - [setHelper, ["@consult.helper"]]
 
-    consult.key_manager:
-        class: ConsultBundle\Manager\KeyManager
+    consult.keep_manager:
+        class: ConsultBundle\Manager\KeepManager
         calls: 
             - [setHelper, ["@consult.helper"]]
 

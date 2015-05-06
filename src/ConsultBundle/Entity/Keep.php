@@ -12,9 +12,9 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="key")
+ * @ORM\Table(name="keep")
  */
-class Key
+class Keep
 {
     /**
      * @ORM\Id
@@ -24,16 +24,16 @@ class Key
     protected $id;
 
     /**
-     * @ORM\Column(type="string", name="key")
+     * @ORM\Column(type="string", name="keep")
      */
-    protected $key;
+    protected $keep;
 
     /**
      * Get PractoAccountId
      *
      * @return integer
      */
-    public function getKey()
+    public function getKeep()
     {
         return $this->key;
     }
@@ -43,9 +43,9 @@ class Key
      *
      * @param string $key
      */
-    public function setKey($key)
+    public function setKeep($keep)
     {
-        $this->key = $key;
+        $this->keep = $keep;
     }
 
     /**

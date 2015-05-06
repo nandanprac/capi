@@ -2,7 +2,7 @@
 
 namespace ConsultBundle\Manager;
 
-use ConsultBundle\Entity\Key;
+use ConsultBundle\Entity\Keep;
 use ConsultBundle\Constants\ConsultConstants;
 use ConsultBundle\Helper\Helper;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
@@ -11,7 +11,7 @@ use Symfony\Component\Security\Core\SecurityContextInterface;
 /**
  * Temp Manager
  */
-class KeyManager extends BaseManager
+class KeepManager extends BaseManager
 {
     /**
      * Update Fields
@@ -24,7 +24,7 @@ class KeyManager extends BaseManager
     public function updateFields($key, $requestParams)
     {
         $errors = array();
-        $key->setKey($requestParams['key']);
+        $key->setKeep($requestParams['key']);
 
         return ;
     }
@@ -38,12 +38,12 @@ class KeyManager extends BaseManager
      */
     public function add($requestParams)
     {
-        $key = new Key();
+        $keep = new Keep();
 
-        $this->updateFields($key, $requestParams);
-        $this->helper->persist($key, true);
+        $this->updateFields($keep, $requestParams);
+        $this->helper->persist($keep, true);
 
-        return $key;
+        return $keep;
     }
 
     /**
@@ -51,14 +51,14 @@ class KeyManager extends BaseManager
      *
      * @return userEntry
      */
-    public function loadAll()
+    public function load()
     {
-        $temp = $this->helper->getRepository(ConsultConstants::$TEMP_ENTITY_NAME)->loadAll();
+        $keep = $this->helper->loadAll(ConsultConstants::$KEEP_ENTITY_NAME);
 
-        if (is_null($temp)) {
+        if (is_null($keep)) {
             return null;
         }
 
-        return $temp;
+        return $keep;
     }
 }

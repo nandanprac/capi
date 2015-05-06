@@ -21,12 +21,14 @@ class Helper
      * @var EntityManager
      */
     protected  $entityManager;
-    protected $cacheUtils;
+    protected  $cacheUtils;
+    protected $doctrine;
 
     public function __construct(Doctrine $doctrine, CacheUtils $cacheUtils)
     {
       $this->entityManager = $doctrine->getManager();
       $this->cacheUtils = $cacheUtils;
+      $this->doctrine = $doctrine;
 
     }
 
@@ -40,7 +42,6 @@ class Helper
     public function loadAll($entityName)
     {
         $entity = $this->entityManager->getRepository($entityName)->findAll();
-
 
         if (is_null($entity)) {
             return null;
