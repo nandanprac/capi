@@ -11,7 +11,7 @@ namespace ConsultBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="ConsultBundle\Repository\QuestionBookmarkRepository")
+ * @ORM\Entity
  * @ORM\Table(name="question_bookmarks")
  * @ORM\HasLifecycleCallbacks()
  */

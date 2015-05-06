@@ -2,7 +2,9 @@ questions:
     resource: ConsultBundle\Controller\QuestionsController
     type:     rest
 
-
+questionBookmarks:
+    resource: ConsultBundle\Controller\QuestionBookmarkController
+    type:     rest
 
 doctorQuestions:
    resource: ConsultBundle\Controller\DoctorQuestionsController

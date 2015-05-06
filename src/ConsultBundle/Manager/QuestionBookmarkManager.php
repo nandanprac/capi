@@ -26,12 +26,15 @@ class QuestionBookmarkManager extends BaseManager
     public function updateFields($questionBookmark, $data)
     {
         $errors = array();
-        if ($data['bookmark']) {
+        if (isset($data['bookmark'])) {
             unset($data['bookmark']);
-            $questionBookmark->setAttributes($data);            
         }
+        if (isset($data['questionId'])) {
+            unset($data['questionId']);
+        }
+        $questionBookmark->setAttributes($data);            
 
-        $validationErrors = $this->validate($questionBookmark);
+        $validationErrors = $this->validator->validate($questionBookmark);
 
         if (0 < count($validationErrors)) {
             foreach ($validationErrors as $validationError) {
@@ -51,15 +54,71 @@ class QuestionBookmarkManager extends BaseManager
         return;
     }
 
-    public function createBookmarkForAQuestion($practoAccountId, $questionId)
+    /**
+     * Add a new bookmark entry 
+     *
+     * @param $array requestParams 
+     *
+     * @return null
+     */
+    public function add($requestparams)
     {
-         $questionBookmark = new QuestionBookmark();
-        $questionBookmark->setPractoAccountId($practoAccountId);
+        if (array_key_exists('questionId', $requestparams)) {
+            $questionId = $requestparams['questionId'];
+        } else {
+            throw new ValidationError('QuestionID is a mandatory parameter');
+        }
 
         $question = $this->helper->loadById($questionId, ConsultConstants::$QUESTION_ENTITY_NAME);
 
+        $questionBookmark = new QuestionBookmark();
         $questionBookmark->setQuestion($question);
+        $this->updateFields($questionBookmark, $requestparams);
+        $question->addBookmark($questionBookmark);
 
         $this->helper->persist($questionBookmark, true);
     }
+
+    /**
+     * Load Bookmark By Id
+     *
+     * @param integer $questionBookmarkId
+     *
+     * @return QuestionBookmark
+     */
+    public function load($questionBookmarkId)
+    {
+
+        $questionBookmark = $this->helper->loadById($questionBookmarkId, ConsultConstants::$QUESTION_BOOKMARK_ENTITY_NAME);
+
+
+        if (is_null($questionBookmark)) {
+            return null;
+        }
+
+        return $questionBookmark;
+    }
+
+
+    /**
+     * Return all bookmarks for a user
+     *
+     * @param interger      $practoId
+     *
+     * @return array Question
+     */
+    public function loadByUserID($practoId)
+    {
+        $questionList = $this->helper->getRepository(
+                                    ConsultConstants::$QUESTION_BOOKMARK_ENTITY_NAME)->findBy(
+                                                                        array('practoAccountId' => $practoId,
+                                                                              'softDeleted' => 0));
+        if (is_null($questionList)) {
+            return null;
+        }
+
+        return $questionList;
+    }
+
 }
+
