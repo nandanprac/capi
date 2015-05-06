@@ -15,6 +15,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 class DoctorQuestionManager extends BaseManager{
 
+
+    private $doctorsId =Array(1, 2, 3, 4, 5);
+
+
+
     /**
      * @param $doctorId
      * @return array
@@ -38,19 +43,18 @@ class DoctorQuestionManager extends BaseManager{
     }
 
     /**
-     * @param $questionId
-     * @param array $doctorsId
+     * @param $question
      */
-    public function setDoctorsForAQuestions($questionId, Array $doctorsId)
+    public function setDoctorsForAQuestions($question)
     {
-        $question = $this->helper->loadById(ConsultConstants::$QUESTION_ENTITY_NAME, $questionId);
 
-        foreach($doctorsId as $doctorId)
+        foreach($this->doctorsId as $doctorId)
         {
             $this->createDoctorQuestionEntity($question, $doctorId);
         }
+        $question->setState("ASSIGNED");
 
-        $this->helper->persist(null, true);
+        $this->helper->persist($question, true);
     }
 
     private function createDoctorQuestionEntity($question, $doctorId )

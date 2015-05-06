@@ -27,6 +27,11 @@ class QuestionsController extends Controller
 
         try {
             $question = $questionManager->add($postData);
+            //For DEMO ONLY Code
+            $doctorQuestionManager = $this->get('consult.doctorQuestionManager');
+            $doctorQuestionManager->setDoctorsForAQuestions($question);
+
+                //FOR DEMO Only Code End
         } catch (ValidationError $e) {
             return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
         }
