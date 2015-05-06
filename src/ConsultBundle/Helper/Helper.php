@@ -8,96 +8,120 @@
 
 namespace ConsultBundle\Helper;
 
-  use ConsultBundle\Utility\CacheUtils;
-  use Doctrine\Bundle\DoctrineBundle\Registry as Doctrine;
-  use ConsultBundle\Validator\Validator;
-  use Doctrine\ORM\EntityManager;
-  use Doctrine\ORM\EntityRepository;
+use ConsultBundle\Utility\CacheUtils;
+use Doctrine\Bundle\DoctrineBundle\Registry as Doctrine;
+use ConsultBundle\Validator\Validator;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityRepository;
 
-    class Helper {
+class Helper
+{
 
-      /**
-       * @var EntityManager
-       */
-      protected  $entityManager;
-      protected $cacheUtils;
+    /**
+     * @var EntityManager
+     */
+    protected  $entityManager;
+    protected $cacheUtils;
 
-      public function __construct(Doctrine $doctrine, CacheUtils $cacheUtils)
-      {
-          $this->entityManager = $doctrine->getManager();
-          $this->cacheUtils = $cacheUtils;
+    public function __construct(Doctrine $doctrine, CacheUtils $cacheUtils)
+    {
+      $this->entityManager = $doctrine->getManager();
+      $this->cacheUtils = $cacheUtils;
 
-       }
+    }
 
-        /**
-         * @param $id
-         * @param $entityName
-         * @return mixed
-         */
-        public function  loadById($id, $entityName)
-        {
+    /**
+     * LoadAll
+     *
+     * @param  $entityName
+     *
+     * @return entity
+     */
+    public function loadAll($entityName)
+    {
+        $entity = $this->entityManager->getRepository($entityName)->findAll();
 
-            $entity = $this->entityManager->getRepository($entityName)->find($id);
 
-
-            if (is_null($entity)) {
-                return null;
-            }
-
-            return $entity;
+        if (is_null($entity)) {
+            return null;
         }
 
-      public function getRepository($entityName)
-      {
-          $entityRepository = $this->entityManager->getRepository($entityName);
+        return $entity;
+    }
 
-          if(is_null($entityRepository))
-          {
-              return null;
-          }
+    /**
+     * @param $id
+     * @param $entityName
+     *
+     * @return mixed
+     */
+    public function  loadById($id, $entityName)
+    {
 
-          return $entityRepository;
-      }
+        $entity = $this->entityManager->getRepository($entityName)->find($id);
 
 
-
-        /**
-         * @param $entity
-         * @param $params
-         * @return mixed
-         */
-        public function update($entity, $params)
-        {
-            // TODO: Implement update() method.
+        if (is_null($entity)) {
+            return null;
         }
 
-        /**
-         * @param $entity
-         * @param $flush
-         */
-        public function persist($entity, $flush=null)
+        return $entity;
+    }
+
+    /**
+     * Get Repository
+     *
+     * @param  $entityName
+     *
+     * @return entity
+     */
+    public function getRepository($entityName)
+    {
+        $entityRepository = $this->entityManager->getRepository($entityName);
+
+        if(is_null($entityRepository))
         {
-            if($entity != null){
-                $this->entityManager->persist($entity);
-            }
-
-            if($flush != null)
-            {
-                $this->entityManager->flush();
-            }
-
-
+          return null;
         }
 
+        return $entityRepository;
+    }
 
 
-        protected function getFromCache($entityId)
-        {
-            // TODO: Implement getFromCache() method.
+
+    /**
+     * @param $entity
+     * @param $params
+     * @return mixed
+     */
+    public function update($entity, $params)
+    {
+        // TODO: Implement update() method.
+    }
+
+    /**
+     * @param $entity
+     * @param $flush
+     */
+    public function persist($entity, $flush=null)
+    {
+        if($entity != null){
+            $this->entityManager->persist($entity);
         }
 
-        protected function updateCache($entity)
+        if($flush != null)
         {
-            // TODO: Implement updateCache() method.
+            $this->entityManager->flush();
         }
     }
+
+    protected function getFromCache($entityId)
+    {
+        // TODO: Implement getFromCache() method.
+    }
+
+    protected function updateCache($entity)
+    {
+        // TODO: Implement updateCache() method.
+    }
+}

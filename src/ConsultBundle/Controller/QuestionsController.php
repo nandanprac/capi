@@ -91,4 +91,20 @@ class QuestionsController extends Controller
 
         return $questionList;
     }
+
+    public function getQuestionsAction()
+    {
+        $questionManager = $this->get('consult.question_manager');
+        $request = $this->getRequest();
+        try {
+            $questionList = $questionManager->loadAll();
+        } catch (AccessDeniedException $e) {
+            return View::create($e->getMessage(), Codes::HTTP_FORBIDDEN);
+        }
+        if (null === $questionList) {
+            return View::create(null, Codes::HTTP_NOT_FOUND);
+        }
+
+        return $questionList;
+    }
 }

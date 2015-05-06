@@ -177,4 +177,24 @@ class QuestionManager extends BaseManager
 
         return $questionList;
     }
+
+    /**
+     * Load Question By Id
+     *
+     * @param integer $questionId - Question Id
+     *
+     * @return Question
+     */
+    public function loadAll()
+    {
+
+        $question = $this->helper->loadAll(ConsultConstants::$QUESTION_ENTITY_NAME);
+
+
+        if (is_null($question)) {
+            return null;
+        }
+
+        return $question;
+    }
 }
