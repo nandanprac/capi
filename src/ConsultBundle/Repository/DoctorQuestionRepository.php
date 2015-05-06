@@ -47,4 +47,27 @@ class DoctorQuestionRepository extends EntityRepository{
 
     }
 
+    /**
+     * @param $doctorId
+     * @param $state
+     * @return array
+     */
+    public function findDoctorQuestionsForAState($doctorId, $state, $maxResults=null)
+    {
+        $query = $this->_em->createQuery("SELECT q FROM ConsultBundle\Entity\Question q join q.doctorQuestions dq WHERE dq.practoAccountId = :doctorId AND dq.state= :state AND q.softDeleted = 0 AND dq.softDeleted= 0");
+        $query->setParameter('doctorId', $doctorId);
+        $query->setParameter('state', $state);
+        if($maxResults!= null)
+        $query->setMaxResults($maxResults);
+
+        $questions = $query->getResult();
+       /* foreach( $questions as $question)
+            {
+                $question->getDoctorQuestions();
+            }*/
+        return $questions;
+
+
+    }
+
 }

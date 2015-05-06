@@ -10,6 +10,7 @@ namespace ConsultBundle\Manager;
 
 
 use ConsultBundle\Constants\ConsultConstants;
+use ConsultBundle\Entity\DoctorQuestion;
 use Doctrine\Common\Collections\ArrayCollection;
 
 class DoctorQuestionManager extends BaseManager{
@@ -28,10 +29,34 @@ class DoctorQuestionManager extends BaseManager{
         $questions= array('AnsweredQuestions'=>$answeredQuestions,
             'UnAnsweredQuestions'=>$unAnsweredQuestions,
             'RejectedQuestions'=>$rejectedQuestions);
-        
+
         return $questions;
 
 
+    }
+
+    /**
+     * @param $questionId
+     * @param array $doctorsId
+     */
+    public function setDoctorsForAQuestions($questionId, Array $doctorsId)
+    {
+        $question = $this->helper->loadById(ConsultConstants::$QUESTION_ENTITY_NAME, $questionId);
+
+        foreach($doctorsId as $doctorId)
+        {
+            $this->createDoctorQuestionEntity($question, $doctorId);
+        }
+
+        $this->helper->persist(null, true);
+    }
+
+    private function createDoctorQuestionEntity($question, $doctorId )
+    {
+        $doctorQuestion = new DoctorQuestion();
+        $doctorQuestion->setQuestion($question);
+        $doctorQuestion->setPractoAccountId($doctorId);
+        $this->helper->persist($doctorQuestion);
     }
 
     /**
@@ -58,7 +83,7 @@ class DoctorQuestionManager extends BaseManager{
         $er =  $this->getRepository();
 
 
-        $questions =  $er->findDoctorQuestionsForState($doctorId, $state);
+        $questions =  $er->findDoctorQuestionsForAState($doctorId, $state);
 
         return $questions;
     }
