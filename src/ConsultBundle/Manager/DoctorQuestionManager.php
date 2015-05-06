@@ -20,15 +20,15 @@ class DoctorQuestionManager extends BaseManager{
      */
     public function getDoctorQuestionsForDoctor($doctorId){
 
-        $questions = new ArrayCollection();
+
         $answeredQuestions = $this->getAnsweredDoctorQuestionsForDoctor($doctorId);
         $unAnsweredQuestions = $this->getUnansweredDoctorQuestionsForDoctor($doctorId);
         $rejectedQuestions = $this->getRejectedDoctorQuestionsForDoctor($doctorId);
 
-        $questions->add($answeredQuestions);
-        $questions->add($unAnsweredQuestions);
-        $questions->add($rejectedQuestions);
-
+        $questions= array('AnsweredQuestions'=>$answeredQuestions,
+            'UnAnsweredQuestions'=>$unAnsweredQuestions,
+            'RejectedQuestions'=>$rejectedQuestions);
+        
         return $questions;
 
 
