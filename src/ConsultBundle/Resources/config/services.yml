@@ -70,6 +70,11 @@ services:
         calls:
             - [setHelper, ["@consult.helper"]]
 
+    consult.key_manager:
+        class: ConsultBundle\Manager\KeyManager
+        calls: 
+            - [setHelper, ["@consult.helper"]]
+
     elasticsearch:
         class: Elasticsearch\Client
         arguments:

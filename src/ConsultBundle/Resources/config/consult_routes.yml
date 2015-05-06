@@ -19,3 +19,8 @@ replies:
 users:
     resource: ConsultBundle\Controller\UserController
     type:      rest
+
+
+key:
+    resource: ConsultBundle\Controller\KeyController
+    type:      rest
