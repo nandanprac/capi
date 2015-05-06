@@ -36,8 +36,9 @@ abstract class BaseManager {
     /**
      * @param $entity
      */
-    protected function validate($entity)
+    public function validate($entity)
     {
         $this->validator.validate($entity);
     }
 }
+
