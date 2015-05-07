@@ -170,7 +170,7 @@ class QuestionManager extends BaseManager
         $questionList = $this->helper->getRepository(
                                     ConsultConstants::$QUESTION_ENTITY_NAME)->findBy(
                                                                         array('practoAccountId' => $practoId,
-                                                                              'softDeleted' => 0));
+                                                                              'softDeleted' => 0), array('modifiedAt' => 'desc'));
         if (is_null($questionList)) {
             return null;
         }
