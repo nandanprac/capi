@@ -41,7 +41,7 @@ class Helper
      */
     public function loadAll($entityName)
     {
-        $entity = $this->entityManager->getRepository($entityName)->findAll();
+        $entity = $this->entityManager->getRepository($entityName)->findBy(array(), array('modifiedAt'=>'desc'));
 
         if (is_null($entity)) {
             return null;
