@@ -56,7 +56,7 @@ class DoctorQuestionRepository extends EntityRepository{
     public function findDoctorQuestionsForAState($doctorId, $state=null, $maxResults=null)
     {
         $queryStr = "SELECT q FROM ConsultBundle\Entity\Question q join q.doctorQuestions
-                        dq WHERE dq.practoAccountId = :doctorId  AND q.softDeleted = 0 AND dq.softDeleted= 0 ";
+                        dq WHERE dq.practoAccountId = :doctorId  AND q.softDeleted = 0 AND dq.softDeleted= 0 ORDER BY q.id DESC";
 
         if($state != null)
         {
