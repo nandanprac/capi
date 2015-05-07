@@ -27,7 +27,7 @@ class Question extends BaseEntity
     protected $practoAccountId;
 
     /**
-     * @ORM\Column(length=360, name="text")
+     * @ORM\Column(type="text", name="text")
      */
     protected $text;
 
