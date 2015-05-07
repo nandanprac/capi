@@ -5,6 +5,7 @@ namespace ConsultBundle\Manager;
 use ConsultBundle\Entity\UserInfo;
 use ConsultBundle\Constants\ConsultConstants;
 use ConsultBundle\Helper\Helper;
+use Symfony\Component\Validator\ValidatorInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 
@@ -27,7 +28,7 @@ class UserManager extends BaseManager
 
         $userEntry->setAttributes($requestParams);
 
-        $validationErrors = $this->validator->validate($userEntry);
+/*        $validationErrors = $this->validate($userEntry);
         if (0 < count($validationErrors)) {
             foreach ($validationErrors as $validationError) {
               $pattern = '/([a-z])([A-Z])/';
@@ -41,7 +42,7 @@ class UserManager extends BaseManager
 
         if (0 < count($errors)) {
             throw new ValidationError($errors);
-        }
+        }*/
 
 
         return ;
