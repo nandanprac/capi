@@ -13,6 +13,7 @@ use Doctrine\Bundle\DoctrineBundle\Registry as Doctrine;
 use ConsultBundle\Validator\Validator;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityRepository;
+use ConsultBundle\Constants\ConsultConstants;
 
 class Helper
 {
@@ -41,7 +42,11 @@ class Helper
      */
     public function loadAll($entityName)
     {
-        $entity = $this->entityManager->getRepository($entityName)->findBy(array(), array('modifiedAt'=>'desc'));
+        if ($entityName == 'ConsultBundle::Question') {
+           $entity = $this->entityManager->getRepository($entityName)->findBy(array(), array('modifiedAt'=>'desc'));
+        } else {
+            $entity = $this->entityManager->getRepository($entityName)->findAll();
+        }
 
         if (is_null($entity)) {
             return null;
