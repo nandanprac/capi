@@ -94,7 +94,7 @@ class QuestionsController extends Controller
             return View::create(null, Codes::HTTP_NOT_FOUND);
         } 
 
-        return $questionList;
+        return array("questions" => $questionList);
     }
 
     public function getQuestionsAction()
