@@ -42,7 +42,7 @@ class Helper
      */
     public function loadAll($entityName)
     {
-        if ($entityName == 'ConsultBundle::Question') {
+        if ($entityName === "ConsultBundle:Question") {
            $entity = $this->entityManager->getRepository($entityName)->findBy(array(), array('modifiedAt'=>'desc'));
         } else {
             $entity = $this->entityManager->getRepository($entityName)->findAll();
