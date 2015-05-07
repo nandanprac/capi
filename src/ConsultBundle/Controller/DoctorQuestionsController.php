@@ -57,7 +57,7 @@ class DoctorQuestionsController extends FOSRestController
         $doctorQuestionManager = $this->get('consult.doctorQuestionManager');
         $questions = $doctorQuestionManager->getDoctorQuestionsForDoctor($doctorId);
 
-        return $questions;
+        return array("questions"=>$questions);
 
 
     }
