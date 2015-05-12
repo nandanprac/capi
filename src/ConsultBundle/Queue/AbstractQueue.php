@@ -9,9 +9,9 @@ abstract class AbstractQueue
 {
     private $queueName;
     private $queuePrefix = '';
-    private $fabricDomain;
+    private $consultDomain;
 
-    const PUSH_TEST             = "testing_queue_queue";
+    const PUSH_TEST              = 'push_tester';
 
     /**
      * Receive Message
@@ -67,10 +67,10 @@ abstract class AbstractQueue
      */
     public function getQueueName()
     {
-        $host = $this->fabricDomain->getHost();
+        $host = $this->consultDomain->getHost();
         $parts = parse_url($host);
         $subdomain = explode('.', $parts['host'])[0];
-        $queueName = str_replace('www', $this->queueName, $subdomain);
+        $queueName = str_replace('consult', $this->queueName, $subdomain);
 
         return $this->queuePrefix . $queueName;
     }
@@ -90,23 +90,13 @@ abstract class AbstractQueue
     }
 
     /**
-     * Set Fabric Domain
+     * Set Practo Domain
      *
-     * @param FabricDomain $fabricDomain - Fabric Domain
+     * @param PractoDomain $consultDomain - Practo Domain
      */
-    public function setFabricDomain($fabricDomain)
+    public function setConsultDomain($consultDomain)
     {
-        $this->fabricDomain = $fabricDomain;
-    }
-
-    /**
-     * Get Fabric Domain
-     *
-     * @return FabricDomain
-     */
-    public function getFabricDomain()
-    {
-        return $this->fabricDomain;
+        $this->consultDomain = $consultDomain;
     }
 
     /**
@@ -118,9 +108,8 @@ abstract class AbstractQueue
     {
         switch ($this->queueName) {
             case self::PUSH_TEST:
-                return 30;
             default:
-                return 300;
+                return 60;
         }
     }
 }

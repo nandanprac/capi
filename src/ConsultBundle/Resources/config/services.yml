@@ -76,3 +76,20 @@ services:
             - hosts: %elasticsearch_hosts%
               logPath: %kernel.logs_dir%/elasticsearch.log
 
+    consult.consult_domain:
+      class: ConsultBundle\ConsultDomain
+      scope: request
+      arguments: [@request]
+      synchronized: true
+
+    consult.consult_queue_factory:
+      class: ConsultBundle\Queue\QueueFactory
+      calls:
+        - [ setContainer, [ @service_container ]]
+    consult.consult_queue:
+      class: ConsultBundle\Queue\AbstractQueue
+      factory_service: consult.consult_queue_factory
+      factory_method: get
+      calls:
+        - [ setConsultDomain, ['@?consult.consult_domain=']]
+

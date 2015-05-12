@@ -7,7 +7,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use ConsultBundle\Queue\AbstractQueue as Queue;
-use ConsultBundle\FabricDomain;
+use ConsultBundle\ConsultDomain;
+use Pheanstalk_Pheanstalk as Pheanstalk;
 
 use Symfony\Component\HttpFoundation\Request;
 /**
@@ -25,7 +26,7 @@ class TestingCommand extends ContainerAwareCommand
     {
         parent::initialize($input, $output);
         $this->container = $this->getContainer();
-        $this->queue = $this->container->get('consult.queue');
+        $this->queue = $this->container->get("consult.consult_queue");
     }
      /**
      * Configure the task.
@@ -35,7 +36,7 @@ class TestingCommand extends ContainerAwareCommand
         $this
             ->setName('consult:queue:indexing:test')
             ->setDescription('queue for indexing for search results.')
-            ->addArgument('domain', InputArgument::OPTIONAL, 'Fabric Domain', 'http://www.practo.com');
+            ->addArgument('domain', InputArgument::OPTIONAL, 'Consult Domain', 'https://consult.practo.com');
     }
 
     /**
@@ -49,19 +50,11 @@ class TestingCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $request = Request::create($input->getArgument('domain'));
-        $fabricDomain = new FabricDomain($request);
-        $this->container->set('consult.fabric_domain', $fabricDomain);
-        $this->queue->setFabricDomain($fabricDomain);
-
-        while (1) {
-            $newJob = $this->queue
-                ->setQueueName(Queue::PUSH_TEST)
-                ->receiveMessage();
-            if ($newJob) {
-//                $output->writeln($newJob);
-              $jobData = json_decode($newJob, true);
-                $this->queue->setQueueName(Queue::PUSH_TEST)->deleteMessage($newJob);
-            }
-        }
+        $consultDomain = new ConsultDomain($request);
+        $this->container->set('consult.consult_domain', $consultDomain);
+        $this->queue->setConsultDomain($consultDomain);
+        $this->queue
+              ->setQueueName(Queue::PUSH_TEST)
+              ->sendMessage(5);
     }
 }

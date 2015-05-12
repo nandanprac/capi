@@ -5,24 +5,27 @@ namespace ConsultBundle\Queue;
 use Symfony\Component\DependencyInjection\ContainerAware;
 
 /**
- * Queue Factory
+ * Legacy Queue Factory
  */
 class QueueFactory extends ContainerAware
 {
     /**
      * Get Queue Object
      *
+     * @param string $uri
+     *
      * @return AbstractQueue
      */
-    public function get()
+    public function get($uri=null)
     {
-        $uri = $this->container->getParameter('queue.uri');
-        $sentryDsn = $this->container->getParameter('sentry.dsn');
+        if (!$uri) {
+            $uri = $this->container->getParameter('consult_queue.uri');
+        }
         $parts = parse_url($uri);
         if (($parts['scheme'] == 'https' || $parts['scheme'] == 'http') &&
             ($hParts = explode('.', $parts['host'], 3)) &&
             ($hParts[0] == 'sqs' && $hParts[2] == 'amazonaws.com')) {
-            return new SQSQueue($uri, $sentryDsn);
+            return new SQSQueue($uri);
         } else if ($parts['scheme'] == 'beanstalk') {
             return new BeanstalkQueue($uri);
         } else {
