@@ -131,8 +131,21 @@ class QuestionManager extends BaseManager
         $question->setSoftDeleted(false);
 
         $this->updateFields($question, $requestParams);
-        $this->helper->persist($question, "true");
+        $this->helper->persist($question, 'true');
 
+        return $question;
+    }
+
+    public function patch($question, $requestParams)
+    {
+        if (array_key_exists('question_id', $requestParams)) {
+            unset($requestParams['question_id']);
+        }
+        if (array_key_exists('_method', $requestParams)) {
+            unset($requestParams['_method']);
+        }
+        $this->updateFields($question, $requestParams);
+        $this->helper->persist($question, 'true');
 
         return $question;
     }
@@ -146,9 +159,7 @@ class QuestionManager extends BaseManager
      */
     public function load($questionId)
     {
-
         $question = $this->helper->loadById($questionId, ConsultConstants::$QUESTION_ENTITY_NAME);
-
 
         if (is_null($question)) {
             return null;
@@ -158,19 +169,16 @@ class QuestionManager extends BaseManager
     }
 
     /**
-     * Load Questions By UserId
+     * Load all questions based on filters
      *
-     * @param integer $practoId - PractoId
+     * @param request parameters
      *
-     * @return array of Question
+     * @return Question
      */
-    public function loadByUserID($practoId)
+    public function loadAll()
     {
+        $questionList = $this->helper->loadAll(ConsultConstants::$QUESTION_ENTITY_NAME);
 
-        $questionList = $this->helper->getRepository(
-                                    ConsultConstants::$QUESTION_ENTITY_NAME)->findBy(
-                                                                        array('practoAccountId' => $practoId,
-                                                                              'softDeleted' => 0));
         if (is_null($questionList)) {
             return null;
         }
@@ -178,23 +186,65 @@ class QuestionManager extends BaseManager
         return $questionList;
     }
 
-    /**
-     * Load Question By Id
-     *
-     * @param integer $questionId - Question Id
-     *
-     * @return Question
-     */
-    public function loadAll()
+    public function loadByAccId($practoAccountId)
     {
+        $questionList = $this->helper->getRepository(
+                                       ConsultConstants::$QUESTION_ENTITY_NAME)->findBy(
+                                                  array('practoAccountId' => $practoAccountId)); 
 
-        $question = $this->helper->loadAll(ConsultConstants::$QUESTION_ENTITY_NAME);
-
-
-        if (is_null($question)) {
+        if (is_null($questionList)) {
             return null;
         }
 
-        return $question;
+        return $questionList;
     }
+
+    public function loadBookmarksById($practoAccountId)
+    {
+        $bookmarkList = $this->helper->getRepository(
+                                       ConsultConstants::$QUESTION_BOOKMARK_ENTITY_NAME)->findBy(
+                                                  array('practoAccountId' => $practoAccountId)); 
+
+        if (is_null($bookmarkList)) {
+            return null;
+        }
+
+        return $bookmarkList;
+    }
+
+    public function loadByModifiedTime($modifiedAt)
+    {
+        $qb = $this->helper->getEntityManager()->createQueryBuilder();
+        $qb->select('q')
+           ->from(ConsultConstants::$QUESTION_ENTITY_NAME, 'q')
+           ->where('q.modifiedAt < :modifiedAt')
+           ->setParameter('modifiedAt', $modifiedAt);
+        $questionList = $qb->getQuery()->getResult();
+
+        if (is_null($questionList)) {
+            return null;
+        }
+
+        return $questionList;
+    }
+
+    public function loadFeed($state, $limit, $offset)
+    {
+        $qb = $this->helper->getEntityManager()->createQueryBuilder();
+        $qb->select('q')
+           ->from(ConsultConstants::$QUESTION_ENTITY_NAME, 'q')
+           ->where('q.state = :state')
+           ->setParameter('state', $state)
+           ->orderBy('q.createdAt', 'DESC')
+           ->setMaxResults($limit)
+           ->setFirstResult($offset);
+        $questionList = $qb->getQuery()->getResult();
+
+        if (is_null($questionList)) {
+            return null;
+        }
+
+        return $questionList;
+    }
+
 }
