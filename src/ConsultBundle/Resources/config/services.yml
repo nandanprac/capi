@@ -21,6 +21,18 @@ services:
     consult.cacheUtil:
         class: ConsultBundle\Utility\CacheUtils
 
+    consult.fileUploadUtil:
+        class: ConsultBundle\Utility\FileUploadUtil
+        arguments:
+        - %s3_access_key%
+        - %s3_access_secret%
+        - %region%
+        - %scheme%
+        - %s3_resources_bucket%
+        - %fileName%
+        - %tempUrl%
+
+
     consult.helper:
         class: ConsultBundle\Helper\Helper
         arguments:
@@ -38,6 +50,8 @@ services:
 
     consult.question_image_manager:
         class: ConsultBundle\Manager\QuestionImageManager
+        arguments:
+                  - @consult.fileUploadUtil
         calls:
                   - [setValidator, ["@consult.questionImageValidator"]]
                   - [setHelper, ["@consult.helper"]]
@@ -70,7 +84,13 @@ services:
         calls:
             - [setHelper, ["@consult.helper"]]
 
-    elasticsearch:
+
+
+
+
+
+
+   # elasticsearch:
         class: Elasticsearch\Client
         arguments:
             - hosts: %elasticsearch_hosts%

@@ -5,6 +5,7 @@ namespace ConsultBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\View\View;
 use FOS\RestBundle\Util\Codes;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use ConsultBundle\Manager\ValidationError;
@@ -16,20 +17,41 @@ use ConsultBundle\Manager\ValidationError;
 class QuestionsController extends Controller
 {
     /**
-     * Create Question
-     *
+     * @param Request $request
      * @return View
      */
-    public function postQuestionAction()
+    public function postQuestionAction(Request $request)
     {
-        $postData = $this->getRequest()->request->all();
+        $postData = $request->request->all();
+
+       // die;
         $questionManager = $this->get('consult.question_manager');
+       // var_dump($postData);
+       // die;
 
         try {
             $question = $questionManager->add($postData);
+
         } catch (ValidationError $e) {
             return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
+        } catch (Exception $e) {
+            var_dump($e->getCode() + $e->getMessage() + $e->getTraceAsString());
+            return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
+
         }
+
+        $files = $request->files;
+        $questionImageManager = $this->get('consult.question_image_manager');
+
+
+        try{
+           $questionImageManager->add($question, $files);
+        }catch(\Exception $e)
+        {
+            var_dump($e->getCode() + $e->getMessage() + $e->getTraceAsString());
+            return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
+        }
+
 
         //$router = $this->get('router');
         //$patientGrowthURL = $router->generate('get_patientgrowth', array(

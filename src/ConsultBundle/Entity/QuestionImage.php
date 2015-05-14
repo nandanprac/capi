@@ -23,10 +23,15 @@ class QuestionImage extends BaseEntity
      */
     protected $question;
 
+
+
+
     /**
      * @ORM\Column(name="url", type="text", name="url")
      */
     protected $url;
+
+
 
     /**
      * Get Url
