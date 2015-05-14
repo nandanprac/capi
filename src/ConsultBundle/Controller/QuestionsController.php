@@ -33,7 +33,7 @@ class QuestionsController extends Controller
         }
 
         return View::create(
-            $question,
+            array("questions" => $question) ,
             Codes::HTTP_CREATED);
     }
 
@@ -65,7 +65,7 @@ class QuestionsController extends Controller
             return View::create(null, Codes::HTTP_GONE);
         }
 
-        return $question;
+        return array("questions" => $question);
     }
 
     public function getQuestionsAction(Request $requestRec)
@@ -93,7 +93,7 @@ class QuestionsController extends Controller
         } 
 
 
-        return $questionList;
+        return array("questions" => $questionList);
 
     }
 
@@ -123,7 +123,7 @@ class QuestionsController extends Controller
             return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
         }
 
-          $questionList = array("question" => $questionFinal);
+          $questionList = array("questions" => $questionFinal);
 
         return View::create(
             $questionList,
