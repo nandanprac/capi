@@ -151,6 +151,12 @@ class Question extends BaseEntity
         $this->images = new ArrayCollection();
     }
 
+
+    public function setImages($images)
+    {
+        $this->images = $images;
+    }
+
     /**
      * Get Doctor Questions
      *

@@ -64,6 +64,7 @@ class QuestionImageManager extends BaseManager
         //var_dump($fileBag->count());
         //die;
        $urls = $this->fileUploadUtil->add($fileBag, $question->getId());
+       //var_dump($urls);die;
         $questionImages = new ArrayCollection();
 
         foreach($urls as $url)
@@ -74,7 +75,8 @@ class QuestionImageManager extends BaseManager
             $questionImages->add($questionImage);
         }
 
-        var_dump("123"); die;
+        //var_dump("123"); die;
+        $question->setImages($questionImages);
 
         if($questionImages->count() > 0)
         {

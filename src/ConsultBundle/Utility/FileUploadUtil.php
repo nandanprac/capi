@@ -82,23 +82,23 @@ class FileUploadUtil
         //$client->createBucket(array('bucket' => "Practo_Dev_Anshuman",
         //    'ACL' => ));
 
-        $buckets = $client->listBuckets();
-        var_dump($buckets->count());die;
+        //$buckets = $client->listBuckets();
+        //var_dump($buckets->count());die;
 
 
 
 
 
            //var_dump($this->s3Client->listBuckets()); die;
-          /* $response = $client->putObject(array(
+           $response = $client->putObject(array(
                'Bucket'     => $this->s3ResourcesBucket,
                'Key'        => $uploadedUri,
                'SourceFile' => $localFile,
                'ACL'    => 'public-read'
-           ));*/
+           ));
 
 
-       // var_dump($response);die;
+       //var_dump($response);die;
 
         return $response;
     }
@@ -114,14 +114,15 @@ class FileUploadUtil
                {
 
                    $uri = $this->processUploadedFile($file , $id);
+                   //var_dump($uri); die;
                    $urls->add($uri);
                }
 
            }
 
-        var_dump($urls);die;
+        //var_dump($urls);die;
 
-       return urls;
+       return $urls;
 
 
 
@@ -200,14 +201,14 @@ class FileUploadUtil
 
        $response = $this->uploadFile($uploadedUri, $localFile);
 
-        var_dump($response); die;
+        //var_dump($response); die;
 
 
 
 
         unlink($localFile);
 
-        return $uploadedUri;
+        return $response->get('ObjectURL');
     }
 
     /**
