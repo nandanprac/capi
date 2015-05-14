@@ -186,63 +186,89 @@ class QuestionManager extends BaseManager
         return $questionList;
     }
 
-    public function loadByAccId($practoAccountId)
+    public function loadByFilters($request)
+    {
+        if (array_key_exists('practo_account_id', $request) and array_key_exists('bookmark', $request)) {
+            $questionList = $this->loadByAccId($request['practo_account_id'], $request['bookmark']);
+        }
+        if (array_key_exists('modified_at', $request)) {
+            $from = new \DateTime($request['modified_at']);
+            $from->format('Y-m-d H:i:s');
+            $questionList = $this->loadByModifiedTime($from);
+        }
+
+        $from = new \DateTime('now');
+        $from->sub(new \DateInterval('P1M'))->format('Y-m-d H:i:s');
+
+        if (array_key_exists('state', $request)) {
+            $limit = 100;
+            $offset = 0;
+            if (array_key_exists('limit', $request)) {
+                $limit = $request['limit'];
+            }
+            if (array_key_exists('offset', $request)) {
+                $offset = $request['offset'];
+            }
+            if (array_key_exists('modified_at', $request)) {
+                $from = new \DateTime($request['modified_at']);
+                $from->format('Y-m-d H:i:s');
+            }
+            $questionList = $this->loadFeed($from, $request['state'], $limit, $offset);
+        }
+        if (array_key_exists('category', $request)) {
+            $limit = 100;
+            $offset = 0;
+            if (array_key_exists('limit', $request)) {
+                $limit = $request['limit'];
+            }
+            if (array_key_exists('offset', $request)) {
+                $offset = $request['offset'];
+            }
+            $questionList = $this->loadByCategory($request['category'], $limit, $offset);
+        }
+        return $questionList;
+    }
+
+    private function loadByAccId($practoAccountId, $bookmark)
     {
         $questionList = $this->helper->getRepository(
                                        ConsultConstants::$QUESTION_ENTITY_NAME)->findBy(
                                                   array('practoAccountId' => $practoAccountId)); 
-
-        if (is_null($questionList)) {
-            return null;
-        }
-
-        return $questionList;
-    }
-
-    public function loadBookmarksById($practoAccountId)
-    {
         $bookmarkList = $this->helper->getRepository(
                                        ConsultConstants::$QUESTION_BOOKMARK_ENTITY_NAME)->findBy(
                                                   array('practoAccountId' => $practoAccountId)); 
 
-        if (is_null($bookmarkList)) {
+        if (is_null($questionList) and is_null($bookmarkList)) {
             return null;
         }
-
-        return $bookmarkList;
+        if ($bookmark == 0)
+            return $questionList;
+        else if ($bookmark == 1)
+            return $bookmarkList;
+        else if ($bookmark == 2)
+            return array_merge($questionList, $bookmarkList);
     }
 
-    public function loadByModifiedTime($modifiedAt)
+    private function loadByModifiedTime($modifiedAt)
     {
-        $qb = $this->helper->getEntityManager()->createQueryBuilder();
-        $qb->select('q')
-           ->from(ConsultConstants::$QUESTION_ENTITY_NAME, 'q')
-           ->where('q.modifiedAt < :modifiedAt')
-           ->setParameter('modifiedAt', $modifiedAt);
-        $questionList = $qb->getQuery()->getResult();
+        $er =  $this->helper->getRepository(ConsultConstants::$QUESTION_ENTITY_NAME);
+        $questionList = $er->findQuestionsByModifiedTime($modifiedAt);
 
-        if (is_null($questionList)) {
-            return null;
-        }
+	return  $questionList;
+    }
+
+    private function loadFeed($modifiedAt, $state, $limit, $offset)
+    {
+        $er = $this->helper->getRepository(ConsultConstants::$QUESTION_ENTITY_NAME);
+        $questionList = $er->findQuestionsByState($modifiedAt, $state, $limit, $offset);
 
         return $questionList;
     }
 
-    public function loadFeed($state, $limit, $offset)
+    private function loadByCategory($category, $limit, $offset)
     {
-        $qb = $this->helper->getEntityManager()->createQueryBuilder();
-        $qb->select('q')
-           ->from(ConsultConstants::$QUESTION_ENTITY_NAME, 'q')
-           ->where('q.state = :state')
-           ->setParameter('state', $state)
-           ->orderBy('q.createdAt', 'DESC')
-           ->setMaxResults($limit)
-           ->setFirstResult($offset);
-        $questionList = $qb->getQuery()->getResult();
-
-        if (is_null($questionList)) {
-            return null;
-        }
+        $er = $this->helper->getRepository(ConsultConstants::$QUESTION_ENTITY_NAME);
+        $questionList = $er->findQuestionsByCategory($category, $limit, $offset);
 
         return $questionList;
     }
