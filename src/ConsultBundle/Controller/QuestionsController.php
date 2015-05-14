@@ -5,6 +5,7 @@ namespace ConsultBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\View\View;
 use FOS\RestBundle\Util\Codes;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use ConsultBundle\Manager\ValidationError;
@@ -67,50 +68,33 @@ class QuestionsController extends Controller
         return $question;
     }
 
-    public function getQuestionsAction()
+    public function getQuestionsAction(Request $requestRec)
     {
         $questionManager = $this->get('consult.question_manager');
-        $request = $this->getRequest()->query->all();
+        $request = $requestRec->query->all();
         try {
+
+
             if (empty($request)) {
                 $questionList = $questionManager->loadAll();
             } else {
-                if (array_key_exists('practo_account_id', $request) and !array_key_exists('bookmarks', $request)) {
-                    $questionList = $questionManager->loadByAccId($request['practo_account_id']);
-                }
-                if (array_key_exists('bookmarks', $request) and $request['bookmarks'] === 'true' and array_key_exists('practo_account_id', $request)) {
-                    $bookmarkList = $questionManager->loadBookmarksById($request['practo_account_id']);
-                }
-                if (array_key_exists('modified_at', $request)) {
-                    $questionList = $questionManager->loadByModifiedTime(new \DateTime('now'));
-                }
-                if (array_key_exists('state', $request)) {
-                    $limit = 100;
-                    $offset = 0;
-                    if (array_key_exists('limit', $request)) {
-                        $limit = $request['limit'];
-                    }
-                    if (array_key_exists('offset', $request)) {
-                        $offset = $request['offset'];
-                    }
-                    $questionList = $questionManager->loadFeed($request['state'], $limit, $offset);
-                }
+                $questionList = $questionManager->loadByFilters($request);
             }
+
         } catch (AccessDeniedException $e) {
             return View::create($e->getMessage(), Codes::HTTP_FORBIDDEN);
         }
 
-/*        if (null === $questionList) {
+
+
+
+        if (null === $questionList) {
             return View::create(null, Codes::HTTP_NOT_FOUND);
-        }
-*/
-        if (!empty($questionList)) {
-            return $questionList;
-        }
-        if (!empty($bookmarkList)) {
-            return $bookmarkList;
-        }
-        return View::create(null, Codes::HTTP_NOT_FOUND);
+        } 
+
+
+        return $questionList;
+
     }
 
     public function patchQuestionAction()
@@ -139,9 +123,11 @@ class QuestionsController extends Controller
             return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
         }
 
-        return $questionList;
+          $questionList = array("question" => $questionFinal);
+
         return View::create(
-            $questionFinal,
+            $questionList,
             Codes::HTTP_CREATED);
+
     }
 }
