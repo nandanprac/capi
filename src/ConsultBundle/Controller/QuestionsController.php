@@ -108,7 +108,7 @@ class QuestionsController extends Controller
         }
 
         try {
-            $questionFinal = $questionManager->patch($request);
+            $questionFinal = $questionManager->patch($question, $request);
         } catch (ValidationError $e) {
             return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
         }

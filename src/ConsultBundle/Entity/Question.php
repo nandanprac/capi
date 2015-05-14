@@ -28,11 +28,15 @@ class Question extends BaseEntity
 
     /**
      * @ORM\Column(length=360, name="text")
+     *
+     * @Assert\NotBlank
      */
     protected $text;
 
     /**
      * @ORM\Column(length=10, name="state")
+     *
+     * @Assert\Choice(choices = {"NEW", "ASSIGNED", "ANSWERED", "FAILED"}, message = "Invalid value for state of a question")
      */
     protected $state="NEW";
     //TODO: put asserts on what states are allowed

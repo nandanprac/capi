@@ -5,6 +5,8 @@ services:
 
     consult.questionValidator:
         class: ConsultBundle\Validator\QuestionValidator
+        arguments:
+          - @validator
 
     consult.questionImageValidator:
          class: ConsultBundle\Validator\QuestionImageValidator

@@ -5,9 +5,9 @@ namespace ConsultBundle\Manager;
 use ConsultBundle\Constants\ConsultConstants;
 use Doctrine\Bundle\DoctrineBundle\Registry as Doctrine;
 use ConsultBundle\Entity\Question;
-use Symfony\Component\Validator\ValidatorInterface;
 use ConsultBundle\Entity\QuestionImage;
 use ConsultBundle\Entity\QuestionBookmark;
+use ConsultBundle\Manager\ValidationError;
 
 /**
  * Question Manager
@@ -98,20 +98,10 @@ class QuestionManager extends BaseManager
         $question->setAttributes($requestParams);
         $question->setModifiedAt(new \DateTime('now'));
 
-        $validationErrors = $this->validator->validate($question);
-        if (0 < count($validationErrors)) {
-            foreach ($validationErrors as $validationError) {
-              $pattern = '/([a-z])([A-Z])/';
-              $replace = function ($m) {
-                  return $m[1] . '_' . strtolower($m[2]);
-              };
-              $attribute = preg_replace_callback($pattern, $replace, $validationError->getPropertyPath());
-              @$errors[$attribute][] = $validationError->getMessage();
-            }
-        }
-
-        if (0 < count($errors)) {
-            throw new ValidationError($errors);
+        try {
+            $this->validator->validate($question);
+        } catch(ValidationError $e) {
+            throw new ValidationError($e->getMessage());
         }
 
         return;
