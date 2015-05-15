@@ -88,7 +88,7 @@ class QuestionsController extends Controller
             return View::create(null, Codes::HTTP_GONE);
         }
 
-        return array("questions" => $question);
+         return $question;
     }
 
     public function getQuestionsAction(Request $requestRec)
