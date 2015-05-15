@@ -40,6 +40,7 @@ class QuestionsController extends Controller
 
         }
 
+
         $files = $request->files;
         $questionImageManager = $this->get('consult.question_image_manager');
 
@@ -53,12 +54,9 @@ class QuestionsController extends Controller
         }
 
 
-        //$router = $this->get('router');
-        //$patientGrowthURL = $router->generate('get_patientgrowth', array(
-        //    'patientGrowthId' => $patientGrowth->getId()), true);
 
         return View::create(
-            $question,
+            array("questions" => $question) ,
             Codes::HTTP_CREATED);
     }
 
@@ -67,14 +65,18 @@ class QuestionsController extends Controller
      *
      * @param integer $question
      *
-     *
      * @return Array
      *
      */
-    public function getQuestionAction($questionId)
+    public function getQuestionAction()
     {
         $questionManager = $this->get('consult.question_manager');
-        $request = $this->getRequest();
+        $requestData = $this->getRequest()->query->all();
+        if (!array_key_exists('question_id', $requestData)) {
+            return View::create(null, Codes::HTTP_BAD_REQUEST);
+        }
+
+        $questionId = $requestData['question_id'];
         try {
             $question = $questionManager->load($questionId);
         } catch (AccessDeniedException $e) {
@@ -86,47 +88,69 @@ class QuestionsController extends Controller
             return View::create(null, Codes::HTTP_GONE);
         }
 
-        return $question;
+        return array("questions" => $question);
     }
 
-    /**
-     * Get Question by UserID Action
-     *
-     * @param integer $practoid
-     *
-     *
-     * @return Array
-     *
-     */
-    public function getQuestionUseridAction($practoId)
+    public function getQuestionsAction(Request $requestRec)
     {
         $questionManager = $this->get('consult.question_manager');
-        $request = $this->getRequest();
+        $request = $requestRec->query->all();
         try {
-            $questionList = $questionManager->loadByUserID($practoId);
+
+
+            if (empty($request)) {
+                $questionList = $questionManager->loadAll();
+            } else {
+                $questionList = $questionManager->loadByFilters($request);
+            }
+
         } catch (AccessDeniedException $e) {
             return View::create($e->getMessage(), Codes::HTTP_FORBIDDEN);
         }
+
+
+
+
         if (null === $questionList) {
             return View::create(null, Codes::HTTP_NOT_FOUND);
         } 
 
-        return $questionList;
-    }
-
-    public function getQuestionsAction()
-    {
-        $questionManager = $this->get('consult.question_manager');
-        $request = $this->getRequest();
-        try {
-            $questionList = $questionManager->loadAll();
-        } catch (AccessDeniedException $e) {
-            return View::create($e->getMessage(), Codes::HTTP_FORBIDDEN);
-        }
-        if (null === $questionList) {
-            return View::create(null, Codes::HTTP_NOT_FOUND);
-        }
 
         return array("questions" => $questionList);
+
+    }
+
+    public function patchQuestionAction()
+    {
+        $questionManager = $this->get('consult.question_manager');
+        $request = $this->getRequest()->request->all();
+
+        if (array_key_exists('question_id', $request)) {
+            try {
+                $question = $questionManager->load($request['question_id']);
+            } catch (AccessDeniedException $e) {
+                return View::create($e->getMessage(), Codes::HTTP_FORBIDDEN);
+            }
+            if (null === $question) {
+                return View::create(null, Codes::HTTP_NOT_FOUND);
+            } else if ($question->isSoftDeleted()) {
+                return View::create(null, Codes::HTTP_GONE);
+            }
+        } else {
+            return View::create(null, Codes::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            $questionFinal = $questionManager->patch($question, $request);
+        } catch (ValidationError $e) {
+            return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
+        }
+
+          $questionList = array("questions" => $questionFinal);
+
+        return View::create(
+            $questionList,
+            Codes::HTTP_CREATED);
+
     }
 }

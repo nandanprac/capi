@@ -18,9 +18,9 @@ use Doctrine\ORM\Mapping as ORM;
 class DoctorReply extends BaseEntity
 {
    /**
-    * @ORM\OneToOne(targetEntity="DoctorQuestion", inversedBy = "doctorReply")
+    * @ORM\Column(type="integer", name="doctor_question_id")
     */
-    protected $doctorQuestion;
+    protected $doctorQuestionId;
 
     /**
      * @ORM\Column(type="text", name="text")
@@ -48,38 +48,22 @@ class DoctorReply extends BaseEntity
     }
 
     /**
-     * Set Doctor Question
-     *
-     * @param DoctorQuestion $doctorQuestion - Doctor Question
+     * @param $doctorQuestionId
      */
-    public function setDoctorQuestion($doctorQuestion)
+    public function setDoctorQuestionId($doctorQuestionId)
     {
-        $this->doctorQuestion = $doctorQuestion;
+        $this->doctorQuestionId = $doctorQuestionId;
     }
 
     /**
-     * Get Doctor Question
-     *
-     * @return DoctorQuestion
-     */
-    public function getDoctorQuestion()
-    {
-        return $this->doctorQuestion;
-    }
-
-    /**
-     * Get DoctorQuestionId
-     *
-     * @return integer
+     * @return mixed
      */
     public function getDoctorQuestionId()
     {
-        if ($this->doctorQuestion) {
-            return $this->doctorQuestion->getId();
-        }
-
-        return null;
+        return $this->doctorQuestionId;
     }
+
+
 
     /**
      * Get text

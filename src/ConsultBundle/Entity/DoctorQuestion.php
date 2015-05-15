@@ -19,10 +19,9 @@ use Doctrine\ORM\Mapping as ORM;
 class DoctorQuestion extends BaseEntity
 {
     /**
-     * @ORM\ManyToOne(targetEntity = "Question", inversedBy ="doctorQuestion")
-     * @ORM\JoinColumn(name = "question_id", referencedColumnName = "id")
+     * @ORM\Column(name="question_id", type="integer")
      */
-    protected $question;
+    protected $question_id;
 
     /**
      * @ORM\Column(name="practo_account_id", type="integer")
@@ -76,38 +75,22 @@ class DoctorQuestion extends BaseEntity
     }
 
     /**
-     * Set Question
-     *
-     * @param Question $question - Question
+     * @param $question_id
      */
-    public function setQuestion($question)
+    public function setQuestionId($question_id)
     {
-        $this->question = $question;
+        $this->question_id = $question_id;
     }
 
     /**
-     * Get Question
-     *
-     * @return Question
-     */
-    public function getQuestion()
-    {
-        return $this->question;
-    }
-
-    /**
-     * Get QuestionId
-     *
-     * @return integer
+     * @return mixed
      */
     public function getQuestionId()
     {
-        if ($this->question) {
-            return $this->question->getId();
-        }
-
-        return null;
+        return $this->question_id;
     }
+
+
 
     /**
      * Get rejectedAt
