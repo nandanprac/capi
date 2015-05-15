@@ -18,10 +18,9 @@ use Doctrine\ORM\Mapping as ORM;
 class QuestionTag extends BaseEntity
 {
     /**
-     * @ORM\ManyToOne(targetEntity = "Question", inversedBy = "doctorQuestions")
-     * @ORM\JoinColumn(name = "question_id", referencedColumnName = "id")
+     * @ORM\Column(name="question_id", type="integer")
      */
-    protected $question;
+    protected $question_id;
 
     /**
      * @ORM\Column(type="string", length=127, name="tag")
@@ -33,39 +32,7 @@ class QuestionTag extends BaseEntity
      */
     protected $userDefined = 0;
 
-    /**
-     * Set Question
-     *
-     * @param Question $question - Question
-     */
-    public function setQuestion($question)
-    {
-        $this->question = $question;
-    }
 
-    /**
-     * Get Question
-     *
-     * @return Question
-     */
-    public function getQuestion()
-    {
-        return $this->question;
-    }
-
-    /**
-     * Get QuestionId
-     *
-     * @return integer
-     */
-    public function getQuestionId()
-    {
-        if ($this->question) {
-            return $this->question->getId();
-        }
-
-        return null;
-    }
 
     /**
      * Get Tag
@@ -106,20 +73,19 @@ class QuestionTag extends BaseEntity
     {
         $this->setBoolean('userDefined', $userDefined);
     }
+    /**
+     * @param $question_id
+     */
+    public function setQuestionId($question_id)
+    {
+        $this->question_id = $question_id;
+    }
 
     /**
      * @return mixed
      */
-    public function getQuestions()
+    public function getQuestionId()
     {
-        return $this->questions;
-    }
-
-    /**
-     * @param mixed $questions
-     */
-    public function setQuestions($questions)
-    {
-        $this->questions = $questions;
+        return $this->question_id;
     }
 }
