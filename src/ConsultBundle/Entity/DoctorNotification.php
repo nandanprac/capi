@@ -23,9 +23,10 @@ class DoctorNotification extends BaseEntity
     protected $practoAccountId;
 
     /**
-     * @ORM\Column(type="integer", name="question_id")
+     * @ORM\ManyToOne(targetEntity="Question", inversedBy="doctorNotification")
+     * @ORM\JoinColumn(name="question_id", referencedColumnName="id")
      */
-    protected $question_id;
+    protected $question;
 
     /**
      * @ORM\Column(name="text", type="text")
@@ -58,22 +59,38 @@ class DoctorNotification extends BaseEntity
     }
 
     /**
-     * @param $question_id
+     * Set Question
+     *
+     * @param Question $question - Question
      */
-    public function setQuestionId($question_id)
+    public function setQuestion($question)
     {
-        $this->question_id = $question_id;
+        $this->question = $question;
     }
 
     /**
-     * @return mixed
+     * Get Question
+     *
+     * @return Question
+     */
+    public function getQuestion()
+    {
+        return $this->question;
+    }
+
+    /**
+     * Get QuestionId
+     *
+     * @return integer
      */
     public function getQuestionId()
     {
-        return $this->question_id;
+        if ($this->question) {
+            return $this->question->getId();
+        }
+
+        return null;
     }
-
-
 
     /**
      * Is Viewed

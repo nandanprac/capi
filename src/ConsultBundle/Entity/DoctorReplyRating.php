@@ -22,29 +22,20 @@ class DoctorReplyRating extends BaseEntity
     protected $practoAccountId;
 
     /**
-     * @ORM\Column(name="doctor_reply_id", type="integer")
+     * @ORM\ManyToOne(targetEntity="DoctorReply", inversedBy="ratings")
+     * @ORM\JoinColumn(name="doctor_reply_id", referencedColumnName="id")
      */
-    protected $doctorReplyId;
+    protected $doctorReply;
 
     /**
-     * @return mixed
+     * @ORM\Column(type="smallint", name="rating")
      */
-    public function getDoctorReplyId()
+    protected $rating;
+
+    public function _construct()
     {
-        return $this->doctorReplyId;
+        $this->doctorReply = new ArrayCollection();
     }
-
-    /**
-     * @param mixed $doctorReplyId
-     */
-    public function setDoctorReplyId($doctorReplyId)
-    {
-        $this->doctorReplyId = $doctorReplyId;
-    }
-
-
-
-
 
     /**
      * Get PractoAccountId
@@ -86,5 +77,31 @@ class DoctorReplyRating extends BaseEntity
         $this->setInt('rating', $rating);
     }
 
+    /**
+     * Get Doctor Reply
+     *
+     * @return ArrayCollection
+     */
+    public function getDoctorReplies()
+    {
+        return $this->doctorReply;
+    }
 
+    /**
+     * Add Doctor Reply
+     *
+     * @param DoctorReply $doctorReply - Doctor Reply
+     */
+    public function addDoctorReply(DoctorReply $doctorReply)
+    {
+        $this->doctorReply[] = $doctorReply;
+    }
+
+    /**
+     * Clear Doctor Reply
+     */
+    public function clearDoctorReplies()
+    {
+        $this->doctorReply = new ArrayCollection();
+    }
 }

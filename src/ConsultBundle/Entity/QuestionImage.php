@@ -18,9 +18,10 @@ use Doctrine\ORM\Mapping as ORM;
 class QuestionImage extends BaseEntity
 {
     /**
-     * @ORM\Column(name="question_id", type="integer")
+     * @ORM\ManyToOne(targetEntity = "Question", inversedBy ="doctorQuestions")
+     * @ORM\JoinColumn(name = "question_id", referencedColumnName = "id")
      */
-    protected $question_id;
+    protected $question;
 
 
 
@@ -53,18 +54,36 @@ class QuestionImage extends BaseEntity
     }
 
     /**
-     * @param $question_id
+     * Set Question
+     *
+     * @param Question $question - Question
      */
-    public function setQuestionId($question_id)
+    public function setQuestion($question)
     {
-        $this->question_id = $question_id;
+        $this->question = $question;
     }
 
     /**
-     * @return mixed
+     * Get Question
+     *
+     * @return Question
+     */
+    public function getQuestion()
+    {
+        return $this->question;
+    }
+
+    /**
+     * Get QuestionId
+     *
+     * @return integer
      */
     public function getQuestionId()
     {
-        return $this->question_id;
+        if ($this->question) {
+            return $this->question->getId();
+        }
+
+        return null;
     }
 }
