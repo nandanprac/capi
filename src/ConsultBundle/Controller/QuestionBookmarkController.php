@@ -19,7 +19,7 @@ class QuestionBookmarkController extends Controller
      *
      * @return View
      */
-    public function postQuestionbookmarkAction()
+    public function postQuestionBookmarkAction()
     {
         $postData = $this->getRequest()->request->all();
         $questionBookmarkManager = $this->get('consult.question_bookmark_manager');
@@ -35,6 +35,37 @@ class QuestionBookmarkController extends Controller
             Codes::HTTP_CREATED);
     }
 
+
+    public function patchQuestionBookmarkAction()
+    {
+        $postData = $this->getRequest()->request->all();
+        $questionBookmarkManager = $this->get('consult.question_bookmark_manager');
+
+        if (!array_key_exists('delete', $postData)) {
+            return View::create("delete key is mandatory to delete the bookmark", Codes::HTTP_BAD_REQUEST);
+        }
+        if (!array_key_exists('question_id', $postData)) {
+            return View::create("question_id is mandatory to delete the bookmark", Codes::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            $questionBookmark = $questionBookmarkManager->load($postData['question_id']);
+        } catch (AccessDeniedException $e) {
+            return View::create($e->getMessage(), Codes::HTTP_FORBIDDEN);
+        }
+        try {
+            if ($postData['delete'] === 'true') {
+                $questionBookmarkManager->delete($questionBookmark);
+            }
+        } catch (ValidationError $e) {
+            return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
+        }
+
+        return View::create(
+            'Bookmark deleted',
+            Codes::HTTP_CREATED);
+    }
+
     /**
      * Get Question Bookmark Action
      *
@@ -43,9 +74,15 @@ class QuestionBookmarkController extends Controller
      * @return Array
      *
      */
-    public function getQuestionbookmarkAction($questionBookmarkId)
+    public function getQuestionBookmarkAction()
     {
         $questionBookmarkManager = $this->get('consult.question_bookmark_manager');
+        $requestData = $this->getRequest()->query->all();
+        if (!array_key_exists('question_bookmark_id', $requestData)) {
+            return View::create('question_bookmark_id is mandatory', Codes::HTTP_BAD_REQUEST);
+        }
+
+        $questionBookmarkId = $requestData['question_bookmark_id'];
         try {
             $questionBookmark = $questionBookmarkManager->load($questionBookmarkId);
         } catch (AccessDeniedException $e) {
@@ -60,27 +97,4 @@ class QuestionBookmarkController extends Controller
         return $questionBookmark;
     }
 
-    /**
-     * Get Question by UserID Action
-     *
-     * @param integer $practoid
-     *
-     *
-     * @return Array
-     *
-     */
-    public function getQuestionbookmarkUseridAction($practoId)
-    {
-        $questionBookmarkManager = $this->get('consult.question_bookmark_manager');
-        try {
-            $questionBookmarkList = $questionBookmarkManager->loadByUserID($practoId);
-        } catch (AccessDeniedException $e) {
-            return View::create($e->getMessage(), Codes::HTTP_FORBIDDEN);
-        }
-        if (null === $questionBookmarkList) {
-            return View::create(null, Codes::HTTP_NOT_FOUND);
-        } 
-
-        return $questionBookmarkList;
-    }
 }
