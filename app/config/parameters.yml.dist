@@ -25,3 +25,11 @@ parameters:
     elastic_place_index_name: fabric_place_search
     elasticsearch_hosts:
         - 127.0.0.1
+
+    s3_access_key: AKIAILIHTHVY2DNKUE2A
+    s3_access_secret: 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
+    s3_resources_bucket: dev-consult-question-images
+    region: ap-southeast-1
+    scheme: https
+    fileName: TREATMENTPHOTO
+    tempUrl: /tmp/practo-consult-resources/

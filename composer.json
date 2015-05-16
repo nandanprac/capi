@@ -29,6 +29,8 @@
         "aws/aws-sdk-php": "2.3.*",
         "elasticsearch/elasticsearch": "0.4.*",
         "pda/pheanstalk": "dev-master"
+        "practo/sentry-bundle": "dev-master",
+        "aws/aws-sdk-php": "2.7.*"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",

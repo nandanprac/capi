@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="ConsultBundle\Repository\QuestionRepository")
  * @ORM\Table(name="questions")
  * @ORM\HasLifecycleCallbacks()
  */
@@ -28,11 +28,15 @@ class Question extends BaseEntity
 
     /**
      * @ORM\Column(length=360, name="text")
+     *
+     * @Assert\NotBlank
      */
     protected $text;
 
     /**
      * @ORM\Column(length=10, name="state")
+     *
+     * @Assert\Choice(choices = {"NEW", "ASSIGNED", "ANSWERED", "FAILED"}, message = "Invalid value for state of a question")
      */
     protected $state="NEW";
     //TODO: put asserts on what states are allowed
@@ -149,6 +153,12 @@ class Question extends BaseEntity
     public function clearImages()
     {
         $this->images = new ArrayCollection();
+    }
+
+
+    public function setImages($images)
+    {
+        $this->images = $images;
     }
 
     /**

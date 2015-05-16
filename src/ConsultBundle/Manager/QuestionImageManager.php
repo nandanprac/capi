@@ -1,7 +1,11 @@
 <?php
 
 namespace ConsultBundle\Manager;
-
+use ConsultBundle\Entity\Question;
+use ConsultBundle\Entity\QuestionImage;
+use ConsultBundle\Utility\FileUploadUtil;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\HttpFoundation\FileBag;
 
 
 /**
@@ -9,6 +13,15 @@ namespace ConsultBundle\Manager;
  */
 class QuestionImageManager extends BaseManager
 {
+    /**
+     * @var FileUploadUtil
+     */
+    protected $fileUploadUtil;
+
+    public function __construct(FileUploadUtil $fileUploadUtil)
+    {
+        $this->fileUploadUtil = $fileUploadUtil;
+    }
 
 
 
@@ -44,4 +57,33 @@ class QuestionImageManager extends BaseManager
 
         return;
     }
+
+
+    public function add(Question $question, FileBag $fileBag)
+    {
+        //var_dump($fileBag->count());
+        //die;
+       $urls = $this->fileUploadUtil->add($fileBag, $question->getId());
+       //var_dump($urls);die;
+        $questionImages = new ArrayCollection();
+
+        foreach($urls as $url)
+        {
+             $questionImage = new QuestionImage();
+            $questionImage->setUrl($url);
+            //$this->helper->persist(questionImage);
+            $questionImages->add($questionImage);
+        }
+
+        //var_dump("123"); die;
+        $question->setImages($questionImages);
+
+        if($questionImages->count() > 0)
+        {
+            $this->helper->persist($question, true);
+        }
+    }
+
+
+
 }

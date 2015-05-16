@@ -43,11 +43,13 @@ class UserController extends FOSRestController{
      *
      * @return View
      */
-    public function getUserConsultinfoAction($practoId)
+    public function getUserConsultinfoAction()
     {
         $userManager = $this->get('consult.user_manager');
+        $formData = $this->getRequest()->request->all();
+        $practoAccountId = $formData['practo_account_id'];
         try {
-            $userConsultEntry = $userManager->load($practoId);
+            $userConsultEntry = $userManager->load($practoAccountId);
         } catch (AccessDeniedException $e) {
             return View::create($e->getMessage(), Codes::HTTP_FORBIDDEN);
         }

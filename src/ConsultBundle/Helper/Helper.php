@@ -30,6 +30,11 @@ class Helper
 
     }
 
+    public function getEntityManager()
+    {
+        return $this->entityManager;
+    }
+
     /**
      * LoadAll
      *
