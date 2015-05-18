@@ -22,24 +22,24 @@ class UserInfo extends BaseEntity
      */
     protected $practoAccountId;
     /**
-     * @ORM\Column(type="text", name="allergies")
+     * @ORM\Column(type="text", name="allergies", nullable=true)
      */
-    protected $allergies;
+    protected $allergies = null;
 
     /**
-     * @ORM\Column(type="text", name="medications")
+     * @ORM\Column(type="text", name="medications", nullable=true)
      */
-    protected $medications;
+    protected $medications = null;
 
     /**
-     * @ORM\Column(name="prev_diagnosed_conditions", type="text")
+     * @ORM\Column(name="prev_diagnosed_conditions", type="text", nullable=true)
      */
-    protected $prevDiagnosedConditions;
+    protected $prevDiagnosedConditions = null;
 
     /**
-     * @ORM\Column(name="additional_details", type="text")
+     * @ORM\Column(name="additional_details", type="text", nullable=true)
      */
-    protected $additionalDetails;
+    protected $additionalDetails = null;
 
     /**
      * Get PractoAccountId

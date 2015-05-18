@@ -12,7 +12,9 @@ services:
          class: ConsultBundle\Validator\QuestionImageValidator
 
     consult.questionBookmarkValidator:
-                 class: ConsultBundle\Validator\QuestionBookmarkValidator
+        class: ConsultBundle\Validator\QuestionBookmarkValidator
+        arguments:
+          - @validator
 
     consult.doctorReplyValidator:
          class: ConsultBundle\Validator\DoctorReplyValidator
@@ -47,7 +49,7 @@ services:
           - [setValidator, ["@consult.questionValidator"]]
           - [setHelper, ["@consult.helper"]]
         arguments:
-          - @consult.question_image_manager
+          - @consult.user_manager
           - @consult.question_bookmark_manager
 
     consult.question_image_manager:
@@ -63,11 +65,6 @@ services:
         calls:
                   - [setValidator, ["@consult.questionBookmarkValidator"]]
                   - [setHelper, ["@consult.helper"]]
-        arguments:
-          - @validator
-
-
-
 
     consult.doctorReplyManager:
         class: ConsultBundle\Manager\DoctorReplyManager

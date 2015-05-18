@@ -9,6 +9,7 @@
 namespace ConsultBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity
@@ -25,6 +26,10 @@ class QuestionBookmark extends BaseEntity
 
     /**
      * @ORM\Column(type="integer", name="practo_account_id")
+     *
+     * @var integer $practoAccountId
+     *
+     * @Assert\NotBlank
      */
     protected $practoAccountId;
 

@@ -36,10 +36,9 @@ class Question extends BaseEntity
     /**
      * @ORM\Column(length=10, name="state")
      *
-     * @Assert\Choice(choices = {"NEW", "ASSIGNED", "ANSWERED", "FAILED"}, message = "Invalid value for state of a question")
+     * @Assert\Choice(choices = {"NEW", "ASSIGNED", "ANSWERED", "GENERIC", "UNCLASSIFIED"}, message = "Invalid value for state of a question")
      */
     protected $state="NEW";
-    //TODO: put asserts on what states are allowed
 
     /**
      * @ORM\Column(type="smallint", name="user_anonymous")
@@ -47,9 +46,20 @@ class Question extends BaseEntity
     protected $userAnonymous=1;
 
     /**
+     * @ORM\Column(type="integer", name="view_count")
+     */
+    protected $viewCount = 0;
+
+    /**
+     * @ORM\Column(type="integer", name="share_count")
+     */
+    protected $shareCount = 0;
+
+    /**
      * @ORM\Column(type="datetime", name="viewed_at", nullable=true)
      */
     protected $viewedAt;
+
 
     /**
      * @return mixed
@@ -125,6 +135,16 @@ class Question extends BaseEntity
         $this->userNotifications = new ArrayCollection();
         $this->doctorNotifications = new ArrayCollection();
         //$this->de
+    }
+
+    public function getUserInfo()
+    {
+        return $this->userInfo;
+    }
+
+    public function setUserInfo(UserInfo $userInfo)
+    {
+        $this->userInfo = $userInfo;
     }
 
     /**
@@ -408,6 +428,38 @@ class Question extends BaseEntity
     public function setUserAnonymous($userAnonymous)
     {
         $this->setBoolean('userAnonymous', $userAnonymous);
+    }
+
+    /**
+     * @return integer
+     */
+    public function getViewCount()
+    {
+        return $this->viewCount;
+    }
+
+    /**
+     * @param integer
+     */
+    public function setViewCount($count)
+    {
+        $this->viewCount = $count;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getShareCount()
+    {
+        return $this->shareCount;
+    }
+
+    /**
+     * @param integer
+     */
+    public function setShareCount($count)
+    {
+        $this->shareCount = $count;
     }
 
     /**
