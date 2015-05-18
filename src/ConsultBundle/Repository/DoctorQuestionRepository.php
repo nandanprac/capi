@@ -13,29 +13,27 @@ use Doctrine\ORM\EntityRepository;
 
 class DoctorQuestionRepository extends EntityRepository{
 
-
     /**
      * @param $doctorId
      * @param $state
      * @return array
      */
-    public function findDoctorQuestionsForState($doctorId, $state)
+    public function findByFiltersDoctorQuestions($doctorId, $filters)
     {
         $qb = $this->_em->createQueryBuilder();
         $questions = null;
-
         try{
              $qb->select(array('q'))
                 ->from("ConsultBundle:Question", 'q')
                 ->innerJoin('q.doctorQuestions', 'dq')
-
-                ->where($qb->expr()->andX(
-                    $qb->expr()->eq('dq.practoAccountId', ':doctorId'),
-                    $qb->expr()->eq('dq.state', ':state')
-                ))->setParameter('state', $state)
-                 ->setParameter('doctorId', $doctorId)
-               ->addOrderBy('dq.modifiedAt', 'DESC');
-
+                ->where('dq.practoAccountId = :doctorId');
+             if (array_key_exists('state', $filters)) {
+                $state = $filters['state'];
+                $qb->andWhere('dq.state = :state')
+                  ->setParameter('state', $state);
+             }
+            $qb->addOrderBy('dq.modifiedAt', 'DESC')
+              ->setParameter('doctorId',$doctorId);
             $questions = $qb->getQuery()->getArrayResult();
         }catch(\Exception $e)
         {
@@ -46,6 +44,7 @@ class DoctorQuestionRepository extends EntityRepository{
         return $questions;
 
     }
+
 
     /**
      * @param $doctorId

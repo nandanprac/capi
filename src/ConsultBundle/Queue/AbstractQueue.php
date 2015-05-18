@@ -12,6 +12,8 @@ abstract class AbstractQueue
     private $consultDomain;
 
     const PUSH_TEST              = 'push_tester';
+    const DAA                    = 'doctor_question_assignment';
+    const CONSULT_GCM            = "consult_gcm_push";
 
     /**
      * Receive Message

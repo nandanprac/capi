@@ -26,7 +26,7 @@ class DoctorQuestionsController extends FOSRestController
      */
    public function postDoctorQuestionsAction(Request $request)
    {
-      $questionId = $request->request->get('questionId');
+       $questionId = $request->request->get('questionId');
        $doctorsId = $request->request->get('doctorsId');
 
        $er=$this->getDoctrine()->getManager()->getRepository("ConsultBundle:Question");
@@ -53,30 +53,13 @@ class DoctorQuestionsController extends FOSRestController
      */
     public function getDoctorQuestionsAction($doctorId)
     {
+        $request = $this->get('request');
+        $queryParams = $request->query->all();
 
         $doctorQuestionManager = $this->get('consult.doctorQuestionManager');
-        $questions = $doctorQuestionManager->getDoctorQuestionsForDoctor($doctorId);
+        $questions = $doctorQuestionManager->loadAll($doctorId, $queryParams);
 
         return $questions;
-
-
     }
-
-    /**
-     * @param $doctorId
-     * @return mixed
-     *
-     * @View()
-     */
-    public function getAnsweredDoctorQuestionsAction($doctorId)
-    {
-     $doctorQuestionManager = $this->get('consult.doctorQuestionManager');
-
-       $questions =  $doctorQuestionManager->getAnsweredDoctorQuestionsForDoctor($doctorId);
-
-        return $questions;
-
-    }
-
 
 }

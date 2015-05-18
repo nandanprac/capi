@@ -299,4 +299,12 @@ class QuestionManager extends BaseManager
         return $questionList;
     }
 
+    public function setState($question_id, $state){
+        $er = $this->helper->getRepository(ConsultConstants::$QUESTION_ENTITY_NAME);
+        $question = $er->load($question_id);
+
+        $requestParams['state'] = $state;
+        $this->updateFields($question, $requestParams);
+        $this->helper->persist($question, 'true');
+    }
 }
