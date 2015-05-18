@@ -31,7 +31,7 @@ class QuestionBookmarkController extends Controller
         }
 
         return View::create(
-            $questionBookmark,
+            array("question_bookmark" => $questionBookmark),
             Codes::HTTP_CREATED);
     }
 

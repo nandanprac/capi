@@ -36,7 +36,7 @@ class QuestionsController extends Controller
         }
 
         try {
-            $question = $questionManager->add($postData, $userManager);
+            $question = $questionManager->add($postData);
         } catch (ValidationError $e) {
             return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
         } catch (Exception $e) {
@@ -56,7 +56,7 @@ class QuestionsController extends Controller
         }
 
         return View::create(
-            array("questions" => $question) ,
+            array("question" => $question) ,
             Codes::HTTP_CREATED);
     }
 
@@ -136,10 +136,8 @@ class QuestionsController extends Controller
             return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
         }
 
-          $questionList = array("questions" => $questionFinal);
-
         return View::create(
-            $questionList,
+            array("question" => $questionFinal),
             Codes::HTTP_CREATED);
 
     }

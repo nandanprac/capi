@@ -108,26 +108,8 @@ class QuestionManager extends BaseManager
             unset($requestParams['state']);
         }
         $question = new Question();
-        $question->setCreatedAt(new \DateTime('now'));
         $question->setSoftDeleted(false);
 
-        $this->updateFields($question, $requestParams);
-        $this->helper->persist($question, 'true');
-
-        return $question;
-    }
-
-    public function patch($question, $requestParams)
-    {
-        if (array_key_exists('question_id', $requestParams)) {
-            unset($requestParams['question_id']);
-        }
-        if (array_key_exists('_method', $requestParams)) {
-            unset($requestParams['_method']);
-        }
-        if (array_key_exists('state', $requestParams)) {
-            unset($requestParams['state']);
-        }
         $this->updateFields($question, $requestParams);
         $this->helper->persist($question, 'true');
 
@@ -144,6 +126,31 @@ class QuestionManager extends BaseManager
             $tagObj->setQuestion($question);
             $question->addTag($tagObj);
         }
+    }
+
+    public function patch($question, $requestParams)
+    {
+        if (array_key_exists('view', $requestParams)) {
+            $question->setViewCount($question->getViewCount() + 1);
+            unset($requestParams['view']);
+        }
+        if (array_key_exists('share', $requestParams)) {
+            $question->setShareCount($question->getShareCount() + 1);
+            unset($requestParams['share']);
+        }
+        if (array_key_exists('question_id', $requestParams)) {
+            unset($requestParams['question_id']);
+        }
+        if (array_key_exists('_method', $requestParams)) {
+            unset($requestParams['_method']);
+        }
+        if (array_key_exists('state', $requestParams)) {
+            unset($requestParams['state']);
+        }
+        $this->updateFields($question, $requestParams);
+        $this->helper->persist($question, 'true');
+
+        return $question;
     }
 
     /**
@@ -171,9 +178,14 @@ class QuestionManager extends BaseManager
      *
      * @return Question
      */
-    public function loadAll()
+    public function loadAll($limit = 100, $offset = 0)
     {
-        $questionList = $this->helper->loadAll(ConsultConstants::$QUESTION_ENTITY_NAME);
+        $questionList = $this->helper->getRepository(
+            ConsultConstants::$QUESTION_ENTITY_NAME)->findBy(
+            array('softDeleted' => 0),
+            array('createdAt' => 'DESC'),
+            $limit,
+            $offset);
 
         if (is_null($questionList)) {
             return null;
@@ -199,8 +211,11 @@ class QuestionManager extends BaseManager
             $offset = $request['offset'];
         }
 
-        $er =  $this->helper->getRepository(ConsultConstants::$QUESTION_ENTITY_NAME);
-        $questionList = $er->findAllQuestions($limit, $offset);
+        if (array_key_exists('modified_at', $request)) {
+            $from = new \DateTime($request['modified_at']);
+            $from->format('Y-m-d H:i:s');
+            $questionList = $this->loadByModifiedTime($from);
+        }
 
         if (array_key_exists('state', $request)) {
             $questionList = $this->loadQuestionsByState($request['state'], $limit, $offset);
@@ -212,11 +227,10 @@ class QuestionManager extends BaseManager
         if (array_key_exists('practo_account_id', $request) and array_key_exists('bookmark', $request)) {
             $questionList = $this->loadByAccId($request['practo_account_id'], $request['bookmark'], $limit, $offset);
         }
-        /*if (array_key_exists('modified_at', $request)) {
-            $from = new \DateTime($request['modified_at']);
-            $from->format('Y-m-d H:i:s');
-            $questionList = $this->loadByModifiedTime($from);
-        }*/
+
+        if (!isset($questionList)) {
+            $questionList = $this->loadAll();
+        }
 
         return $questionList;
     }
@@ -263,8 +277,16 @@ class QuestionManager extends BaseManager
 
     private function loadQuestionsByState($state, $limit, $offset)
     {
-        $er = $this->helper->getRepository(ConsultConstants::$QUESTION_ENTITY_NAME);
-        $questionList = $er->findQuestionsByState($state, $limit, $offset);
+        $questionList = $this->helper->getRepository(
+            ConsultConstants::$QUESTION_ENTITY_NAME)->findBy(
+            array('state' => $state, 'softDeleted' => 0),
+            array('createdAt' => 'DESC'),
+            $limit,
+            $offset);
+
+        if (is_null($questionList)) {
+            return null;
+        }
 
         return $questionList;
     }
