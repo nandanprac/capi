@@ -26,8 +26,7 @@ class QuestionBookmarkManager extends BaseManager
      */
     public function updateFields($questionBookmark, $data)
     {
-        $errors = array();
-        if (isset($data['question_id'])) {
+        if (array_key_exists('question_id', $data)) {
             unset($data['question_id']);
         }
         $questionBookmark->setAttributes($data);            
@@ -42,9 +41,13 @@ class QuestionBookmarkManager extends BaseManager
         return;
     }
 
-    public function delete($questionBookmark)
+    public function remove($questionBookmark)
     {
-        $questionBookmark->setSoftDeleted(True);
+        if (array_key_exists('_method', $requestParams)) {
+            unset($requestParams['_method']);
+        }
+        $questionBookmark->setSoftDeleted(true);
+        $this->helper->persist($questionBookmark, true);
     }
 
     /**

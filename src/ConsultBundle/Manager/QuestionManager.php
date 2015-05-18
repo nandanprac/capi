@@ -26,9 +26,9 @@ class QuestionManager extends BaseManager
      * @param ValidatorInterface       $validator          - Validator
      */
     public function __construct(
-        QuestionImageManager $questionImageManager, QuestionBookmarkManager $questionBookmarkManager )
+        UserManager $userManager, QuestionBookmarkManager $questionBookmarkManager )
     {
-        $this->questionImageManager = $questionImageManager;
+        $this->userManager = $userManager;
         $this->questionBookmarkManager = $questionBookmarkManager;
 
     }
@@ -41,7 +41,7 @@ class QuestionManager extends BaseManager
      *
      * @return null
      */
-    public function updateFields($question, $requestParams, $userManager)
+    public function updateFields($question, $requestParams)
     {
         /*if (array_key_exists('bookmark', $requestParams)) {
             if ($requestParams['bookmark']) {
@@ -71,10 +71,10 @@ class QuestionManager extends BaseManager
                 unset($requestParams[$userInfo]);
             }
         }
-        //$userManager = $this->get('consult.user_manager');
+
         if (count($userInfoArray) > 0) {
             $userInfoArray['practo_account_id'] =  $requestParams['practo_account_id'];
-            $userEntry = $userManager->add($userInfoArray);
+            $userEntry = $this->userManager->add($userInfoArray);
             $question->setUserInfo($userEntry);
         }
 
@@ -102,13 +102,16 @@ class QuestionManager extends BaseManager
      *
      * @return Question
      */
-    public function add($requestParams, $userManager)
+    public function add($requestParams)
     {
+        if (array_key_exists('state', $requestParams)) {
+            unset($requestParams['state']);
+        }
         $question = new Question();
         $question->setCreatedAt(new \DateTime('now'));
         $question->setSoftDeleted(false);
 
-        $this->updateFields($question, $requestParams, $userManager);
+        $this->updateFields($question, $requestParams);
         $this->helper->persist($question, 'true');
 
         return $question;
@@ -121,6 +124,9 @@ class QuestionManager extends BaseManager
         }
         if (array_key_exists('_method', $requestParams)) {
             unset($requestParams['_method']);
+        }
+        if (array_key_exists('state', $requestParams)) {
+            unset($requestParams['state']);
         }
         $this->updateFields($question, $requestParams);
         $this->helper->persist($question, 'true');
@@ -204,7 +210,7 @@ class QuestionManager extends BaseManager
         }
 
         if (array_key_exists('practo_account_id', $request) and array_key_exists('bookmark', $request)) {
-            $questionList = $this->loadByAccId($request['practo_account_id'], $request['bookmark']);
+            $questionList = $this->loadByAccId($request['practo_account_id'], $request['bookmark'], $limit, $offset);
         }
         /*if (array_key_exists('modified_at', $request)) {
             $from = new \DateTime($request['modified_at']);
@@ -215,15 +221,22 @@ class QuestionManager extends BaseManager
         return $questionList;
     }
 
-    private function loadByAccId($practoAccountId, $bookmark)
+    private function loadByAccId($practoAccountId, $bookmark, $limit, $offset)
     {
         $questionList = $this->helper->getRepository(
             ConsultConstants::$QUESTION_ENTITY_NAME)->findBy(
-            array('practoAccountId' => $practoAccountId));
+            array('practoAccountId' => $practoAccountId),
+            array('createdAt' => 'DESC'),
+            $limit,
+            $offset);
 
         $bookmarkList = $this->helper->getRepository(
             ConsultConstants::$QUESTION_BOOKMARK_ENTITY_NAME)->findBy(
-            array('practoAccountId' => $practoAccountId));
+            array('practoAccountId' => $practoAccountId),
+            array(),
+            $limit,
+            $offset);
+
         $bookmarkQuestionList = array();
         foreach ($bookmarkList as $bookMark) {
             array_push($bookmarkQuestionList, $bookMark->getQuestion());
