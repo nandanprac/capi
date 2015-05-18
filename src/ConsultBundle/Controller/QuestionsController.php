@@ -26,24 +26,26 @@ class QuestionsController extends Controller
 
        // die;
         $questionManager = $this->get('consult.question_manager');
+        $userManager = $this->get('consult.user_manager');
+
        // var_dump($postData);
        // die;
 
-        try {
-            $question = $questionManager->add($postData);
+        if (!array_key_exists('practo_account_id', $postData) or !array_key_exists('text', $postData)) {
+            return View::create('Missing mandatory paramater - practo_account_id or text', Codes::HTTP_BAD_REQUEST);
+        }
 
+        try {
+            $question = $questionManager->add($postData, $userManager);
         } catch (ValidationError $e) {
             return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
         } catch (Exception $e) {
             var_dump($e->getCode() + $e->getMessage() + $e->getTraceAsString());
             return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
-
         }
-
 
         $files = $request->files;
         $questionImageManager = $this->get('consult.question_image_manager');
-
 
         try{
            $questionImageManager->add($question, $files);
@@ -52,8 +54,6 @@ class QuestionsController extends Controller
             var_dump($e->getCode() + $e->getMessage() + $e->getTraceAsString());
             return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
         }
-
-
 
         return View::create(
             array("questions" => $question) ,
@@ -73,7 +73,7 @@ class QuestionsController extends Controller
         $questionManager = $this->get('consult.question_manager');
         $requestData = $this->getRequest()->query->all();
         if (!array_key_exists('question_id', $requestData)) {
-            return View::create(null, Codes::HTTP_BAD_REQUEST);
+            return View::create('question_id is mandatory', Codes::HTTP_BAD_REQUEST);
         }
 
         $questionId = $requestData['question_id'];
@@ -84,8 +84,6 @@ class QuestionsController extends Controller
         }
         if (null === $question) {
             return View::create(null, Codes::HTTP_NOT_FOUND);
-        } else if ($question->isSoftDeleted()) {
-            return View::create(null, Codes::HTTP_GONE);
         }
 
          return $question;
@@ -96,8 +94,6 @@ class QuestionsController extends Controller
         $questionManager = $this->get('consult.question_manager');
         $request = $requestRec->query->all();
         try {
-
-
             if (empty($request)) {
                 $questionList = $questionManager->loadAll();
             } else {
@@ -108,13 +104,9 @@ class QuestionsController extends Controller
             return View::create($e->getMessage(), Codes::HTTP_FORBIDDEN);
         }
 
-
-
-
         if (null === $questionList) {
             return View::create(null, Codes::HTTP_NOT_FOUND);
         } 
-
 
         return array("questions" => $questionList);
 
@@ -133,8 +125,6 @@ class QuestionsController extends Controller
             }
             if (null === $question) {
                 return View::create(null, Codes::HTTP_NOT_FOUND);
-            } else if ($question->isSoftDeleted()) {
-                return View::create(null, Codes::HTTP_GONE);
             }
         } else {
             return View::create(null, Codes::HTTP_BAD_REQUEST);

@@ -44,7 +44,8 @@ class Helper
      */
     public function loadAll($entityName)
     {
-        $entity = $this->entityManager->getRepository($entityName)->findAll();
+        //$entity = $this->entityManager->getRepository($entityName)->findAll();
+        $entity = $this->entityManager->getRepository($entityName)->findBy(array('softDeleted' => 0));
 
 
         if (is_null($entity)) {

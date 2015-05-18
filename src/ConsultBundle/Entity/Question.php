@@ -36,7 +36,7 @@ class Question extends BaseEntity
     /**
      * @ORM\Column(length=10, name="state")
      *
-     * @Assert\Choice(choices = {"NEW", "ASSIGNED", "ANSWERED", "FAILED"}, message = "Invalid value for state of a question")
+     * @Assert\Choice(choices = {"NEW", "ASSIGNED", "ANSWERED", "GENERIC", "UNCLASSIFIED"}, message = "Invalid value for state of a question")
      */
     protected $state="NEW";
     //TODO: put asserts on what states are allowed
@@ -125,6 +125,16 @@ class Question extends BaseEntity
         $this->userNotifications = new ArrayCollection();
         $this->doctorNotifications = new ArrayCollection();
         //$this->de
+    }
+
+    public function getUserInfo()
+    {
+        return $this->userInfo;
+    }
+
+    public function setUserInfo(UserInfo $userInfo)
+    {
+        $this->userInfo = $userInfo;
     }
 
     /**
