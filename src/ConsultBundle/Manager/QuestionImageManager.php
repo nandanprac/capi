@@ -71,6 +71,7 @@ class QuestionImageManager extends BaseManager
         {
              $questionImage = new QuestionImage();
             $questionImage->setUrl($url);
+            $questionImage->setQuestion($question);
             //$this->helper->persist(questionImage);
             $questionImages->add($questionImage);
         }
