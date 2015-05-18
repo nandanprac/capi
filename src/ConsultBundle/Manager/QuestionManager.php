@@ -183,7 +183,7 @@ class QuestionManager extends BaseManager
         $questionList = $this->helper->getRepository(
             ConsultConstants::$QUESTION_ENTITY_NAME)->findBy(
             array('softDeleted' => 0),
-            array('createdAt' => 'DESC'),
+            array('modifiedAt' => 'DESC'),
             $limit,
             $offset);
 
@@ -240,7 +240,7 @@ class QuestionManager extends BaseManager
         $questionList = $this->helper->getRepository(
             ConsultConstants::$QUESTION_ENTITY_NAME)->findBy(
             array('practoAccountId' => $practoAccountId),
-            array('createdAt' => 'DESC'),
+            array('modifiedAt' => 'DESC'),
             $limit,
             $offset);
 
@@ -280,7 +280,7 @@ class QuestionManager extends BaseManager
         $questionList = $this->helper->getRepository(
             ConsultConstants::$QUESTION_ENTITY_NAME)->findBy(
             array('state' => $state, 'softDeleted' => 0),
-            array('createdAt' => 'DESC'),
+            array('modifiedAt' => 'DESC'),
             $limit,
             $offset);
 

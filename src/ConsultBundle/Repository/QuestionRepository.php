@@ -16,6 +16,7 @@ class QuestionRepository extends EntityRepository{
            ->where('q.modifiedAt > :modifiedAt')
            ->andWhere('q.softDeleted = 0')
            ->setParameter('modifiedAt', $modifiedAt);
+           ->orderBy('q.modifiedAt', 'DESC')
         $questionList = $qb->getQuery()->getResult();
 
         if (is_null($questionList)) {
@@ -35,7 +36,7 @@ class QuestionRepository extends EntityRepository{
            ->andWhere('t.tag = :category')
            ->andWhere('q.softDeleted = 0')
            ->setParameter('category', $category)
-           ->orderBy('q.createdAt', 'DESC')
+           ->orderBy('q.modifiedAt', 'DESC')
            ->setMaxResults($limit)
            ->setFirstResult($offset);
         $questionList = $qb->getQuery()->getResult();
