@@ -15,8 +15,8 @@ class QuestionRepository extends EntityRepository{
            ->from(ConsultConstants::$QUESTION_ENTITY_NAME, 'q')
            ->where('q.modifiedAt > :modifiedAt')
            ->andWhere('q.softDeleted = 0')
-           ->setParameter('modifiedAt', $modifiedAt);
-           ->orderBy('q.modifiedAt', 'DESC')
+           ->setParameter('modifiedAt', $modifiedAt)
+           ->orderBy('q.modifiedAt', 'DESC');
         $questionList = $qb->getQuery()->getResult();
 
         if (is_null($questionList)) {
