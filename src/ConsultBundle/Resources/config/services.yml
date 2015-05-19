@@ -51,6 +51,7 @@ services:
         arguments:
           - @consult.user_manager
           - @consult.question_bookmark_manager
+          - @consult.consult_queue
 
     consult.question_image_manager:
         class: ConsultBundle\Manager\QuestionImageManager

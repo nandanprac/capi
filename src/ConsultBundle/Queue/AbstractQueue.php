@@ -14,6 +14,7 @@ abstract class AbstractQueue
     const PUSH_TEST              = 'push_tester';
     const DAA                    = 'doctor_question_assignment';
     const CONSULT_GCM            = "consult_gcm_push";
+    const ASSIGNMENT_UPDATE      = "doctor_assignment_persistance";
 
     /**
      * Receive Message

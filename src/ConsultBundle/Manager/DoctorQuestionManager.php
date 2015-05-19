@@ -21,7 +21,7 @@ class DoctorQuestionManager extends BaseManager
      */
     public function setDoctorsForAQuestions($questionId, Array $doctorsId)
     {
-        $question = $this->helper->loadById(ConsultConstants::$QUESTION_ENTITY_NAME, $questionId);
+        $question = $this->helper->loadById($questionId, ConsultConstants::$QUESTION_ENTITY_NAME);
         foreach($doctorsId as $doctorId)
         {
             $this->createDoctorQuestionEntity($question, $doctorId);
@@ -41,8 +41,6 @@ class DoctorQuestionManager extends BaseManager
 
     public function loadAll($doctorId, $queryParams = null){
         $result = $this->getRepository()->findByFiltersDoctorQuestions($doctorId, $queryParams);
-        var_dump($result);
-        die;
     }
 
     private function getRepository()

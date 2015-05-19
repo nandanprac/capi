@@ -34,9 +34,9 @@ class Question extends BaseEntity
     protected $text;
 
     /**
-     * @ORM\Column(length=10, name="state")
+     * @ORM\Column(length=20, name="state")
      *
-     * @Assert\Choice(choices = {"NEW", "ASSIGNED", "ANSWERED", "GENERIC", "UNCLASSIFIED"}, message = "Invalid value for state of a question")
+     * @Assert\Choice(choices = {"NEW", "ASSIGNED", "DOCNOTFOUND", "MISMATCH", "ANSWERED", "GENERIC", "UNCLASSIFIED"}, message = "Invalid value for state of a question")
      */
     protected $state="NEW";
 
