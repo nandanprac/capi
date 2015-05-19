@@ -112,7 +112,7 @@ class QuestionRepository extends EntityRepository{
         if (is_null($questionList)) {
             return null;
         }
-        return $questionList;
+        return array($questionList, $count);
     }
 
     public function findQuestionsByCategory($category, $limit, $offset)
@@ -136,7 +136,7 @@ class QuestionRepository extends EntityRepository{
         if (is_null($questionList)) {
             return null;
         }
-        return $questionList;
+        return array($questionList, $count);
     }
 
 }
