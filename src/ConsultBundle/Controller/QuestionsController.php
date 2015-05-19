@@ -93,23 +93,20 @@ class QuestionsController extends Controller
     {
         $questionManager = $this->get('consult.question_manager');
         $request = $requestRec->query->all();
+        $questionList = array();
         try {
-            if (empty($request)) {
+            if (empty($request))
                 $questionList = $questionManager->loadAll();
-            } else {
+            else
                 $questionList = $questionManager->loadByFilters($request);
-            }
 
         } catch (AccessDeniedException $e) {
             return View::create($e->getMessage(), Codes::HTTP_FORBIDDEN);
         }
 
-        if (null === $questionList) {
+        if (null === $questionList)
             return View::create(null, Codes::HTTP_NOT_FOUND);
-        } 
-
-        return array("questions" => $questionList);
-
+        return array('questions' => $questionList[0], 'count' => $questionList[1]);
     }
 
     public function patchQuestionAction()
@@ -123,9 +120,9 @@ class QuestionsController extends Controller
             } catch (AccessDeniedException $e) {
                 return View::create($e->getMessage(), Codes::HTTP_FORBIDDEN);
             }
-            if (null === $question) {
+
+            if (null === $question)
                 return View::create(null, Codes::HTTP_NOT_FOUND);
-            }
         } else {
             return View::create(null, Codes::HTTP_BAD_REQUEST);
         }
