@@ -213,7 +213,7 @@ class QuestionManager extends BaseManager
             $questionList = $this->loadByState($request['state'], $limit, $offset);
 
         if (array_key_exists('category', $request))
-            $questionList = $this->loadByCategory($request['category'], $limit, $offset);
+            $questionList = $this->loadByCategory(explode(",", $request['category']), $limit, $offset);
 
         if (array_key_exists('practo_account_id', $request) and array_key_exists('bookmark', $request))
             $questionList = $this->loadByAccId($request['practo_account_id'], $request['bookmark'], $limit, $offset);
