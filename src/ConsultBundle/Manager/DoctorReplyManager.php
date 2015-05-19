@@ -52,4 +52,17 @@ class DoctorReplyManager extends BaseManager {
 
   }
 
+    /**
+     * @param $postData
+     */
+    public function patchDoctorReply($postData)
+    {
+        $doctorReply = $postData['doctor_reply'];
+
+
+    }
+
+
+
+
 }

@@ -121,6 +121,21 @@ class Helper
         }
     }
 
+    /**
+     * @param array $data
+     * @param array $fields
+     */
+    public function checkForMandatoryFields(array $data, array $fields)
+    {
+        foreach($fields as $field)
+        {
+            if(!array_key_exists($field, $data))
+            {
+
+            }
+        }
+    }
+
     protected function getFromCache($entityId)
     {
         // TODO: Implement getFromCache() method.

@@ -35,16 +35,25 @@ class RepliesController extends FOSRestController
          return $doctorReply;
      }
 
-    /**
-     * @param $replyId
-     * @param $practoAccntId
+   /**
+    *
      *
      *
      * @View()
      */
-    public function postMarkAsBestAnswerAction($replyId, $practoAccntId)
+    public function patchDoctorReplyAction(Request $request)
     {
-        //TODO
+        $postData = $request->request->all();
+        $doctorReplyManager = $this->get('consult.doctorReplyManager');
+        try{
+            $doctorReply = $doctorReplyManager->patchDoctorReply($postData);
+        }catch (\HttpException $e)
+        {
+            return View::create(json_decode($e->getMessage(),true), $e->getCode());
+        }
+
+
+        return array("doctor_reply"=> $doctorReply);
     }
 
     /**
