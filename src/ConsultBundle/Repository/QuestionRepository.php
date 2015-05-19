@@ -122,7 +122,7 @@ class QuestionRepository extends EntityRepository{
         $qb->select('q')
            ->from(ConsultConstants::$QUESTION_ENTITY_NAME, 'q')
            ->innerJoin(ConsultConstants::$QUESTION_TAG_ENTITY_NAME, 't', 'WITH', 'q = t.question')
-           ->andWhere('t.tag = :category')
+           ->andWhere('t.tag IN(:category)')
            ->andWhere('q.softDeleted = 0')
            ->setParameter('category', $category)
            ->orderBy('q.modifiedAt', 'DESC')
