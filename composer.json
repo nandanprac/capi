@@ -29,7 +29,10 @@
         "elasticsearch/elasticsearch": "0.4.*",
         "practo/sentry-bundle": "dev-master",
         "aws/aws-sdk-php": "2.7.*",
-        "pda/pheanstalk": "~2.1"
+        "pda/pheanstalk": "~2.1",
+        "aws/aws-sdk-php": "2.7.*",
+        "guzzlehttp/guzzle": "~5.0",
+        "sensio/buzz-bundle": "dev-master"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",

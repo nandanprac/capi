@@ -59,7 +59,23 @@ class DoctorQuestionsController extends FOSRestController
         $doctorQuestionManager = $this->get('consult.doctorQuestionManager');
         $questions = $doctorQuestionManager->loadAll($doctorId, $queryParams);
 
+        return array("questions"=>$questions);
+    }
+
+    /**
+     * @param $doctorId
+     * @return mixed
+     *
+     * @View()
+     */
+    public function getAnsweredDoctorQuestionsAction($doctorId)
+    {
+     $doctorQuestionManager = $this->get('consult.doctorQuestionManager');
+
+       $questions =  $doctorQuestionManager->getAnsweredDoctorQuestionsForDoctor($doctorId);
+
         return $questions;
+
     }
 
 }

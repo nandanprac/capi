@@ -86,6 +86,14 @@ services:
 
 
 
+    consult.account_authenticator_util:
+        class: ConsultBundle\Utility\AuthenticationUtils
+        arguments:
+             - %accounts_host%
+
+
+
+
 
 
 
