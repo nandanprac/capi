@@ -164,10 +164,8 @@ class QuestionManager extends BaseManager
     {
         $question = $this->helper->loadById($questionId, ConsultConstants::$QUESTION_ENTITY_NAME);
 
-        if (is_null($question) or $question->isSoftDeleted()) {
+        if (is_null($question) or $question->isSoftDeleted())
             return null;
-        }
-
         return $question;
     }
 
@@ -176,21 +174,17 @@ class QuestionManager extends BaseManager
      *
      * @param request parameters
      *
-     * @return Question
+     * @return array
      */
     public function loadAll($limit = 100, $offset = 0)
     {
-        $questionList = $this->helper->getRepository(
-            ConsultConstants::$QUESTION_ENTITY_NAME)->findBy(
-            array('softDeleted' => 0),
-            array('modifiedAt' => 'DESC'),
-            $limit,
-            $offset);
+        $questionList = array();
+        $er =  $this->helper->getRepository(ConsultConstants::$QUESTION_ENTITY_NAME);
+        $questionList = $er->findAllQuestions($limit, $offset);
 
         if (is_null($questionList)) {
             return null;
         }
-
         return $questionList;
     }
 
@@ -204,12 +198,10 @@ class QuestionManager extends BaseManager
 
         $limit = 100;
         $offset = 0;
-        if (array_key_exists('limit', $request)) {
+        if (array_key_exists('limit', $request))
             $limit = $request['limit'];
-        }
-        if (array_key_exists('offset', $request)) {
+        if (array_key_exists('offset', $request))
             $offset = $request['offset'];
-        }
 
         if (array_key_exists('modified_at', $request)) {
             $from = new \DateTime($request['modified_at']);
@@ -217,54 +209,53 @@ class QuestionManager extends BaseManager
             $questionList = $this->loadByModifiedTime($from);
         }
 
-        if (array_key_exists('state', $request)) {
-            $questionList = $this->loadQuestionsByState($request['state'], $limit, $offset);
-        }
-        if (array_key_exists('category', $request)) {
+        if (array_key_exists('state', $request))
+            $questionList = $this->loadByState($request['state'], $limit, $offset);
+
+        if (array_key_exists('category', $request))
             $questionList = $this->loadByCategory($request['category'], $limit, $offset);
-        }
 
-        if (array_key_exists('practo_account_id', $request) and array_key_exists('bookmark', $request)) {
+        if (array_key_exists('practo_account_id', $request) and array_key_exists('bookmark', $request))
             $questionList = $this->loadByAccId($request['practo_account_id'], $request['bookmark'], $limit, $offset);
-        }
 
-        if (!isset($questionList)) {
-            $questionList = $this->loadAll();
-        }
+        if (!isset($questionList))
+            $questionList = $this->loadAll($limit, $offset);
 
         return $questionList;
     }
 
     private function loadByAccId($practoAccountId, $bookmark, $limit, $offset)
     {
-        $questionList = $this->helper->getRepository(
-            ConsultConstants::$QUESTION_ENTITY_NAME)->findBy(
-            array('practoAccountId' => $practoAccountId),
-            array('modifiedAt' => 'DESC'),
-            $limit,
-            $offset);
-
-        $bookmarkList = $this->helper->getRepository(
-            ConsultConstants::$QUESTION_BOOKMARK_ENTITY_NAME)->findBy(
-            array('practoAccountId' => $practoAccountId),
-            array(),
-            $limit,
-            $offset);
-
-        $bookmarkQuestionList = array();
-        foreach ($bookmarkList as $bookMark) {
-            array_push($bookmarkQuestionList, $bookMark->getQuestion());
+        if ($bookmark == 0 or $bookmark == 2) {
+            $questionList = array();
+            $er =  $this->helper->getRepository(ConsultConstants::$QUESTION_ENTITY_NAME);
+            $questionList = $er->findQuestionsByAccID($practoAccountId, $limit, $offset);
+        }
+        if ($bookmark == 1 or $bookmark == 2) {
+            $bookmarkList = array();
+            $er =  $this->helper->getRepository(ConsultConstants::$QUESTION_ENTITY_NAME);
+            $bookmarkList = $er->findBookmarksByAccID($practoAccountId, $limit, $offset);
+ 
+            $bookmarkQuestionList = array();
+            foreach ($bookmarkList[0] as $bookMark)
+                array_push($bookmarkQuestionList, $bookMark->getQuestion());
         }
 
-        if (is_null($questionList) and is_null($bookmarkList)) {
-            return null;
-        }
         if ($bookmark == 0)
-            return $questionList;
+            if (is_null($questionList[0]))
+                return null;
+            else
+                return $questionList;
         else if ($bookmark == 1)
-            return $bookmarkQuestionList;
+            if (is_null($bookmarkList[0]))
+                 return null;
+             else
+                return array($bookmarkQuestionList, $bookmarkList[1]);
         else if ($bookmark == 2)
-            return array_merge($questionList, $bookmarkQuestionList);
+            if (is_null($questionList[0]) and is_null($bookmarkList[0]))
+                return null;
+            else
+                return array(array_merge($questionList[0], $bookmarkQuestionList), $questionList[1] + $bookmarkList[1]);
     }
 
     private function loadByModifiedTime($modifiedAt)
@@ -272,22 +263,18 @@ class QuestionManager extends BaseManager
         $er =  $this->helper->getRepository(ConsultConstants::$QUESTION_ENTITY_NAME);
         $questionList = $er->findQuestionsByModifiedTime($modifiedAt);
 
+        if (is_null($questionList))
+            return null;
         return  $questionList;
     }
 
-    private function loadQuestionsByState($state, $limit, $offset)
+    private function loadByState($state, $limit, $offset)
     {
-        $questionList = $this->helper->getRepository(
-            ConsultConstants::$QUESTION_ENTITY_NAME)->findBy(
-            array('state' => $state, 'softDeleted' => 0),
-            array('modifiedAt' => 'DESC'),
-            $limit,
-            $offset);
+        $er =  $this->helper->getRepository(ConsultConstants::$QUESTION_ENTITY_NAME);
+        $questionList = $er->findQuestionsByState($state, $limit, $offset);
 
-        if (is_null($questionList)) {
+        if (is_null($questionList))
             return null;
-        }
-
         return $questionList;
     }
 
@@ -296,6 +283,8 @@ class QuestionManager extends BaseManager
         $er = $this->helper->getRepository(ConsultConstants::$QUESTION_ENTITY_NAME);
         $questionList = $er->findQuestionsByCategory($category, $limit, $offset);
 
+        if (is_null($questionList))
+            return null;
         return $questionList;
     }
 
