@@ -3,6 +3,7 @@ imports:
   #  - { resource: queueServices.yml }
     - { resource: security.yml }
     - { resource: @ConsultBundle/Resources/config/services.yml }
+    - { resource: @ConsultBundle/Resources/config/securityServices.yml}
 
 framework:
     #esi:             ~

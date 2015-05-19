@@ -29,9 +29,6 @@ class RepliesController extends FOSRestController
          $answerText = $request->request->get("text");
          $practoAccountId  = $request->request->get("practo_account_id");
          $doctorQuestionId = $request->request->get("doctor_question_id");
-         //$doctorReply  = new DoctorReply();
-         //$doctorReply->setText($answerText);
-         //return $doctorReply;
          $doctorReplyManager = $this->get('consult.doctorReplyManager');
          $doctorReply = $doctorReplyManager->replyToAQuestion($doctorQuestionId, $practoAccountId, $answerText);
 
