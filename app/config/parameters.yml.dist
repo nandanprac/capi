@@ -34,3 +34,4 @@ parameters:
     scheme: https
     fileName: TREATMENTPHOTO
     tempUrl: /tmp/practo-consult-resources/
+    accounts_host: http://accounts.practo.local

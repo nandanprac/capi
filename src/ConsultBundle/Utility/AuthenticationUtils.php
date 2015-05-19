@@ -12,22 +12,31 @@ namespace ConsultBundle\Utility;
 use Buzz\Browser;
 use Buzz\Bundle\BuzzBundle\Buzz\BrowserManager;
 use Buzz\Bundle\BuzzBundle\Buzz\Buzz;
+use Buzz\Exception\RequestException;
 use GuzzleHttp\Client;
 use PhpCollection\Map;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class AuthenticationUtils {
 
 
     private static  $authenticationMap;
-    private $browser;
+
+    private $accountHost;
 
 
 
-    public function __construct()
+
+    public function __construct($accountHost)
     {
-        if(AuthenticationUtils::$authenticationMap ===null)
+        $this->accountHost = $accountHost;
+
+        if(AuthenticationUtils::$authenticationMap === null)
         {
+
             AuthenticationUtils::$authenticationMap = new Map();
+
         }
 
 
@@ -53,7 +62,10 @@ class AuthenticationUtils {
      */
     private function isAlreadyValidated($practoAccountId, $profileToken)
     {
-        return $profileToken === AuthenticationUtils::$authenticationMap->get($practoAccountId);
+        //var_dump($practoAccountId, AuthenticationUtils::$authenticationMap->get($practoAccountId));
+       /* var_dump($profileToken, "    ", AuthenticationUtils::$authenticationMap->get($practoAccountId));
+        var_dump($profileToken === AuthenticationUtils::$authenticationMap->get($practoAccountId));die;*/
+        return ($profileToken === AuthenticationUtils::$authenticationMap->get($practoAccountId));
     }
 
     /**
@@ -76,12 +88,28 @@ class AuthenticationUtils {
 
     private function validateWithTokenNew($practoAccountId, $profileToken)
     {
-        $client = new Client([
-            'base_url' => 'http://accounts-consult.practodev.com',
-            'defaults' => [
-                'headers' => ['X-Profile-Token' => $profileToken]
-            ]]);
-        $res = $client->get('/get_profile_with_token');
+
+            $client = new Client([
+                'base_url' => $this->accountHost,
+                'defaults' => [
+                    'headers' => ['X-Profile-Token' => $profileToken]
+                ]]);
+            $res = $client->get('/get_profile_with_token');
+
+        
+        $userJson = $res->json();
+
+        $userId = $userJson["id"];
+
+
+        $code = $res->getStatusCode();
+
+        if(is_null($userId) || $userId != $practoAccountId || $code[0] > 3)
+        {
+            throw new HttpException(Response::HTTP_FORBIDDEN);
+        }
+
+        AuthenticationUtils::$authenticationMap->set($practoAccountId, $profileToken);
 
     }
 

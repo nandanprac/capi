@@ -51,8 +51,15 @@ class SecurityListener {
             $event->setResponse($responseRet);
 
         }
+        try{
+            $this->authenticationUtils->authenticateWithAccounts($practoAccountID, $profileToken);
+        }catch(\Exception $e)
+        {
+            $responseRet = new Response();
+            $responseRet->setStatusCode(Response::HTTP_FORBIDDEN);
+            $event->setResponse($responseRet);
+        }
 
-        $this->authenticationUtils->authenticateWithAccounts($practoAccountID, $profileToken);
 
 
 
