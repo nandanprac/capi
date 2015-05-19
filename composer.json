@@ -26,11 +26,10 @@
         "doctrine/doctrine-migrations-bundle": "2.1.*@dev",
         "jms/serializer-bundle": "0.13.*",
         "friendsofsymfony/rest-bundle": "~1.5",
-        "aws/aws-sdk-php": "2.3.*",
-        "leezy/pheanstalk-bundle": "2.*",
         "elasticsearch/elasticsearch": "0.4.*",
         "practo/sentry-bundle": "dev-master",
-        "aws/aws-sdk-php": "2.7.*"
+        "aws/aws-sdk-php": "2.7.*",
+        "pda/pheanstalk": "~2.1"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",

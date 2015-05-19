@@ -18,9 +18,8 @@ parameters:
 
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt
-    queue.uri: 'beanstalk://localhost/dev-'
     sentry.dsn: 'udp://a:b@localhost:12345/c'
-    queue.uri: 'beanstalk://localhost/dev-'
+    consult_queue.uri: 'beanstalk://localhost/dev-'
 
     elastic_index_name: fabric_search_new
     elastic_place_index_name: fabric_place_search
@@ -34,3 +33,4 @@ parameters:
     scheme: https
     fileName: TREATMENTPHOTO
     tempUrl: /tmp/practo-consult-resources/
+    daa_debug: false

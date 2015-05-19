@@ -8,7 +8,9 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\HttpFoundation\Request;
 use ConsultBundle\Queue\AbstractQueue as Queue;
-use ConsultBundle\FabricDomain;
+use ConsultBundle\ConsultDomain;
+
+use Pheanstalk_Pheanstalk as Pheanstalk;
 
 /**
  * Command to merge the accounts and Make the necessary updates.
@@ -26,8 +28,7 @@ class PushTestCommand extends ContainerAwareCommand
     {
         parent::initialize($input, $output);
         $this->container = $this->getContainer();
-        $this->queue = $this->container->get('consult.queue');
-
+        $this->queue = $this->container->get('consult.consult_queue');
     }
 
     /**
@@ -37,7 +38,7 @@ class PushTestCommand extends ContainerAwareCommand
     {
         $this->setName('consult:queue:indexing:push')
             ->setDescription('Perform the merge account updates.')
-            ->addArgument('domain', InputArgument::OPTIONAL, 'Fabric Domain', 'https://www.practo.com');
+            ->addArgument('domain', InputArgument::OPTIONAL, 'Consult Domain', 'https://consult.practo.com');
     }
     /**
      * Command executes logic
@@ -50,13 +51,17 @@ class PushTestCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $request = Request::create($input->getArgument('domain'));
-        $fabricDomain = new FabricDomain($request);
-        //var_dump($fabricDomain);die;
-        $this->container->set('consult.fabric_domain', $fabricDomain);
-        $this->queue->setFabricDomain($fabricDomain);
-        //for($i=0;$i<100;$i++){
-        $this->queue->setQueueName(Queue::PUSH_TEST);
-        var_dump($this->queue->sendMessage(5));die;
-        //}
+        $consultDomain = new ConsultDomain($request);
+        $this->container->set('consult.consult_domain', $consultDomain);
+        $this->queue->setConsultDomain($consultDomain);
+        while (1) {
+            $newJob = $this->queue
+                        ->setQueueName(Queue::PUSH_TEST)
+                        ->receiveMessage();
+            if($newJob){
+                echo $newJob;
+            }
+            $this->queue->deleteMessage($newJob);
+        }
     }
 }

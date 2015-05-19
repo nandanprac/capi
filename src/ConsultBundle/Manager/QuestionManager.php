@@ -9,6 +9,7 @@ use ConsultBundle\Entity\QuestionImage;
 use ConsultBundle\Entity\QuestionBookmark;
 use ConsultBundle\Entity\QuestionTag;
 use ConsultBundle\Manager\ValidationError;
+use ConsultBundle\Queue\AbstractQueue as Queue;
 
 /**
  * Question Manager
@@ -26,10 +27,11 @@ class QuestionManager extends BaseManager
      * @param ValidatorInterface       $validator          - Validator
      */
     public function __construct(
-        UserManager $userManager, QuestionBookmarkManager $questionBookmarkManager )
+        UserManager $userManager, QuestionBookmarkManager $questionBookmarkManager, Queue $queue )
     {
         $this->userManager = $userManager;
         $this->questionBookmarkManager = $questionBookmarkManager;
+        $this->queue = $queue;
 
     }
 
@@ -113,6 +115,14 @@ class QuestionManager extends BaseManager
         $this->updateFields($question, $requestParams);
         $this->helper->persist($question, 'true');
 
+        $job = array('question_id'=>$question->getId(), 'question'=>$question->getText());
+        if (array_key_exists('city', $requestParams)) {
+            $job['city'] = $requestParams['city'];
+        }
+        if (array_key_exists('tag', $requestParams)) {
+            $job['tag'] = $requestParams['tag'];
+        }
+        $this->queue->setQueueName(Queue::DAA)->sendMessage(json_encode($job));
         return $question;
     }
 
@@ -288,4 +298,10 @@ class QuestionManager extends BaseManager
         return $questionList;
     }
 
+    public function setState($question_id, $state){
+        $question = $this->load($question_id);
+
+        $question->setState($state);
+        $this->helper->persist($question, 'true');
+    }
 }

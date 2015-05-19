@@ -3,7 +3,7 @@
 namespace ConsultBundle\Queue;
 
 /**
- * Queue Message
+ * Legacy Queue Message
  */
 class Message
 {

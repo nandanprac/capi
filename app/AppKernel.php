@@ -20,7 +20,6 @@ class AppKernel extends Kernel
             new JMS\SerializerBundle\JMSSerializerBundle(),
             new FOS\RestBundle\FOSRestBundle(),
             new ConsultBundle\ConsultBundle(),
-            new Leezy\PheanstalkBundle\LeezyPheanstalkBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

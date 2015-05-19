@@ -4,7 +4,6 @@ namespace ConsultBundle\Queue;
 
 use Aws\Sqs\SqsClient;
 use Aws\Sqs\Exception\SqsException;
-use \Raven_Client;
 
 /**
  * SQS Queue
@@ -15,18 +14,15 @@ class SQSQueue extends AbstractQueue
     protected $scheme;
     protected $region;
     protected $accountId;
-    protected $sentryDsn;
 
     /**
      * Constructor
      *
-     * @param string $uri       - Uri. Eg: http://sqs.ap-southeast-1.amazonaws.com/71203182391283/sample-queue
-     * @param string $sentryDsn - Sentry DSN
+     * @param string $uri - Uri. Eg: http://sqs.ap-southeast-1.amazonaws.com/71203182391283/sample-queue
      */
-    public function __construct($uri, $sentryDsn)
+    public function __construct($uri)
     {
         $parts = parse_url($uri);
-        $this->sentryDsn = $sentryDsn;
         $this->scheme = @$parts['scheme']?:'https';
         $hParts = explode('.', $parts['host'], 3);
         $this->region = @$hParts[1]?:'ap-southeast-1';
@@ -60,7 +56,7 @@ class SQSQueue extends AbstractQueue
         try {
             $visibilityTimeout = $this->getVisibilityTimeout();
             if ($visibilityTimeout > 43200) {
-                $this->addToSentryLogs($this->getQueueName() . ' is not available');
+                // TODO: Post warning in sentry
                 $visibilityTimeout = 43200;
             }
             $this->sqs->createQueue(array(
@@ -92,7 +88,7 @@ class SQSQueue extends AbstractQueue
     {
         $visibilityTimeout = $this->getVisibilityTimeout();
         if ($visibilityTimeout > 43200) {
-            $this->addToSentryLogs($this->getQueueName() . ' is not available');
+            // TODO: Post warning in sentry
             $visibilityTimeout = 43200;
         }
         while (true) {
@@ -130,7 +126,7 @@ class SQSQueue extends AbstractQueue
     protected function doSendMessage(Message $message, $delay=null)
     {
         if ($delay > 900) {
-            $this->addToSentryLogs($this->getQueueName() . ' has jobs with ttr of  ' . $delay);
+            // TODO: Post warning in sentry
             $delay = 900;
         }
         try {
@@ -165,19 +161,5 @@ class SQSQueue extends AbstractQueue
             'QueueUrl' => $this->getQueueUrl(),
             'ReceiptHandle' => $message->getHandle()
         ));
-    }
-
-    /**
-     * Log message to sentry
-     * @param Message $message - Message to log in sentry
-     */
-    protected function addToSentryLogs($message)
-    {
-        $client = new Raven_Client($this->sentryDsn);
-        if ($client) {
-            $client->getIdent($client->captureMessage($message));
-        }
-
-        return;
     }
 }
