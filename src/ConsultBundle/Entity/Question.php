@@ -125,6 +125,13 @@ class Question extends BaseEntity
      */
     protected $userInfo;
 
+    /**
+     * @ORM\OneToMany(targetEntity="QuestionComment", mappedBy="question", cascade={"persist", "remove"})
+     * @ORM\OrderBy({"createdAt" = "DESC"})
+     * @var ArrayCollection $comments
+     */
+    protected $comments;
+
     public function __construct()
     {
         $this->images = new ArrayCollection();
@@ -134,6 +141,7 @@ class Question extends BaseEntity
         $this->views = new ArrayCollection();
         $this->userNotifications = new ArrayCollection();
         $this->doctorNotifications = new ArrayCollection();
+        $this->comments = new ArrayCollection();
         //$this->de
     }
 
@@ -460,6 +468,34 @@ class Question extends BaseEntity
     public function setShareCount($count)
     {
         $this->shareCount = $count;
+    }
+
+    /**
+     * Get comments
+     *
+     * @return ArrayCollection
+     */
+    public function getComments()
+    {
+        return $this->comments;
+    }
+
+    /**
+     * Add Tag
+     *
+     * @param QuestionComment $comments - Question Comment
+     */
+    public function addComment(QuestionComment $comment)
+    {
+        $this->comments->add($comment);
+    }
+
+    /**
+     * Clear Question Comments
+     */
+    public function clearComments()
+    {
+        $this->comments = new ArrayCollection();
     }
 
     /**

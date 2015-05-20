@@ -44,6 +44,18 @@ class QuestionValidator implements Validator
         if (0 < count($errors)) {
             throw new ValidationError($errors);
         }
-
     }
+
+    public function validatePatchArguments($requestParams)
+    {
+        $parameters = array("view", "share", "question_id", "_method", "state",
+                            "practo_account_id", "created_at", "modified_at",
+                            "comment", "c_text", "X-Profile-Token");
+        foreach ($parameters as $parameter)
+            if (array_key_exists($parameter, $requestParams))
+                unset($requestParams[$parameter]);
+
+        return $requestParams;
+    }
+
 }

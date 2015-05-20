@@ -23,17 +23,10 @@ class QuestionsController extends Controller
     public function postQuestionAction(Request $request)
     {
         $postData = $request->request->all();
-
-       // die;
         $questionManager = $this->get('consult.question_manager');
-        $userManager = $this->get('consult.user_manager');
 
        // var_dump($postData);
        // die;
-
-        if (!array_key_exists('practo_account_id', $postData) or !array_key_exists('text', $postData)) {
-            return View::create('Missing mandatory paramater - practo_account_id or text', Codes::HTTP_BAD_REQUEST);
-        }
 
         try {
             $question = $questionManager->add($postData);
