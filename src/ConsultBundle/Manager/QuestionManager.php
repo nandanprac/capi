@@ -44,9 +44,6 @@ class QuestionManager extends BaseManager
      */
     public function updateFields($question, $requestParams)
     {
-        if (array_key_exists('X-Profile-Token', $requestParams))
-            unset($requestParams['X-Profile-Token']);
-
         $userInfoParams= array('allergies', 'medications', 'prev_diagnosed_conditions', 'additional_details');
         $requestKeys = array_keys($requestParams);
         $userInfoArray = array();
