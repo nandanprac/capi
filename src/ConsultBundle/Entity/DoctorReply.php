@@ -40,11 +40,11 @@ class DoctorReply extends BaseEntity
     /**
      * @ORM\OneToMany(targetEntity="DoctorReplyRating", mappedBy="doctorReply")
      */
-    protected $ratings;
+    protected $likes;
 
     public function _construct()
     {
-        $this->ratings = new ArrayCollection();
+        $this->likes = new ArrayCollection();
     }
 
     /**
@@ -156,9 +156,9 @@ class DoctorReply extends BaseEntity
      *
      * @return ArrayCollection
      */
-    public function getRatings()
+    public function getLikes()
     {
-        return $this->ratings;
+        return $this->likes;
     }
 
     /**
@@ -166,9 +166,9 @@ class DoctorReply extends BaseEntity
      *
      * @param DoctorReplyRating $rating - Doctor Reply Rating
      */
-    public function addRating(DoctorReplyRating $rating)
+    public function addRating(DoctorReplyRating $like)
     {
-        $this->ratings[] = $rating;
+        $this->likes[] = $like;
     }
 
     /**
@@ -176,6 +176,6 @@ class DoctorReply extends BaseEntity
      */
     public function clearRatings()
     {
-        $this->ratings = new ArrayCollection();
+        $this->likes = new ArrayCollection();
     }
 }

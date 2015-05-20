@@ -11,8 +11,11 @@ namespace ConsultBundle\Helper;
 use ConsultBundle\Utility\CacheUtils;
 use Doctrine\Bundle\DoctrineBundle\Registry as Doctrine;
 use ConsultBundle\Validator\Validator;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityRepository;
+use FOS\RestBundle\Util\Codes;
+use GuzzleHttp\Message\Response;
 
 class Helper
 {
@@ -124,15 +127,22 @@ class Helper
     /**
      * @param array $data
      * @param array $fields
+     * @throws \HttpException
      */
     public function checkForMandatoryFields(array $data, array $fields)
     {
+        $errors = new ArrayCollection();
         foreach($fields as $field)
         {
             if(!array_key_exists($field, $data))
             {
-
+                 $errors->add($field + "is Mandatory");
             }
+        }
+
+        if($errors->count()>0)
+        {
+            throw new \HttpException($errors->toArray(), Codes::HTTP_BAD_REQUEST);
         }
     }
 
