@@ -20,20 +20,20 @@ class QuestionComment extends BaseEntity
      *
      * @Assert\NotBlank
      */
-    private $practoAccountId;
+    protected $practoAccountId;
 
     /**
-     * @ORM\Column(type="text", name="comment")
+     * @ORM\Column(type="text", name="text")
      *
      * @Assert\NotBlank
      */
-    private $text;
+    protected $text;
 
     /**
      * @ORM\ManyToOne(targetEntity = "Question", inversedBy = "comments")
      * @ORM\JoinColumn(name = "question_id", referencedColumnName = "id")
      */
-    private $question;
+    protected $question;
 
 
     /**
@@ -43,7 +43,7 @@ class QuestionComment extends BaseEntity
      */
     public function setPractoAccountId($practoAccountId)
     {
-        $this->practoAccountId = $practoAccountId;
+        $this->setInt('practoAccountId', $practoAccountId);
     }
 
     /**
@@ -64,7 +64,7 @@ class QuestionComment extends BaseEntity
      */
     public function setText($text)
     {
-        $this->text = $text;
+        $this->setString('text', $text);
     }
 
     /**
