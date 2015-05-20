@@ -73,7 +73,6 @@ class QuestionManager extends BaseManager
             unset($requestParams['tags']);
         }
         $question->setAttributes($requestParams);
-        $question->setModifiedAt(new \DateTime('now'));
         $question->setViewedAt(new \DateTime('now'));
 
         try {
@@ -132,14 +131,21 @@ class QuestionManager extends BaseManager
             $question->setShareCount($question->getShareCount() + 1);
 
         if (array_key_exists('comment', $requestParams)) {
-            if (!array_key_exists('practo_account_id', $requestParams) or !array_key_exists('c_text', $requestParams)) {
-                throw new ValidationError('practo_account_id and c_text are mandatory fields');
-            }
+            $commentParams = array();
+            if (array_key_exists('practo_account_id', $requestParams))
+                 $commentParams['practo_account_id'] = $requestParams['practo_account_id'];
+            if (array_key_exists('c_text', $requestParams))
+                 $commentParams['text'] = $requestParams['c_text'];
+
             $questionComment = new QuestionComment();
-            $questionComment->setPractoAccountId($requestParams['practo_account_id']);
-            $questionComment->setText($requestParams['c_text']);
+            $questionComment->setAttributes($commentParams);
             $questionComment->setQuestion($question);
             $question->addComment($questionComment);
+            try {
+                $this->validator->validateComment($questionComment);
+            } catch(ValidationError $e) {
+                throw new ValidationError($e->getMessage());
+            }
         }
 
         $params = $this->validator->validatePatchArguments($requestParams);
