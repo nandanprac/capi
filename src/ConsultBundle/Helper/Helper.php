@@ -78,14 +78,13 @@ class Helper
     }
 
     /**
-     * Get Repository
-     *
-     * @param  $entityName
-     *
-     * @return entity
+     * @param $entityName
+     * @return EntityRepository|null
      */
+
     public function getRepository($entityName)
     {
+
         $entityRepository = $this->entityManager->getRepository($entityName);
 
         if(is_null($entityRepository))
@@ -93,7 +92,14 @@ class Helper
           return null;
         }
 
+
         return $entityRepository;
+    }
+
+
+    public function remove($entity)
+    {
+        $this->entityManager->remove($entity);
     }
 
 
@@ -118,7 +124,7 @@ class Helper
             $this->entityManager->persist($entity);
         }
 
-        if($flush != null)
+        if($flush)
         {
             $this->entityManager->flush();
         }
@@ -129,20 +135,23 @@ class Helper
      * @param array $fields
      * @throws \HttpException
      */
-    public function checkForMandatoryFields(array $data, array $fields)
+    public function checkForMandatoryFields($fields, array $data )
     {
         $errors = new ArrayCollection();
+        //var_dump($data);
         foreach($fields as $field)
         {
+            //var_dump($field);
             if(!array_key_exists($field, $data))
             {
-                 $errors->add($field + "is Mandatory");
+
+                 $errors->add($field . " is Mandatory");
             }
         }
 
         if($errors->count()>0)
         {
-            throw new \HttpException($errors->toArray(), Codes::HTTP_BAD_REQUEST);
+            throw new \HttpException(json_encode($errors->getValues()), Codes::HTTP_BAD_REQUEST);
         }
     }
 

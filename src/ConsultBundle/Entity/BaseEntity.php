@@ -78,6 +78,7 @@ abstract class BaseEntity
      */
     public function setSoftDeleted($softDeleted)
     {
+
         $this->setBoolean('softDeleted', $softDeleted);
     }
 
@@ -132,9 +133,11 @@ abstract class BaseEntity
      */
     public function setBoolean($field, $value)
     {
+
         if (is_bool($value)) {
             $this->$field = $value;
         } else if (is_numeric($value)) {
+
             $this->$field = (bool) $value;
         } else if (null === $value || '' === $value) {
             $this->$field = null;

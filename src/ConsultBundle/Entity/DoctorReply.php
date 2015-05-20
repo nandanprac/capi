@@ -38,7 +38,8 @@ class DoctorReply extends BaseEntity
     protected $viewedAt;
 
     /**
-     * @ORM\OneToMany(targetEntity="DoctorReplyRating", mappedBy="doctorReply")
+     * @ORM\OneToMany(targetEntity="DoctorReplyRating", mappedBy="doctorReply", cascade={"persist", "remove"})
+     * @var ArrayCollection $likes
      */
     protected $likes;
 
@@ -168,7 +169,17 @@ class DoctorReply extends BaseEntity
      */
     public function addRating(DoctorReplyRating $like)
     {
-        $this->likes[] = $like;
+        if(!$like->isSoftDeleted())
+        {
+            $this->likes[] = $like;
+        }
+
+    }
+
+
+    public function setLikes($likes)
+    {
+        $this->likes = $likes;
     }
 
     /**

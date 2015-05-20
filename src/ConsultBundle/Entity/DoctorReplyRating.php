@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity(repositoryClass="ConsultBundle\Repository\DoctorReplyRatingRepository")
  * @ORM\Table(name="doctor_reply_ratings")
+ * @ORM\HasLifecycleCallbacks()
  */
 class DoctorReplyRating extends BaseEntity
 {
@@ -22,7 +23,7 @@ class DoctorReplyRating extends BaseEntity
     protected $practoAccountId;
 
     /**
-     * @ORM\ManyToOne(targetEntity="DoctorReply", inversedBy="ratings")
+     * @ORM\ManyToOne(targetEntity="DoctorReply", inversedBy="likes")
      * @ORM\JoinColumn(name="doctor_reply_id", referencedColumnName="id")
      */
     protected $doctorReply;

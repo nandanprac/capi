@@ -15,13 +15,26 @@ use ConsultBundle\Constants\ConsultConstants;
 use ConsultBundle\Entity\DoctorQuestion;
 use ConsultBundle\Entity\DoctorReply;
 use ConsultBundle\Entity\DoctorReplyRating;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityRepository;
 use FOS\RestBundle\Util\Codes;
 
 class DoctorReplyManager extends BaseManager {
 
 
-    public static $mandatoryFields = ["doctor_question_id", "id"];
+    public static $mandatoryFields;
+  //new
+    //} ArrayCollection(array("doctor_question_id", "id"));
+
+    public function __construct()
+    {
+        if(!isset(self::$mandatoryFields))
+        {
+            self::$mandatoryFields = new ArrayCollection();
+            self::$mandatoryFields->add("doctor_question_id");
+            self::$mandatoryFields->add("id");
+        }
+    }
 
 
     /**
@@ -53,9 +66,9 @@ class DoctorReplyManager extends BaseManager {
       }
 
 
-      if($doctorQuestion->getState() != "ASSIGNED")
+      if($doctorQuestion->getState() != "UNANSWERED")
       {
-          throw new \HttpException("The doctor is not allowed to answer this question". Codes::HTTP_BAD_REQUEST);
+          throw new \HttpException("The doctor is not allowed to answer this question", Codes::HTTP_BAD_REQUEST);
       }
 
       $doctorQuestion->setState("ANSWERED");
@@ -86,19 +99,31 @@ class DoctorReplyManager extends BaseManager {
      */
     public function patchDoctorReply($postData)
     {
+
         $practoAccountId = $postData['practo_account_id'];
-        $doctorReply = $postData['doctor_reply'];
+
+        //var_dump($practoAccountId);die;
+
+        if(array_key_exists("doctor_reply", $postData)) {
+
+            $doctorReply = $postData['doctor_reply'];
+        }else
+        {
+            throw new \HttpException("doctor_reply is mandatory", Codes::HTTP_BAD_REQUEST);
+        }
         $changed = false;
 
-        $this->helper->checkForMandatoryFields(DoctorReply::mandatoryFields, $doctorReply);
+        $this->helper->checkForMandatoryFields(self::$mandatoryFields, $doctorReply);
 
         //Fetch Doctor Reply
         $id = $doctorReply['id'];
 
         $doctorReplyEntity = $this->helper->loadById($id, ConsultConstants::$DOCTOR_REPLY_ENTITY_NAME);
+        //var_dump($doctorReplyEntity->getId());die;
 
 
         $ownerId = $doctorReplyEntity->getDoctorQuestion()->getQuestion()->getPractoAccountId();
+        //var_dump($ownerId);die;
 
         //Mark As Best Answer
         if(array_key_exists("selected", $doctorReply))
@@ -134,14 +159,26 @@ class DoctorReplyManager extends BaseManager {
         if(array_key_exists("like", $doctorReply))
         {
             $like = $doctorReply['like'];
-
+            //$er = new EntityRepository();
             $er = $this->helper->getRepository(ConsultConstants::$DOCTOR_REPLY_RATING_ENTITY_NAME);
 
+            if(is_null($er))
+            {
+                var_dump("123");die;
+            }
 
-            $doctorReplyRatingEntity = $er->findBy(["practoAccountId" => $practoAccountId,
-                "reply" => $doctorReplyEntity,
-                "softDeleted" => 0
-        ]);
+
+
+
+
+         $doctorReplyRatingEntity = $er->findOneBy(array("practoAccountId" => $practoAccountId,
+                "doctorReply" => $doctorReplyEntity,
+
+         ));
+
+           //var_dump($doctorReplyRatingEntity->getId());die;
+
+
 
             //Like
             if(!$doctorReplyRatingEntity && $like)
@@ -153,12 +190,13 @@ class DoctorReplyManager extends BaseManager {
                 $changed = true;
             }
 
+
+
             //Unlike
             if($doctorReplyRatingEntity && !$like)
             {
-
-                $doctorReplyRatingEntity->setSoftDeleted(true);
                 $changed = true;
+                $this->helper->remove($doctorReplyRatingEntity);
 
             }
 
@@ -167,8 +205,10 @@ class DoctorReplyManager extends BaseManager {
         if($changed)
         {
             $this->helper->persist($doctorReplyEntity, true);
-
         }
+
+
+        return $doctorReplyEntity;
 
 
     }

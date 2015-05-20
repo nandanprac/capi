@@ -16,6 +16,8 @@ abstract class BaseManager {
      protected $helper;
      protected $validator;
 
+
+
     /**
      * @param  $validator
      */
