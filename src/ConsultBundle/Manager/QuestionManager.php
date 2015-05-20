@@ -5,6 +5,7 @@ namespace ConsultBundle\Manager;
 use ConsultBundle\Constants\ConsultConstants;
 use Doctrine\Bundle\DoctrineBundle\Registry as Doctrine;
 use ConsultBundle\Entity\Question;
+use ConsultBundle\Entity\QuestionComment;
 use ConsultBundle\Entity\QuestionImage;
 use ConsultBundle\Entity\QuestionBookmark;
 use ConsultBundle\Entity\QuestionTag;
@@ -45,24 +46,8 @@ class QuestionManager extends BaseManager
      */
     public function updateFields($question, $requestParams)
     {
-        /*if (array_key_exists('bookmark', $requestParams)) {
-            if ($requestParams['bookmark']) {
-                $data['bookmark'] = $requestParams['bookmark'];
-                $data['practo_account_id'] = $requestParams['practo_account_id'];
-
-                $questionBookmark = new questionBookmark;
-                $questionBookmark->setQuestion($question);
-                try {
-                    $this->questionBookmarkManager->updateFields($questionBookmark, $data);
-                    $question->addBookmark($questionBookmark);
-                } catch (ValidationError $e) {
-                    @$errors['bookmark'][$index + 1] = json_decode($e->getMessage(), true);
-                }
-                unset($requestParams['bookmark']);
-            } else {
-                //todo
-            }
-        }*/
+        if (array_key_exists('X-Profile-Token', $requestParams))
+            unset($requestParams['X-Profile-Token']);
 
         $userInfoParams= array('allergies', 'medications', 'prev_diagnosed_conditions', 'additional_details');
         $requestKeys = array_keys($requestParams);
@@ -75,13 +60,15 @@ class QuestionManager extends BaseManager
         }
 
         if (count($userInfoArray) > 0) {
-            $userInfoArray['practo_account_id'] =  $requestParams['practo_account_id'];
+            if (array_key_exists('practo_account_id', $requestParams))
+                $userInfoArray['practo_account_id'] =  $requestParams['practo_account_id'];
+            else
+                $userInfoArray['practo_account_id'] =  $question->getPractoAccountId();
             $userEntry = $this->userManager->add($userInfoArray);
             $question->setUserInfo($userEntry);
         }
 
         if (array_key_exists('tags', $requestParams)) {
-            //$this->setQuestionTags($question, $requestParams['tags']);
             $this->setQuestionTags($question, explode(",", $requestParams['tags']));
             unset($requestParams['tags']);
         }
@@ -128,8 +115,7 @@ class QuestionManager extends BaseManager
 
     private function setQuestionTags($question, $tags)
     {
-        foreach($tags as $tag)
-        {
+        foreach($tags as $tag) {
             $tagObj = new QuestionTag();
             $tagObj->setTag($tag);
             $tagObj->setUserDefined(True);
@@ -140,24 +126,24 @@ class QuestionManager extends BaseManager
 
     public function patch($question, $requestParams)
     {
-        if (array_key_exists('view', $requestParams)) {
+        if (array_key_exists('view', $requestParams))
             $question->setViewCount($question->getViewCount() + 1);
-            unset($requestParams['view']);
-        }
-        if (array_key_exists('share', $requestParams)) {
+        if (array_key_exists('share', $requestParams))
             $question->setShareCount($question->getShareCount() + 1);
-            unset($requestParams['share']);
+
+        if (array_key_exists('comment', $requestParams)) {
+            if (!array_key_exists('practo_account_id', $requestParams) or !array_key_exists('c_text', $requestParams)) {
+                throw new ValidationError('practo_account_id and c_text are mandatory fields');
+            }
+            $questionComment = new QuestionComment();
+            $questionComment->setPractoAccountId($requestParams['practo_account_id']);
+            $questionComment->setText($requestParams['c_text']);
+            $questionComment->setQuestion($question);
+            $question->addComment($questionComment);
         }
-        if (array_key_exists('question_id', $requestParams)) {
-            unset($requestParams['question_id']);
-        }
-        if (array_key_exists('_method', $requestParams)) {
-            unset($requestParams['_method']);
-        }
-        if (array_key_exists('state', $requestParams)) {
-            unset($requestParams['state']);
-        }
-        $this->updateFields($question, $requestParams);
+
+        $params = $this->validator->validatePatchArguments($requestParams);
+        $this->updateFields($question, $params);
         $this->helper->persist($question, 'true');
 
         return $question;
