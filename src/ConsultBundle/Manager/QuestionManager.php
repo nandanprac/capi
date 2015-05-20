@@ -90,13 +90,11 @@ class QuestionManager extends BaseManager
      */
     public function add($requestParams)
     {
-        if (array_key_exists('state', $requestParams)) {
-            unset($requestParams['state']);
-        }
         $question = new Question();
         $question->setSoftDeleted(false);
 
-        $this->updateFields($question, $requestParams);
+        $params = $this->validator->validatePostArguments($requestParams);
+        $this->updateFields($question, $params);
         $this->helper->persist($question, 'true');
 
         return $question;
@@ -113,8 +111,18 @@ class QuestionManager extends BaseManager
         }
     }
 
-    public function patch($question, $requestParams)
+    public function patch($requestParams)
     {
+        $error = array();
+        if (array_key_exists('question_id', $requestParams)) {
+            $question = $this->load($requestParams['question_id']);
+            if (null === $question)
+                throw new ValidationError();
+        } else {
+            @$error['question_id']='This cannot be blank';
+            throw new ValidationError($error);
+        }
+
         if (array_key_exists('view', $requestParams))
             $question->setViewCount($question->getViewCount() + 1);
         if (array_key_exists('share', $requestParams))
@@ -154,6 +162,21 @@ class QuestionManager extends BaseManager
      */
     public function load($questionId)
     {
+        $question = $this->helper->loadById($questionId, ConsultConstants::$QUESTION_ENTITY_NAME);
+
+        if (is_null($question))
+            return null;
+        return $question;
+    }
+
+    public function loadMultiple($requestData)
+    {
+        $error = array();
+        if (!array_key_exists('question_id', $requestData))
+            @$error['question_id']='This cannot be blank';
+            throw new ValidationError($error);
+
+        $questionId = $requestData['question_id'];
         $question = $this->helper->loadById($questionId, ConsultConstants::$QUESTION_ENTITY_NAME);
 
         if (is_null($question) or $question->isSoftDeleted())

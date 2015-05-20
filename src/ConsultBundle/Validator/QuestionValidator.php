@@ -69,8 +69,19 @@ class QuestionValidator implements Validator
     public function validatePatchArguments($requestParams)
     {
         $parameters = array("view", "share", "question_id", "_method", "state",
-                            "practo_account_id", "created_at", "modified_at",
-                            "comment", "c_text", "X-Profile-Token");
+                            "practo_account_id", "created_at", "comment",
+                            "c_text", "X-Profile-Token");
+        foreach ($parameters as $parameter)
+            if (array_key_exists($parameter, $requestParams))
+                unset($requestParams[$parameter]);
+
+        return $requestParams;
+    }
+
+    public function validatePostArguments($requestParams)
+    {
+        $parameters = array("view", "share", "question_id", "state",
+                            "created_at", "modified_at", "X-Profile-Token");
         foreach ($parameters as $parameter)
             if (array_key_exists($parameter, $requestParams))
                 unset($requestParams[$parameter]);
