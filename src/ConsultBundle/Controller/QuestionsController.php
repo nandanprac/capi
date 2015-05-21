@@ -23,17 +23,10 @@ class QuestionsController extends Controller
     public function postQuestionAction(Request $request)
     {
         $postData = $request->request->all();
-
-       // die;
         $questionManager = $this->get('consult.question_manager');
-        $userManager = $this->get('consult.user_manager');
 
        // var_dump($postData);
        // die;
-
-        if (!array_key_exists('practo_account_id', $postData) or !array_key_exists('text', $postData)) {
-            return View::create('Missing mandatory paramater - practo_account_id or text', Codes::HTTP_BAD_REQUEST);
-        }
 
         try {
             $question = $questionManager->add($postData);
@@ -68,15 +61,10 @@ class QuestionsController extends Controller
      * @return Array
      *
      */
-    public function getQuestionAction()
+    public function getQuestionAction($questionId)
     {
         $questionManager = $this->get('consult.question_manager');
-        $requestData = $this->getRequest()->query->all();
-        if (!array_key_exists('question_id', $requestData)) {
-            return View::create('question_id is mandatory', Codes::HTTP_BAD_REQUEST);
-        }
-
-        $questionId = $requestData['question_id'];
+        $request = $this->getRequest();
         try {
             $question = $questionManager->load($questionId);
         } catch (AccessDeniedException $e) {
@@ -84,10 +72,32 @@ class QuestionsController extends Controller
         }
         if (null === $question) {
             return View::create(null, Codes::HTTP_NOT_FOUND);
+        } else if ($question->isSoftDeleted()) {
+            return View::create(null, Codes::HTTP_GONE);
         }
 
-         return $question;
+        return $question;
     }
+
+/*
+    public function getQuestionAction()
+    {
+        $questionManager = $this->get('consult.question_manager');
+        $requestData = $this->getRequest()->query->all();
+
+        try {
+            $question = $questionManager->loadMultiple($requestData);
+        } catch (AccessDeniedException $e) {
+            return View::create($e->getMessage(), Codes::HTTP_FORBIDDEN);
+        } catch (ValidationError $e) {
+            return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
+        }
+
+        if (null === $question) {
+            return View::create(null, Codes::HTTP_NOT_FOUND);
+        }
+        return $question;
+    }*/
 
     public function getQuestionsAction(Request $requestRec)
     {
@@ -95,11 +105,7 @@ class QuestionsController extends Controller
         $request = $requestRec->query->all();
         $questionList = array();
         try {
-            if (empty($request))
-                $questionList = $questionManager->loadAll();
-            else
-                $questionList = $questionManager->loadByFilters($request);
-
+            $questionList = $questionManager->loadByFilters($request);
         } catch (AccessDeniedException $e) {
             return View::create($e->getMessage(), Codes::HTTP_FORBIDDEN);
         }
@@ -114,24 +120,11 @@ class QuestionsController extends Controller
         $questionManager = $this->get('consult.question_manager');
         $request = $this->getRequest()->request->all();
 
-        if (array_key_exists('question_id', $request)) {
-            try {
-                $question = $questionManager->load($request['question_id']);
-            } catch (AccessDeniedException $e) {
-                return View::create($e->getMessage(), Codes::HTTP_FORBIDDEN);
-            }
-
-            if (null === $question)
-                return View::create(null, Codes::HTTP_NOT_FOUND);
-        } else {
-            return View::create(null, Codes::HTTP_BAD_REQUEST);
-        }
-
         try {
-            $questionFinal = $questionManager->patch($question, $request);
+            $questionFinal = $questionManager->patch($request);
         } catch (ValidationError $e) {
             return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
-        }
+        } 
 
         return View::create(
             array("question" => $questionFinal),

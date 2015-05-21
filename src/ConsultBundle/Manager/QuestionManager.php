@@ -5,6 +5,7 @@ namespace ConsultBundle\Manager;
 use ConsultBundle\Constants\ConsultConstants;
 use Doctrine\Bundle\DoctrineBundle\Registry as Doctrine;
 use ConsultBundle\Entity\Question;
+use ConsultBundle\Entity\QuestionComment;
 use ConsultBundle\Entity\QuestionImage;
 use ConsultBundle\Entity\QuestionBookmark;
 use ConsultBundle\Entity\QuestionTag;
@@ -45,25 +46,6 @@ class QuestionManager extends BaseManager
      */
     public function updateFields($question, $requestParams)
     {
-        /*if (array_key_exists('bookmark', $requestParams)) {
-            if ($requestParams['bookmark']) {
-                $data['bookmark'] = $requestParams['bookmark'];
-                $data['practo_account_id'] = $requestParams['practo_account_id'];
-
-                $questionBookmark = new questionBookmark;
-                $questionBookmark->setQuestion($question);
-                try {
-                    $this->questionBookmarkManager->updateFields($questionBookmark, $data);
-                    $question->addBookmark($questionBookmark);
-                } catch (ValidationError $e) {
-                    @$errors['bookmark'][$index + 1] = json_decode($e->getMessage(), true);
-                }
-                unset($requestParams['bookmark']);
-            } else {
-                //todo
-            }
-        }*/
-
         $userInfoParams= array('allergies', 'medications', 'prev_diagnosed_conditions', 'additional_details');
         $requestKeys = array_keys($requestParams);
         $userInfoArray = array();
@@ -75,18 +57,19 @@ class QuestionManager extends BaseManager
         }
 
         if (count($userInfoArray) > 0) {
-            $userInfoArray['practo_account_id'] =  $requestParams['practo_account_id'];
+            if (array_key_exists('practo_account_id', $requestParams))
+                $userInfoArray['practo_account_id'] =  $requestParams['practo_account_id'];
+            else
+                $userInfoArray['practo_account_id'] =  $question->getPractoAccountId();
             $userEntry = $this->userManager->add($userInfoArray);
             $question->setUserInfo($userEntry);
         }
 
         if (array_key_exists('tags', $requestParams)) {
-            //$this->setQuestionTags($question, $requestParams['tags']);
             $this->setQuestionTags($question, explode(",", $requestParams['tags']));
             unset($requestParams['tags']);
         }
         $question->setAttributes($requestParams);
-        $question->setModifiedAt(new \DateTime('now'));
         $question->setViewedAt(new \DateTime('now'));
 
         try {
@@ -106,13 +89,11 @@ class QuestionManager extends BaseManager
      */
     public function add($requestParams)
     {
-        if (array_key_exists('state', $requestParams)) {
-            unset($requestParams['state']);
-        }
         $question = new Question();
         $question->setSoftDeleted(false);
 
-        $this->updateFields($question, $requestParams);
+        $params = $this->validator->validatePostArguments($requestParams);
+        $this->updateFields($question, $params);
         $this->helper->persist($question, 'true');
 
         $job = array('question_id'=>$question->getId(), 'question'=>$question->getText());
@@ -128,8 +109,7 @@ class QuestionManager extends BaseManager
 
     private function setQuestionTags($question, $tags)
     {
-        foreach($tags as $tag)
-        {
+        foreach($tags as $tag) {
             $tagObj = new QuestionTag();
             $tagObj->setTag($tag);
             $tagObj->setUserDefined(True);
@@ -138,26 +118,43 @@ class QuestionManager extends BaseManager
         }
     }
 
-    public function patch($question, $requestParams)
+    public function patch($requestParams)
     {
-        if (array_key_exists('view', $requestParams)) {
-            $question->setViewCount($question->getViewCount() + 1);
-            unset($requestParams['view']);
-        }
-        if (array_key_exists('share', $requestParams)) {
-            $question->setShareCount($question->getShareCount() + 1);
-            unset($requestParams['share']);
-        }
+        $error = array();
         if (array_key_exists('question_id', $requestParams)) {
-            unset($requestParams['question_id']);
+            $question = $this->load($requestParams['question_id']);
+            if (null === $question)
+                throw new ValidationError();
+        } else {
+            @$error['question_id']='This cannot be blank';
+            throw new ValidationError($error);
         }
-        if (array_key_exists('_method', $requestParams)) {
-            unset($requestParams['_method']);
+
+        if (array_key_exists('view', $requestParams))
+            $question->setViewCount($question->getViewCount() + 1);
+        if (array_key_exists('share', $requestParams))
+            $question->setShareCount($question->getShareCount() + 1);
+
+        if (array_key_exists('comment', $requestParams)) {
+            $commentParams = array();
+            if (array_key_exists('practo_account_id', $requestParams))
+                 $commentParams['practo_account_id'] = $requestParams['practo_account_id'];
+            if (array_key_exists('c_text', $requestParams))
+                 $commentParams['text'] = $requestParams['c_text'];
+
+            $questionComment = new QuestionComment();
+            $questionComment->setAttributes($commentParams);
+            $questionComment->setQuestion($question);
+            $question->addComment($questionComment);
+            try {
+                $this->validator->validateComment($questionComment);
+            } catch(ValidationError $e) {
+                throw new ValidationError($e->getMessage());
+            }
         }
-        if (array_key_exists('state', $requestParams)) {
-            unset($requestParams['state']);
-        }
-        $this->updateFields($question, $requestParams);
+
+        $params = $this->validator->validatePatchArguments($requestParams);
+        $this->updateFields($question, $params);
         $this->helper->persist($question, 'true');
 
         return $question;
@@ -172,6 +169,21 @@ class QuestionManager extends BaseManager
      */
     public function load($questionId)
     {
+        $question = $this->helper->loadById($questionId, ConsultConstants::$QUESTION_ENTITY_NAME);
+
+        if (is_null($question))
+            return null;
+        return $question;
+    }
+
+    public function loadMultiple($requestData)
+    {
+        $error = array();
+        if (!array_key_exists('question_id', $requestData))
+            @$error['question_id']='This cannot be blank';
+            throw new ValidationError($error);
+
+        $questionId = $requestData['question_id'];
         $question = $this->helper->loadById($questionId, ConsultConstants::$QUESTION_ENTITY_NAME);
 
         if (is_null($question) or $question->isSoftDeleted())
