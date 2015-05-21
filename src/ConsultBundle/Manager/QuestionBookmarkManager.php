@@ -54,8 +54,13 @@ class QuestionBookmarkManager extends BaseManager
         }
 
         $questionBookmark = $this->load($requestParams['bookmark_id']);
-        $questionBookmark->setSoftDeleted(true);
-        $this->helper->persist($questionBookmark, true);
+        if (is_null($questionBookmark)) {
+            $error = array();
+            @$error['error']='Bookmark doesnt exist';
+            throw new ValidationError($error);
+        }
+        else
+            $this->helper->remove($questionBookmark);
     }
 
     /**
