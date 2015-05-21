@@ -25,9 +25,6 @@ class QuestionsController extends Controller
         $postData = $request->request->all();
         $questionManager = $this->get('consult.question_manager');
 
-       // var_dump($postData);
-       // die;
-
         try {
             $question = $questionManager->add($postData);
         } catch (ValidationError $e) {

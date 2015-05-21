@@ -10,19 +10,20 @@ namespace ConsultBundle\Controller;
 
 
 use ConsultBundle\Entity\DoctorQuestion;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Doctrine\Common\Collections\ArrayCollection;
-use FOS\RestBundle\Controller\FOSRestController;
-use Symfony\Component\HttpFoundation\Request;
-use FOS\RestBundle\Controller\Annotations\View;
+use FOS\RestBundle\View\View;
+use FOS\RestBundle\Util\Codes;
 use Doctrine\Common\Persistence\ObjectRepository;
+use ConsultBundle\Manager\ValidationError;
+use Symfony\Component\HttpFoundation\Request;
 
-class DoctorQuestionsController extends FOSRestController
+class DoctorQuestionsController extends Controller
 {
     /**
      * @param Request $request
      * @return DoctorQuestion
      *
-     * @View()
      */
    public function postDoctorQuestionsAction(Request $request)
    {
@@ -46,27 +47,51 @@ class DoctorQuestionsController extends FOSRestController
    }
 
     /**
-     * @param $doctorId
      * @return ArrayCollection
      *
-     * @View()
      */
-    public function getDoctorQuestionsAction($doctorId)
+    public function getDoctorQuestionsAction()
     {
         $request = $this->get('request');
         $queryParams = $request->query->all();
 
-        $doctorQuestionManager = $this->get('consult.doctorQuestionManager');
-        $questions = $doctorQuestionManager->loadAll($doctorId, $queryParams);
+        if (array_key_exists('practo_account_id', $queryParams)) {
+            $doctorId = $queryParams['practo_account_id'];
+        } else {
+            return View::create("Atleast <practo_account_id> is needed.", Codes::HTTP_BAD_REQUEST);
+        }
 
-        return array("questions"=>$questions);
+        $doctorQuestionManager = $this->get('consult.doctorQuestionManager');
+        list($questions, $count) = $doctorQuestionManager->loadAllByDoctor($doctorId, $queryParams);
+
+
+        return array("questions"=>$questions, "count"=>$count);
     }
+
+   /**
+    *
+    * @return mixed
+    *
+    */
+
+    public function patchDoctorQuestionAction()
+    {
+        $updateData = $this->getRequest()->request->all();
+        $doctorQuestionManager = $this->get('consult.doctorQuestionManager');
+
+       try {
+           $doctor_question_mapping_final = $doctorQuestionManager->patch($updateData);
+       } catch (ValidationError $e) {
+           return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
+       }
+       return View::create(array("question" => $doctor_question_mapping_final), Codes::HTTP_CREATED);
+    }
+
 
     /**
      * @param $doctorId
      * @return mixed
      *
-     * @View()
      */
     public function getAnsweredDoctorQuestionsAction($doctorId)
     {

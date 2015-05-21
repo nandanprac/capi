@@ -21,6 +21,8 @@ services:
 
     consult.doctorQuestionValidator:
          class: ConsultBundle\Validator\DoctorQuestionValidator
+         arguments:
+           - @validator
 
     consult.cacheUtil:
         class: ConsultBundle\Utility\CacheUtils

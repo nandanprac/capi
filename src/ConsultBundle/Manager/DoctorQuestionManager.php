@@ -12,6 +12,7 @@ namespace ConsultBundle\Manager;
 use ConsultBundle\Constants\ConsultConstants;
 use ConsultBundle\Entity\DoctorQuestion;
 use Doctrine\Common\Collections\ArrayCollection;
+use ConsultBundle\Manager\ValidationError;
 
 class DoctorQuestionManager extends BaseManager
 {
@@ -38,9 +39,59 @@ class DoctorQuestionManager extends BaseManager
         $this->helper->persist($doctorQuestion);
     }
 
+    public function patch( $updateData ) {
 
-    public function loadAll($doctorId, $queryParams = null){
-        $result = $this->getRepository()->findByFiltersDoctorQuestions($doctorId, $queryParams);
+        if (array_key_exists('question_id', $updateData) and array_key_exists('practo_account_id', $updateData)) {
+            $question = $this->getRepository()->findOneBy(array('practoAccountId'=>$updateData['practo_account_id'], 'question'=>$updateData['question_id']));
+            if (!$question) {
+                throw new ValidationError(array("error"=>"Question is mapped to this doctor."));
+            }
+        } else {
+            return View::create("<practo_account_id> and <question_id> is required.", Codes::HTTP_BAD_REQUEST);
+        }
+
+        if (array_key_exists('rejection_reason', $updateData))
+            $question->setRejectionReason($updateData['rejection_reason']);
+        if (array_key_exists('reject', $updateData) && $updateData['reject'] == 'true')
+        {
+            if (!$question->getRejectedAt()) {
+                $updateData['rejected_at'] = $updateData['reject'];
+                unset($updateData['reject']);
+                $question->setRejectedAt(new \DateTime());
+            } else {
+                throw new ValidationError(array("error" => "Question is already rejected by this doctor"));
+            }
+        }
+        if (array_key_exists('view', $updateData) && $updateData['view'] == 'true')
+        {
+            if(!$question->getViewedAt()) {
+                $updateData['viewed_at'] = $updateData['view'];
+                unset($updateData['view']);
+                $question->setViewedAt(new \DateTime());
+            } else {
+                throw new ValidationError(array("error" => "Question is viewed already by this doctor"));
+            }
+        }
+        $params = $this->validator->validatePatchArguments($updateData);
+        $this->updateFields($question, $params);
+        $this->helper->persist($question, true);
+    }
+
+    public function updateFields($question, $params){
+
+        $question->setAttributes($params);
+
+        try {
+            $this->validator->validate($question);
+        } catch(ValidationError $e) {
+            throw new ValidationError($e->getMessage());
+        }
+
+        return;
+    }
+
+    public function loadAllByDoctor($doctorId, $queryParams = null){
+        return $this->getRepository()->findByFilters($doctorId, $queryParams);
     }
 
     private function getRepository()
