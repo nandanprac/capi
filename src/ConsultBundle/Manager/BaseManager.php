@@ -13,6 +13,10 @@ use ConsultBundle\Validator\Validator;
 
 
 abstract class BaseManager {
+
+    /**
+     * @var Helper $helper
+     */
      protected $helper;
      protected $validator;
 

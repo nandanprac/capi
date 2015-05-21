@@ -149,7 +149,8 @@ class DoctorReply extends BaseEntity
      */
     public function setViewedAt($viewedAt)
     {
-        $this->setDateTime('viewedAt', $viewedAt);
+        //$this->setDateTime('viewedAt', $viewedAt);
+        $this->viewedAt = $viewedAt;
     }
 
     /**

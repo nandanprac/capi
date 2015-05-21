@@ -142,7 +142,7 @@ class DoctorReplyManager extends BaseManager {
         }
 
         //Mark the answer as viewed
-        if(array_key_exists("viewed_at", $doctorReply))
+        if(array_key_exists("viewed", $doctorReply))
         {
             if($ownerId != $practoAccountId)
             {
@@ -150,7 +150,7 @@ class DoctorReplyManager extends BaseManager {
             }
             if(!$doctorReplyEntity->getViewedAt())
             {
-                $doctorReplyEntity->setViewedAt($doctorReply['viewed_at']);
+                $doctorReplyEntity->setViewedAt(new \DateTime());
                 $changed = true;
             }
         }
