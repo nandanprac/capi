@@ -9,10 +9,6 @@
 namespace ConsultBundle\Utility;
 
 
-use Buzz\Browser;
-use Buzz\Bundle\BuzzBundle\Buzz\BrowserManager;
-use Buzz\Bundle\BuzzBundle\Buzz\Buzz;
-use Buzz\Exception\RequestException;
 use GuzzleHttp\Client;
 use PhpCollection\Map;
 use Symfony\Component\HttpFoundation\Response;

@@ -93,6 +93,14 @@ services:
 
 
 
+    consult.retrieve_user_profile_util:
+        class: ConsultBundle\Utility\RetrieveUserProfileUtil
+        arguments:
+             - %accounts_host%
+             - %accounts_signing_key%
+
+
+
 
 
 

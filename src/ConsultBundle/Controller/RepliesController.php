@@ -81,12 +81,14 @@ class RepliesController extends FOSRestController
     }
 
     /**
-     * @param $replyId
+     * @param $practoAccntId
      *
      * @View()
      */
-    public function getReplyAction($practoAccntId, $doctorId, $replyId)
+    public function getReplyAction($practoAccntId)
     {
-        //TODO
+
     }
+
+
 }
