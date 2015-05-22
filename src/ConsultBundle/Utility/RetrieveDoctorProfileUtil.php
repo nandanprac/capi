@@ -38,19 +38,22 @@ class RetrieveDoctorProfileUtil {
         //$params['body']['size']  = 100;
         $results = $this->client->search($params);
 
+
+        if(count($results['hits']['hits']) === 0 )
+        {
+            return null;
+        }
+
         foreach($results['hits']['hits'] as $result)
         {
             $doc = $this->populateDoctorObject($result['_source']);
 
         }
-        //var_dump($doc);
-        //die;
 
-        //var_dump($results);die;
-
-      // $doc = $this->populateDoctoreObject($results['hits']['hits']['0']['_source']);
-
-        //var_dump($doc);die;
+        if(is_null($doc))
+        {
+            return null;
+        }
 
         return $doc;
 
@@ -60,21 +63,28 @@ class RetrieveDoctorProfileUtil {
 
     public function retrieveDoctorProfileForQuestion(Question $question)
     {
+
         $doctorQuestions = $question->getDoctorQuestions();
 
         foreach($doctorQuestions as $doctorQuestion)
         {
-            $doctor_id = $doctorQuestion->getPractoAccountId();
-            $doc = $this->retrieveDoctorProfile($doctor_id);
+
+            $doctorId = $doctorQuestion->getPractoAccountId();
+
+
+            $doc = $this->retrieveDoctorProfile($doctorId);
 
             $doctorQuestion->setDoctor($doc);
         }
+
+
     }
 
 
     private function populateDoctorObject(array $docArr)
     {
 
+        //var_dump("123");
 
         if(is_null($docArr))
         {
