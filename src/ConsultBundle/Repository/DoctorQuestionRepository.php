@@ -23,7 +23,7 @@ class DoctorQuestionRepository extends EntityRepository{
     {
         $qb = $this->_em->createQueryBuilder();
         $questions = null;
-        $limit = array_key_exists('limit', $filters) ? $filters['limit'] : 1;
+        $limit = array_key_exists('limit', $filters) ? $filters['limit'] : 500;
         $offset = array_key_exists('offset', $filters) ? $filters['offset'] : 0;
         try{
              $qb->select(array('q'))
@@ -41,7 +41,7 @@ class DoctorQuestionRepository extends EntityRepository{
                ->setMaxResults($limit)
                ->addOrderBy('dq.modifiedAt', 'DESC')
                ->setParameter('doctorId',$doctorId);
-             $questions = $qb->getQuery()->getArrayResult();
+             $questions = $qb->getQuery()->getResult();
              $paginator = new Paginator($qb->getQuery(), $fetchJoinCollection = true);
              $count = count($paginator);
 

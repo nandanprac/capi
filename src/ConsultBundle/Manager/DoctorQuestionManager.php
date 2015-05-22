@@ -55,8 +55,6 @@ class DoctorQuestionManager extends BaseManager
         if (array_key_exists('reject', $updateData) && $updateData['reject'] == 'true')
         {
             if (!$question->getRejectedAt()) {
-                $updateData['rejected_at'] = $updateData['reject'];
-                unset($updateData['reject']);
                 $question->setRejectedAt(new \DateTime());
             } else {
                 throw new ValidationError(array("error" => "Question is already rejected by this doctor"));
@@ -65,8 +63,6 @@ class DoctorQuestionManager extends BaseManager
         if (array_key_exists('view', $updateData) && $updateData['view'] == 'true')
         {
             if(!$question->getViewedAt()) {
-                $updateData['viewed_at'] = $updateData['view'];
-                unset($updateData['view']);
                 $question->setViewedAt(new \DateTime());
             } else {
                 throw new ValidationError(array("error" => "Question is viewed already by this doctor"));
@@ -79,7 +75,7 @@ class DoctorQuestionManager extends BaseManager
 
     public function updateFields($question, $params){
 
-        $question->setAttributes($params);
+        //$question->setAttributes($params);
 
         try {
             $this->validator->validate($question);

@@ -175,4 +175,22 @@ abstract class BaseEntity
             $this->$field = $value;
         }
     }
+
+    /**
+     * Set DateTime field (Helper)
+     *
+     * @param string $field - field name
+     * @param mixed  $value - string or DateTime object
+     */
+    public function setDateTime($field, $value)
+    {
+        if ($value instanceof \DateTime) {
+            $this->$field = $value;
+        } else if (!empty($value)) {
+            $this->$field = new \DateTime($value);
+        } else {
+            $this->$field = null;
+        }
+    }
+
 }
