@@ -11,6 +11,8 @@ namespace ConsultBundle\Controller;
 
 use ConsultBundle\Entity\DoctorReply;
 use FOS\RestBundle\Controller\FOSRestController;
+use FOS\RestBundle\Util\Codes;
+use FOS\RestBundle\View\View as Views;
 use FOS\RestBundle\Controller\Annotations\View;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -23,28 +25,47 @@ class RepliesController extends FOSRestController
      * @return DoctorReply
      *
      * @View()
+     *
      */
      public function postDoctorReplyAction(Request $request)
      {
+
          $answerText = $request->request->get("text");
          $practoAccountId  = $request->request->get("practo_account_id");
          $doctorQuestionId = $request->request->get("doctor_question_id");
          $doctorReplyManager = $this->get('consult.doctorReplyManager');
-         $doctorReply = $doctorReplyManager->replyToAQuestion($doctorQuestionId, $practoAccountId, $answerText);
+         try{
+             $doctorReply = $doctorReplyManager->replyToAQuestion($doctorQuestionId, $practoAccountId, $answerText);
+
+         }catch(\HttpException $e)
+         {
+             //var_dump($e->getCode());die;
+             return Views::create($e->getMessage(), $e->getCode());
+         }
 
          return $doctorReply;
      }
 
     /**
-     * @param $replyId
-     * @param $practoAccntId
-     *
+     * @param Request $request
+     * @return array|Views
      *
      * @View()
      */
-    public function postMarkAsBestAnswerAction($replyId, $practoAccntId)
+    public function patchDoctorReplyAction(Request $request)
     {
-        //TODO
+        $postData = $request->request->all();
+        //var_dump($postData);die;
+        $doctorReplyManager = $this->get('consult.doctorReplyManager');
+        try{
+            $doctorReply = $doctorReplyManager->patchDoctorReply($postData);
+        }catch (\HttpException $e)
+        {
+            return Views::create($e->getMessage(), $e->getCode());
+        }
+
+
+        return array("doctor_reply"=> $doctorReply);
     }
 
     /**

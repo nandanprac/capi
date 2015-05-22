@@ -8,6 +8,11 @@ services:
         arguments:
           - @validator
 
+    consult.userValidator:
+        class: ConsultBundle\Validator\UserValidator
+        arguments:
+          - @validator
+
     consult.questionImageValidator:
          class: ConsultBundle\Validator\QuestionImageValidator
 
@@ -52,6 +57,7 @@ services:
           - [setHelper, ["@consult.helper"]]
         arguments:
           - @consult.user_manager
+          - @consult.user_profile_manager
           - @consult.question_bookmark_manager
           - @consult.consult_queue
 
@@ -85,6 +91,12 @@ services:
         class: ConsultBundle\Manager\UserManager
         calls:
             - [setHelper, ["@consult.helper"]]
+
+    consult.user_profile_manager:
+        class: ConsultBundle\Manager\UserProfileManager
+        calls:
+            - [setHelper, ["@consult.helper"]]
+            - [setValidator, ["@consult.UserValidator"]]
 
 
 

@@ -41,13 +41,26 @@ class QuestionBookmarkManager extends BaseManager
         return;
     }
 
-    public function remove($questionBookmark)
+    public function remove($requestParams)
     {
-        if (array_key_exists('_method', $requestParams)) {
-            unset($requestParams['_method']);
+        $error = array();
+        if (!array_key_exists('delete', $requestParams)) { 
+            @$error['delete'] = 'This cannot be blank';
+            throw new ValidationError($error);
         }
-        $questionBookmark->setSoftDeleted(true);
-        $this->helper->persist($questionBookmark, true);
+        if (!array_key_exists('bookmark_id', $requestParams)) {
+            @$error['bookmark_id'] = 'This cannot be blank';
+            throw new ValidationError($error);
+        }
+
+        $questionBookmark = $this->load($requestParams['bookmark_id']);
+        if (is_null($questionBookmark)) {
+            $error = array();
+            @$error['error']='Bookmark doesnt exist';
+            throw new ValidationError($error);
+        }
+        else
+            $this->helper->remove($questionBookmark);
     }
 
     /**
@@ -59,19 +72,19 @@ class QuestionBookmarkManager extends BaseManager
      */
     public function add($requestparams)
     {
-        if (array_key_exists('question_id', $requestparams)) {
-            $questionId = $requestparams['question_id'];
-        } else {
-            throw new ValidationError('question_id is a mandatory parameter');
+        $error = array();
+        if (!array_key_exists('question_id', $requestparams)) {
+            @$error['question_id'] = 'This cannot be blank';
+            throw new ValidationError($error);
         }
 
+        $questionId = $requestparams['question_id'];
         $question = $this->helper->loadById($questionId, ConsultConstants::$QUESTION_ENTITY_NAME);
 
         $questionBookmark = new QuestionBookmark();
         $questionBookmark->setQuestion($question);
         $this->updateFields($questionBookmark, $requestparams);
         $question->addBookmark($questionBookmark);
-
         $this->helper->persist($questionBookmark, true);
     }
 
@@ -90,7 +103,6 @@ class QuestionBookmarkManager extends BaseManager
         if (is_null($questionBookmark)) {
             return null;
         }
-
         return $questionBookmark;
     }
 

@@ -43,7 +43,8 @@ class SecurityListener {
 
 
         $profileToken = $request->headers->get('X-PROFILE-TOKEN');
-        $practoAccountID = $request->get('practo_account_id');
+        $practoAccountID = $request->get("practo_account_id");
+        //var_dump($practoAccountID);die;
         //var_dump(is_null($profileToken||$practoAccountID));
         if (is_null($profileToken) || is_null($practoAccountID)) {
             $responseRet = new Response();

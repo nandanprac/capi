@@ -76,26 +76,6 @@ class QuestionsController extends Controller
         return $question;
     }
 
-/*
-    public function getQuestionAction()
-    {
-        $questionManager = $this->get('consult.question_manager');
-        $requestData = $this->getRequest()->query->all();
-
-        try {
-            $question = $questionManager->loadMultiple($requestData);
-        } catch (AccessDeniedException $e) {
-            return View::create($e->getMessage(), Codes::HTTP_FORBIDDEN);
-        } catch (ValidationError $e) {
-            return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
-        }
-
-        if (null === $question) {
-            return View::create(null, Codes::HTTP_NOT_FOUND);
-        }
-        return $question;
-    }*/
-
     public function getQuestionsAction(Request $requestRec)
     {
         $questionManager = $this->get('consult.question_manager');

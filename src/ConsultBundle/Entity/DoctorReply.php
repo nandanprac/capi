@@ -38,13 +38,14 @@ class DoctorReply extends BaseEntity
     protected $viewedAt;
 
     /**
-     * @ORM\OneToMany(targetEntity="DoctorReplyRating", mappedBy="doctorReply")
+     * @ORM\OneToMany(targetEntity="DoctorReplyRating", mappedBy="doctorReply", cascade={"persist", "remove"})
+     * @var ArrayCollection $likes
      */
-    protected $ratings;
+    protected $likes;
 
     public function _construct()
     {
-        $this->ratings = new ArrayCollection();
+        $this->likes = new ArrayCollection();
     }
 
     /**
@@ -148,7 +149,8 @@ class DoctorReply extends BaseEntity
      */
     public function setViewedAt($viewedAt)
     {
-        $this->setDateTime('viewedAt', $viewedAt);
+        //$this->setDateTime('viewedAt', $viewedAt);
+        $this->viewedAt = $viewedAt;
     }
 
     /**
@@ -156,9 +158,9 @@ class DoctorReply extends BaseEntity
      *
      * @return ArrayCollection
      */
-    public function getRatings()
+    public function getLikes()
     {
-        return $this->ratings;
+        return $this->likes;
     }
 
     /**
@@ -166,9 +168,19 @@ class DoctorReply extends BaseEntity
      *
      * @param DoctorReplyRating $rating - Doctor Reply Rating
      */
-    public function addRating(DoctorReplyRating $rating)
+    public function addRating(DoctorReplyRating $like)
     {
-        $this->ratings[] = $rating;
+        if(!$like->isSoftDeleted())
+        {
+            $this->likes[] = $like;
+        }
+
+    }
+
+
+    public function setLikes($likes)
+    {
+        $this->likes = $likes;
     }
 
     /**
@@ -176,6 +188,6 @@ class DoctorReply extends BaseEntity
      */
     public function clearRatings()
     {
-        $this->ratings = new ArrayCollection();
+        $this->likes = new ArrayCollection();
     }
 }

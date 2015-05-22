@@ -41,20 +41,8 @@ class QuestionBookmarkController extends Controller
         $postData = $this->getRequest()->request->all();
         $questionBookmarkManager = $this->get('consult.question_bookmark_manager');
 
-        if (!array_key_exists('delete', $postData))
-            return View::create("delete key is mandatory to delete the bookmark", Codes::HTTP_BAD_REQUEST);
-        if (!array_key_exists('bookmark_id', $postData))
-            return View::create("bookmark_id is mandatory to delete the bookmark", Codes::HTTP_BAD_REQUEST);
-
         try {
-            $questionBookmark = $questionBookmarkManager->load($postData['bookmark_id']);
-        } catch (AccessDeniedException $e) {
-            return View::create($e->getMessage(), Codes::HTTP_FORBIDDEN);
-        }
-
-        try {
-            if ($postData['delete'] === 'true')
-                $questionBookmarkManager->remove($questionBookmark);
+            $questionBookmarkManager->remove($postData);
         } catch (ValidationError $e) {
             return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
         }
@@ -72,14 +60,10 @@ class QuestionBookmarkController extends Controller
      * @return Array
      *
      */
-    public function getQuestionBookmarkAction()
+    public function getQuestionbookmarkAction($questionBookmarkId)
     {
         $questionBookmarkManager = $this->get('consult.question_bookmark_manager');
-        $requestData = $this->getRequest()->query->all();
-        if (!array_key_exists('question_bookmark_id', $requestData))
-            return View::create('question_bookmark_id is mandatory', Codes::HTTP_BAD_REQUEST);
 
-        $questionBookmarkId = $requestData['question_bookmark_id'];
         try {
             $questionBookmark = $questionBookmarkManager->load($questionBookmarkId);
         } catch (AccessDeniedException $e) {
