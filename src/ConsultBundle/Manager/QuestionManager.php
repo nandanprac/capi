@@ -3,6 +3,8 @@
 namespace ConsultBundle\Manager;
 
 use ConsultBundle\Constants\ConsultConstants;
+use ConsultBundle\Entity\UserInfo;
+use ConsultBundle\Utility\RetrieveUserProfileUtil;
 use Doctrine\Bundle\DoctrineBundle\Registry as Doctrine;
 use ConsultBundle\Entity\Question;
 use ConsultBundle\Entity\QuestionComment;
@@ -19,30 +21,34 @@ class QuestionManager extends BaseManager
 {
 
     protected $questionBookmarkManager;
+    protected $userManager;
+    protected $userProfileManager;
+    protected $queue;
+    protected $retrieveUserProfileUtil;
 
     /**
-     * Constructor
-     *
-     * @param Doctrine                 $doctrine           - Doctrine
-     * @param ValidatorInterface       $validator          - Validator
+     * @param UserManager $userManager
+     * @param UserProfileManager $userProfileManager
+     * @param QuestionBookmarkManager $questionBookmarkManager
+     * @param Queue $queue
+     * @param RetrieveUserProfileUtil $retrieveUserProfileUtil
      */
     public function __construct(
-        UserManager $userManager, UserProfileManager $userProfileManager, QuestionBookmarkManager $questionBookmarkManager, Queue $queue )
+        UserManager $userManager, UserProfileManager $userProfileManager, QuestionBookmarkManager $questionBookmarkManager,
+        Queue $queue, RetrieveUserProfileUtil $retrieveUserProfileUtil )
     {
         $this->userManager = $userManager;
         $this->userProfileManager = $userProfileManager;
         $this->questionBookmarkManager = $questionBookmarkManager;
         $this->queue = $queue;
+        $this->retrieveUserProfileUtil = $retrieveUserProfileUtil;
 
     }
 
     /**
-     * Update Fields
-     *
-     * @param Question $question     - PatientGrowth
-     * @param array         $requestParams     - Request parameters
-     *
-     * @return null
+     * @param $question
+     * @param $requestParams
+     * @throws ValidationError
      */
     public function updateFields($question, $requestParams)
     {
@@ -169,12 +175,21 @@ class QuestionManager extends BaseManager
      */
     public function load($questionId)
     {
+        /**
+         * @var Question $question
+         */
         $question = $this->helper->loadById($questionId, ConsultConstants::$QUESTION_ENTITY_NAME);
 
         if (is_null($question))
             return null;
+
+        $this->retrieveUserProfileUtil->loadUserDetailInQuestion($question);
+
+
         return $question;
     }
+
+
 
     public function loadMultiple($requestData)
     {

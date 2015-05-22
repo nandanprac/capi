@@ -57,7 +57,8 @@ class User extends BaseEntity
      */
     public function setDateOfBirth($dateOfBirth)
     {
-        $this->dateOfBirth = $dateOfBirth;
+        $this->dateOfBirth = new \DateTime($dateOfBirth);
+        $this->dateOfBirth->format('Y-m-d H:i:s');
     }
 
     /**

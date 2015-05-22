@@ -68,25 +68,7 @@ class RepliesController extends FOSRestController
         return array("doctor_reply"=> $doctorReply);
     }
 
-    /**
-     * @param $replyId
-     * @param $rating
-     * @param $practoAccntId
-     *
-     * @View()
-     */
-    public function postRateAReplyAction($replyId, $rating, $practoAccntId)
-    {
-        //TODO
-    }
+    
 
-    /**
-     * @param $replyId
-     *
-     * @View()
-     */
-    public function getReplyAction($practoAccntId, $doctorId, $replyId)
-    {
-        //TODO
-    }
+
 }
