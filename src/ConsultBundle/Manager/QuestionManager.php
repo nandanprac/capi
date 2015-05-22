@@ -4,6 +4,7 @@ namespace ConsultBundle\Manager;
 
 use ConsultBundle\Constants\ConsultConstants;
 use ConsultBundle\Entity\UserInfo;
+use ConsultBundle\Utility\RetrieveDoctorProfileUtil;
 use ConsultBundle\Utility\RetrieveUserProfileUtil;
 use Doctrine\Bundle\DoctrineBundle\Registry as Doctrine;
 use ConsultBundle\Entity\Question;
@@ -25,6 +26,7 @@ class QuestionManager extends BaseManager
     protected $userProfileManager;
     protected $queue;
     protected $retrieveUserProfileUtil;
+    protected $retrieveDoctorProfileUtil;
 
     /**
      * @param UserManager $userManager
@@ -32,17 +34,18 @@ class QuestionManager extends BaseManager
      * @param QuestionBookmarkManager $questionBookmarkManager
      * @param Queue $queue
      * @param RetrieveUserProfileUtil $retrieveUserProfileUtil
+     * @param RetrieveDoctorProfileUtil $retrieveDoctorProfileUtil
      */
     public function __construct(
         UserManager $userManager, UserProfileManager $userProfileManager, QuestionBookmarkManager $questionBookmarkManager,
-        Queue $queue, RetrieveUserProfileUtil $retrieveUserProfileUtil )
+        Queue $queue, RetrieveUserProfileUtil $retrieveUserProfileUtil, RetrieveDoctorProfileUtil $retrieveDoctorProfileUtil )
     {
         $this->userManager = $userManager;
         $this->userProfileManager = $userProfileManager;
         $this->questionBookmarkManager = $questionBookmarkManager;
         $this->queue = $queue;
         $this->retrieveUserProfileUtil = $retrieveUserProfileUtil;
-
+        $this->retrieveDoctorProfileUtil = $retrieveDoctorProfileUtil;
     }
 
     /**
@@ -185,6 +188,9 @@ class QuestionManager extends BaseManager
             return null;
 
         //$this->retrieveUserProfileUtil->loadUserDetailInQuestion($question);
+
+        $this->retrieveDoctorProfileUtil->retrieveDoctorProfileForQuestion($question);
+
 
 
         return $question;

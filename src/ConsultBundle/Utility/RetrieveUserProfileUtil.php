@@ -8,7 +8,9 @@
 
 namespace ConsultBundle\Utility;
 
+use ConsultBundle\Entity\Question;
 use ConsultBundle\Entity\User;
+use ConsultBundle\Entity\UserInfo;
 use GuzzleHttp\Message\Request;
 use GuzzleHttp\Message\Response;
 use GuzzleHttp\Client;
@@ -149,9 +151,11 @@ class RetrieveUserProfileUtil {
     public function loadUserDetailInQuestion(Question $question)
     {
 
+        //var_dump(json_encode($question->getPractoAccountId()));
         $userInfo = $question->getUserInfo();
         if(is_null($userInfo))
         {
+            //var_dump("1234");die;
             $userInfo = new UserInfo();
         }
 
@@ -159,10 +163,14 @@ class RetrieveUserProfileUtil {
 
         if(is_null($userProfile))
         {
-            $userProfile = $this->retrieveUserProfileUtil->retrieveUserProfileNew($question->getPractoAccountId());
+
+            $userProfile = $this->retrieveUserProfileNew($question->getPractoAccountId());
+            //var_dump($userProfile);die;
             $userInfo->setUserProfileDetails($userProfile);
             $question->setUserInfo($userInfo);
         }
+
+
     }
 
 
