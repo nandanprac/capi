@@ -68,7 +68,7 @@ class RepliesController extends FOSRestController
         return array("doctor_reply"=> $doctorReply);
     }
 
-    
+
 
 
 }

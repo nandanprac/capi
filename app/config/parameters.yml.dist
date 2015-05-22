@@ -35,3 +35,4 @@ parameters:
     tempUrl: /tmp/practo-consult-resources/
     daa_debug: false
     accounts_host: http://accounts.practo.local
+    accounts_signing_key: software-accounts-key
