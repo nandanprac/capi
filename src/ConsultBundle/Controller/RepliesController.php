@@ -69,6 +69,13 @@ class RepliesController extends FOSRestController
     }
 
 
+    public function getReplyAction()
+    {
+        $m = $this->get('consult.retrieve_doctor_profile_util');
+        $m->retrieveDoctorProfile();
+    }
+
+
 
 
 }

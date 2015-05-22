@@ -25,6 +25,28 @@ class DoctorQuestion extends BaseEntity
     protected $question;
 
     /**
+     * @var DoctorEntity $doctor
+     */
+    private $doctor;
+
+    /**
+     * @return DoctorEntity
+     */
+    public function getDoctor()
+    {
+        return $this->doctor;
+    }
+
+    /**
+     * @param DoctorEntity $doctor
+     */
+    public function setDoctor($doctor)
+    {
+        $this->doctor = $doctor;
+    }
+
+
+    /**
      * @ORM\Column(name="practo_account_id", type="integer")
      */
     protected $practoAccountId;
