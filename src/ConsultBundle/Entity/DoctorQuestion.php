@@ -159,7 +159,6 @@ class DoctorQuestion extends BaseEntity
     public function setRejectedAt($rejectedAt)
     {
         $this->rejectedAt = $rejectedAt;
-        //$this->setDateTime('rejectedAt', $rejectedAt);
     }
 
     /**
@@ -190,7 +189,6 @@ class DoctorQuestion extends BaseEntity
     public function setViewedAt($viewedAt)
     {
         $this->viewedAt = $viewedAt;
-        //$this->setDateTime('viewedAt', $viewedAt);
     }
 
     /**
