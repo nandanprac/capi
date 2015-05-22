@@ -3,43 +3,17 @@
 namespace ConsultBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * User
  *
  * @ORM\Table(name="users")
  * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks()
  */
 class User extends BaseEntity
 {
-
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="practo_account_id", type="integer")
-     */
-    private $practoAccountId;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="relative_id", type="integer", nullable=true)
-     */
-    private $relativeId;
-
-
-    /**
-     * @ORM\Column(name="relationship", type="string", nullable=true)
-     */
-    private $relationship;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="name", type="string", length=255, nullable=true)
-     */
-    private $name;
 
     /**
      * @var \DateTime
@@ -58,108 +32,32 @@ class User extends BaseEntity
     /**
      * @var string
      *
-     * @ORM\Column(name="profile_picture", type="string", length=255, nullable=true)
+     * @ORM\Column(name="blood_group", type="string", length=5, nullable=true)
      */
-    private $profilePicture;
+    private $bloodGroup;
 
     /**
-     * @var string
+     * @var float
      *
-     * @ORM\Column(name="email", type="string", length=255, nullable=true)
+     * @ORM\Column(name="height", type="float", nullable=true)
      */
-    private $email;
-
+    private $height;
 
     /**
-     * Get id
+     * @var float
      *
-     * @return integer 
+     * @ORM\Column(name="weight", type="float", nullable=true)
      */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set practoAccountId
-     *
-     * @param integer $practoAccountId
-     * @return User
-     */
-    public function setPractoAccountId($practoAccountId)
-    {
-        $this->practoAccountId = $practoAccountId;
-
-        return $this;
-    }
-
-    /**
-     * Get practoAccountId
-     *
-     * @return integer 
-     */
-    public function getPractoAccountId()
-    {
-        return $this->practoAccountId;
-    }
-
-    /**
-     * Set relativeId
-     *
-     * @param integer $relativeId
-     * @return User
-     */
-    public function setRelativeId($relativeId)
-    {
-        $this->relativeId = $relativeId;
-
-        return $this;
-    }
-
-    /**
-     * Get relativeId
-     *
-     * @return integer 
-     */
-    public function getRelativeId()
-    {
-        return $this->relativeId;
-    }
-
-    /**
-     * Set name
-     *
-     * @param string $name
-     * @return User
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
+    private $weight;
 
     /**
      * Set dateOfBirth
      *
      * @param \DateTime $dateOfBirth
-     * @return User
      */
     public function setDateOfBirth($dateOfBirth)
     {
         $this->dateOfBirth = $dateOfBirth;
-
-        return $this;
     }
 
     /**
@@ -176,13 +74,10 @@ class User extends BaseEntity
      * Set gender
      *
      * @param string $gender
-     * @return User
      */
     public function setGender($gender)
     {
         $this->gender = $gender;
-
-        return $this;
     }
 
     /**
@@ -195,49 +90,34 @@ class User extends BaseEntity
         return $this->gender;
     }
 
-    /**
-     * Set profilePicture
-     *
-     * @param string $profilePicture
-     * @return User
-     */
-    public function setProfilePicture($profilePicture)
+    public function setBloodGroup($bloodGroup)
     {
-        $this->profilePicture = $profilePicture;
-
-        return $this;
+        $this->bloodGroup = $bloodGroup;
     }
 
-    /**
-     * Get profilePicture
-     *
-     * @return string 
-     */
-    public function getProfilePicture()
+    public function getBloodGroup()
     {
-        return $this->profilePicture;
+        return $this->bloodGroup;
     }
 
-    /**
-     * Set email
-     *
-     * @param string $email
-     * @return User
-     */
-    public function setEmail($email)
+    public function setHeight($height)
     {
-        $this->email = $email;
-
-        return $this;
+        $this->height = $height;
     }
 
-    /**
-     * Get email
-     *
-     * @return string 
-     */
-    public function getEmail()
+    public function getHeight()
     {
-        return $this->email;
+        return $this->height;
     }
+
+    public function setWeight($weight)
+    {
+        $this->weight = $weight;
+    }
+
+    public function getWeight()
+    {
+        return $this->weight;
+    }
+
 }

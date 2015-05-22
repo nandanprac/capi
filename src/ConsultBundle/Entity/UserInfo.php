@@ -42,6 +42,13 @@ class UserInfo extends BaseEntity
     protected $additionalDetails = null;
 
     /**
+     * @ORM\OneToOne(targetEntity="User")
+     * @ORM\JoinColumn(name="profile_id", referencedColumnName="id")
+     */
+    protected $userProfileDetails;
+
+
+    /**
      * Get PractoAccountId
      *
      * @return integer
@@ -139,5 +146,15 @@ class UserInfo extends BaseEntity
     public function setAdditionalDetails($additionalDetails)
     {
         $this->setString('additionalDetails', $additionalDetails);
+    }
+
+    public function setUserProfileDetails(User $user)
+    {
+        $this->userProfileDetails = $user;
+    }
+
+    public function getUserProfileDetails()
+    {
+        return $this->userProfileDetails;
     }
 }

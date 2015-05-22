@@ -60,7 +60,7 @@ class QuestionBookmarkController extends Controller
      * @return Array
      *
      */
-    public function getQuestionBookmarkAction($questionBookmarkId)
+    public function getQuestionbookmarkAction($questionBookmarkId)
     {
         $questionBookmarkManager = $this->get('consult.question_bookmark_manager');
 

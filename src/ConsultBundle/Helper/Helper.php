@@ -100,6 +100,7 @@ class Helper
     public function remove($entity)
     {
         $this->entityManager->remove($entity);
+        $this->entityManager->flush();
     }
 
 

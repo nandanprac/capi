@@ -25,9 +25,6 @@ class QuestionsController extends Controller
         $postData = $request->request->all();
         $questionManager = $this->get('consult.question_manager');
 
-       // var_dump($postData);
-       // die;
-
         try {
             $question = $questionManager->add($postData);
         } catch (ValidationError $e) {
@@ -78,26 +75,6 @@ class QuestionsController extends Controller
 
         return $question;
     }
-
-/*
-    public function getQuestionAction()
-    {
-        $questionManager = $this->get('consult.question_manager');
-        $requestData = $this->getRequest()->query->all();
-
-        try {
-            $question = $questionManager->loadMultiple($requestData);
-        } catch (AccessDeniedException $e) {
-            return View::create($e->getMessage(), Codes::HTTP_FORBIDDEN);
-        } catch (ValidationError $e) {
-            return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
-        }
-
-        if (null === $question) {
-            return View::create(null, Codes::HTTP_NOT_FOUND);
-        }
-        return $question;
-    }*/
 
     public function getQuestionsAction(Request $requestRec)
     {
