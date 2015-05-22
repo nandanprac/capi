@@ -68,30 +68,7 @@ class RepliesController extends FOSRestController
         return array("doctor_reply"=> $doctorReply);
     }
 
-    /**
-     * @param $replyId
-     * @param $rating
-     * @param $practoAccntId
-     *
-     * @View()
-     */
-    public function postRateAReplyAction($replyId, $rating, $practoAccntId)
-    {
-        //TODO
-    }
-
-    /**
-     * @param $practoAccntId
-     *
-     * @View()
-     */
-    public function getReplyAction($practoAccntId)
-    {
-      $m = $this->get('consult.retrieve_user_profile_util');
-       $user =  $m->retrieveUserProfileNew($practoAccntId);
-
-        var_dump($user);die;
-    }
+    
 
 
 }
