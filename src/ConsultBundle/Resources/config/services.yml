@@ -60,6 +60,7 @@ services:
           - @consult.user_profile_manager
           - @consult.question_bookmark_manager
           - @consult.consult_queue
+          - @consult.retrieve_user_profile_util
 
     consult.question_image_manager:
         class: ConsultBundle\Manager\QuestionImageManager
