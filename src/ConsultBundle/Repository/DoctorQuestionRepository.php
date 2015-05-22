@@ -10,6 +10,7 @@ namespace ConsultBundle\Repository;
 
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 
 class DoctorQuestionRepository extends EntityRepository{
 
@@ -18,30 +19,37 @@ class DoctorQuestionRepository extends EntityRepository{
      * @param $state
      * @return array
      */
-    public function findByFiltersDoctorQuestions($doctorId, $filters)
+    public function findByFilters($doctorId, $filters)
     {
         $qb = $this->_em->createQueryBuilder();
         $questions = null;
+        $limit = array_key_exists('limit', $filters) ? $filters['limit'] : 1;
+        $offset = array_key_exists('offset', $filters) ? $filters['offset'] : 0;
         try{
              $qb->select(array('q'))
                 ->from("ConsultBundle:Question", 'q')
                 ->innerJoin('q.doctorQuestions', 'dq')
                 ->where('dq.practoAccountId = :doctorId');
+
              if (array_key_exists('state', $filters)) {
                 $state = $filters['state'];
                 $qb->andWhere('dq.state = :state')
                   ->setParameter('state', $state);
              }
-            $qb->addOrderBy('dq.modifiedAt', 'DESC')
-              ->setParameter('doctorId',$doctorId);
-            $questions = $qb->getQuery()->getArrayResult();
-        }catch(\Exception $e)
-        {
-            //return $qb->getQuery();
+
+             $qb->setFirstResult($offset)
+               ->setMaxResults($limit)
+               ->addOrderBy('dq.modifiedAt', 'DESC')
+               ->setParameter('doctorId',$doctorId);
+             $questions = $qb->getQuery()->getArrayResult();
+             $paginator = new Paginator($qb->getQuery(), $fetchJoinCollection = true);
+             $count = count($paginator);
+
+        } catch( \Exception $e ) {
             return $e->getMessage();
         }
 
-        return $questions;
+        return array($questions, $count);
 
     }
 
