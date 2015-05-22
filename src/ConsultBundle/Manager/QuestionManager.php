@@ -97,8 +97,7 @@ class QuestionManager extends BaseManager
     {
         $question = new Question();
         $question->setSoftDeleted(false);
-
-        $job = array('question_id'=>$question->getId(), 'question'=>$question->getText());
+        $job = array();
         if (array_key_exists('city', $requestParams)) {
             $job['city'] = $requestParams['city'];
         }
@@ -109,6 +108,8 @@ class QuestionManager extends BaseManager
         $this->updateFields($question, $params);
         $this->helper->persist($question, 'true');
 
+        $job['question_id'] = $question->getId();
+        $job['question'] = $question->getText();
         $this->queue->setQueueName(Queue::DAA)->sendMessage(json_encode($job));
         return $question;
     }
@@ -183,7 +184,7 @@ class QuestionManager extends BaseManager
         if (is_null($question))
             return null;
 
-        $this->retrieveUserProfileUtil->loadUserDetailInQuestion($question);
+        //$this->retrieveUserProfileUtil->loadUserDetailInQuestion($question);
 
 
         return $question;
@@ -266,7 +267,6 @@ class QuestionManager extends BaseManager
             $bookmarkList = array();
             $er =  $this->helper->getRepository(ConsultConstants::$QUESTION_ENTITY_NAME);
             $bookmarkList = $er->findBookmarksByAccID($practoAccountId, $modifiedAfter, $limit, $offset);
- 
             $bookmarkQuestionList = array();
             foreach ($bookmarkList[0] as $bookMark)
                 array_push($bookmarkQuestionList, $bookMark->getQuestion());

@@ -8,7 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\HttpFoundation\Request;
 use ConsultBundle\Queue\AbstractQueue as Queue;
-use ConsultBundle\Constants;
+use ConsultBundle\Constants\ConsultFeatureData;
 use ConsultBundle\ConsultDomain;
 use Elasticsearch;
 
@@ -30,10 +30,12 @@ class DoctorAssigmentCommand extends ContainerAwareCommand
         $this->daa_debug = $this->container->getParameter('daa_debug');
         $this->client = new Elasticsearch\Client();
         $this->general_words = array('have', 'that', 'with');
-        $this->c_words = array('pace'=>array('neurosurgeons'=> 0, 'cardiologists'=> 1),
-                               'neuro'=>array('neurosurgeons'=> 1, 'cardiologists'=> 0));
-        $this->c_words_categories = array('neurosurgeons'=> 39, 'cardiologists'=> 48);
-        $this->c_categories = array('neurosurgeons'=>5, 'cardiologists'=>5);
+        $this->c_words = array('pace'=>array('Somnologist'=> 0, 'Cardiologist'=> 1),
+                               'neuro'=>array('Somnologist'=> 1, 'Cardiologist'=> 0));
+        $this->c_words_categories = array('Somnologist'=> 39, 'Cardiologist'=> 48);
+        $this->c_categories = array('Somnologist'=>5, 'Cardiologist'=>5);
+        $this->p1_words = ConsultFeatureData::$P1_WORDS;
+        $this->categories_grouping = ConsultFeatureData::$CATEGORY_GROUPING;
         $this->c_texts = 10;
         $this->c_tot_words = 81;
     }
@@ -68,21 +70,37 @@ class DoctorAssigmentCommand extends ContainerAwareCommand
             ->receiveMessage();
           if ($newJob) {
               $jobData = json_decode($newJob, true);
-              $this->queue
-                ->setQueueName(Queue::DAA)
-                ->deleteMessage($newJob);
+              $this->queue->setQueueName(Queue::DAA)->deleteMessage($newJob);
               try{
                   $question_id = array_key_exists('question_id', $jobData) ? $jobData['question_id'] : null;
                   $question = array_key_exists('question', $jobData) ? $jobData['question'] : null;
                   $city = array_key_exists('city', $jobData) ? $jobData['city'] : null;
-                  $tag = array_key_exists('tag', $jobData) ? $jobData['tag'] : null;
+                  $tag = array_key_exists('tags', $jobData) ? $jobData['tags'] : null;
+                  $specialities = array();
+                  if ($tag) {
+                      foreach (array_map('strtolower', explode(",",$tag)) as $keyword){
+                          if (array_key_exists(strtolower(trim($keyword)), array_change_key_case($this->categories_grouping))){
+                              array_push($specialities, array_change_key_case($this->categories_grouping)[strtolower(trim($keyword))]);
+                          }
+                      }
+                      if (empty($specialities)){
+                          foreach (array_map('strtolower', explode(",",$tag)) as $keyword) {
+                              if (array_key_exists(strtolower(trim($keyword)), array_change_key_case($this->p1_words))){
+                                  if(empty($specialities)){
+                                      $specialities = $this->p1_words[$keyword];
+                                  } else {
+                                      $specialities = array_intersect($specialities, $this->p1_words[$keyword]);
+                                  }
+                              }
+                          }
+                      }
+                  }
                   list($speciality, $speciality_prob) = $this->classifier($question);
-
-                  if ($tag && $tag == $speciality) {
+                  if ($specialities && in_array($speciality,$specialities)) {
                       $state = 'ASSIGNED';
-                  } elseif ($tag && $tag != $speciality) {
+                  } elseif ($specialities && !in_array($speciality,$specialities)) {
                       $state = 'MISMATCH';
-                  } elseif (!$tag) {
+                  } elseif (empty($specialities)) {
                       if ($speciality && $speciality != 'GENERIC') {
                           $state = 'ASSIGNED';
                       } elseif ($speciality == '') {
@@ -105,7 +123,7 @@ class DoctorAssigmentCommand extends ContainerAwareCommand
 
                       $params['index'] = 'fabric_search_new';
                       $params['type']  = 'search';
-                      $params['_source']  = array('doctor_id', 'doctor_name');
+                      $params['_source']  = array('practo_account_id', 'doctor_name');
                       $params['body']['query']['bool']['must']['query_string']['default_field']  = 'search.specialties.specialty';
                       $params['body']['query']['bool']['must']['query_string']['query']  = $speciality;
 
@@ -114,10 +132,10 @@ class DoctorAssigmentCommand extends ContainerAwareCommand
                       $params['body']['from']  = 0;
                       $params['body']['size']  = 100;
                       $results = $this->client->search($params);
-
                       $doctorIds = array();
                       foreach ($results['hits']['hits'] as $result){
-                          array_push($doctorIds,$result["_source"]["doctor_id"]);
+                          if (array_key_exists("practo_account_id", $result["_source"]))
+                              array_push($doctorIds,$result["_source"]["practo_account_id"]);
                       }
                       $questionAction['classified'] = 1;
                       $questionAction['speciality'] = $speciality;
@@ -134,7 +152,6 @@ class DoctorAssigmentCommand extends ContainerAwareCommand
                       $questionAction['state'] = $state;
                       $questionAction['doctors'] = null;
                   }
-                  var_dump(json_encode($questionAction));
                   $this->queue
                     ->setQueueName(Queue::ASSIGNMENT_UPDATE)
                     ->sendMessage(json_encode($questionAction));
