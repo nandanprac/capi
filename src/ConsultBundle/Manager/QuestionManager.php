@@ -18,7 +18,6 @@ use ConsultBundle\Queue\AbstractQueue as Queue;
 class QuestionManager extends BaseManager
 {
 
-    protected $questionImageManager;
     protected $questionBookmarkManager;
 
     /**
@@ -28,9 +27,10 @@ class QuestionManager extends BaseManager
      * @param ValidatorInterface       $validator          - Validator
      */
     public function __construct(
-        UserManager $userManager, QuestionBookmarkManager $questionBookmarkManager, Queue $queue )
+        UserManager $userManager, UserProfileManager $userProfileManager, QuestionBookmarkManager $questionBookmarkManager, Queue $queue )
     {
         $this->userManager = $userManager;
+        $this->userProfileManager = $userProfileManager;
         $this->questionBookmarkManager = $questionBookmarkManager;
         $this->queue = $queue;
 
@@ -46,23 +46,23 @@ class QuestionManager extends BaseManager
      */
     public function updateFields($question, $requestParams)
     {
-        $userInfoParams= array('allergies', 'medications', 'prev_diagnosed_conditions', 'additional_details');
-        $requestKeys = array_keys($requestParams);
-        $userInfoArray = array();
-        foreach($userInfoParams as $userInfo) {
-            if (in_array($userInfo, $requestKeys)) {
-                $userInfoArray[$userInfo] = $requestParams[$userInfo];
-                unset($requestParams[$userInfo]);
-            }
+        if (array_key_exists('for_someone_else', $requestParams) and !empty($requestParams['for_someone_else'])) {
+            $userProfileArray = $requestParams['for_someone_else'];
+            $userProfile = $this->userProfileManager->add($userProfileArray);
+            unset($requestParams['for_someone_else']);
         }
 
-        if (count($userInfoArray) > 0) {
+        if (array_key_exists('additional_info', $requestParams) and !empty($requestParams['additional_info'])) {
+            $userInfoArray = $requestParams['additional_info'];
             if (array_key_exists('practo_account_id', $requestParams))
-                $userInfoArray['practo_account_id'] =  $requestParams['practo_account_id'];
+                $userInfoArray['practo_account_id'] = $requestParams['practo_account_id'];
             else
-                $userInfoArray['practo_account_id'] =  $question->getPractoAccountId();
+                $userInfoArray['practo_account_id'] = $question->getPractoAccountId();        //in case of patch
             $userEntry = $this->userManager->add($userInfoArray);
+            if (isset($userProfile))
+                $userEntry->setUserProfileDetails($userProfile);
             $question->setUserInfo($userEntry);
+            unset($requestParams['additional_info']);
         }
 
         if (array_key_exists('tags', $requestParams)) {
@@ -92,17 +92,17 @@ class QuestionManager extends BaseManager
         $question = new Question();
         $question->setSoftDeleted(false);
 
-        $params = $this->validator->validatePostArguments($requestParams);
-        $this->updateFields($question, $params);
-        $this->helper->persist($question, 'true');
-
         $job = array('question_id'=>$question->getId(), 'question'=>$question->getText());
         if (array_key_exists('city', $requestParams)) {
             $job['city'] = $requestParams['city'];
         }
-        if (array_key_exists('tag', $requestParams)) {
-            $job['tag'] = $requestParams['tag'];
+        if (array_key_exists('tags', $requestParams)) {
+            $job['tags'] = $requestParams['tags'];
         }
+        $params = $this->validator->validatePostArguments($requestParams);
+        $this->updateFields($question, $params);
+        $this->helper->persist($question, 'true');
+
         $this->queue->setQueueName(Queue::DAA)->sendMessage(json_encode($job));
         return $question;
     }
