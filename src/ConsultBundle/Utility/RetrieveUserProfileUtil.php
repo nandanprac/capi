@@ -19,13 +19,7 @@ class RetrieveUserProfileUtil {
 
     private $accountHost;
     private $accountsSigningKey;
-    private static $arrayMapping = array("id" => "practo_accountId",
-                                  "blood_group" => "blood_group",
-                                  "height" => "height",
-                                  "weight" => "weight",
-                                  "dob" => "date_of_birth",
-                                  "gender" => "gender"
-          );
+
 
 
 
@@ -116,19 +110,62 @@ class RetrieveUserProfileUtil {
 
 
 
-        $user->setPractoAccountId($userProfile['id']);
-        $user->setDateOfBirth($userProfile['dob']);
-        $user->setGender($userProfile['gender']);
-        /*$user->setHeight($userProfile['height']);
-        $user->setWeight($userProfile['weight']);
-        $user->setBloodGroup($userProfile['blood_group']);
-        */
+
+
+        if(array_key_exists('dob', $userProfile))
+        {
+            $user->setDateOfBirth($userProfile['dob']);
+        }
+
+        if(array_key_exists('gender', $userProfile))
+        {
+            $user->setGender($userProfile['gender']);
+        }
+
+        if(array_key_exists('height', $userProfile))
+        {
+            $user->setHeight($userProfile['height']);
+        }
+
+        if(array_key_exists('weight', $userProfile)) {
+
+            $user->setWeight($userProfile['weight']);
+        }
+
+        if(array_key_exists('blood_group', $userProfile))
+        {
+            $user->setBloodGroup($userProfile['blood_group']);
+
+        }
+
 
 
         return $user;
 
 
     }
+
+
+    public function loadUserDetailInQuestion(Question $question)
+    {
+
+        $userInfo = $question->getUserInfo();
+        if(is_null($userInfo))
+        {
+            $userInfo = new UserInfo();
+        }
+
+        $userProfile = $userInfo->getUserProfileDetails();
+
+        if(is_null($userProfile))
+        {
+            $userProfile = $this->retrieveUserProfileUtil->retrieveUserProfileNew($question->getPractoAccountId());
+            $userInfo->setUserProfileDetails($userProfile);
+            $question->setUserInfo($userInfo);
+        }
+    }
+
+
 
 
 

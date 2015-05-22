@@ -87,7 +87,10 @@ class RepliesController extends FOSRestController
      */
     public function getReplyAction($practoAccntId)
     {
+      $m = $this->get('consult.retrieve_user_profile_util');
+       $user =  $m->retrieveUserProfileNew($practoAccntId);
 
+        var_dump($user);die;
     }
 
 
