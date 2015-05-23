@@ -17,7 +17,6 @@ use FOS\RestBundle\Controller\Annotations\View;
 use Symfony\Component\HttpFoundation\Request;
 
 class RepliesController extends FOSRestController
-
 {
 
     /**
@@ -29,21 +28,18 @@ class RepliesController extends FOSRestController
      */
      public function postDoctorReplyAction(Request $request)
      {
+        $answerText = $request->request->get("text");
+        $practoAccountId  = $request->request->get("practo_account_id");
+        $doctorQuestionId = $request->request->get("doctor_question_id");
+        $doctorReplyManager = $this->get('consult.doctorReplyManager');
 
-         $answerText = $request->request->get("text");
-         $practoAccountId  = $request->request->get("practo_account_id");
-         $doctorQuestionId = $request->request->get("doctor_question_id");
-         $doctorReplyManager = $this->get('consult.doctorReplyManager');
-         try{
-             $doctorReply = $doctorReplyManager->replyToAQuestion($doctorQuestionId, $practoAccountId, $answerText);
+        try {
+           $doctorReply = $doctorReplyManager->replyToAQuestion($doctorQuestionId, $practoAccountId, $answerText);
+        } catch(\HttpException $e) {
+            return Views::create($e->getMessage(), $e->getCode());
+        }
 
-         }catch(\HttpException $e)
-         {
-             //var_dump($e->getCode());die;
-             return Views::create($e->getMessage(), $e->getCode());
-         }
-
-         return $doctorReply;
+        return $doctorReply;
      }
 
     /**
@@ -55,15 +51,12 @@ class RepliesController extends FOSRestController
     public function patchDoctorReplyAction(Request $request)
     {
         $postData = $request->request->all();
-        //var_dump($postData);die;
         $doctorReplyManager = $this->get('consult.doctorReplyManager');
-        try{
+        try {
             $doctorReply = $doctorReplyManager->patchDoctorReply($postData);
-        }catch (\HttpException $e)
-        {
+        } catch (\HttpException $e) {
             return Views::create($e->getMessage(), $e->getCode());
         }
-
 
         return array("doctor_reply"=> $doctorReply);
     }
@@ -74,8 +67,4 @@ class RepliesController extends FOSRestController
         $m = $this->get('consult.retrieve_doctor_profile_util');
         $m->retrieveDoctorProfile();
     }
-
-
-
-
 }

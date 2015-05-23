@@ -8,15 +8,14 @@
 
 namespace ConsultBundle\Controller;
 
-
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
 use FOS\RestBundle\Util\Codes;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use ConsultBundle\Manager\ValidationError;
 
-class UserController extends FOSRestController{
-
+class UserController extends FOSRestController
+{
     /**
      * Additional info of user addition
      *
@@ -31,6 +30,7 @@ class UserController extends FOSRestController{
         } catch (ValidationError $e) {
             return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
         }
+
         return View::create(
             $userConsultEntry,
             Codes::HTTP_CREATED);
@@ -48,11 +48,13 @@ class UserController extends FOSRestController{
         $userManager = $this->get('consult.user_manager');
         $formData = $this->getRequest()->request->all();
         $practoAccountId = $formData['practo_account_id'];
+
         try {
             $userConsultEntry = $userManager->load($practoAccountId);
         } catch (AccessDeniedException $e) {
             return View::create($e->getMessage(), Codes::HTTP_FORBIDDEN);
         }
+
         if (null === $userConsultEntry) {
             return View::create(null, Codes::HTTP_NOT_FOUND);
         } else if ($userConsultEntry->isSoftDeleted()) {
@@ -60,7 +62,5 @@ class UserController extends FOSRestController{
         }
 
         return $userConsultEntry;
-
     }
-
 }

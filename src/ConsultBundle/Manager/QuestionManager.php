@@ -63,13 +63,18 @@ class QuestionManager extends BaseManager
 
         if (array_key_exists('additional_info', $requestParams) and !empty($requestParams['additional_info'])) {
             $userInfoArray = $requestParams['additional_info'];
-            if (array_key_exists('practo_account_id', $requestParams))
-                $userInfoArray['practo_account_id'] = $requestParams['practo_account_id'];
-            else
+            if (array_key_exists('practo_account_id', $requestParams)) {
+                $userInfoArray['practo_account_id'] = $requestParams['practo_account_id'];                
+            } else {
                 $userInfoArray['practo_account_id'] = $question->getPractoAccountId();        //in case of patch
+            }
+
             $userEntry = $this->userManager->add($userInfoArray);
-            if (isset($userProfile))
+
+            if (isset($userProfile)) {
                 $userEntry->setUserProfileDetails($userProfile);
+            }
+
             $question->setUserInfo($userEntry);
             unset($requestParams['additional_info']);
         }
@@ -78,6 +83,7 @@ class QuestionManager extends BaseManager
             $this->setQuestionTags($question, explode(",", $requestParams['tags']));
             unset($requestParams['tags']);
         }
+
         $question->setAttributes($requestParams);
         $question->setViewedAt(new \DateTime('now'));
 
@@ -108,12 +114,15 @@ class QuestionManager extends BaseManager
             $job['tags'] = $requestParams['tags'];
         }
         $params = $this->validator->validatePostArguments($requestParams);
+
         $this->updateFields($question, $params);
         $this->helper->persist($question, 'true');
 
         $job['question_id'] = $question->getId();
         $job['question'] = $question->getText();
+
         $this->queue->setQueueName(Queue::DAA)->sendMessage(json_encode($job));
+
         return $question;
     }
 

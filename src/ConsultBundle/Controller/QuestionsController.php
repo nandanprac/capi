@@ -30,23 +30,20 @@ class QuestionsController extends Controller
         } catch (ValidationError $e) {
             return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
         } catch (Exception $e) {
-            var_dump($e->getCode() + $e->getMessage() + $e->getTraceAsString());
             return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
         }
 
         $files = $request->files;
         $questionImageManager = $this->get('consult.question_image_manager');
 
-        try{
+        try {
            $questionImageManager->add($question, $files);
-        }catch(\Exception $e)
-        {
-            var_dump($e->getCode() + $e->getMessage() + $e->getTraceAsString());
+        } catch(\Exception $e) {
             return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
         }
 
         return View::create(
-            array("question" => $question) ,
+            array("question" => $question),
             Codes::HTTP_CREATED);
     }
 
@@ -62,11 +59,13 @@ class QuestionsController extends Controller
     {
         $questionManager = $this->get('consult.question_manager');
         $request = $this->getRequest();
+
         try {
             $question = $questionManager->load($questionId);
         } catch (AccessDeniedException $e) {
             return View::create($e->getMessage(), Codes::HTTP_FORBIDDEN);
         }
+
         if (null === $question) {
             return View::create(null, Codes::HTTP_NOT_FOUND);
         } else if ($question->isSoftDeleted()) {
@@ -81,6 +80,7 @@ class QuestionsController extends Controller
         $questionManager = $this->get('consult.question_manager');
         $request = $requestRec->query->all();
         $questionList = array();
+
         try {
             $questionList = $questionManager->loadByFilters($request);
         } catch (AccessDeniedException $e) {
@@ -89,6 +89,7 @@ class QuestionsController extends Controller
 
         if (null === $questionList)
             return View::create(null, Codes::HTTP_NOT_FOUND);
+
         return array('questions' => $questionList[0], 'count' => $questionList[1]);
     }
 
