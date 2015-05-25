@@ -17,10 +17,13 @@ abstract class BaseManager {
     /**
      * @var Helper $helper
      */
-     protected $helper;
-     protected $validator;
+    protected $helper;
 
-
+    /**
+     * validator
+     * @var Validator
+     */
+    protected $validator;
 
     /**
      * @param  $validator
@@ -37,7 +40,6 @@ abstract class BaseManager {
     {
         $this->helper = $helper;
     }
-
 
     /**
      * @param $entity
