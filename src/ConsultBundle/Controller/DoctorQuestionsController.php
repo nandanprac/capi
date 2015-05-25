@@ -42,8 +42,6 @@ class DoctorQuestionsController extends Controller
        $em->flush();
 
        return $doctorsQuestion;
-      // $doctorQuestionManager = $this->get('consult.doctorQuestionManager');
-      // $doctorQuestionManager->
    }
 
     /**
@@ -73,20 +71,19 @@ class DoctorQuestionsController extends Controller
     * @return mixed
     *
     */
-
     public function patchDoctorQuestionAction()
     {
         $updateData = $this->getRequest()->request->all();
         $doctorQuestionManager = $this->get('consult.doctorQuestionManager');
 
-       try {
-           $doctor_question_mapping_final = $doctorQuestionManager->patch($updateData);
-       } catch (ValidationError $e) {
-           return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
-       }
-       return View::create(array("question" => $doctor_question_mapping_final), Codes::HTTP_CREATED);
-    }
+        try {
+            $doctor_question_mapping_final = $doctorQuestionManager->patch($updateData);
+        } catch (ValidationError $e) {
+            return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
+        }
 
+        return View::create(array("question" => $doctor_question_mapping_final), Codes::HTTP_CREATED);
+    }
 
     /**
      * @param $doctorId
@@ -95,12 +92,10 @@ class DoctorQuestionsController extends Controller
      */
     public function getAnsweredDoctorQuestionsAction($doctorId)
     {
-     $doctorQuestionManager = $this->get('consult.doctorQuestionManager');
-
-       $questions =  $doctorQuestionManager->getAnsweredDoctorQuestionsForDoctor($doctorId);
+        $doctorQuestionManager = $this->get('consult.doctorQuestionManager');
+        $questions =  $doctorQuestionManager->getAnsweredDoctorQuestionsForDoctor($doctorId);
 
         return $questions;
 
     }
-
 }

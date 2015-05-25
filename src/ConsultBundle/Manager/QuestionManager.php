@@ -63,13 +63,18 @@ class QuestionManager extends BaseManager
 
         if (array_key_exists('additional_info', $requestParams) and !empty($requestParams['additional_info'])) {
             $userInfoArray = $requestParams['additional_info'];
-            if (array_key_exists('practo_account_id', $requestParams))
-                $userInfoArray['practo_account_id'] = $requestParams['practo_account_id'];
-            else
+            if (array_key_exists('practo_account_id', $requestParams)) {
+                $userInfoArray['practo_account_id'] = $requestParams['practo_account_id'];                
+            } else {
                 $userInfoArray['practo_account_id'] = $question->getPractoAccountId();        //in case of patch
+            }
+
             $userEntry = $this->userManager->add($userInfoArray);
-            if (isset($userProfile))
+
+            if (isset($userProfile)) {
                 $userEntry->setUserProfileDetails($userProfile);
+            }
+
             $question->setUserInfo($userEntry);
             unset($requestParams['additional_info']);
         }
@@ -78,6 +83,7 @@ class QuestionManager extends BaseManager
             $this->setQuestionTags($question, explode(",", $requestParams['tags']));
             unset($requestParams['tags']);
         }
+
         $question->setAttributes($requestParams);
         $question->setViewedAt(new \DateTime('now'));
 
@@ -100,8 +106,7 @@ class QuestionManager extends BaseManager
     {
         $question = new Question();
         $question->setSoftDeleted(false);
-
-        $job = array('question_id'=>$question->getId(), 'question'=>$question->getText());
+        $job = array();
         if (array_key_exists('city', $requestParams)) {
             $job['city'] = $requestParams['city'];
         }
@@ -109,10 +114,15 @@ class QuestionManager extends BaseManager
             $job['tags'] = $requestParams['tags'];
         }
         $params = $this->validator->validatePostArguments($requestParams);
+
         $this->updateFields($question, $params);
         $this->helper->persist($question, 'true');
 
+        $job['question_id'] = $question->getId();
+        $job['question'] = $question->getText();
+
         $this->queue->setQueueName(Queue::DAA)->sendMessage(json_encode($job));
+
         return $question;
     }
 
@@ -186,7 +196,7 @@ class QuestionManager extends BaseManager
         if (is_null($question))
             return null;
 
-        $this->retrieveUserProfileUtil->loadUserDetailInQuestion($question);
+        //$this->retrieveUserProfileUtil->loadUserDetailInQuestion($question);
 
         $this->retrieveDoctorProfileUtil->retrieveDoctorProfileForQuestion($question);
 
@@ -272,7 +282,6 @@ class QuestionManager extends BaseManager
             $bookmarkList = array();
             $er =  $this->helper->getRepository(ConsultConstants::$QUESTION_ENTITY_NAME);
             $bookmarkList = $er->findBookmarksByAccID($practoAccountId, $modifiedAfter, $limit, $offset);
- 
             $bookmarkQuestionList = array();
             foreach ($bookmarkList[0] as $bookMark)
                 array_push($bookmarkQuestionList, $bookMark->getQuestion());

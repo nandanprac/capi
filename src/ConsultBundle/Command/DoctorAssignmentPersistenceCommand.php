@@ -60,19 +60,26 @@ class DoctorAssignmentPersistenceCommand extends ContainerAwareCommand
                 ->receiveMessage();
             if ($newJob) {
                 $jobData = json_decode($newJob, true);
-                $this->queue->setQueueName(Queue::ASSIGNMENT_UPDATE)->deleteMessage($newJob);
                 try {
                   if ($jobData['state'] == 'UNCLASSIFIED' or $jobData['state'] == 'MISMATCH') {
                       $this->questionManager->setState($jobData['question_id'], $jobData['state']);
                   } elseif($jobData['state'] == 'ASSIGNED') {
                       $this->doctorQuestionManager->setDoctorsForAQuestions($jobData['question_id'], $jobData['doctors']);
                       $this->questionManager->setState($jobData['question_id'], $jobData['state']);
+                      $jobData['type'] = 'new_question';
+                      $jobData['user_ids'] = $jobData['doctors'];
+                      $jobData['text'] = "Your Question has been assigned";
+                      unset($jobData['doctors']);
+                      $this->queue
+                        ->setQueueName(Queue::CONSULT_GCM)
+                        ->sendMessage(json_encode($jobData));
                   } elseif ($jobData['state'] == 'GENERIC') {
                       $this->questionManager->setState($jobData['question_id'], $jobData['state']);
                   }
                 } catch (\Exception $e) {
                     $output->writeln($e->getMessage());
                 }
+                $this->queue->setQueueName(Queue::ASSIGNMENT_UPDATE)->deleteMessage($newJob);
             }
         }
     }

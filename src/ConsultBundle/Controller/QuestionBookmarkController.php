@@ -35,7 +35,6 @@ class QuestionBookmarkController extends Controller
             Codes::HTTP_CREATED);
     }
 
-
     public function patchQuestionBookmarkAction()
     {
         $postData = $this->getRequest()->request->all();
