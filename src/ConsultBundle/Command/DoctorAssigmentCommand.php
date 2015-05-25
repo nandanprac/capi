@@ -29,6 +29,7 @@ class DoctorAssigmentCommand extends ContainerAwareCommand
         $this->queue = $this->container->get('consult.consult_queue');
         $this->daa_debug = $this->container->getParameter('daa_debug');
         $this->client = new Elasticsearch\Client();
+        $this->fabric_search = $this->container->getParameter('elastic_index_name');
         $this->general_words = array('have', 'that', 'with');
         $this->c_words = array('pace'=>array('Somnologist'=> 0, 'Cardiologist'=> 1),
                                'neuro'=>array('Somnologist'=> 1, 'Cardiologist'=> 0));
@@ -121,7 +122,7 @@ class DoctorAssigmentCommand extends ContainerAwareCommand
                         $city = "bangalore";
                       }
 
-                      $params['index'] = 'fabric_search_new';
+                      $params['index'] = $this->fabric_search;
                       $params['type']  = 'search';
                       $params['_source']  = array('practo_account_id', 'doctor_name');
                       $params['body']['query']['bool']['must']['query_string']['default_field']  = 'search.specialties.specialty';
@@ -141,7 +142,8 @@ class DoctorAssigmentCommand extends ContainerAwareCommand
                       $questionAction['speciality'] = $speciality;
                       if ( $doctorIds ) {
                           $questionAction['state'] = $state;
-                          $questionAction['doctors'] = $doctorIds;
+                          shuffle($doctorIds);
+                          $questionAction['doctors'] = array_slice($doctorIds, 0, 3);
                       } else {
                           $questionAction['state'] = 'DOCNOTFOUND';
                           $questionAction['doctors'] = null;
