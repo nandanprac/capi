@@ -30,7 +30,7 @@ class QuestionsController extends Controller
 
         try {
 
-            $question = $questionManager->add((array)json_decode($postData));
+            $question = $questionManager->add((array)json_decode($postData, true));
 
         } catch (ValidationError $e) {
             return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
