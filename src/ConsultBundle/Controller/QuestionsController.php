@@ -22,11 +22,14 @@ class QuestionsController extends Controller
      */
     public function postQuestionAction(Request $request)
     {
-        $postData = $request->request->all();
+        $postData = $request->request->get('question');
+        //var_dump($postData);
+        //var_dump(json_decode($postData));die;
+       // $question = $post
         $questionManager = $this->get('consult.question_manager');
 
         try {
-            $question = $questionManager->add($postData);
+            $question = $questionManager->add((array)json_decode($postData));
         } catch (ValidationError $e) {
             return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
         } catch (Exception $e) {

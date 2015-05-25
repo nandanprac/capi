@@ -9,6 +9,7 @@ namespace ConsultBundle\Entity;
 
 
 use Doctrine\ORM\Mapping as ORM;
+use FOS\RestBundle\Util\Codes;
 use Symfony\Component\Validator\Constraints as Assert;
 
 
@@ -93,11 +94,11 @@ abstract class BaseEntity
     }
 
     /**
-     * Set attributes from snake_cased array of key-value pairs
-     *
-     * @param array $attributes - Attributes
-     *
-     * @return boolean
+     * @param $attributes
+     * @return bool
+     * @throws BadAttributeException
+     * @throws ValidationError
+     * @throws \Exception
      */
     public function setAttributes($attributes)
     {
@@ -109,13 +110,15 @@ abstract class BaseEntity
                     if ('' === $value) {
                         $value = null;
                     }
-                    $this->$setter($value);
-                } catch (NumberParseException $e) {
-                    throw new ValidationError(array('mobile' => array('This value is not a valid mobile number')));
-                } catch (BadAttributeException $e) {
-                    throw $e;
+                   if(method_exists($this, $setter))
+                   {
+                       $this->$setter($value);
+
+                   }
+
                 } catch (\Exception $e) {
-                    throw new BadAttributeException($attrSnake);
+                    var_dump($attrCamel);die;
+                    throw new \HttpException($attrCamel. "is not a valid field in ".__CLASS__ ,Codes::HTTP_BAD_REQUEST);
                 }
             //} else {
             //    throw new BadAttributeException($attrSnake);
