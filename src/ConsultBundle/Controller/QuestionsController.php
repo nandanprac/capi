@@ -29,7 +29,7 @@ class QuestionsController extends Controller
         $questionManager = $this->get('consult.question_manager');
 
         try {
-            $question = $questionManager->add((array)json_decode($postData));
+            $question = $questionManager->add(json_decode($postData,true));
         } catch (ValidationError $e) {
             return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
         } catch (Exception $e) {
@@ -37,6 +37,7 @@ class QuestionsController extends Controller
         }
 
         $files = $request->files;
+//        var_dump($files);die;
         $questionImageManager = $this->get('consult.question_image_manager');
 
         try {
