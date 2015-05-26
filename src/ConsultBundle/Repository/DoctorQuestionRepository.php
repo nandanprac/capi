@@ -31,6 +31,24 @@ class DoctorQuestionRepository extends EntityRepository{
                 ->innerJoin('q.doctorQuestions', 'dq')
                 ->where('dq.practoAccountId = :doctorId');
 
+             if (array_key_exists('reject', $filters)) {
+               $state = $filters['reject'];
+               if (strtolower($state) == 'false'){
+                  $qb->andWhere('dq.rejectedAt is NULL');
+               } else if (strtolower($state) == 'true'){
+                  $qb->andWhere('dq.rejectedAt is not NULL');
+               }
+             }
+
+             if (array_key_exists('view', $filters)) {
+               $state = $filters['view'];
+               if (strtolower($state) == 'false'){
+                  $qb->andWhere('dq.viewedAt is NULL');
+               } else if (strtolower($state) == 'true'){
+                  $qb->andWhere('dq.viewedAt is not NULL');
+               }
+             }
+
              if (array_key_exists('state', $filters)) {
                 $state = $filters['state'];
                 $qb->andWhere('dq.state = :state')
