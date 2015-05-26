@@ -73,7 +73,7 @@ class DoctorQuestionManager extends BaseManager
         $this->updateFields($question, $params);
         $this->helper->persist($question, true);
 
-        return $question;
+        return $question->getQuestion();
     }
 
     public function updateFields($question, $params)
