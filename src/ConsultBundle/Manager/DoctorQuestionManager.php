@@ -72,6 +72,8 @@ class DoctorQuestionManager extends BaseManager
         $params = $this->validator->validatePatchArguments($updateData);
         $this->updateFields($question, $params);
         $this->helper->persist($question, true);
+
+        return $question;
     }
 
     public function updateFields($question, $params)
