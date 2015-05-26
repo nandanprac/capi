@@ -18,9 +18,11 @@ class UpdateAccountsUtil {
 
     private $accountHost;
 
-    private static $fieldsToUpdate = array('weightInKgs' => 'weight',
-                                     'heightInCms' => 'height',
-                                      'dob' => 'dob');
+    private static $fieldsToUpdate = array('weight_in_kgs' => 'weight',
+                                     'height_in_cms' => 'height',
+                                      'date_of_birth' => 'dob',
+                                     'gender' => 'gender',
+                                      'blood_group' => 'blood_group');
 
     public function __construct($accountHost)
     {
@@ -31,8 +33,21 @@ class UpdateAccountsUtil {
     public function updateAccountDetails($profileToken, $data)
     {
 
+        //var_dump($profileToken);die;
+        if(empty($profileToken))
+            return null;
 
-        $postData = $this->populatePostData($data);
+
+            $postData = $this->populatePostData($data);
+
+
+
+        //var_dump($postData);die;
+
+        if(empty($postData))
+        {
+            return null;
+        }
 
         $body = new PostBody();
         $body->replaceFields($postData);
@@ -40,27 +55,70 @@ class UpdateAccountsUtil {
             array('X-Profile-Token' => $profileToken), $body );
 
         $client = new Client();
-        $res = $client->send($request);
 
-        var_dump($res->json());die;
+        try{
+            $client->send($request);
+
+        }catch(\Exception $e)
+        {
+            //do nothing.
+        }
+
+        
 
 
 
     }
 
-    private function populatePostData($data)
+    private function populatePostData($params)
     {
-         $postData = array();
-        foreach(self::$fieldsToUpdate as $key => $value)
-        {
-            if(array_key_exists($key, $data))
-            {
-                $postData[$value] = $data[$key];
+
+        if (array_key_exists('user_profile_details', $params)) {
+            if (!(array_key_exists('is_someone_else', $params['user_profile_details']) and
+                $params['user_profile_details']['is_someone_else'] === true)) {
+
+                $data = $params['user_profile_details'];
             }
         }
 
-        if(count($postData)===0)
+        //var_dump($data);die;
+
+        if(empty($data))
             return null;
+
+
+        //var_dump($data);die;
+
+         $postData = array();
+        foreach(self::$fieldsToUpdate as $key => $value)
+        {
+            if(array_key_exists($key, $data) )
+            {
+                try{
+                    $val = trim($data[$key]);
+                    if(!empty($val))
+                    {
+                        if($value === 'dob')
+                        {
+
+                            $dob = new \DateTime($val);
+
+                            $val = $dob->format("Y-m-d");
+
+
+                        }
+                        $postData[$value] = $val;
+
+                    }
+                }catch (\Exception $e)
+                {
+                    //var_dump($e->getTraceAsString());
+                }
+
+            }
+        }
+
+
 
         return $postData;
     }

@@ -6,6 +6,7 @@ use ConsultBundle\Constants\ConsultConstants;
 use ConsultBundle\Entity\UserInfo;
 use ConsultBundle\Utility\RetrieveDoctorProfileUtil;
 use ConsultBundle\Utility\RetrieveUserProfileUtil;
+use ConsultBundle\Utility\UpdateAccountsUtil;
 use Doctrine\Bundle\DoctrineBundle\Registry as Doctrine;
 use ConsultBundle\Entity\Question;
 use ConsultBundle\Entity\QuestionComment;
@@ -27,6 +28,7 @@ class QuestionManager extends BaseManager
     protected $queue;
     protected $retrieveUserProfileUtil;
     protected $retrieveDoctorProfileUtil;
+    protected $updateAccountsUtil;
 
     /**
      * @param UserManager $userManager
@@ -35,10 +37,12 @@ class QuestionManager extends BaseManager
      * @param Queue $queue
      * @param RetrieveUserProfileUtil $retrieveUserProfileUtil
      * @param RetrieveDoctorProfileUtil $retrieveDoctorProfileUtil
+     * @param UpdateAccountsUtil $updateAccountsUtil
      */
     public function __construct(
         UserManager $userManager, UserProfileManager $userProfileManager, QuestionBookmarkManager $questionBookmarkManager,
-        Queue $queue, RetrieveUserProfileUtil $retrieveUserProfileUtil, RetrieveDoctorProfileUtil $retrieveDoctorProfileUtil )
+        Queue $queue, RetrieveUserProfileUtil $retrieveUserProfileUtil, RetrieveDoctorProfileUtil $retrieveDoctorProfileUtil,
+        UpdateAccountsUtil $updateAccountsUtil)
     {
         $this->userManager = $userManager;
         $this->userProfileManager = $userProfileManager;
@@ -46,6 +50,7 @@ class QuestionManager extends BaseManager
         $this->queue = $queue;
         $this->retrieveUserProfileUtil = $retrieveUserProfileUtil;
         $this->retrieveDoctorProfileUtil = $retrieveDoctorProfileUtil;
+        $this->updateAccountsUtil = $updateAccountsUtil;
     }
 
     /**
@@ -57,7 +62,7 @@ class QuestionManager extends BaseManager
     {
         if (array_key_exists('user_profile_details', $requestParams)) {
             if (array_key_exists('is_someone_else', $requestParams['user_profile_details']) and
-                $requestParams['user_profile_details']['is_someone_else'] == true) {
+                $requestParams['user_profile_details']['is_someone_else'] === true) {
                 $userProfileArray = $requestParams['user_profile_details'];
                 unset($userProfileArray['is_someone_else']);
                 $userProfile = $this->userProfileManager->add($userProfileArray);
@@ -106,7 +111,7 @@ class QuestionManager extends BaseManager
      *
      * @return Question
      */
-    public function add($requestParams)
+    public function add($requestParams, $profileToken = null)
     {
         $question = new Question();
         $question->setSoftDeleted(false);
@@ -120,6 +125,9 @@ class QuestionManager extends BaseManager
         $params = $this->validator->validatePostArguments($requestParams);
 
         $this->updateFields($question, $params);
+
+        $this->updateAccountsUtil->updateAccountDetails($profileToken, $params);
+
         $this->helper->persist($question, 'true');
 
         $job['question_id'] = $question->getId();
@@ -200,7 +208,7 @@ class QuestionManager extends BaseManager
         if (is_null($question))
             return null;
 
-        //$this->retrieveUserProfileUtil->loadUserDetailInQuestion($question);
+        $this->retrieveUserProfileUtil->loadUserDetailInQuestion($question);
 
         $this->retrieveDoctorProfileUtil->retrieveDoctorProfileForQuestion($question);
 
