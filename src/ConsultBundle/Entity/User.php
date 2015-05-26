@@ -39,16 +39,16 @@ class User extends BaseEntity
     /**
      * @var float
      *
-     * @ORM\Column(name="height", type="float", nullable=true)
+     * @ORM\Column(name="height_in_cms", type="float", nullable=true)
      */
-    private $height;
+    private $heightInCms;
 
     /**
      * @var float
      *
-     * @ORM\Column(name="weight", type="float", nullable=true)
+     * @ORM\Column(name="weight_in_kgs", type="float", nullable=true)
      */
-    private $weight;
+    private $weightInKgs;
 
     /**
      * Set dateOfBirth
@@ -101,24 +101,24 @@ class User extends BaseEntity
         return $this->bloodGroup;
     }
 
-    public function setHeight($height)
+    public function setHeightInCms($height)
     {
-        $this->height = $height;
+        $this->heightInCms = $height;
     }
 
-    public function getHeight()
+    public function getHeightInCms()
     {
-        return $this->height;
+        return $this->heightInCms;
     }
 
-    public function setWeight($weight)
+    public function setWeightInKgs($weight)
     {
-        $this->weight = $weight;
+        $this->weightInKgs = $weight;
     }
 
-    public function getWeight()
+    public function getWeightInKgs()
     {
-        return $this->weight;
+        return $this->weightInKgs;
     }
 
 }
