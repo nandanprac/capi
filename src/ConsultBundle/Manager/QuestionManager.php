@@ -55,10 +55,14 @@ class QuestionManager extends BaseManager
      */
     public function updateFields($question, $requestParams)
     {
-        if (array_key_exists('for_someone_else', $requestParams) and !empty($requestParams['for_someone_else'])) {
-            $userProfileArray = $requestParams['for_someone_else'];
-            $userProfile = $this->userProfileManager->add($userProfileArray);
-            unset($requestParams['for_someone_else']);
+        if (array_key_exists('user_profile_details', $requestParams)) {
+            if (array_key_exists('is_someone_else', $requestParams['user_profile_details']) and
+                $requestParams['user_profile_details']['is_someone_else'] == true) {
+                $userProfileArray = $requestParams['user_profile_details'];
+                unset($userProfileArray['is_someone_else']);
+                $userProfile = $this->userProfileManager->add($userProfileArray);
+                unset($requestParams['user_profile_details']);
+            }
         }
 
         if (array_key_exists('additional_info', $requestParams) and !empty($requestParams['additional_info'])) {
@@ -206,49 +210,14 @@ class QuestionManager extends BaseManager
     }
 
 
-
-    public function loadMultiple($requestData)
-    {
-        $error = array();
-        if (!array_key_exists('question_id', $requestData))
-            @$error['question_id']='This cannot be blank';
-            throw new ValidationError($error);
-
-        $questionId = $requestData['question_id'];
-        $question = $this->helper->loadById($questionId, ConsultConstants::$QUESTION_ENTITY_NAME);
-
-        if (is_null($question) or $question->isSoftDeleted())
-            return null;
-        return $question;
-    }
-
-    /**
-     * Load all questions based on filters
-     *
-     * @param request parameters
-     *
-     * @return array
-     */
-    public function loadAll($modifiedAfter, $limit = 100, $offset = 0)
-    {
-        $questionList = array();
-        $er =  $this->helper->getRepository(ConsultConstants::$QUESTION_ENTITY_NAME);
-        $questionList = $er->findAllQuestions($modifiedAfter, $limit, $offset);
-
-        if (is_null($questionList)) {
-            return null;
-        }
-        return $questionList;
-    }
-
     public function loadByFilters($request)
     {
-        $limit = 100;
-        $offset = 0;
-        if (array_key_exists('limit', $request))
-            $limit = $request['limit'];
-        if (array_key_exists('offset', $request))
-            $offset = $request['offset'];
+        $limit = (array_key_exists('limit', $request)) ? $request['limit'] : 100;
+        $offset = (array_key_exists('offset', $request)) ? $request['offset'] : 0;
+        $state = (array_key_exists('state', $request)) ? explode(",", $request['state']) : null;
+        $category = (array_key_exists('category', $request)) ? explode(",", $request['category']) : null;
+        $practoAccountId = (array_key_exists('practo_account_id', $request)) ? $request['practo_account_id'] : null;
+        $bookmark = (array_key_exists('bookmark', $request)) ? $request['bookmark'] : null;
 
         $modifiedAfter = null;
         if (array_key_exists('modified_after', $request)) {
@@ -256,72 +225,10 @@ class QuestionManager extends BaseManager
             $modifiedAfter->format('Y-m-d H:i:s');
         }
 
-        if (array_key_exists('state', $request))
-            $questionList = $this->loadByState($request['state'], $modifiedAfter, $limit, $offset);
+       $er =  $this->helper->getRepository(ConsultConstants::$QUESTION_ENTITY_NAME);
+       $questionList = $er->findQuestionsByFilters($practoAccountId, $bookmark, $state, $category, $modifiedAfter, $limit, $offset); 
 
-        if (array_key_exists('category', $request))
-            $questionList = $this->loadByCategory(explode(",", $request['category']), $modifiedAfter, $limit, $offset);
-
-        if (array_key_exists('practo_account_id', $request) and array_key_exists('bookmark', $request))
-            $questionList = $this->loadByAccId($request['practo_account_id'], $request['bookmark'], $modifiedAfter, $limit, $offset);
-
-        if (!isset($questionList))
-            $questionList = $this->loadAll($modifiedAfter, $limit, $offset);
-
-        return $questionList;
-    }
-
-    private function loadByAccId($practoAccountId, $bookmark, $modifiedAfter, $limit, $offset)
-    {
-        if ($bookmark == 0 or $bookmark == 2) {
-            $questionList = array();
-            $er =  $this->helper->getRepository(ConsultConstants::$QUESTION_ENTITY_NAME);
-            $questionList = $er->findQuestionsByAccID($practoAccountId, $modifiedAfter, $limit, $offset);
-        }
-        if ($bookmark == 1 or $bookmark == 2) {
-            $bookmarkList = array();
-            $er =  $this->helper->getRepository(ConsultConstants::$QUESTION_ENTITY_NAME);
-            $bookmarkList = $er->findBookmarksByAccID($practoAccountId, $modifiedAfter, $limit, $offset);
-            $bookmarkQuestionList = array();
-            foreach ($bookmarkList[0] as $bookMark)
-                array_push($bookmarkQuestionList, $bookMark->getQuestion());
-        }
-
-        if ($bookmark == 0)
-            if (is_null($questionList[0]))
-                return null;
-            else
-                return $questionList;
-        else if ($bookmark == 1)
-            if (is_null($bookmarkList[0]))
-                 return null;
-             else
-                return array($bookmarkQuestionList, $bookmarkList[1]);
-        else if ($bookmark == 2)
-            if (is_null($questionList[0]) and is_null($bookmarkList[0]))
-                return null;
-            else
-                return array(array_merge($questionList[0], $bookmarkQuestionList), $questionList[1] + $bookmarkList[1]);
-    }
-
-    private function loadByState($state, $modifiedAfter, $limit, $offset)
-    {
-        $er =  $this->helper->getRepository(ConsultConstants::$QUESTION_ENTITY_NAME);
-        $questionList = $er->findQuestionsByState($state, $modifiedAfter, $limit, $offset);
-
-        if (is_null($questionList))
-            return null;
-        return $questionList;
-    }
-
-    private function loadByCategory($category, $modifiedAfter, $limit, $offset)
-    {
-        $er = $this->helper->getRepository(ConsultConstants::$QUESTION_ENTITY_NAME);
-        $questionList = $er->findQuestionsByCategory($category, $modifiedAfter, $limit, $offset);
-
-        if (is_null($questionList))
-            return null;
-        return $questionList;
+       return $questionList;
     }
 
     public function setState($question_id, $state){
