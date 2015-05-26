@@ -43,7 +43,7 @@ class DoctorQuestionManager extends BaseManager
         if (array_key_exists('question_id', $updateData) and array_key_exists('practo_account_id', $updateData)) {
             $question = $this->getRepository()->findOneBy(array('practoAccountId'=>$updateData['practo_account_id'], 'question'=>$updateData['question_id']));
             if (!$question) {
-                throw new ValidationError(array("error"=>"Question is mapped to this doctor."));
+                throw new ValidationError(array("error"=>"Question is not mapped to this doctor."));
             }
         } else {
             return View::create("<practo_account_id> and <question_id> is required.", Codes::HTTP_BAD_REQUEST);
@@ -64,8 +64,6 @@ class DoctorQuestionManager extends BaseManager
         if (array_key_exists('view', $updateData) && $updateData['view'] == 'true') {
             if(!$question->getViewedAt()) {
                 $question->setViewedAt(new \DateTime());
-            } else {
-                throw new ValidationError(array("error" => "Question is viewed already by this doctor"));
             }
         }
 
