@@ -82,6 +82,8 @@ services:
         calls:
                           - [setValidator, ["@consult.doctorReplyValidator"]]
                           - [setHelper, ["@consult.helper"]]
+        arguments:
+          - @consult.consult_queue
 
     consult.doctorQuestionManager:
         class: ConsultBundle\Manager\DoctorQuestionManager

@@ -15,17 +15,19 @@ use ConsultBundle\Entity\DoctorReplyRating;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityRepository;
 use FOS\RestBundle\Util\Codes;
+use ConsultBundle\Queue\AbstractQueue as Queue;
 
 class DoctorReplyManager extends BaseManager
 {
     public static $mandatoryFields;
-    public function __construct()
+    public function __construct(Queue $queue)
     {
         if (!isset(self::$mandatoryFields)) {
             self::$mandatoryFields = new ArrayCollection();
             self::$mandatoryFields->add("doctor_question_id");
             self::$mandatoryFields->add("id");
         }
+        $this->queue = $queue;
     }
 
     /**
@@ -42,14 +44,14 @@ class DoctorReplyManager extends BaseManager
             $doctorQuestionId,
             ConsultConstants::$DOCTOR_QUESTION_ENTITY_NAME);
 
-        if (is_null($doctorQuestion)) {
+        if (is_null($doctorQuestion->getQuestion())) {
            throw new \HttpException ("Error:Doctor has not been assigned the question", Codes::HTTP_BAD_REQUEST);
         }
-  
+
         if($practoAccountId != $doctorQuestion->getPractoAccountId()) {
             throw new \HttpException("You are not allowed to perform this operation", Codes::HTTP_FORBIDDEN);
         }
-  
+
         if($doctorQuestion->getRejectedAt()) {
               throw new \HttpException("The question has been rejected", Codes::HTTP_BAD_REQUEST);
         }
@@ -72,7 +74,7 @@ class DoctorReplyManager extends BaseManager
           //To be implemented
           throw new Exception($e, $e->getMessage());
       }*/
-
+      $this->queue->setQueueName(Queue::CONSULT_GCM)->sendMessage(json_encode(array("type"=>"query_answered", "message"=>"Your Query has been answered", "id"=>$doctorQuestion->getQuestion()->getId(), "user_ids"=>array($doctorQuestion->getQuestion()->getPractoAccountId()))));
       $this->helper->persist($doctorReply, true);
 
       return $doctorReply;

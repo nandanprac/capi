@@ -56,6 +56,7 @@ class DoctorQuestionManager extends BaseManager
         if (array_key_exists('reject', $updateData) && $updateData['reject'] == 'true') {
             if (!$question->getRejectedAt()) {
                 $question->setRejectedAt(new \DateTime());
+                $question->setViewedAt(new \DateTime());
             } else {
                 throw new ValidationError(array("error" => "Question is already rejected by this doctor"));
             }
@@ -85,8 +86,12 @@ class DoctorQuestionManager extends BaseManager
         return;
     }
 
-    public function loadAllByDoctor($doctorId, $queryParams = null){
+    public function loadById($doctorQuestionId){
 
+        return $this->getRepository()->findById($doctorQuestionId);
+    }
+
+    public function loadAllByDoctor($doctorId, $queryParams = null){
         return $this->getRepository()->findByFilters($doctorId, $queryParams);
     }
 
