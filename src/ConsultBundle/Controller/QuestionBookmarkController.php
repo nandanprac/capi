@@ -21,7 +21,7 @@ class QuestionBookmarkController extends Controller
      */
     public function postQuestionBookmarkAction()
     {
-        $postData = $this->getRequest()->request->all();
+        $postData = $this->request->all();
         $questionBookmarkManager = $this->get('consult.question_bookmark_manager');
 
         try {

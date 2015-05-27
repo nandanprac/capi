@@ -3,6 +3,7 @@
 namespace ConsultBundle\Manager;
 
 use ConsultBundle\Constants\ConsultConstants;
+use FOS\RestBundle\Util\Codes;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 use Symfony\Component\Validator\ValidatorInterface;
 use ConsultBundle\Manager\ValidationError;
@@ -64,28 +65,31 @@ class QuestionBookmarkManager extends BaseManager
     }
 
     /**
-     * Add a new bookmark entry 
-     *
-     * @param $array requestParams 
-     *
-     * @return null
+     * @param $requestParams
+     * @return QuestionBookmark
+     * @throws ValidationError
      */
-    public function add($requestparams)
+    public function add($requestParams)
     {
         $error = array();
-        if (!array_key_exists('question_id', $requestparams)) {
+        if (!array_key_exists('question_id', $requestParams)) {
             @$error['question_id'] = 'This cannot be blank';
             throw new ValidationError($error);
         }
 
-        $questionId = $requestparams['question_id'];
+        $questionId = $requestParams['question_id'];
         $question = $this->helper->loadById($questionId, ConsultConstants::$QUESTION_ENTITY_NAME);
-
+        if(empty($question))
+        {
+            return new \HttpException("Question doesn't exist", Codes::HTTP_BAD_REQUEST);
+        }
         $questionBookmark = new QuestionBookmark();
         $questionBookmark->setQuestion($question);
-        $this->updateFields($questionBookmark, $requestparams);
+        $this->updateFields($questionBookmark, $requestParams);
         $question->addBookmark($questionBookmark);
         $this->helper->persist($questionBookmark, true);
+
+        return $questionBookmark;
     }
 
 
