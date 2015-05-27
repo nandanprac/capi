@@ -5,6 +5,7 @@ namespace ConsultBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\View\View;
 use FOS\RestBundle\Util\Codes;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use ConsultBundle\Manager\ValidationError;
 
@@ -15,13 +16,12 @@ use ConsultBundle\Manager\ValidationError;
 class QuestionBookmarkController extends Controller
 {
     /**
-     * Create Question bookmark
-     *
+     * @param Request $request
      * @return View
      */
-    public function postQuestionBookmarkAction()
+    public function postQuestionBookmarkAction(Request $request)
     {
-        $postData = $this->request->all();
+        $postData = $request->request->all();
         $questionBookmarkManager = $this->get('consult.question_bookmark_manager');
 
         try {
