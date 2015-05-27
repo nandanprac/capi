@@ -64,7 +64,7 @@ class QuestionManager extends BaseManager
         if (array_key_exists('additional_info', $requestParams) and !empty($requestParams['additional_info'])) {
             $userInfoArray = $requestParams['additional_info'];
             if (array_key_exists('practo_account_id', $requestParams)) {
-                $userInfoArray['practo_account_id'] = $requestParams['practo_account_id'];                
+                $userInfoArray['practo_account_id'] = $requestParams['practo_account_id'];
             } else {
                 $userInfoArray['practo_account_id'] = $question->getPractoAccountId();        //in case of patch
             }
@@ -325,7 +325,7 @@ class QuestionManager extends BaseManager
     }
 
     public function setState($question_id, $state){
-        $question = $this->load($question_id);
+        $question = $this->helper->loadById($question_id, ConsultConstants::$QUESTION_ENTITY_NAME);
 
         $question->setState($state);
         $this->helper->persist($question, 'true');

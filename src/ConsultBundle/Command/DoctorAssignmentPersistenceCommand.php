@@ -68,12 +68,12 @@ class DoctorAssignmentPersistenceCommand extends ContainerAwareCommand
                       $this->questionManager->setState($jobData['question_id'], $jobData['state']);
                       $jobData['type'] = 'new_question';
                       $jobData['user_ids'] = $jobData['doctors'];
-                      $jobData['text'] = "Your Question has been assigned";
+                      $jobData['message'] = $jobData['question_id'];
                       unset($jobData['doctors']);
                       $this->queue
                         ->setQueueName(Queue::CONSULT_GCM)
                         ->sendMessage(json_encode($jobData));
-                  } elseif ($jobData['state'] == 'GENERIC') {
+                  } elseif ($jobData['state'] == 'GENERIC'  or $jobData['state'] == 'DOCNOTFOUND') {
                       $this->questionManager->setState($jobData['question_id'], $jobData['state']);
                   }
                 } catch (\Exception $e) {

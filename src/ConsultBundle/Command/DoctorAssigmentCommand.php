@@ -64,14 +64,12 @@ class DoctorAssigmentCommand extends ContainerAwareCommand
         $consultDomain = new ConsultDomain($request);
         $this->container->set('consult.consult_domain', $consultDomain);
         $this->queue->setConsultDomain($consultDomain);
-
         while (1) {
           $newJob = $this->queue
             ->setQueueName(Queue::DAA)
             ->receiveMessage();
           if ($newJob) {
               $jobData = json_decode($newJob, true);
-              $this->queue->setQueueName(Queue::DAA)->deleteMessage($newJob);
               try{
                   $question_id = array_key_exists('question_id', $jobData) ? $jobData['question_id'] : null;
                   $question = array_key_exists('question', $jobData) ? $jobData['question'] : null;
@@ -95,6 +93,10 @@ class DoctorAssigmentCommand extends ContainerAwareCommand
                               }
                           }
                       }
+                  }
+                  if ($specialities){
+                      list($speciality, $speciality_prob) = $this->classifier($question);
+                      $speciality = shuffle($specialities)[0];
                   }
                   list($speciality, $speciality_prob) = $this->classifier($question);
                   if ($specialities && in_array($speciality,$specialities)) {
@@ -154,6 +156,7 @@ class DoctorAssigmentCommand extends ContainerAwareCommand
                       $questionAction['state'] = $state;
                       $questionAction['doctors'] = null;
                   }
+                  echo json_encode($questionAction);
                   $this->queue
                     ->setQueueName(Queue::ASSIGNMENT_UPDATE)
                     ->sendMessage(json_encode($questionAction));
@@ -161,6 +164,7 @@ class DoctorAssigmentCommand extends ContainerAwareCommand
                   $output->writeln($e->getMessage());
                   $output->writeln($newJob);
               }
+              $this->queue->setQueueName(Queue::DAA)->deleteMessage($newJob);
           }
         }
     }
