@@ -76,29 +76,20 @@ class DoctorAssigmentCommand extends ContainerAwareCommand
                   $city = array_key_exists('city', $jobData) ? $jobData['city'] : null;
                   $tag = array_key_exists('tags', $jobData) ? $jobData['tags'] : null;
                   $specialities = array();
-                  if ($tag) {
-                      foreach (array_map('strtolower', explode(",",$tag)) as $keyword){
-                          if (array_key_exists(strtolower(trim($keyword)), array_change_key_case($this->categories_grouping))){
-                              array_push($specialities, array_change_key_case($this->categories_grouping)[strtolower(trim($keyword))]);
+                  $speciality = '';
+                  if ($tag or $question) {
+                      foreach (array_map('strtolower', preg_split("/[\W]+/",$tag." ".$question)) as $keyword) {
+                          $onemap = array_change_key_case($this->p1_words);
+                          if (array_key_exists(strtolower(trim($keyword)), $onemap)){
+                              $specialities = array_merge($specialities, $onemap[strtolower(trim($keyword))]);
                           }
                       }
-                      if (empty($specialities)){
-                          foreach (array_map('strtolower', explode(",",$tag)) as $keyword) {
-                              if (array_key_exists(strtolower(trim($keyword)), array_change_key_case($this->p1_words))){
-                                  if(empty($specialities)){
-                                      $specialities = $this->p1_words[$keyword];
-                                  } else {
-                                      $specialities = array_intersect($specialities, $this->p1_words[$keyword]);
-                                  }
-                              }
-                          }
-                      }
+                      $c = array_count_values($specialities);
+                      $speciality = array_search(max($c), $c);
                   }
-                  if ($specialities){
-                      list($speciality, $speciality_prob) = $this->classifier($question);
-                      $speciality = shuffle($specialities)[0];
-                  }
-                  list($speciality, $speciality_prob) = $this->classifier($question);
+                  //if (!$speciality){
+                  //    list($speciality, $speciality_prob) = $this->classifier($question);
+                  //}
                   if ($specialities && in_array($speciality,$specialities)) {
                       $state = 'ASSIGNED';
                   } elseif ($specialities && !in_array($speciality,$specialities)) {

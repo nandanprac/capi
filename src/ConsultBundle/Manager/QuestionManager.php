@@ -330,4 +330,15 @@ class QuestionManager extends BaseManager
         $question->setState($state);
         $this->helper->persist($question, 'true');
     }
+
+    public function setTagByQuestionId($question_id, $tag){
+        $question = $this->helper->loadById($question_id, ConsultConstants::$QUESTION_ENTITY_NAME);
+        $tagObj = new QuestionTag();
+        $tagObj->setTag($tag);
+        $tagObj->setUserDefined(False);
+        $tagObj->setQuestion($question);
+        $question->addTag($tagObj);
+//        $this->helper->persist($tagObj, 'true');
+        $this->helper->persist($question, 'true');
+    }
 }
