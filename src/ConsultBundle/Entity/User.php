@@ -25,7 +25,8 @@ class User extends BaseEntity
     /**
      * @var string
      *
-     * @ORM\Column(name="gender", type="string", length=255, nullable=true)
+     * @ORM\Column(name="gender", type="string", length=1, nullable=true)
+     * @Assert\Choice(choices = {"M", "F"}, message="Input can only be M/F")
      */
     private $gender;
 
@@ -58,7 +59,7 @@ class User extends BaseEntity
     public function setDateOfBirth($dateOfBirth)
     {
         $this->dateOfBirth = new \DateTime($dateOfBirth);
-        $this->dateOfBirth->format('Y-m-d H:i:s');
+        $this->dateOfBirth->format('Y-m-d');
     }
 
     /**
