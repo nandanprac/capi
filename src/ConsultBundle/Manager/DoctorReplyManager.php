@@ -32,8 +32,8 @@ class DoctorReplyManager extends BaseManager
      * @param $doctorQuestionId
      * @param $practoAccountId
      * @param $answerText
-     *
-     * @return DoctorReply|string
+     * @return DoctorReply
+     * @throws \HttpException
      */
     public function replyToAQuestion($doctorQuestionId, $practoAccountId, $answerText)
     {
@@ -75,15 +75,18 @@ class DoctorReplyManager extends BaseManager
 
       $this->helper->persist($doctorReply, true);
 
-      return $doctorReply;
+      return $doctorReply->getDoctorQuestion()->getQuestion();
     }
 
     /**
      * @param $postData
+     * @return mixed
      * @throws \HttpException
      */
     public function patchDoctorReply($postData)
     {
+
+
         $practoAccountId = $postData['practo_account_id'];
 
         if(array_key_exists("doctor_reply", $postData)) {
@@ -101,6 +104,10 @@ class DoctorReplyManager extends BaseManager
         $id = $doctorReply['id'];
 
         $doctorReplyEntity = $this->helper->loadById($id, ConsultConstants::$DOCTOR_REPLY_ENTITY_NAME);
+        if(empty($doctorReplyRatingEntity))
+        {
+            throw new \HttpException("Not a valid Doctor Reply Id", Codes::HTTP_BAD_REQUEST );
+        }
 
         $ownerId = $doctorReplyEntity->getDoctorQuestion()->getQuestion()->getPractoAccountId();
 
@@ -129,19 +136,11 @@ class DoctorReplyManager extends BaseManager
             }
         }
 
-        //mark that the answer has been liked/unliked by the user
         if(array_key_exists("like", $doctorReply))
         {
             $like = $doctorReply['like'];
             //$er = new EntityRepository();
             $er = $this->helper->getRepository(ConsultConstants::$DOCTOR_REPLY_RATING_ENTITY_NAME);
-
-            if(is_null($er))
-            {
-                var_dump("123");die;
-            }
-
-
 
 
 
