@@ -51,7 +51,7 @@ class RetrieveUserProfileUtil {
         if (!$response->isSuccessful()) {
             return null;
         }
-        var_dump($response->getContent());
+        //var_dump($response->getContent());
     }
 
 
@@ -66,7 +66,7 @@ class RetrieveUserProfileUtil {
 
 
 
-        $this->signEndpointPostData($postData, $this->accountsSigningKey);
+        $postData = $this->signEndpointPostData($postData, $this->accountsSigningKey);
 
         $body = new PostBody();
         $body->replaceFields($postData);
@@ -96,6 +96,8 @@ class RetrieveUserProfileUtil {
         $signedData = implode('&', $signedData);
 
         $postData['signature'] = base64_encode(hash_hmac('sha1', $signedData, $signingKey, true));
+
+        return $postData;
     }
 
     private function populateUserFromAccounts(array $userProfile)
