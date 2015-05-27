@@ -196,7 +196,7 @@ class QuestionManager extends BaseManager
         if (is_null($question))
             return null;
 
-        //$this->retrieveUserProfileUtil->loadUserDetailInQuestion($question);
+        $this->retrieveUserProfileUtil->loadUserDetailInQuestion($question);
 
         $this->retrieveDoctorProfileUtil->retrieveDoctorProfileForQuestion($question);
 
