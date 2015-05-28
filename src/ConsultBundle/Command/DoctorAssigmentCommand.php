@@ -126,9 +126,10 @@ class DoctorAssigmentCommand extends ContainerAwareCommand
                       $params['body']['from']  = 0;
                       $params['body']['size']  = 100;
                       $results = $this->client->search($params);
-                      $doctorIds = array();
+                      echo json_encode($results);
+			$doctorIds = array();
                       foreach ($results['hits']['hits'] as $result){
-                          if (array_key_exists("practo_account_id", $result["_source"]))
+                          if (array_key_exists("practo_account_id", $result["_source"]) and $result["_source"]["practo_account_id"] != null)
                               array_push($doctorIds,$result["_source"]["practo_account_id"]);
                       }
                       $questionAction['classified'] = 1;

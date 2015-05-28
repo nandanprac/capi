@@ -326,9 +326,12 @@ class QuestionManager extends BaseManager
 
     public function setState($question_id, $state){
         $question = $this->helper->loadById($question_id, ConsultConstants::$QUESTION_ENTITY_NAME);
-
-        $question->setState($state);
-        $this->helper->persist($question, 'true');
+	if ($question){
+	    $question->setState($state);
+            $this->helper->persist($question, 'true');
+	} else {
+	    throw new \Exception("Question with id ".$question_id." doesn't exist.");
+	}
     }
 
     public function setTagByQuestionId($question_id, $tag){

@@ -67,7 +67,6 @@ class DoctorAssignmentPersistenceCommand extends ContainerAwareCommand
                   } elseif($jobData['state'] == 'ASSIGNED') {
                       $this->doctorQuestionManager->setDoctorsForAQuestions($jobData['question_id'], $jobData['doctors']);
                       $this->questionManager->setState($jobData['question_id'], $jobData['state']);
-                      //$this->questionManager->setQuestionTags($this->helper->loadById($questionId, ConsultConstants::$QUESTION_ENTITY_NAME) ,array($jobData['speciality']));
                       $this->questionManager->setTagByQuestionId($jobData['question_id'],$jobData['speciality']);
                       $jobData['type'] = 'new_question';
                       $jobData['user_ids'] = $jobData['doctors'];
@@ -78,9 +77,12 @@ class DoctorAssignmentPersistenceCommand extends ContainerAwareCommand
                         ->sendMessage(json_encode($jobData));
                   } elseif ($jobData['state'] == 'GENERIC'  or $jobData['state'] == 'DOCNOTFOUND') {
                       $this->questionManager->setState($jobData['question_id'], $jobData['state']);
+                      $this->questionManager->setTagByQuestionId($jobData['question_id'],$jobData['speciality']);
                   }
-                echo json_encode($jobData);
+                echo "Queue Message Persisted: ".json_encode($jobData);
                 } catch (\Exception $e) {
+		    $output->writeln("Dropping the queue message: ". json_encode($jobData));
+		    $this->queue->setQueueName(Queue::ASSIGNMENT_UPDATE)->deleteMessage($newJob);
                     $output->writeln($e->getMessage());
                 }
                 $this->queue->setQueueName(Queue::ASSIGNMENT_UPDATE)->deleteMessage($newJob);
