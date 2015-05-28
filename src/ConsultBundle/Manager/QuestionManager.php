@@ -220,7 +220,7 @@ class QuestionManager extends BaseManager
 
     public function loadByFilters($request)
     {
-        $limit = (array_key_exists('limit', $request)) ? $request['limit'] : 100;
+        $limit = (array_key_exists('limit', $request)) ? $request['limit'] : 30;
         $offset = (array_key_exists('offset', $request)) ? $request['offset'] : 0;
         $state = (array_key_exists('state', $request)) ? explode(",", $request['state']) : null;
         $category = (array_key_exists('category', $request)) ? explode(",", $request['category']) : null;
