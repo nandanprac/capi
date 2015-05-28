@@ -229,7 +229,7 @@ class QuestionManager extends BaseManager
      *
      * @return array
      */
-    public function loadAll($modifiedAfter, $limit = 100, $offset = 0)
+    public function loadAll($modifiedAfter, $limit = 30, $offset = 0)
     {
         $questionList = array();
         $er =  $this->helper->getRepository(ConsultConstants::$QUESTION_ENTITY_NAME);
@@ -243,7 +243,7 @@ class QuestionManager extends BaseManager
 
     public function loadByFilters($request)
     {
-        $limit = 100;
+        $limit = 30;
         $offset = 0;
         if (array_key_exists('limit', $request))
             $limit = $request['limit'];
