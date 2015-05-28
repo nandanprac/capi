@@ -79,6 +79,7 @@ class QuestionBookmarkManager extends BaseManager
         if (!array_key_exists('practo_account_id', $requestParams)) {
             @$error['practo_account_id'] = 'This cannot be blank';
             throw new ValidationError($error);
+        }
 
         $questionId = $requestParams['question_id'];
         $question = $this->helper->loadById($questionId, ConsultConstants::$QUESTION_ENTITY_NAME);
