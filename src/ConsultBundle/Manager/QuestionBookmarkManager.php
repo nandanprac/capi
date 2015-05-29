@@ -92,6 +92,7 @@ class QuestionBookmarkManager extends BaseManager
         $questionBookmark->setQuestion($question);
         $this->updateFields($questionBookmark, $requestParams);
         $question->addBookmark($questionBookmark);
+        $question->setModifiedAt(new \DateTime('now'));
         $this->helper->persist($questionBookmark, true);
 
         return $questionBookmark;
