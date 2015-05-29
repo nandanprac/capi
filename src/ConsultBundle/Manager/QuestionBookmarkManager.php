@@ -39,19 +39,11 @@ class QuestionBookmarkManager extends BaseManager
         return;
     }
 
-    public function remove($requestParams)
+    public function remove($bookmarkId)
     {
         $error = array();
-        if (!array_key_exists('delete', $requestParams)) { 
-            @$error['delete'] = 'This cannot be blank';
-            throw new ValidationError($error);
-        }
-        if (!array_key_exists('bookmark_id', $requestParams)) {
-            @$error['bookmark_id'] = 'This cannot be blank';
-            throw new ValidationError($error);
-        }
 
-        $questionBookmark = $this->load($requestParams['bookmark_id']);
+        $questionBookmark = $this->load($bookmarkId);
         if (is_null($questionBookmark)) {
             $error = array();
             @$error['error']='Bookmark doesnt exist';

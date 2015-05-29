@@ -35,13 +35,13 @@ class QuestionBookmarkController extends Controller
             Codes::HTTP_CREATED);
     }
 
-    public function patchQuestionBookmarkAction()
+    public function deleteQuestionBookmarkAction($bookmarkId)
     {
         $postData = $this->getRequest()->request->all();
         $questionBookmarkManager = $this->get('consult.question_bookmark_manager');
 
         try {
-            $questionBookmarkManager->remove($postData);
+            $questionBookmarkManager->remove($bookmarkId);
         } catch (ValidationError $e) {
             return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
         }
