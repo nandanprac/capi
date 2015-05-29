@@ -13,9 +13,21 @@ use ConsultBundle\Constants\ConsultConstants;
 use ConsultBundle\Entity\DoctorQuestion;
 use Doctrine\Common\Collections\ArrayCollection;
 use ConsultBundle\Manager\ValidationError;
+use ConsultBundle\Utility\RetrieveDoctorProfileUtil;
+use ConsultBundle\Utility\RetrieveUserProfileUtil;
 
 class DoctorQuestionManager extends BaseManager
 {
+    /**
+     * @param RetrieveUserProfileUtil $retrieveUserProfileUtil
+     * @param RetrieveDoctorProfileUtil $retrieveDoctorProfileUtil
+     */
+    public function __construct(RetrieveUserProfileUtil $retrieveUserProfileUtil, RetrieveDoctorProfileUtil $retrieveDoctorProfileUtil )
+    {
+        $this->retrieveUserProfileUtil = $retrieveUserProfileUtil;
+        $this->retrieveDoctorProfileUtil = $retrieveDoctorProfileUtil;
+    }
+
     /**
      * @param $questionId
      * @param array $doctorsId
@@ -72,7 +84,12 @@ class DoctorQuestionManager extends BaseManager
         $this->updateFields($question, $params);
         $this->helper->persist($question, true);
 
-        return $question->getQuestion();
+        $ques = $question->getQuestion();
+	
+	$this->retrieveUserProfileUtil->loadUserDetailInQuestion($ques);
+	$this->retrieveDoctorProfileUtil->retrieveDoctorProfileForQuestion($ques);
+
+	return $ques;
     }
 
     public function updateFields($question, $params)

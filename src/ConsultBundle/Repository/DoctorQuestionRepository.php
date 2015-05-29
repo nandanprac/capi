@@ -50,14 +50,14 @@ class DoctorQuestionRepository extends EntityRepository{
              }
 
              if (array_key_exists('state', $filters)) {
-                $state = $filters['state'];
+                $state = strtoupper($filters['state']);
                 $qb->andWhere('dq.state = :state')
                   ->setParameter('state', $state);
              }
 
              $qb->setFirstResult($offset)
                ->setMaxResults($limit)
-               ->addOrderBy('dq.modifiedAt', 'DESC')
+               ->addOrderBy('q.modifiedAt', 'DESC')
                ->setParameter('doctorId',$doctorId);
              $questions = $qb->getQuery()->getResult();
              $paginator = new Paginator($qb->getQuery(), $fetchJoinCollection = true);

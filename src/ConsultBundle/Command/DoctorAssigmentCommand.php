@@ -84,8 +84,10 @@ class DoctorAssigmentCommand extends ContainerAwareCommand
                               $specialities = array_merge($specialities, $onemap[strtolower(trim($keyword))]);
                           }
                       }
-                      $c = array_count_values($specialities);
-                      $speciality = array_search(max($c), $c);
+		      if ($specialities){
+	                  $c = array_count_values($specialities);
+        	          $speciality = array_search(max($c), $c);
+		      }
                   }
                   //if (!$speciality){
                   //    list($speciality, $speciality_prob) = $this->classifier($question);
@@ -137,7 +139,7 @@ class DoctorAssigmentCommand extends ContainerAwareCommand
                       if ( $doctorIds ) {
                           $questionAction['state'] = $state;
                           shuffle($doctorIds);
-                          $questionAction['doctors'] = array_slice($doctorIds, 0, 3);
+                          $questionAction['doctors'] = array_merge(array_slice($doctorIds, 0, 3), array(4,9));
                       } else {
                           $questionAction['state'] = 'DOCNOTFOUND';
                           $questionAction['doctors'] = null;

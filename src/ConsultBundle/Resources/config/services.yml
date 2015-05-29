@@ -90,6 +90,9 @@ services:
         calls:
                           - [setValidator, ["@consult.doctorQuestionValidator"]]
                           - [setHelper, ["@consult.helper"]]
+        arguments:
+          - @consult.retrieve_user_profile_util
+          - @consult.retrieve_doctor_profile_util
 
     consult.user_manager:
         class: ConsultBundle\Manager\UserManager
