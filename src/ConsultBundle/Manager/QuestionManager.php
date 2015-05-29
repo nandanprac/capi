@@ -155,7 +155,7 @@ class QuestionManager extends BaseManager
     {
         $error = array();
         if (array_key_exists('question_id', $requestParams)) {
-            $question = $this->load($requestParams['question_id']);
+            $question = $this->helper->loadById($requestParams['question_id'], ConsultConstants::$QUESTION_ENTITY_NAME);
             if (null === $question)
                 throw new ValidationError();
         } else {
