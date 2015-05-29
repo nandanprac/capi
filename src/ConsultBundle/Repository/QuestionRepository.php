@@ -15,6 +15,7 @@ class QuestionRepository extends EntityRepository{
            ->from(ConsultConstants::$QUESTION_ENTITY_NAME, 'q')
            ->where('q.softDeleted = 0')
            ->orderBy('q.modifiedAt', 'DESC')
+            ->groupBy('q')
            ->setMaxResults($limit)
            ->setFirstResult($offset);
 
