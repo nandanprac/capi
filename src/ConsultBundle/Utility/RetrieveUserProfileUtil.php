@@ -77,6 +77,7 @@ class RetrieveUserProfileUtil {
         $client = new Client();
         $res = $client->send($request);
 
+
         $user = $this->populateUserFromAccounts($res->json());
 
         return $user;
@@ -128,12 +129,12 @@ class RetrieveUserProfileUtil {
 
         if(array_key_exists('height', $userProfile))
         {
-            $user->setHeight($userProfile['height']);
+            $user->setHeightInCms($userProfile['height']);
         }
 
         if(array_key_exists('weight', $userProfile)) {
 
-            $user->setWeight($userProfile['weight']);
+            $user->setWeightInKgs($userProfile['weight']);
         }
 
         if(array_key_exists('blood_group', $userProfile))

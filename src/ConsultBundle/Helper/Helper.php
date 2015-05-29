@@ -132,8 +132,8 @@ class Helper
     }
 
     /**
+     * @param $fields
      * @param array $data
-     * @param array $fields
      * @throws \HttpException
      */
     public function checkForMandatoryFields($fields, array $data )

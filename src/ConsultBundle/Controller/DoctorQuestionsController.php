@@ -52,7 +52,8 @@ class DoctorQuestionsController extends Controller
     {
         $request = $this->get('request');
         $queryParams = $request->query->all();
-
+        //TODO Move this in manager
+        // practo_account_id is not mandatory
         if (array_key_exists('practo_account_id', $queryParams)) {
             $doctorId = $queryParams['practo_account_id'];
         } else {

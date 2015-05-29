@@ -62,6 +62,7 @@ services:
           - @consult.consult_queue
           - @consult.retrieve_user_profile_util
           - @consult.retrieve_doctor_profile_util
+          - @consult.update_accounts_util
 
     consult.question_image_manager:
         class: ConsultBundle\Manager\QuestionImageManager
@@ -123,6 +124,14 @@ services:
 
     consult.retrieve_doctor_profile_util:
         class: ConsultBundle\Utility\RetrieveDoctorProfileUtil
+
+
+
+    consult.update_accounts_util:
+        class: ConsultBundle\Utility\UpdateAccountsUtil
+        arguments:
+             - %accounts_host%
+
 
 
 

@@ -23,6 +23,7 @@ class QuestionsController extends Controller
     public function postQuestionAction(Request $request)
     {
         $postData = $request->request->get('question');
+        $profileToken = $request->headers->get('X-Profile-Token');
         //var_dump($postData);
         //var_dump(json_decode($postData));die;
        // $question = $post
@@ -30,7 +31,7 @@ class QuestionsController extends Controller
 
         try {
 
-            $question = $questionManager->add((array)json_decode($postData, true));
+            $question = $questionManager->add((array)json_decode($postData, true), $profileToken);
 
         } catch (ValidationError $e) {
             return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);

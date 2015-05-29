@@ -25,7 +25,8 @@ class User extends BaseEntity
     /**
      * @var string
      *
-     * @ORM\Column(name="gender", type="string", length=255, nullable=true)
+     * @ORM\Column(name="gender", type="string", length=1, nullable=true)
+     * @Assert\Choice(choices = {"M", "F"}, message="Input can only be M/F")
      */
     private $gender;
 
@@ -39,16 +40,16 @@ class User extends BaseEntity
     /**
      * @var float
      *
-     * @ORM\Column(name="height", type="float", nullable=true)
+     * @ORM\Column(name="height_in_cms", type="float", nullable=true)
      */
-    private $height;
+    private $heightInCms;
 
     /**
      * @var float
      *
-     * @ORM\Column(name="weight", type="float", nullable=true)
+     * @ORM\Column(name="weight_in_kgs", type="float", nullable=true)
      */
-    private $weight;
+    private $weightInKgs;
 
     /**
      * Set dateOfBirth
@@ -58,7 +59,7 @@ class User extends BaseEntity
     public function setDateOfBirth($dateOfBirth)
     {
         $this->dateOfBirth = new \DateTime($dateOfBirth);
-        $this->dateOfBirth->format('Y-m-d H:i:s');
+        $this->dateOfBirth->format('Y-m-d');
     }
 
     /**
@@ -101,24 +102,24 @@ class User extends BaseEntity
         return $this->bloodGroup;
     }
 
-    public function setHeight($height)
+    public function setHeightInCms($height)
     {
-        $this->height = $height;
+        $this->heightInCms = $height;
     }
 
-    public function getHeight()
+    public function getHeightInCms()
     {
-        return $this->height;
+        return $this->heightInCms;
     }
 
-    public function setWeight($weight)
+    public function setWeightInKgs($weight)
     {
-        $this->weight = $weight;
+        $this->weightInKgs = $weight;
     }
 
-    public function getWeight()
+    public function getWeightInKgs()
     {
-        return $this->weight;
+        return $this->weightInKgs;
     }
 
 }

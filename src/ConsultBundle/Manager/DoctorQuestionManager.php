@@ -50,9 +50,17 @@ class DoctorQuestionManager extends BaseManager
         $this->helper->persist($doctorQuestion);
     }
 
+    /**
+     * @param $updateData
+     * @return \ConsultBundle\Entity\Question
+     * @throws ValidationError
+     */
     public function patch($updateData) {
 
         if (array_key_exists('question_id', $updateData) and array_key_exists('practo_account_id', $updateData)) {
+            /**
+             * @var DoctorQuestion $question
+             */
             $question = $this->getRepository()->findOneBy(array('practoAccountId'=>$updateData['practo_account_id'], 'question'=>$updateData['question_id']));
             if (!$question) {
                 throw new ValidationError(array("error"=>"Question is not mapped to this doctor."));
@@ -84,15 +92,22 @@ class DoctorQuestionManager extends BaseManager
         $this->updateFields($question, $params);
         $this->helper->persist($question, true);
 
+
         $ques = $question->getQuestion();
 	
 	$this->retrieveUserProfileUtil->loadUserDetailInQuestion($ques);
 	$this->retrieveDoctorProfileUtil->retrieveDoctorProfileForQuestion($ques);
 
 	return $ques;
+
     }
 
-    public function updateFields($question, $params)
+    /**
+     * @param $question
+     * @param $params
+     * @throws ValidationError
+     */
+    private function updateFields($question, $params)
     {
         try {
             $this->validator->validate($question);
@@ -108,6 +123,11 @@ class DoctorQuestionManager extends BaseManager
         return $this->getRepository()->findById($doctorQuestionId);
     }
 
+    /**
+     * @param $doctorId
+     * @param null $queryParams
+     * @return mixed
+     */
     public function loadAllByDoctor($doctorId, $queryParams = null){
         return $this->getRepository()->findByFilters($doctorId, $queryParams);
     }

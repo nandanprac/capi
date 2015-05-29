@@ -49,6 +49,7 @@ class QuestionBookmarkValidator implements Validator
     }
 
 
+
     public function checkUniqueness($question, $practoAccountId)
     {
         foreach($question->getBookmarks() as $bookmark)
@@ -57,4 +58,5 @@ class QuestionBookmarkValidator implements Validator
 
         return false;
     }
+
 }
