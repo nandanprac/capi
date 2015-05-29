@@ -62,7 +62,7 @@ class QuestionManager extends BaseManager
     {
         if (array_key_exists('user_profile_details', $requestParams)) {
             if (array_key_exists('is_someone_else', $requestParams['user_profile_details']) and
-                $requestParams['user_profile_details']['is_someone_else'] === true) {
+                $requestParams['user_profile_details']['is_someone_else'] == true) {
                 $userProfileArray = $requestParams['user_profile_details'];
                 unset($userProfileArray['is_someone_else']);
                 $userProfile = $this->userProfileManager->add($userProfileArray);
@@ -70,13 +70,16 @@ class QuestionManager extends BaseManager
             }
         }
 
-        if (array_key_exists('additional_info', $requestParams) and !empty($requestParams['additional_info'])) {
-            $userInfoArray = $requestParams['additional_info'];
-            if (array_key_exists('practo_account_id', $requestParams)) {
-                $userInfoArray['practo_account_id'] = $requestParams['practo_account_id'];
-            } else {
-                $userInfoArray['practo_account_id'] = $question->getPractoAccountId();        //in case of patch
+        if (array_key_exists('additional_info', $requestParams) or isset($userProfile)) {
+            $userInfoArray = array();
+            if (array_key_exists('additional_info', $requestParams) and !empty($requestParams['additional_info'])) {
+                $userInfoArray = $requestParams['additional_info'];
+                unset($requestParams['additional_info']);
             }
+            if (array_key_exists('practo_account_id', $requestParams))
+                $userInfoArray['practo_account_id'] = $requestParams['practo_account_id'];
+            else
+                $userInfoArray['practo_account_id'] = $question->getPractoAccountId();        //in case of patch
 
             $userEntry = $this->userManager->add($userInfoArray);
 
@@ -85,7 +88,6 @@ class QuestionManager extends BaseManager
             }
 
             $question->setUserInfo($userEntry);
-            unset($requestParams['additional_info']);
         }
 
         if (array_key_exists('tags', $requestParams)) {
