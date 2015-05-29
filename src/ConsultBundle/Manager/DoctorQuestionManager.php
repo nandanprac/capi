@@ -66,21 +66,24 @@ class DoctorQuestionManager extends BaseManager
                 throw new ValidationError(array("error"=>"Question is not mapped to this doctor."));
             }
         } else {
-            return View::create("<practo_account_id> and <question_id> is required.", Codes::HTTP_BAD_REQUEST);
+            throw new ValidationError(array("error"=> "practo_account_id and question_id is required."));
         }
 
-        if (array_key_exists('rejection_reason', $updateData)) {
-            $question->setRejectionReason($updateData['rejection_reason']);
-        }
 
-        if (array_key_exists('reject', $updateData) && $updateData['reject'] == 'true') {
+        if (array_key_exists('reject', $updateData) && $updateData['reject'] === true) {
+            if (array_key_exists('rejection_reason', $updateData)) {
+                $question->setRejectionReason($updateData['rejection_reason']);
+            }
             if (!$question->getRejectedAt()) {
                 $question->setRejectedAt(new \DateTime());
                 $question->setViewedAt(new \DateTime());
+                $question->setState("REJECTED");
             } else {
                 throw new ValidationError(array("error" => "Question is already rejected by this doctor"));
             }
-        }
+          } else if (array_key_exists('reject', $updateData) && $updateData['reject'] === false and array_key_exists('rejection_reason', $updateData)) {
+              throw new ValidationError(array("error"=> "Please dont pass rejection_reason if reject is false"));
+          }
 
         if (array_key_exists('view', $updateData) && $updateData['view'] == 'true') {
             if(!$question->getViewedAt()) {
@@ -94,12 +97,11 @@ class DoctorQuestionManager extends BaseManager
 
 
         $ques = $question->getQuestion();
-	
-	$this->retrieveUserProfileUtil->loadUserDetailInQuestion($ques);
-	$this->retrieveDoctorProfileUtil->retrieveDoctorProfileForQuestion($ques);
 
-	return $ques;
+        $this->retrieveUserProfileUtil->loadUserDetailInQuestion($ques);
+        $this->retrieveDoctorProfileUtil->retrieveDoctorProfileForQuestion($ques);
 
+        return $ques;
     }
 
     /**
