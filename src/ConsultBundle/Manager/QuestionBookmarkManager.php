@@ -71,7 +71,6 @@ class QuestionBookmarkManager extends BaseManager
             throw new ValidationError($error);
         }
 
-
         $questionId = $requestParams['question_id'];
         $question = $this->helper->loadById($questionId, ConsultConstants::$QUESTION_ENTITY_NAME);
 
@@ -80,7 +79,10 @@ class QuestionBookmarkManager extends BaseManager
             throw new ValidationError($error);
         }
 
-
+        if($question->getPractoAccountId() == $requestParams['practo_account_id']) {
+            @$error['error'] = 'User cannot bookmark the question';
+            throw new ValidationError($error);
+        }
 
         if ($this->validator->checkUniqueness($question, $requestParams['practo_account_id'])) {
             @$error['error'] = 'This user has already bookmarked this question';
