@@ -106,7 +106,7 @@ class DoctorReplyManager extends BaseManager
         $id = $doctorReply['id'];
 
         $doctorReplyEntity = $this->helper->loadById($id, ConsultConstants::$DOCTOR_REPLY_ENTITY_NAME);
-        if(empty($doctorReplyRatingEntity))
+        if(empty($doctorReplyEntity))
         {
             throw new \HttpException("Not a valid Doctor Reply Id", Codes::HTTP_BAD_REQUEST );
         }
