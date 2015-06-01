@@ -39,18 +39,29 @@ class QuestionBookmarkManager extends BaseManager
         return;
     }
 
-    public function remove($bookmarkId)
+    public function remove($requestParams)
     {
         $error = array();
 
-        $questionBookmark = $this->load($bookmarkId);
-        if (is_null($questionBookmark)) {
-            $error = array();
-            @$error['error']='Bookmark doesnt exist';
+        if (!array_key_exists('question_id', $requestParams)) {
+            @$error['question_id'] = 'This cannot be blank';
             throw new ValidationError($error);
         }
-        else
-            $this->helper->remove($questionBookmark);
+
+        if (!array_key_exists('practo_account_id', $requestParams)) {
+            @$error['practo_account_id'] = 'This cannot be blank';
+            throw new ValidationError($error);
+        }
+
+        $er =  $this->helper->getRepository(ConsultConstants::$QUESTION_BOOKMARK_ENTITY_NAME);
+        $questionBookmark = $er->findBookmark($requestParams['practo_account_id'], $requestParams['question_id']);
+
+        if (empty($questionBookmark)) {
+            @$error['error']='Bookmark doesnt exist';
+            throw new ValidationError($error);
+        } else {
+            $this->helper->remove($questionBookmark[0]);
+        }
     }
 
     /**
@@ -66,11 +77,10 @@ class QuestionBookmarkManager extends BaseManager
             throw new ValidationError($error);
         }
 
-        if (!array_key_exists('practo_account_id', $requestparams)) {
+        if (!array_key_exists('practo_account_id', $requestParams)) {
             @$error['practo_account_id'] = 'This cannot be blank';
             throw new ValidationError($error);
         }
-
 
         $questionId = $requestParams['question_id'];
         $question = $this->helper->loadById($questionId, ConsultConstants::$QUESTION_ENTITY_NAME);
@@ -80,9 +90,12 @@ class QuestionBookmarkManager extends BaseManager
             throw new ValidationError($error);
         }
 
+        if($question->getPractoAccountId() == $requestParams['practo_account_id']) {
+            @$error['error'] = 'User cannot bookmark the question';
+            throw new ValidationError($error);
+        }
 
-
-        if ($this->validator->checkUniqueness($question, $requestparams['practo_account_id'])) {
+        if ($this->validator->checkUniqueness($question, $requestParams['practo_account_id'])) {
             @$error['error'] = 'This user has already bookmarked this question';
             throw new ValidationError($error);
         }
@@ -92,6 +105,7 @@ class QuestionBookmarkManager extends BaseManager
         $questionBookmark->setQuestion($question);
         $this->updateFields($questionBookmark, $requestParams);
         $question->addBookmark($questionBookmark);
+        $question->setModifiedAt(new \DateTime('now'));
         $this->helper->persist($questionBookmark, true);
 
         return $questionBookmark;
