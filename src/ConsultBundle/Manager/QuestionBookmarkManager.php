@@ -39,18 +39,29 @@ class QuestionBookmarkManager extends BaseManager
         return;
     }
 
-    public function remove($bookmarkId)
+    public function remove($requestParams)
     {
         $error = array();
 
-        $questionBookmark = $this->load($bookmarkId);
-        if (is_null($questionBookmark)) {
-            $error = array();
-            @$error['error']='Bookmark doesnt exist';
+        if (!array_key_exists('question_id', $requestParams)) {
+            @$error['question_id'] = 'This cannot be blank';
             throw new ValidationError($error);
         }
-        else
-            $this->helper->remove($questionBookmark);
+
+        if (!array_key_exists('practo_account_id', $requestParams)) {
+            @$error['practo_account_id'] = 'This cannot be blank';
+            throw new ValidationError($error);
+        }
+
+        $er =  $this->helper->getRepository(ConsultConstants::$QUESTION_BOOKMARK_ENTITY_NAME);
+        $questionBookmark = $er->findBookmark($requestParams['practo_account_id'], $requestParams['question_id']);
+
+        if (empty($questionBookmark)) {
+            @$error['error']='Bookmark doesnt exist';
+            throw new ValidationError($error);
+        } else {
+            $this->helper->remove($questionBookmark[0]);
+        }
     }
 
     /**
