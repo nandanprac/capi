@@ -23,7 +23,7 @@ class UserProfileManager extends BaseManager
         }
         return;
     }
- 
+
     public function add($requestParams) {
         $user = new User();
         $this->updateFields($user, $requestParams);

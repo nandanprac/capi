@@ -29,13 +29,7 @@ class RetrieveDoctorProfileUtil {
         $params['_source']  = array('doctor_id', 'doctor_name', 'practo_account_id', 'specialties.specialty', 'profile_picture');
 
         $params['body']['query']['match']['practo_account_id'] = $practoAccntId;
-       // $params['body']['query']['bool']['must']['query_string']['default_field']  = 'search.specialties.specialty';
-        //$params['body']['query']['bool']['must']['query_string']['query']  = $speciality;
 
-        //$params['body']['query']['bool']['must']['query_string']['default_field']  = 'search.city';
-        //$params['body']['query']['bool']['must']['query_string']['query']  = $city;
-        //$params['body']['from']  = 0;
-        //$params['body']['size']  = 100;
         $results = $this->client->search($params);
 
 
@@ -84,7 +78,7 @@ class RetrieveDoctorProfileUtil {
     private function populateDoctorObject(array $docArr)
     {
 
-        //var_dump("123");
+
 
         if(is_null($docArr))
         {

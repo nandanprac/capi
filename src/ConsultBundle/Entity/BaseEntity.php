@@ -117,7 +117,7 @@ abstract class BaseEntity
                    }
 
                 } catch (\Exception $e) {
-                    var_dump($attrCamel);die;
+
                     throw new \HttpException($attrCamel. "is not a valid field in ".__CLASS__ ,Codes::HTTP_BAD_REQUEST);
                 }
             //} else {

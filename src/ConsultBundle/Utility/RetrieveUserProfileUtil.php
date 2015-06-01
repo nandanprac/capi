@@ -51,7 +51,6 @@ class RetrieveUserProfileUtil {
         if (!$response->isSuccessful()) {
             return null;
         }
-        //var_dump($response->getContent());
     }
 
 
@@ -72,7 +71,6 @@ class RetrieveUserProfileUtil {
         $body->replaceFields($postData);
         $request = new Request('POST', $this->accountHost."/_enquire_profile", [], $body );
 
-        //var_dump($postData);die;
 
         $client = new Client();
         $res = $client->send($request);
@@ -154,11 +152,9 @@ class RetrieveUserProfileUtil {
     public function loadUserDetailInQuestion(Question $question)
     {
 
-        //var_dump(json_encode($question->getPractoAccountId()));
         $userInfo = $question->getUserInfo();
         if(is_null($userInfo))
         {
-            //var_dump("1234");die;
             $userInfo = new UserInfo();
         }
 
@@ -168,7 +164,7 @@ class RetrieveUserProfileUtil {
         {
 
             $userProfile = $this->retrieveUserProfileNew($question->getPractoAccountId());
-            //var_dump($userProfile);die;
+
             $userInfo->setUserProfileDetails($userProfile);
             $question->setUserInfo($userInfo);
         }

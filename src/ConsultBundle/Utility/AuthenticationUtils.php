@@ -58,28 +58,9 @@ class AuthenticationUtils {
      */
     private function isAlreadyValidated($practoAccountId, $profileToken)
     {
-        //var_dump($practoAccountId, AuthenticationUtils::$authenticationMap->get($practoAccountId));
-       /* var_dump($profileToken, "    ", AuthenticationUtils::$authenticationMap->get($practoAccountId));
-        var_dump($profileToken === AuthenticationUtils::$authenticationMap->get($practoAccountId));die;*/
         return ($profileToken === AuthenticationUtils::$authenticationMap->get($practoAccountId));
     }
 
-    /**
-     * @param $practoAccountId
-     * @param $profileToken
-     * @return bool
-     */
-    private function validateWithToken($practoAccountId, $profileToken)
-    {
-        var_dump($profileToken);die;
-        //$browser = new Browser();
-        //$browser->h
-        //$response = $this->browser->get("http://accounts-consult.practodev.com".'/get_profile_with_token', ['X-Profile-Token' => $profileToken]);
-        //$client = new Client(["base_url" => "https://accounts-consult.practodev.com", 'defaults' => ['headers' => ['X-Profile-Token' => $profileToken]]]);
-        //$response = $client->get('/get_profile_with_token');
-        //var_dump($response->getHeader("content-type"));die;
-        return false;
-    }
 
 
     private function validateWithTokenNew($practoAccountId, $profileToken)
@@ -92,7 +73,7 @@ class AuthenticationUtils {
                 ]]);
             $res = $client->get('/get_profile_with_token');
 
-        
+
         $userJson = $res->json();
 
         $userId = $userJson["id"];

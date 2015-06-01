@@ -49,7 +49,7 @@ class QuestionComment extends BaseEntity
     /**
      * Get practoAccountId
      *
-     * @return integer 
+     * @return integer
      */
     public function getPractoAccountId()
     {
@@ -70,7 +70,7 @@ class QuestionComment extends BaseEntity
     /**
      * Get text
      *
-     * @return string 
+     * @return string
      */
     public function getText()
     {
@@ -90,7 +90,7 @@ class QuestionComment extends BaseEntity
     /**
      * Get question
      *
-     * @return Question 
+     * @return Question
      */
     public function getQuestion()
     {

@@ -151,7 +151,6 @@ class DoctorReplyManager extends BaseManager
 
          ));
 
-           //var_dump($doctorReplyRatingEntity->getId());die;
 
 
 

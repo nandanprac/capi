@@ -27,7 +27,7 @@ class QuestionBookmarkManager extends BaseManager
         if (array_key_exists('question_id', $data)) {
             unset($data['question_id']);
         }
-        $questionBookmark->setAttributes($data);            
+        $questionBookmark->setAttributes($data);
         $questionBookmark->setModifiedAt(new \DateTime('now'));
 
         try {

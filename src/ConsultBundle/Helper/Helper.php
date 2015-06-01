@@ -47,11 +47,11 @@ class Helper
      */
     public function loadAll($entityName)
     {
-        //$entity = $this->entityManager->getRepository($entityName)->findAll();
+
         $entity = $this->entityManager->getRepository($entityName)->findBy(array('softDeleted' => 0));
 
 
-        if (is_null($entity)) {
+        if (empty($entity)) {
             return null;
         }
 
@@ -70,7 +70,7 @@ class Helper
         $entity = $this->entityManager->getRepository($entityName)->find($id);
 
 
-        if (is_null($entity)) {
+        if (empty($entity)) {
             return null;
         }
 
@@ -139,10 +139,8 @@ class Helper
     public function checkForMandatoryFields($fields, array $data )
     {
         $errors = new ArrayCollection();
-        //var_dump($data);
         foreach($fields as $field)
         {
-            //var_dump($field);
             if(!array_key_exists($field, $data))
             {
 

@@ -81,8 +81,8 @@ class DoctorAssignmentPersistenceCommand extends ContainerAwareCommand
                   }
                 echo "Queue Message Persisted: ".json_encode($jobData);
                 } catch (\Exception $e) {
-		    $output->writeln("Dropping the queue message: ". json_encode($jobData));
-		    $this->queue->setQueueName(Queue::ASSIGNMENT_UPDATE)->deleteMessage($newJob);
+            $output->writeln("Dropping the queue message: ". json_encode($jobData));
+            $this->queue->setQueueName(Queue::ASSIGNMENT_UPDATE)->deleteMessage($newJob);
                     $output->writeln($e->getMessage());
                 }
                 $this->queue->setQueueName(Queue::ASSIGNMENT_UPDATE)->deleteMessage($newJob);

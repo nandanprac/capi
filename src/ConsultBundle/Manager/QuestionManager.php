@@ -239,19 +239,19 @@ class QuestionManager extends BaseManager
         }
 
        $er =  $this->helper->getRepository(ConsultConstants::$QUESTION_ENTITY_NAME);
-       $questionList = $er->findQuestionsByFilters($practoAccountId, $bookmark, $state, $category, $modifiedAfter, $limit, $offset); 
+       $questionList = $er->findQuestionsByFilters($practoAccountId, $bookmark, $state, $category, $modifiedAfter, $limit, $offset);
 
        return $questionList;
     }
 
     public function setState($question_id, $state){
         $question = $this->helper->loadById($question_id, ConsultConstants::$QUESTION_ENTITY_NAME);
-	if ($question){
-	    $question->setState($state);
+    if ($question){
+        $question->setState($state);
             $this->helper->persist($question, 'true');
-	} else {
-	    throw new \Exception("Question with id ".$question_id." doesn't exist.");
-	}
+    } else {
+        throw new \Exception("Question with id ".$question_id." doesn't exist.");
+    }
     }
 
     public function setTagByQuestionId($question_id, $tag){

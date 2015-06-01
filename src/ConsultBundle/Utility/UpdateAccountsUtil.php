@@ -33,7 +33,6 @@ class UpdateAccountsUtil {
     public function updateAccountDetails($profileToken, $data)
     {
 
-        //var_dump($profileToken);die;
         if(empty($profileToken))
             return null;
 
@@ -42,7 +41,6 @@ class UpdateAccountsUtil {
 
 
 
-        //var_dump($postData);die;
 
         if(empty($postData))
         {
@@ -64,7 +62,7 @@ class UpdateAccountsUtil {
             //do nothing.
         }
 
-        
+
 
 
 
@@ -81,13 +79,10 @@ class UpdateAccountsUtil {
             }
         }
 
-        //var_dump($data);die;
-
         if(empty($data))
             return null;
 
 
-        //var_dump($data);die;
 
          $postData = array();
         foreach(self::$fieldsToUpdate as $key => $value)
@@ -112,7 +107,7 @@ class UpdateAccountsUtil {
                     }
                 }catch (\Exception $e)
                 {
-                    //var_dump($e->getTraceAsString());
+
                 }
 
             }

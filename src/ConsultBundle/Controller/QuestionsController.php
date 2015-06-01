@@ -24,9 +24,7 @@ class QuestionsController extends Controller
     {
         $postData = $request->request->get('question');
         $profileToken = $request->headers->get('X-Profile-Token');
-        //var_dump($postData);
-        //var_dump(json_decode($postData));die;
-       // $question = $post
+
         $questionManager = $this->get('consult.question_manager');
 
         try {
@@ -40,7 +38,6 @@ class QuestionsController extends Controller
         }
 
         $files = $request->files;
-//        var_dump($files);die;
         $questionImageManager = $this->get('consult.question_image_manager');
 
         try {
@@ -55,17 +52,12 @@ class QuestionsController extends Controller
     }
 
     /**
-     * Get Question Action
-     *
-     * @param integer $question
-     *
-     * @return Array
-     *
+     * @param $questionId
+     * @return \ConsultBundle\Entity\Question|View
      */
     public function getQuestionAction($questionId)
     {
         $questionManager = $this->get('consult.question_manager');
-        $request = $this->getRequest();
 
         try {
             $question = $questionManager->load($questionId);
@@ -86,7 +78,6 @@ class QuestionsController extends Controller
     {
         $questionManager = $this->get('consult.question_manager');
         $request = $requestRec->query->all();
-        $questionList = array();
 
         try {
             $questionList = $questionManager->loadByFilters($request);
@@ -109,7 +100,7 @@ class QuestionsController extends Controller
             $questionFinal = $questionManager->patch($request);
         } catch (ValidationError $e) {
             return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
-        } 
+        }
 
         return View::create(
             array("question" => $questionFinal),
