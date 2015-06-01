@@ -62,7 +62,9 @@ class QuestionManager extends BaseManager
     {
         if (array_key_exists('user_profile_details', $requestParams)) {
             if (array_key_exists('is_someone_else', $requestParams['user_profile_details']) and
-                $requestParams['user_profile_details']['is_someone_else'] == true) {
+                ($requestParams['user_profile_details']['is_someone_else'] === true or
+                $requestParams['user_profile_details']['is_someone_else'] === "true")) {
+                var_dump($requestParams);die;
                 $userProfileArray = $requestParams['user_profile_details'];
                 unset($userProfileArray['is_someone_else']);
                 $userProfile = $this->userProfileManager->add($userProfileArray);
