@@ -7,6 +7,7 @@ use ConsultBundle\Entity\UserInfo;
 use ConsultBundle\Utility\RetrieveDoctorProfileUtil;
 use ConsultBundle\Utility\RetrieveUserProfileUtil;
 use ConsultBundle\Utility\UpdateAccountsUtil;
+use ConsultBundle\Utils\Utility;
 use Doctrine\Bundle\DoctrineBundle\Registry as Doctrine;
 use ConsultBundle\Entity\Question;
 use ConsultBundle\Entity\QuestionComment;
@@ -62,9 +63,7 @@ class QuestionManager extends BaseManager
     {
         if (array_key_exists('user_profile_details', $requestParams)) {
             if (array_key_exists('is_someone_else', $requestParams['user_profile_details']) and
-                ($requestParams['user_profile_details']['is_someone_else'] === true or
-                $requestParams['user_profile_details']['is_someone_else'] === "true")) {
-                var_dump($requestParams);die;
+                Utility::toBool($requestParams['user_profile_details']['is_someone_else'])) {
                 $userProfileArray = $requestParams['user_profile_details'];
                 unset($userProfileArray['is_someone_else']);
                 $userProfile = $this->userProfileManager->add($userProfileArray);

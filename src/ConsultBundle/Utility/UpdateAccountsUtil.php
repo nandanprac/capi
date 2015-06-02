@@ -8,6 +8,7 @@
 
 namespace ConsultBundle\Utility;
 
+use ConsultBundle\Utils\Utility;
 use GuzzleHttp\Message\Request;
 use GuzzleHttp\Message\Response;
 use GuzzleHttp\Client;
@@ -73,11 +74,12 @@ class UpdateAccountsUtil {
 
         if (array_key_exists('user_profile_details', $params)) {
             if (!(array_key_exists('is_someone_else', $params['user_profile_details']) and
-                $params['user_profile_details']['is_someone_else'] === true)) {
+                Utility::toBool($params['user_profile_details']['is_someone_else']) )) {
 
                 $data = $params['user_profile_details'];
             }
         }
+
 
         if(empty($data))
             return null;
@@ -85,6 +87,7 @@ class UpdateAccountsUtil {
 
 
          $postData = array();
+
         foreach(self::$fieldsToUpdate as $key => $value)
         {
             if(array_key_exists($key, $data) )
