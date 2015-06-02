@@ -93,7 +93,7 @@ def polish():
             found_errors = found_errors or result.return_code != 0
 
             info('Running coding standards check...')
-            result = local('phpcs --standard=Symfony2 '
+            result = local('./bin/phpcs --standard=Symfony2 '
                            './src/')
             found_errors = found_errors or result.return_code != 0
 
@@ -106,7 +106,7 @@ def polish():
 
             info('Validating doctrine orm schema...')
             result = local(
-                './app/console doctrine:schema:validate --em=neo | '
+                './app/console doctrine:schema:validate | '
                 'grep \'\\[Mapping\\]\\s*OK\'')
             found_errors = found_errors or result.return_code != 0
 

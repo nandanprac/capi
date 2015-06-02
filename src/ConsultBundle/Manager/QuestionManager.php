@@ -169,7 +169,7 @@ class QuestionManager extends BaseManager
         if (array_key_exists('share', $requestParams))
             $question->setShareCount($question->getShareCount() + 1);
 
-        if (array_key_exists('comment', $requestParams)) {
+        if (array_key_exists('comment', $requestParams)){
             $commentParams = array();
             if (array_key_exists('practo_account_id', $requestParams))
                  $commentParams['practo_account_id'] = $requestParams['practo_account_id'];
