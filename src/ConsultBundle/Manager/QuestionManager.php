@@ -48,8 +48,8 @@ class QuestionManager extends BaseManager
         RetrieveUserProfileUtil $retrieveUserProfileUtil,
         RetrieveDoctorProfileUtil $retrieveDoctorProfileUtil,
         UpdateAccountsUtil $updateAccountsUtil
-    ) {
-
+    )
+{
         $this->userManager = $userManager;
         $this->userProfileManager = $userProfileManager;
         $this->questionBookmarkManager = $questionBookmarkManager;
@@ -217,7 +217,7 @@ class QuestionManager extends BaseManager
         /**
          * @var Question $question
          */
-        $question = $this->helper->loadById($questionId, ConsultConstants::QUESTION_ENTITY_NAME);
+        $question = $this->helper->loadById($questionId, ConsultConstants::$QUESTION_ENTITY_NAME);
 
         if (is_null($question)) {
             return null;
