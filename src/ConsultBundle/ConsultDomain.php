@@ -22,6 +22,7 @@ class ConsultDomain
 
     /**
      * Get Host
+     *
      * @param string $subdomain - Subdomain
      *
      * @return string

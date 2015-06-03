@@ -15,7 +15,8 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Post\PostBody;
 
 
-class UpdateAccountsUtil {
+class UpdateAccountsUtil
+{
 
     private $accountHost;
 
@@ -34,8 +35,9 @@ class UpdateAccountsUtil {
     public function updateAccountDetails($profileToken, $data)
     {
 
-        if(empty($profileToken))
-            return null;
+        if(empty($profileToken)) {
+            return null; 
+        }
 
 
             $postData = $this->populatePostData($data);
@@ -43,15 +45,16 @@ class UpdateAccountsUtil {
 
 
 
-        if(empty($postData))
-        {
+        if(empty($postData)) {
             return null;
         }
 
         $body = new PostBody();
         $body->replaceFields($postData);
-        $request = new Request('POST', $this->accountHost."/update_profile_with_token",
-            array('X-Profile-Token' => $profileToken), $body );
+        $request = new Request(
+            'POST', $this->accountHost."/update_profile_with_token",
+            array('X-Profile-Token' => $profileToken), $body 
+        );
 
         $client = new Client();
 
@@ -73,16 +76,18 @@ class UpdateAccountsUtil {
     {
 
         if (array_key_exists('user_profile_details', $params)) {
-            if (!(array_key_exists('is_someone_else', $params['user_profile_details']) and
-                Utility::toBool($params['user_profile_details']['is_someone_else']) )) {
+            if (!(array_key_exists('is_someone_else', $params['user_profile_details']) 
+                and Utility::toBool($params['user_profile_details']['is_someone_else']) )
+            ) {
 
                 $data = $params['user_profile_details'];
             }
         }
 
 
-        if(empty($data))
-            return null;
+        if(empty($data)) {
+            return null; 
+        }
 
 
 
@@ -90,14 +95,11 @@ class UpdateAccountsUtil {
 
         foreach(self::$fieldsToUpdate as $key => $value)
         {
-            if(array_key_exists($key, $data) )
-            {
+            if(array_key_exists($key, $data) ) {
                 try{
                     $val = trim($data[$key]);
-                    if(!empty($val))
-                    {
-                        if($value === 'dob')
-                        {
+                    if(!empty($val)) {
+                        if($value === 'dob') {
 
                             $dob = new \DateTime($val);
 

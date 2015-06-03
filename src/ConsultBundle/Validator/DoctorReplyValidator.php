@@ -12,7 +12,8 @@ namespace ConsultBundle\Validator;
 use ConsultBundle\Entity\BaseEntity;
 use ConsultBundle\Entity\DoctorReply;
 
-class DoctorReplyValidator implements Validator {
+class DoctorReplyValidator implements Validator
+{
 
     public function validate(BaseEntity $doctorReply)
     {

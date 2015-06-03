@@ -28,11 +28,13 @@ class SQSQueue extends AbstractQueue
         $this->region = @$hParts[1]?:'ap-southeast-1';
         $accessKey = @$parts['user']?:'';
         $accessSecret = @$parts['pass']?:'';
-        $this->sqs = SqsClient::factory(array(
+        $this->sqs = SqsClient::factory(
+            array(
             'key'    => $accessKey,
             'secret' => $accessSecret,
             'region' => $this->region
-        ));
+            )
+        );
         if (($path = ltrim(@$parts['path'], '/'))) {
             $pParts = explode('/', $path, 2);
             $this->accountId = $pParts[0];
@@ -59,13 +61,15 @@ class SQSQueue extends AbstractQueue
                 // TODO: Post warning in sentry
                 $visibilityTimeout = 43200;
             }
-            $this->sqs->createQueue(array(
+            $this->sqs->createQueue(
+                array(
                 'QueueName' => $queueName,
                 'Attributes' => array(
                     'VisibilityTimeout' => $visibilityTimeout,
                     'ReceiveMessageWaitTimeSeconds' => 20
                 )
-            ));
+                )
+            );
         } catch (SqsException $e) {
             if ($e->getExceptionCode() === 'QueueAlreadyExists') {
                 return;
@@ -93,12 +97,14 @@ class SQSQueue extends AbstractQueue
         }
         while (true) {
             try {
-                $result = $this->sqs->receiveMessage(array(
+                $result = $this->sqs->receiveMessage(
+                    array(
                     'QueueUrl' => $this->getQueueUrl(),
                     'MaxNumberOfMessages' => 1,
                     'WaitTimeSeconds' => 20,
                     'VisibilityTimeout' => $visibilityTimeout
-                ));
+                    )
+                );
             } catch (SqsException $e) {
                 if ($e->getExceptionCode() === 'AWS.SimpleQueueService.NonExistentQueue') {
                     $this->createQueueIfNotExists($this->getQueueName());
@@ -130,19 +136,23 @@ class SQSQueue extends AbstractQueue
             $delay = 900;
         }
         try {
-            $messageId = $this->sqs->sendMessage(array(
+            $messageId = $this->sqs->sendMessage(
+                array(
                 'QueueUrl' => $this->getQueueUrl(),
                 'MessageBody' => base64_encode(strval($message)),
                 'DelaySeconds' => $delay?:0
-            ));
+                )
+            );
         } catch (SqsException $e) {
             if ($e->getExceptionCode() === 'AWS.SimpleQueueService.NonExistentQueue') {
                 $this->createQueueIfNotExists($this->getQueueName());
-                $messageId = $this->sqs->sendMessage(array(
+                $messageId = $this->sqs->sendMessage(
+                    array(
                     'QueueUrl' => $this->getQueueUrl(),
                     'MessageBody' => base64_encode(strval($message)),
                     'DelaySeconds' => $delay?:0
-                ));
+                    )
+                );
             } else {
                 throw $e;
             }
@@ -157,9 +167,11 @@ class SQSQueue extends AbstractQueue
      */
     public function deleteMessage($message)
     {
-        $this->sqs->deleteMessage(array(
+        $this->sqs->deleteMessage(
+            array(
             'QueueUrl' => $this->getQueueUrl(),
             'ReceiptHandle' => $message->getHandle()
-        ));
+            )
+        );
     }
 }

@@ -13,7 +13,8 @@ use ConsultBundle\Entity\User;
  */
 class UserProfileManager extends BaseManager
 {
-    public function updateFields($userInfo, $requestParams) {
+    public function updateFields($userInfo, $requestParams) 
+    {
         $userInfo->setAttributes($requestParams);
 
         try {
@@ -24,7 +25,8 @@ class UserProfileManager extends BaseManager
         return;
     }
 
-    public function add($requestParams) {
+    public function add($requestParams) 
+    {
         $user = new User();
         $this->updateFields($user, $requestParams);
         $this->helper->persist($user, 'true');

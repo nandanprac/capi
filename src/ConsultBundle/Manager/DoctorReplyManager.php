@@ -42,10 +42,11 @@ class DoctorReplyManager extends BaseManager
         $doctorReply = new DoctorReply();
         $doctorQuestion = $this->helper->loadById(
             $doctorQuestionId,
-            ConsultConstants::$DOCTOR_QUESTION_ENTITY_NAME);
+        ConsultConstants::$DOCTOR_QUESTION_ENTITY_NAME
+        );
 
         if (is_null($doctorQuestion->getQuestion())) {
-           throw new \HttpException ("Error:Doctor has not been assigned the question", Codes::HTTP_BAD_REQUEST);
+            throw new \HttpException("Error:Doctor has not been assigned the question", Codes::HTTP_BAD_REQUEST);
         }
 
         if($practoAccountId != $doctorQuestion->getPractoAccountId()) {
@@ -57,7 +58,7 @@ class DoctorReplyManager extends BaseManager
         }
 
         if($doctorQuestion->getState() != "UNANSWERED") {
-          throw new \HttpException("The doctor is not allowed to answer this question", Codes::HTTP_BAD_REQUEST);
+            throw new \HttpException("The doctor is not allowed to answer this question", Codes::HTTP_BAD_REQUEST);
         }
 
         $doctorQuestion->setState("ANSWERED");
@@ -65,19 +66,19 @@ class DoctorReplyManager extends BaseManager
         $doctorReply->setDoctorQuestion($doctorQuestion);
         $doctorReply->setText($answerText);
 
-/*
-      try {
+        /*
+        try {
           $this->validate($doctorReply);
 
-      }catch(\Exception $e)
-      {
+        }catch(\Exception $e)
+        {
           //To be implemented
           throw new Exception($e, $e->getMessage());
-      }*/
-      $this->queue->setQueueName(Queue::CONSULT_GCM)->sendMessage(json_encode(array("type"=>"query_answered", "message"=>"Your Query has been answered", "id"=>$doctorQuestion->getQuestion()->getId(), "user_ids"=>array($doctorQuestion->getQuestion()->getPractoAccountId()))));
-      $this->helper->persist($doctorReply, true);
+        }*/
+        $this->queue->setQueueName(Queue::CONSULT_GCM)->sendMessage(json_encode(array("type"=>"query_answered", "message"=>"Your Query has been answered", "id"=>$doctorQuestion->getQuestion()->getId(), "user_ids"=>array($doctorQuestion->getQuestion()->getPractoAccountId()))));
+        $this->helper->persist($doctorReply, true);
 
-      return $doctorReply->getDoctorQuestion()->getQuestion();
+        return $doctorReply->getDoctorQuestion()->getQuestion();
     }
 
     /**
@@ -106,9 +107,8 @@ class DoctorReplyManager extends BaseManager
         $id = $doctorReply['id'];
 
         $doctorReplyEntity = $this->helper->loadById($id, ConsultConstants::$DOCTOR_REPLY_ENTITY_NAME);
-        if(empty($doctorReplyEntity))
-        {
-            throw new \HttpException("Not a valid Doctor Reply Id", Codes::HTTP_BAD_REQUEST );
+        if(empty($doctorReplyEntity)) {
+            throw new \HttpException("Not a valid Doctor Reply Id", Codes::HTTP_BAD_REQUEST);
         }
 
         $ownerId = $doctorReplyEntity->getDoctorQuestion()->getQuestion()->getPractoAccountId();
@@ -131,32 +131,31 @@ class DoctorReplyManager extends BaseManager
                 throw new \HttpException("Not the owner of the question", Codes::HTTP_BAD_REQUEST);
             }
 
-            if (!$doctorReplyEntity->getViewedAt())
-            {
+            if (!$doctorReplyEntity->getViewedAt()) {
                 $doctorReplyEntity->setViewedAt(new \DateTime());
                 $changed = true;
             }
         }
 
-        if(array_key_exists("like", $doctorReply))
-        {
+        if(array_key_exists("like", $doctorReply)) {
             $like = $doctorReply['like'];
             //$er = new EntityRepository();
             $er = $this->helper->getRepository(ConsultConstants::$DOCTOR_REPLY_RATING_ENTITY_NAME);
 
 
 
-         $doctorReplyRatingEntity = $er->findOneBy(array("practoAccountId" => $practoAccountId,
+            $doctorReplyRatingEntity = $er->findOneBy(
+                array("practoAccountId" => $practoAccountId,
                 "doctorReply" => $doctorReplyEntity,
 
-         ));
+                )
+            );
 
 
 
 
             //Like
-            if(!$doctorReplyRatingEntity && $like)
-            {
+            if(!$doctorReplyRatingEntity && $like) {
                 $doctorReplyRatingEntity = new DoctorReplyRating();
                 $doctorReplyRatingEntity->setPractoAccountId($practoAccountId);
                 $doctorReplyRatingEntity->setDoctorReply($doctorReplyEntity);
@@ -167,8 +166,7 @@ class DoctorReplyManager extends BaseManager
 
 
             //Unlike
-            if($doctorReplyRatingEntity && !$like)
-            {
+            if($doctorReplyRatingEntity && !$like) {
                 $changed = true;
                 $this->helper->remove($doctorReplyRatingEntity);
 
@@ -176,8 +174,7 @@ class DoctorReplyManager extends BaseManager
 
         }
 
-        if($changed)
-        {
+        if($changed) {
             $this->helper->persist($doctorReplyEntity, true);
         }
 

@@ -24,7 +24,6 @@ class RepliesController extends FOSRestController
      * @return DoctorReply
      *
      * @View()
-     *
      */
      public function postDoctorReplyAction(Request $request)
      {
@@ -34,7 +33,7 @@ class RepliesController extends FOSRestController
         $doctorReplyManager = $this->get('consult.doctorReplyManager');
 
         try {
-           $doctorReply = $doctorReplyManager->replyToAQuestion($doctorQuestionId, $practoAccountId, $answerText);
+            $doctorReply = $doctorReplyManager->replyToAQuestion($doctorQuestionId, $practoAccountId, $answerText);
         } catch(\HttpException $e) {
             return Views::create($e->getMessage(), $e->getCode());
         }
@@ -42,29 +41,29 @@ class RepliesController extends FOSRestController
         return $doctorReply;
      }
 
-    /**
+        /**
      * @param Request $request
      * @return array|Views
      *
      * @View()
      */
-    public function patchDoctorReplyAction(Request $request)
-    {
-        $postData = $request->request->all();
-        $doctorReplyManager = $this->get('consult.doctorReplyManager');
-        try {
-            $doctorReply = $doctorReplyManager->patchDoctorReply($postData);
-        } catch (\HttpException $e) {
-            return Views::create($e->getMessage(), $e->getCode());
+        public function patchDoctorReplyAction(Request $request)
+        {
+            $postData = $request->request->all();
+            $doctorReplyManager = $this->get('consult.doctorReplyManager');
+            try {
+                $doctorReply = $doctorReplyManager->patchDoctorReply($postData);
+            } catch (\HttpException $e) {
+                return Views::create($e->getMessage(), $e->getCode());
+            }
+
+            return array("doctor_reply"=> $doctorReply);
         }
 
-        return array("doctor_reply"=> $doctorReply);
-    }
 
-
-    public function getReplyAction()
-    {
-        $m = $this->get('consult.retrieve_doctor_profile_util');
-        $m->retrieveDoctorProfile();
-    }
+        public function getReplyAction()
+        {
+            $m = $this->get('consult.retrieve_doctor_profile_util');
+            $m->retrieveDoctorProfile();
+        }
 }

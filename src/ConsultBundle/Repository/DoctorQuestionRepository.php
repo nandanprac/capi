@@ -12,7 +12,8 @@ namespace ConsultBundle\Repository;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 
-class DoctorQuestionRepository extends EntityRepository{
+class DoctorQuestionRepository extends EntityRepository
+{
 
     /**
      * @param $doctorId
@@ -27,38 +28,38 @@ class DoctorQuestionRepository extends EntityRepository{
         $offset = array_key_exists('offset', $filters) ? $filters['offset'] : 0;
         try{
              $qb->select(array('q'))
-                ->from("ConsultBundle:Question", 'q')
-                ->innerJoin('q.doctorQuestions', 'dq')
-                ->where('dq.practoAccountId = :doctorId');
+                 ->from("ConsultBundle:Question", 'q')
+                 ->innerJoin('q.doctorQuestions', 'dq')
+                 ->where('dq.practoAccountId = :doctorId');
 
-             if (array_key_exists('reject', $filters)) {
-               $state = $filters['reject'];
-               if (strtolower($state) == 'false'){
-                  $qb->andWhere('dq.rejectedAt is NULL');
-               } else if (strtolower($state) == 'true'){
-                  $qb->andWhere('dq.rejectedAt is not NULL');
-               }
-             }
+            if (array_key_exists('reject', $filters)) {
+                $state = $filters['reject'];
+                if (strtolower($state) == 'false') {
+                    $qb->andWhere('dq.rejectedAt is NULL');
+                } else if (strtolower($state) == 'true') {
+                    $qb->andWhere('dq.rejectedAt is not NULL');
+                }
+            }
 
-             if (array_key_exists('view', $filters)) {
-               $state = $filters['view'];
-               if (strtolower($state) == 'false'){
-                  $qb->andWhere('dq.viewedAt is NULL');
-               } else if (strtolower($state) == 'true'){
-                  $qb->andWhere('dq.viewedAt is not NULL');
-               }
-             }
+            if (array_key_exists('view', $filters)) {
+                $state = $filters['view'];
+                if (strtolower($state) == 'false') {
+                    $qb->andWhere('dq.viewedAt is NULL');
+                } else if (strtolower($state) == 'true') {
+                    $qb->andWhere('dq.viewedAt is not NULL');
+                }
+            }
 
-             if (array_key_exists('state', $filters)) {
+            if (array_key_exists('state', $filters)) {
                 $state = strtoupper($filters['state']);
                 $qb->andWhere('dq.state = :state')
-                  ->setParameter('state', $state);
-             }
+                    ->setParameter('state', $state);
+            }
 
              $qb->setFirstResult($offset)
-               ->setMaxResults($limit)
-               ->addOrderBy('q.modifiedAt', 'DESC')
-               ->setParameter('doctorId',$doctorId);
+                 ->setMaxResults($limit)
+                 ->addOrderBy('q.modifiedAt', 'DESC')
+                 ->setParameter('doctorId', $doctorId);
              $questions = $qb->getQuery()->getResult();
              $paginator = new Paginator($qb->getQuery(), $fetchJoinCollection = true);
              $count = count($paginator);
@@ -75,7 +76,7 @@ class DoctorQuestionRepository extends EntityRepository{
     /**
      * @param $doctorId
      * @param $state
-     * @param null $maxResults
+     * @param null     $maxResults
      * @return array
      */
     public function findDoctorQuestionsForAState($doctorId, $state=null, $maxResults=null)
@@ -83,8 +84,7 @@ class DoctorQuestionRepository extends EntityRepository{
         $queryStr = "SELECT q FROM ConsultBundle\Entity\Question q join q.doctorQuestions
                         dq WHERE dq.practoAccountId = :doctorId  AND q.softDeleted = 0 AND dq.softDeleted= 0 ";
 
-        if($state != null)
-        {
+        if($state != null) {
             $queryStr = $queryStr + " AND dq.state = :state";
         }
 
@@ -93,12 +93,12 @@ class DoctorQuestionRepository extends EntityRepository{
 
         $query->setParameter('doctorId', $doctorId);
 
-        if($state != null)
-        {$query->setParameter('state', $state);
+        if($state != null) {$query->setParameter('state', $state);
         }
 
-        if($maxResults!= null)
-        $query->setMaxResults($maxResults);
+        if($maxResults!= null) {
+            $query->setMaxResults($maxResults); 
+        }
 
         $questions = $query->getResult();
 

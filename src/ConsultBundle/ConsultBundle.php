@@ -11,6 +11,7 @@ namespace ConsultBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-class ConsultBundle extends Bundle {
+class ConsultBundle extends Bundle
+{
 
 }

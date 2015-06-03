@@ -26,12 +26,12 @@ class QuestionImageManager extends BaseManager
 
     /**
      * @param Question $question
-     * @param FileBag $fileBag
+     * @param FileBag  $fileBag
      */
     public function add(Question $question, FileBag $fileBag)
     {
 
-       $urls = $this->fileUploadUtil->add($fileBag, $question->getId());
+        $urls = $this->fileUploadUtil->add($fileBag, $question->getId());
         $questionImages = new ArrayCollection();
 
         foreach($urls as $url)
@@ -44,8 +44,7 @@ class QuestionImageManager extends BaseManager
 
         $question->setImages($questionImages);
 
-        if($questionImages->count() > 0)
-        {
+        if($questionImages->count() > 0) {
             $this->helper->persist($question, true);
         }
     }

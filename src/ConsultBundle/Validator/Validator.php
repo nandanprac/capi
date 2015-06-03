@@ -11,7 +11,8 @@ namespace ConsultBundle\Validator;
 
 use ConsultBundle\Entity\BaseEntity;
 
-interface Validator {
+interface Validator
+{
 
     public function validate(BaseEntity $baseEntity);
 

@@ -19,7 +19,7 @@ use ConsultBundle\Utility\RetrieveUserProfileUtil;
 class DoctorQuestionManager extends BaseManager
 {
     /**
-     * @param RetrieveUserProfileUtil $retrieveUserProfileUtil
+     * @param RetrieveUserProfileUtil   $retrieveUserProfileUtil
      * @param RetrieveDoctorProfileUtil $retrieveDoctorProfileUtil
      */
     public function __construct(RetrieveUserProfileUtil $retrieveUserProfileUtil, RetrieveDoctorProfileUtil $retrieveDoctorProfileUtil )
@@ -30,7 +30,7 @@ class DoctorQuestionManager extends BaseManager
 
     /**
      * @param $questionId
-     * @param array $doctorsId
+     * @param array      $doctorsId
      */
     public function setDoctorsForAQuestions($questionId, Array $doctorsId)
     {
@@ -55,7 +55,8 @@ class DoctorQuestionManager extends BaseManager
      * @return \ConsultBundle\Entity\Question
      * @throws ValidationError
      */
-    public function patch($updateData) {
+    public function patch($updateData) 
+    {
 
         if (array_key_exists('question_id', $updateData) and array_key_exists('practo_account_id', $updateData)) {
             /**
@@ -81,9 +82,9 @@ class DoctorQuestionManager extends BaseManager
             } else {
                 throw new ValidationError(array("error" => "Question is already rejected by this doctor"));
             }
-          } else if (array_key_exists('reject', $updateData) && $updateData['reject'] === false and array_key_exists('rejection_reason', $updateData)) {
-              throw new ValidationError(array("error"=> "Please dont pass rejection_reason if reject is false"));
-          }
+        } else if (array_key_exists('reject', $updateData) && $updateData['reject'] === false and array_key_exists('rejection_reason', $updateData)) {
+            throw new ValidationError(array("error"=> "Please dont pass rejection_reason if reject is false"));
+        }
 
         if (array_key_exists('view', $updateData) && $updateData['view'] == 'true') {
             if(!$question->getViewedAt()) {
@@ -120,21 +121,24 @@ class DoctorQuestionManager extends BaseManager
         return;
     }
 
-    public function loadById($doctorQuestionId){
+    public function loadById($doctorQuestionId)
+    {
 
         return $this->getRepository()->findById($doctorQuestionId);
     }
 
     /**
      * @param $doctorId
-     * @param null $queryParams
+     * @param null     $queryParams
      * @return mixed
      */
-    public function loadAllByDoctor($doctorId, $queryParams = null){
+    public function loadAllByDoctor($doctorId, $queryParams = null)
+    {
         return $this->getRepository()->findByFilters($doctorId, $queryParams);
     }
 
-    private function getRepository() {
+    private function getRepository() 
+    {
 
         return $this->helper->getRepository(ConsultConstants::$DOCTOR_QUESTION_ENTITY_NAME);
     }

@@ -16,7 +16,7 @@ class ValidationError extends \ErrorException
      *
      * @param ConstraintViolationList|array|string $errors
      */
-    public function __construct ($errors)
+    public function __construct($errors)
     {
         if ($errors instanceof ConstraintViolationList) {
             $errorFields = array();

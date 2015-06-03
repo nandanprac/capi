@@ -38,13 +38,11 @@ class FileUploadUtil
 
         $this->scheme = $scheme;
         $this->region = $region;
-        if(!(is_null($fileName)))
-        {
+        if(!(is_null($fileName))) {
             $this->fileName = $fileName;
         }
 
-        if(!(is_null($tempUrl)))
-        {
+        if(!(is_null($tempUrl))) {
             $this->tempUrl = $tempUrl;
         }
 
@@ -55,15 +53,17 @@ class FileUploadUtil
 
     private function createS3Client()
     {
-         $s3Client = S3Client::factory(array(
-         'key' => $this->s3Key,
-         'secret' => $this->s3Secret,
-         'region' => Region::AP_SOUTHEAST_1,
-         'scheme' => 'https'
-          ));
+         $s3Client = S3Client::factory(
+             array(
+             'key' => $this->s3Key,
+             'secret' => $this->s3Secret,
+             'region' => Region::AP_SOUTHEAST_1,
+             'scheme' => 'https'
+             )
+         );
 
-        return $s3Client;
-     }
+         return $s3Client;
+    }
 
 
     private function uploadFile($uploadedUri, $localFile, $contentType='image/jpeg')
@@ -72,38 +72,39 @@ class FileUploadUtil
 
                $client = $this->createS3Client();
 
-           $response = $client->putObject(array(
+           $response = $client->putObject(
+               array(
                'Bucket'     => $this->s3ResourcesBucket,
                'Key'        => $uploadedUri,
                'SourceFile' => $localFile,
                'ACL'    => 'public-read'
-           ));
+               )
+           );
 
 
 
-        return $response;
+           return $response;
     }
 
     public function add(FileBag $fileBag, $id)
     {
         $urls = new ArrayCollection();
 
-       foreach( $fileBag->all() as  $file)
+        foreach( $fileBag->all() as  $file)
            {
 
-               if($file instanceof UploadedFile)
-               {
+            if($file instanceof UploadedFile) {
 
-                   $uri = $this->processUploadedFile($file , $id);
+                $uri = $this->processUploadedFile($file, $id);
 
-                   $urls->add($uri);
-               }
+                $urls->add($uri);
+            }
 
-           }
-
+        }
 
 
-       return $urls;
+
+        return $urls;
 
 
 
@@ -172,7 +173,7 @@ class FileUploadUtil
 
 
 
-       $response = $this->uploadFile($uploadedUri, $localFile);
+        $response = $this->uploadFile($uploadedUri, $localFile);
 
 
 

@@ -110,9 +110,9 @@ abstract class AbstractQueue
     public function getVisibilityTimeout()
     {
         switch ($this->queueName) {
-            case self::PUSH_TEST:
-            default:
-                return 60;
+        case self::PUSH_TEST:
+        default:
+            return 60;
         }
     }
 }

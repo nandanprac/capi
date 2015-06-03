@@ -17,7 +17,8 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Post\PostBody;
 
 
-class RetrieveUserProfileUtil {
+class RetrieveUserProfileUtil
+{
 
     private $accountHost;
     private $accountsSigningKey;
@@ -69,7 +70,7 @@ class RetrieveUserProfileUtil {
 
         $body = new PostBody();
         $body->replaceFields($postData);
-        $request = new Request('POST', $this->accountHost."/_enquire_profile", [], $body );
+        $request = new Request('POST', $this->accountHost."/_enquire_profile", [], $body);
 
 
         $client = new Client();
@@ -102,8 +103,7 @@ class RetrieveUserProfileUtil {
     private function populateUserFromAccounts(array $userProfile)
     {
 
-        if(is_null($userProfile))
-        {
+        if(is_null($userProfile)) {
             return null;
         }
 
@@ -115,18 +115,15 @@ class RetrieveUserProfileUtil {
 
 
 
-        if(array_key_exists('dob', $userProfile))
-        {
+        if(array_key_exists('dob', $userProfile)) {
             $user->setDateOfBirth($userProfile['dob']);
         }
 
-        if(array_key_exists('gender', $userProfile))
-        {
+        if(array_key_exists('gender', $userProfile)) {
             $user->setGender($userProfile['gender']);
         }
 
-        if(array_key_exists('height', $userProfile))
-        {
+        if(array_key_exists('height', $userProfile)) {
             $user->setHeightInCms($userProfile['height']);
         }
 
@@ -135,8 +132,7 @@ class RetrieveUserProfileUtil {
             $user->setWeightInKgs($userProfile['weight']);
         }
 
-        if(array_key_exists('blood_group', $userProfile))
-        {
+        if(array_key_exists('blood_group', $userProfile)) {
             $user->setBloodGroup($userProfile['blood_group']);
 
         }
@@ -153,15 +149,13 @@ class RetrieveUserProfileUtil {
     {
 
         $userInfo = $question->getUserInfo();
-        if(is_null($userInfo))
-        {
+        if(is_null($userInfo)) {
             $userInfo = new UserInfo();
         }
 
         $userProfile = $userInfo->getUserProfileDetails();
 
-        if(is_null($userProfile))
-        {
+        if(is_null($userProfile)) {
 
             $userProfile = $this->retrieveUserProfileNew($question->getPractoAccountId());
 

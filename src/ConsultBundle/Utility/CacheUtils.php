@@ -8,12 +8,13 @@
 
 namespace ConsultBundle\Utility;
 
-class CacheUtils {
+class CacheUtils
+{
 
     public function getFromCache($cacheName, $id)
     {
-     return null;
-     }
+        return null;
+    }
 
 
     public function postInCache($cacheName, $entity)

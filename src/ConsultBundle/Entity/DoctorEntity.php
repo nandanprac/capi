@@ -19,8 +19,8 @@ class DoctorEntity
     private $profilePicture;
 
     public function __construct($name=null, $specialty=null,
-        $profilePicture = 'http://www.1stdoctor.com/wp-content/uploads/2013/11/woman_doctor_02.png')
-    {
+        $profilePicture = 'http://www.1stdoctor.com/wp-content/uploads/2013/11/woman_doctor_02.png'
+    ) {
         $this->name = $name;
         $this->specialty = $specialty;
         $this->profilePicture = $profilePicture;

@@ -106,20 +106,19 @@ abstract class BaseEntity
             //if ($this->isEditableAttribute($attrSnake)) {
                 $attrCamel = str_replace(' ', '', ucwords(str_replace('_', ' ', $attrSnake)));
                 $setter = 'set' . $attrCamel;
-                try {
-                    if ('' === $value) {
-                        $value = null;
-                    }
-                   if(method_exists($this, $setter))
-                   {
-                       $this->$setter($value);
-
-                   }
-
-                } catch (\Exception $e) {
-
-                    throw new \HttpException($attrCamel. "is not a valid field in ".__CLASS__ ,Codes::HTTP_BAD_REQUEST);
+            try {
+                if ('' === $value) {
+                    $value = null;
                 }
+                if(method_exists($this, $setter)) {
+                    $this->$setter($value);
+
+               }
+
+            } catch (\Exception $e) {
+
+                throw new \HttpException($attrCamel. "is not a valid field in ".__CLASS__, Codes::HTTP_BAD_REQUEST);
+            }
             //} else {
             //    throw new BadAttributeException($attrSnake);
             //}

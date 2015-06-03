@@ -11,7 +11,8 @@ namespace ConsultBundle\Validator;
 
 use ConsultBundle\Entity\BaseEntity;
 
-class QuestionImageValidator implements Validator {
+class QuestionImageValidator implements Validator
+{
 
     public function validate(BaseEntity $entity)
     {

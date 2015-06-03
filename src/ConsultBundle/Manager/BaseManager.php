@@ -12,7 +12,8 @@ use ConsultBundle\Helper\Helper;
 use ConsultBundle\Validator\Validator;
 
 
-abstract class BaseManager {
+abstract class BaseManager
+{
 
     /**
      * @var Helper $helper

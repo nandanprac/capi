@@ -12,7 +12,6 @@ use ConsultBundle\Manager\ValidationError;
 
 /**
  * Questions Controller
- *
  */
 class QuestionsController extends Controller
 {
@@ -32,23 +31,24 @@ class QuestionsController extends Controller
             $question = $questionManager->add((array)json_decode($postData, true), $profileToken);
 
         } catch (ValidationError $e) {
-            return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
+            return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
         } catch (Exception $e) {
-            return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
+            return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
         }
 
         $files = $request->files;
         $questionImageManager = $this->get('consult.question_image_manager');
 
         try {
-           $questionImageManager->add($question, $files);
+            $questionImageManager->add($question, $files);
         } catch(\Exception $e) {
-            return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
+            return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
         }
 
         return View::create(
             array("question" => $question),
-            Codes::HTTP_CREATED);
+        Codes::HTTP_CREATED
+        );
     }
 
     /**
@@ -85,8 +85,9 @@ class QuestionsController extends Controller
             return View::create($e->getMessage(), Codes::HTTP_FORBIDDEN);
         }
 
-        if (null === $questionList)
-            return View::create(null, Codes::HTTP_NOT_FOUND);
+        if (null === $questionList) {
+            return View::create(null, Codes::HTTP_NOT_FOUND); 
+        }
 
         return array('questions' => $questionList[0], 'count' => $questionList[1]);
     }
@@ -99,12 +100,13 @@ class QuestionsController extends Controller
         try {
             $questionFinal = $questionManager->patch($request);
         } catch (ValidationError $e) {
-            return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
+            return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
         }
 
         return View::create(
             array("question" => $questionFinal),
-            Codes::HTTP_CREATED);
+            Codes::HTTP_CREATED
+        );
 
     }
 }

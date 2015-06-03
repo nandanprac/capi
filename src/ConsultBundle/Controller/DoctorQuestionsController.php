@@ -23,30 +23,28 @@ class DoctorQuestionsController extends Controller
     /**
      * @param Request $request
      * @return DoctorQuestion
-     *
      */
-   public function postDoctorQuestionsAction(Request $request)
-   {
-       $questionId = $request->request->get('questionId');
-       $doctorsId = $request->request->get('doctorsId');
+    public function postDoctorQuestionsAction(Request $request)
+    {
+        $questionId = $request->request->get('questionId');
+        $doctorsId = $request->request->get('doctorsId');
 
-       $er=$this->getDoctrine()->getManager()->getRepository("ConsultBundle:Question");
-       $question = $er->find($questionId);
+        $er=$this->getDoctrine()->getManager()->getRepository("ConsultBundle:Question");
+        $question = $er->find($questionId);
 
-       $doctorsQuestion = new DoctorQuestion();
-       $doctorsQuestion->setPractoAccountId($doctorsId);
-       $doctorsQuestion->setQuestion($question);
+        $doctorsQuestion = new DoctorQuestion();
+        $doctorsQuestion->setPractoAccountId($doctorsId);
+        $doctorsQuestion->setQuestion($question);
 
-       $em = $this->getDoctrine()->getManager();
-       $em->persist($doctorsQuestion);
-       $em->flush();
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($doctorsQuestion);
+        $em->flush();
 
-       return $doctorsQuestion;
-   }
+        return $doctorsQuestion;
+    }
 
     /**
      * @return ArrayCollection
-     *
      */
     public function getDoctorQuestionsAction()
     {
@@ -67,10 +65,9 @@ class DoctorQuestionsController extends Controller
         return array("questions"=>$questions, "count"=>$count);
     }
 
-   /**
+    /**
     *
     * @return mixed
-    *
     */
     public function patchDoctorQuestionAction()
     {
@@ -80,7 +77,7 @@ class DoctorQuestionsController extends Controller
         try {
             $doctor_question_mapping_final = $doctorQuestionManager->patch($updateData);
         } catch (ValidationError $e) {
-            return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
+            return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
         }
 
         return View::create(array("question" => $doctor_question_mapping_final), Codes::HTTP_CREATED);
@@ -89,7 +86,6 @@ class DoctorQuestionsController extends Controller
     /**
      * @param $doctorId
      * @return mixed
-     *
      */
     public function getAnsweredDoctorQuestionsAction($doctorId)
     {

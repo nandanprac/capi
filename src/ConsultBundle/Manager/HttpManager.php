@@ -24,6 +24,7 @@ class HttpManager
 
     /**
      * make appropriate response
+     *
      * @param array  $response    - Response
      * @param string $contentType - Content Type
      *
