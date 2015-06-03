@@ -59,7 +59,7 @@ class QuestionComment extends BaseEntity
     /**
      * Set text
      *
-     * @param string $text
+     * @param  string $text
      * @return QuestionComment
      */
     public function setText($text)

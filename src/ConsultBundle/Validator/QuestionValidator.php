@@ -32,12 +32,12 @@ class QuestionValidator implements Validator
         $validationErrors = $this->validator->validate($question);
         if (0 < count($validationErrors)) {
             foreach ($validationErrors as $validationError) {
-              $pattern = '/([a-z])([A-Z])/';
-              $replace = function ($m) {
-                  return $m[1] . '_' . strtolower($m[2]);
-              };
-              $attribute = preg_replace_callback($pattern, $replace, $validationError->getPropertyPath());
-              @$errors[$attribute][] = $validationError->getMessage();
+                $pattern = '/([a-z])([A-Z])/';
+                $replace = function ($m) {
+                    return $m[1].'_'.strtolower($m[2]);
+                };
+                $attribute = preg_replace_callback($pattern, $replace, $validationError->getPropertyPath());
+                @$errors[$attribute][] = $validationError->getMessage();
             }
         }
 
@@ -52,12 +52,12 @@ class QuestionValidator implements Validator
         $validationErrors = $this->validator->validate($comment);
         if (0 < count($validationErrors)) {
             foreach ($validationErrors as $validationError) {
-              $pattern = '/([a-z])([A-Z])/';
-              $replace = function ($m) {
-                  return $m[1] . '_' . strtolower($m[2]);
-              };
-              $attribute = preg_replace_callback($pattern, $replace, $validationError->getPropertyPath());
-              @$errors[$attribute][] = $validationError->getMessage();
+                $pattern = '/([a-z])([A-Z])/';
+                $replace = function ($m) {
+                    return $m[1].'_'.strtolower($m[2]);
+                };
+                $attribute = preg_replace_callback($pattern, $replace, $validationError->getPropertyPath());
+                @$errors[$attribute][] = $validationError->getMessage();
             }
         }
 
@@ -71,9 +71,11 @@ class QuestionValidator implements Validator
         $parameters = array("view", "share", "question_id", "_method", "state",
                             "practo_account_id", "created_at", "comment",
                             "c_text", "X-Profile-Token");
-        foreach ($parameters as $parameter)
-            if (array_key_exists($parameter, $requestParams))
+        foreach ($parameters as $parameter) {
+            if (array_key_exists($parameter, $requestParams)) {
                 unset($requestParams[$parameter]);
+            }
+        }
 
         return $requestParams;
     }
@@ -82,11 +84,12 @@ class QuestionValidator implements Validator
     {
         $parameters = array("view", "share", "question_id", "state",
                             "created_at", "modified_at", "X-Profile-Token");
-        foreach ($parameters as $parameter)
-            if (array_key_exists($parameter, $requestParams))
+        foreach ($parameters as $parameter) {
+            if (array_key_exists($parameter, $requestParams)) {
                 unset($requestParams[$parameter]);
+            }
+        }
 
         return $requestParams;
     }
-
 }

@@ -2,7 +2,8 @@
 /**
  * @author Anshuman
  * Date: 29/04/15
- * Time:*/
+ * Time:
+*/
 
 namespace ConsultBundle\Entity;
 
@@ -77,7 +78,7 @@ class Question extends BaseEntity
         $this->viewedAt = $viewedAt;
     }
 
-   /**
+    /**
     * @ORM\OneToMany(targetEntity="QuestionImage", mappedBy="question", cascade={"persist", "remove"})
     * @var ArrayCollection $images
     */
@@ -262,7 +263,7 @@ class Question extends BaseEntity
      */
     public function addBookmark(QuestionBookmark $bookmark)
     {
-        $this->bookmarks->add($bookmark) ;
+        $this->bookmarks->add($bookmark);
     }
 
     /**
@@ -342,7 +343,7 @@ class Question extends BaseEntity
     /**
      * Add Doctor Notification
      *
-     * @param DoctorNotification $notification
+     * @param    DoctorNotification $notification
      * @internal param DoctorNotification $doctorNotification - Doctor Notification
      */
     public function addDoctorNotification(DoctorNotification $notification)
@@ -503,7 +504,7 @@ class Question extends BaseEntity
      *
      * @return ArrayCollection
      */
-   /* public function getDetails()
+    /* public function getDetails()
     {
         return $this->details;
     }*/

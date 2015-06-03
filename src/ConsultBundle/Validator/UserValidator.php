@@ -26,12 +26,12 @@ class UserValidator implements Validator
         $validationErrors = $this->validator->validate($user);
         if (0 < count($validationErrors)) {
             foreach ($validationErrors as $validationError) {
-              $pattern = '/([a-z])([A-Z])/';
-              $replace = function ($m) {
-                  return $m[1] . '_' . strtolower($m[2]);
-              };
-              $attribute = preg_replace_callback($pattern, $replace, $validationError->getPropertyPath());
-              @$errors[$attribute][] = $validationError->getMessage();
+                $pattern = '/([a-z])([A-Z])/';
+                $replace = function ($m) {
+                    return $m[1].'_'.strtolower($m[2]);
+                };
+                $attribute = preg_replace_callback($pattern, $replace, $validationError->getPropertyPath());
+                @$errors[$attribute][] = $validationError->getMessage();
             }
         }
 
@@ -39,5 +39,4 @@ class UserValidator implements Validator
             throw new ValidationError($errors);
         }
     }
-
 }

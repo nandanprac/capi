@@ -121,5 +121,4 @@ class User extends BaseEntity
     {
         return $this->weightInKgs;
     }
-
 }

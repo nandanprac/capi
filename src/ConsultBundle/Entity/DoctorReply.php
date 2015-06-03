@@ -17,7 +17,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class DoctorReply extends BaseEntity
 {
-   /**
+    /**
     * @ORM\OneToOne(targetEntity="DoctorQuestion", inversedBy = "doctorReply")
     */
     protected $doctorQuestion;
@@ -170,8 +170,7 @@ class DoctorReply extends BaseEntity
      */
     public function addRating(DoctorReplyRating $like)
     {
-        if(!$like->isSoftDeleted())
-        {
+        if (!$like->isSoftDeleted()) {
             $this->likes[] = $like;
         }
 

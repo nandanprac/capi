@@ -8,7 +8,7 @@
 
 namespace ConsultBundle\Manager;
 
-
-class AccountsManager {
+class AccountsManager
+{
 
 }

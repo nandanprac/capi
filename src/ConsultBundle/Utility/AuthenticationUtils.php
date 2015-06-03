@@ -8,29 +8,33 @@
 
 namespace ConsultBundle\Utility;
 
-
 use GuzzleHttp\Client;
 use PhpCollection\Map;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
-class AuthenticationUtils {
+/**
+ * Class AuthenticationUtils
+ *
+ * @package ConsultBundle\Utility
+ */
+class AuthenticationUtils
+{
 
 
-    private static  $authenticationMap;
+    private static $authenticationMap;
 
     private $accountHost;
 
 
-
-
+    /**
+     * @param $accountHost
+     */
     public function __construct($accountHost)
     {
         $this->accountHost = $accountHost;
 
-        if(AuthenticationUtils::$authenticationMap === null)
-        {
-
+        if (AuthenticationUtils::$authenticationMap === null) {
             AuthenticationUtils::$authenticationMap = new Map();
 
         }
@@ -41,14 +45,17 @@ class AuthenticationUtils {
     /**
      * @param $practoAccountId
      * @param $profileToken
+     *
      * @return bool
      */
     public function authenticateWithAccounts($practoAccountId, $profileToken)
     {
-        if($this->isAlreadyValidated($practoAccountId, $profileToken))
-            return true;
 
-        return $this->validateWithTokenNew($practoAccountId, $profileToken);
+        if ($this->isAlreadyValidated($practoAccountId, $profileToken)) {
+            return true;
+        }
+
+        $this->validateWithTokenNew($practoAccountId, $profileToken);
     }
 
     /**
@@ -66,28 +73,25 @@ class AuthenticationUtils {
     private function validateWithTokenNew($practoAccountId, $profileToken)
     {
 
-            $client = new Client([
-                'base_url' => $this->accountHost,
-                'defaults' => [
-                    'headers' => ['X-Profile-Token' => $profileToken]
-                ]]);
+            $client = new Client(
+                ['base_url' => $this->accountHost,
+                'defaults' => ['headers' => ['X-Profile-Token' => $profileToken]]]
+            );
             $res = $client->get('/get_profile_with_token');
 
 
-        $userJson = $res->json();
+            $userJson = $res->json();
 
-        $userId = $userJson["id"];
+            $userId = $userJson["id"];
 
 
-        $code = $res->getStatusCode();
+            $code = $res->getStatusCode();
 
-        if(is_null($userId) || $userId != $practoAccountId || $code[0] > 3)
-        {
-            throw new HttpException(Response::HTTP_FORBIDDEN);
-        }
+            if (is_null($userId) || $userId != $practoAccountId || $code[0] > 3) {
+                throw new HttpException(Response::HTTP_FORBIDDEN);
+            }
 
-        AuthenticationUtils::$authenticationMap->set($practoAccountId, $profileToken);
+            AuthenticationUtils::$authenticationMap->set($practoAccountId, $profileToken);
 
     }
-
 }

@@ -23,13 +23,13 @@ class Helper
     /**
      * @var EntityManager
      */
-    protected  $entityManager;
+    protected $entityManager;
     protected $cacheUtils;
 
     public function __construct(Doctrine $doctrine, CacheUtils $cacheUtils)
     {
-      $this->entityManager = $doctrine->getManager();
-      $this->cacheUtils = $cacheUtils;
+        $this->entityManager = $doctrine->getManager();
+        $this->cacheUtils = $cacheUtils;
 
     }
 
@@ -41,7 +41,7 @@ class Helper
     /**
      * LoadAll
      *
-     * @param  $entityName
+     * @param $entityName
      *
      * @return entity
      */
@@ -64,7 +64,7 @@ class Helper
      *
      * @return mixed
      */
-    public function  loadById($id, $entityName)
+    public function loadById($id, $entityName)
     {
 
         $entity = $this->entityManager->getRepository($entityName)->find($id);
@@ -87,9 +87,8 @@ class Helper
 
         $entityRepository = $this->entityManager->getRepository($entityName);
 
-        if(is_null($entityRepository))
-        {
-          return null;
+        if (is_null($entityRepository)) {
+            return null;
         }
 
 
@@ -119,37 +118,32 @@ class Helper
      * @param $entity
      * @param $flush
      */
-    public function persist($entity, $flush=null)
+    public function persist($entity, $flush = null)
     {
-        if($entity != null){
+        if ($entity != null) {
             $this->entityManager->persist($entity);
         }
 
-        if($flush)
-        {
+        if ($flush) {
             $this->entityManager->flush();
         }
     }
 
     /**
      * @param $fields
-     * @param array $data
+     * @param array  $data
      * @throws \HttpException
      */
-    public function checkForMandatoryFields($fields, array $data )
+    public function checkForMandatoryFields($fields, array $data)
     {
         $errors = new ArrayCollection();
-        foreach($fields as $field)
-        {
-            if(!array_key_exists($field, $data))
-            {
-
-                 $errors->add($field . " is Mandatory");
+        foreach ($fields as $field) {
+            if (!array_key_exists($field, $data)) {
+                 $errors->add($field." is Mandatory");
             }
         }
 
-        if($errors->count()>0)
-        {
+        if ($errors->count()>0) {
             throw new \HttpException(json_encode($errors->getValues()), Codes::HTTP_BAD_REQUEST);
         }
     }
