@@ -40,7 +40,7 @@ class QuestionRepository extends EntityRepository
             if (isset($bookmark) and $bookmark == "false") {
                 $qb->andWhere('q.practoAccountId = :practoAccountID');
                 $qb->setParameter('practoAccountID', $practoAccountId);
-            } else if (isset($bookmark) and $bookmark == "true") {
+            } elseif (isset($bookmark) and $bookmark == "true") {
                 $qb->innerJoin(ConsultConstants::$QUESTION_BOOKMARK_ENTITY_NAME, 'b', 'WITH', 'q = b.question');
                 $qb->andWhere('b.practoAccountId = :practoAccountId');
                 $qb->setParameter('practoAccountId', $practoAccountId);
@@ -56,7 +56,7 @@ class QuestionRepository extends EntityRepository
         $count = count($paginator);
 
         if (is_null($questionList)) {
-            return null; 
+            return null;
         }
         return array($questionList, $count);
     }

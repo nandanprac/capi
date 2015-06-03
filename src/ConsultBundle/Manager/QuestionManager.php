@@ -41,10 +41,15 @@ class QuestionManager extends BaseManager
      * @param UpdateAccountsUtil        $updateAccountsUtil
      */
     public function __construct(
-        UserManager $userManager, UserProfileManager $userProfileManager, QuestionBookmarkManager $questionBookmarkManager,
-        Queue $queue, RetrieveUserProfileUtil $retrieveUserProfileUtil, RetrieveDoctorProfileUtil $retrieveDoctorProfileUtil,
+        UserManager $userManager,
+        UserProfileManager $userProfileManager,
+        QuestionBookmarkManager $questionBookmarkManager,
+        Queue $queue,
+        RetrieveUserProfileUtil $retrieveUserProfileUtil,
+        RetrieveDoctorProfileUtil $retrieveDoctorProfileUtil,
         UpdateAccountsUtil $updateAccountsUtil
-    ) {
+    )
+{
         $this->userManager = $userManager;
         $this->userProfileManager = $userProfileManager;
         $this->questionBookmarkManager = $questionBookmarkManager;
@@ -62,7 +67,7 @@ class QuestionManager extends BaseManager
     public function updateFields($question, $requestParams)
     {
         if (array_key_exists('user_profile_details', $requestParams)) {
-            if (array_key_exists('is_someone_else', $requestParams['user_profile_details']) 
+            if (array_key_exists('is_someone_else', $requestParams['user_profile_details'])
                 and Utility::toBool($requestParams['user_profile_details']['is_someone_else'])
             ) {
                 $userProfileArray = $requestParams['user_profile_details'];
@@ -79,9 +84,8 @@ class QuestionManager extends BaseManager
                 unset($requestParams['additional_info']);
             }
             if (array_key_exists('practo_account_id', $requestParams)) {
-                $userInfoArray['practo_account_id'] = $requestParams['practo_account_id']; 
-            }
-            else {
+                $userInfoArray['practo_account_id'] = $requestParams['practo_account_id'];
+            } else {
                 $userInfoArray['practo_account_id'] = $question->getPractoAccountId();        //in case of patch
             }
             $userEntry = $this->userManager->add($userInfoArray);
@@ -103,7 +107,7 @@ class QuestionManager extends BaseManager
 
         try {
             $this->validator->validate($question);
-        } catch(ValidationError $e) {
+        } catch (ValidationError $e) {
             throw new ValidationError($e->getMessage());
         }
 
@@ -145,7 +149,7 @@ class QuestionManager extends BaseManager
 
     private function setQuestionTags($question, $tags)
     {
-        foreach($tags as $tag) {
+        foreach ($tags as $tag) {
             $tagObj = new QuestionTag();
             $tagObj->setTag($tag);
             $tagObj->setUserDefined(true);
@@ -160,7 +164,7 @@ class QuestionManager extends BaseManager
         if (array_key_exists('question_id', $requestParams)) {
             $question = $this->helper->loadById($requestParams['question_id'], ConsultConstants::$QUESTION_ENTITY_NAME);
             if (null === $question) {
-                throw new ValidationError(); 
+                throw new ValidationError();
             }
         } else {
             @$error['question_id']='This cannot be blank';
@@ -168,19 +172,19 @@ class QuestionManager extends BaseManager
         }
 
         if (array_key_exists('view', $requestParams)) {
-            $question->setViewCount($question->getViewCount() + 1); 
+            $question->setViewCount($question->getViewCount() + 1);
         }
         if (array_key_exists('share', $requestParams)) {
-            $question->setShareCount($question->getShareCount() + 1); 
+            $question->setShareCount($question->getShareCount() + 1);
         }
 
         if (array_key_exists('comment', $requestParams)) {
             $commentParams = array();
             if (array_key_exists('practo_account_id', $requestParams)) {
-                 $commentParams['practo_account_id'] = $requestParams['practo_account_id']; 
+                 $commentParams['practo_account_id'] = $requestParams['practo_account_id'];
             }
             if (array_key_exists('c_text', $requestParams)) {
-                 $commentParams['text'] = $requestParams['c_text']; 
+                 $commentParams['text'] = $requestParams['c_text'];
             }
 
             $questionComment = new QuestionComment();
@@ -189,7 +193,7 @@ class QuestionManager extends BaseManager
             $question->addComment($questionComment);
             try {
                 $this->validator->validateComment($questionComment);
-            } catch(ValidationError $e) {
+            } catch (ValidationError $e) {
                 throw new ValidationError($e->getMessage());
             }
         }
@@ -216,7 +220,7 @@ class QuestionManager extends BaseManager
         $question = $this->helper->loadById($questionId, ConsultConstants::$QUESTION_ENTITY_NAME);
 
         if (is_null($question)) {
-            return null; 
+            return null;
         }
 
         $this->retrieveUserProfileUtil->loadUserDetailInQuestion($question);

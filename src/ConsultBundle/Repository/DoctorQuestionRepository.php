@@ -8,7 +8,6 @@
 
 namespace ConsultBundle\Repository;
 
-
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 
@@ -26,7 +25,7 @@ class DoctorQuestionRepository extends EntityRepository
         $questions = null;
         $limit = array_key_exists('limit', $filters) ? $filters['limit'] : 500;
         $offset = array_key_exists('offset', $filters) ? $filters['offset'] : 0;
-        try{
+        try {
              $qb->select(array('q'))
                  ->from("ConsultBundle:Question", 'q')
                  ->innerJoin('q.doctorQuestions', 'dq')
@@ -36,7 +35,7 @@ class DoctorQuestionRepository extends EntityRepository
                 $state = $filters['reject'];
                 if (strtolower($state) == 'false') {
                     $qb->andWhere('dq.rejectedAt is NULL');
-                } else if (strtolower($state) == 'true') {
+                } elseif (strtolower($state) == 'true') {
                     $qb->andWhere('dq.rejectedAt is not NULL');
                 }
             }
@@ -45,7 +44,7 @@ class DoctorQuestionRepository extends EntityRepository
                 $state = $filters['view'];
                 if (strtolower($state) == 'false') {
                     $qb->andWhere('dq.viewedAt is NULL');
-                } else if (strtolower($state) == 'true') {
+                } elseif (strtolower($state) == 'true') {
                     $qb->andWhere('dq.viewedAt is not NULL');
                 }
             }
@@ -64,7 +63,7 @@ class DoctorQuestionRepository extends EntityRepository
              $paginator = new Paginator($qb->getQuery(), $fetchJoinCollection = true);
              $count = count($paginator);
 
-        } catch( \Exception $e ) {
+        } catch (\Exception $e) {
             return $e->getMessage();
         }
 
@@ -79,12 +78,12 @@ class DoctorQuestionRepository extends EntityRepository
      * @param null     $maxResults
      * @return array
      */
-    public function findDoctorQuestionsForAState($doctorId, $state=null, $maxResults=null)
+    public function findDoctorQuestionsForAState($doctorId, $state = null, $maxResults = null)
     {
         $queryStr = "SELECT q FROM ConsultBundle\Entity\Question q join q.doctorQuestions
                         dq WHERE dq.practoAccountId = :doctorId  AND q.softDeleted = 0 AND dq.softDeleted= 0 ";
 
-        if($state != null) {
+        if ($state != null) {
             $queryStr = $queryStr + " AND dq.state = :state";
         }
 
@@ -93,11 +92,12 @@ class DoctorQuestionRepository extends EntityRepository
 
         $query->setParameter('doctorId', $doctorId);
 
-        if($state != null) {$query->setParameter('state', $state);
+        if ($state != null) {
+            $query->setParameter('state', $state);
         }
 
-        if($maxResults!= null) {
-            $query->setMaxResults($maxResults); 
+        if ($maxResults!= null) {
+            $query->setMaxResults($maxResults);
         }
 
         $questions = $query->getResult();
@@ -106,5 +106,4 @@ class DoctorQuestionRepository extends EntityRepository
 
 
     }
-
 }

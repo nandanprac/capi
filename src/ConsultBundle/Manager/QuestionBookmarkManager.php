@@ -32,7 +32,7 @@ class QuestionBookmarkManager extends BaseManager
 
         try {
             $this->validator->validate($questionBookmark);
-        } catch(ValidationError $e) {
+        } catch (ValidationError $e) {
             throw new ValidationError($e->getMessage());
         }
 
@@ -90,7 +90,7 @@ class QuestionBookmarkManager extends BaseManager
             throw new ValidationError($error);
         }
 
-        if($question->getPractoAccountId() == $requestParams['practo_account_id']) {
+        if ($question->getPractoAccountId() == $requestParams['practo_account_id']) {
             @$error['error'] = 'User cannot bookmark the question';
             throw new ValidationError($error);
         }
@@ -128,6 +128,4 @@ class QuestionBookmarkManager extends BaseManager
         }
         return $questionBookmark;
     }
-
 }
-

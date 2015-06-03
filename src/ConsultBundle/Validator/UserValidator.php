@@ -28,7 +28,7 @@ class UserValidator implements Validator
             foreach ($validationErrors as $validationError) {
                 $pattern = '/([a-z])([A-Z])/';
                 $replace = function ($m) {
-                    return $m[1] . '_' . strtolower($m[2]);
+                    return $m[1].'_'.strtolower($m[2]);
                 };
                 $attribute = preg_replace_callback($pattern, $replace, $validationError->getPropertyPath());
                 @$errors[$attribute][] = $validationError->getMessage();
@@ -39,5 +39,4 @@ class UserValidator implements Validator
             throw new ValidationError($errors);
         }
     }
-
 }

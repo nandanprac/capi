@@ -23,7 +23,7 @@ class Helper
     /**
      * @var EntityManager
      */
-    protected  $entityManager;
+    protected $entityManager;
     protected $cacheUtils;
 
     public function __construct(Doctrine $doctrine, CacheUtils $cacheUtils)
@@ -87,7 +87,7 @@ class Helper
 
         $entityRepository = $this->entityManager->getRepository($entityName);
 
-        if(is_null($entityRepository)) {
+        if (is_null($entityRepository)) {
             return null;
         }
 
@@ -118,13 +118,13 @@ class Helper
      * @param $entity
      * @param $flush
      */
-    public function persist($entity, $flush=null)
+    public function persist($entity, $flush = null)
     {
-        if($entity != null) {
+        if ($entity != null) {
             $this->entityManager->persist($entity);
         }
 
-        if($flush) {
+        if ($flush) {
             $this->entityManager->flush();
         }
     }
@@ -134,18 +134,16 @@ class Helper
      * @param array  $data
      * @throws \HttpException
      */
-    public function checkForMandatoryFields($fields, array $data )
+    public function checkForMandatoryFields($fields, array $data)
     {
         $errors = new ArrayCollection();
-        foreach($fields as $field)
-        {
-            if(!array_key_exists($field, $data)) {
-
-                 $errors->add($field . " is Mandatory");
+        foreach ($fields as $field) {
+            if (!array_key_exists($field, $data)) {
+                 $errors->add($field." is Mandatory");
             }
         }
 
-        if($errors->count()>0) {
+        if ($errors->count()>0) {
             throw new \HttpException(json_encode($errors->getValues()), Codes::HTTP_BAD_REQUEST);
         }
     }

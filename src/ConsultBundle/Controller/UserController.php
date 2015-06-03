@@ -57,7 +57,7 @@ class UserController extends FOSRestController
 
         if (null === $userConsultEntry) {
             return View::create(null, Codes::HTTP_NOT_FOUND);
-        } else if ($userConsultEntry->isSoftDeleted()) {
+        } elseif ($userConsultEntry->isSoftDeleted()) {
             return View::create(null, Codes::HTTP_GONE);
         }
 

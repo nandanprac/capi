@@ -58,7 +58,7 @@ class PushTestCommand extends ContainerAwareCommand
             $newJob = $this->queue
                 ->setQueueName(Queue::PUSH_TEST)
                 ->receiveMessage();
-            if($newJob) {
+            if ($newJob) {
                 echo $newJob;
             }
             $this->queue->deleteMessage($newJob);

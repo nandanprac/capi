@@ -27,8 +27,7 @@ class QuestionsController extends Controller
         $questionManager = $this->get('consult.question_manager');
 
         try {
-
-            $question = $questionManager->add((array)json_decode($postData, true), $profileToken);
+            $question = $questionManager->add((array) json_decode($postData, true), $profileToken);
 
         } catch (ValidationError $e) {
             return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
@@ -41,13 +40,13 @@ class QuestionsController extends Controller
 
         try {
             $questionImageManager->add($question, $files);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
         }
 
         return View::create(
             array("question" => $question),
-        Codes::HTTP_CREATED
+            Codes::HTTP_CREATED
         );
     }
 
@@ -67,7 +66,7 @@ class QuestionsController extends Controller
 
         if (null === $question) {
             return View::create(null, Codes::HTTP_NOT_FOUND);
-        } else if ($question->isSoftDeleted()) {
+        } elseif ($question->isSoftDeleted()) {
             return View::create(null, Codes::HTTP_GONE);
         }
 
@@ -86,7 +85,7 @@ class QuestionsController extends Controller
         }
 
         if (null === $questionList) {
-            return View::create(null, Codes::HTTP_NOT_FOUND); 
+            return View::create(null, Codes::HTTP_NOT_FOUND);
         }
 
         return array('questions' => $questionList[0], 'count' => $questionList[1]);

@@ -11,6 +11,7 @@ use ConsultBundle\ConsultDomain;
 use Pheanstalk_Pheanstalk as Pheanstalk;
 
 use Symfony\Component\HttpFoundation\Request;
+
 /**
  * Command to queue index
  */

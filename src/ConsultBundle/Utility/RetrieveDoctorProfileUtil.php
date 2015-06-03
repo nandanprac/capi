@@ -12,7 +12,6 @@ use ConsultBundle\Entity\DoctorEntity;
 use ConsultBundle\Entity\Question;
 use Elasticsearch\Client;
 
-
 class RetrieveDoctorProfileUtil
 {
 
@@ -34,17 +33,16 @@ class RetrieveDoctorProfileUtil
         $results = $this->client->search($params);
 
 
-        if(count($results['hits']['hits']) === 0 ) {
+        if (count($results['hits']['hits']) === 0) {
             return null;
         }
 
-        foreach($results['hits']['hits'] as $result)
-        {
+        foreach ($results['hits']['hits'] as $result) {
             $doc = $this->populateDoctorObject($result['_source']);
 
         }
 
-        if(is_null($doc)) {
+        if (is_null($doc)) {
             return null;
         }
 
@@ -59,9 +57,7 @@ class RetrieveDoctorProfileUtil
 
         $doctorQuestions = $question->getDoctorQuestions();
 
-        foreach($doctorQuestions as $doctorQuestion)
-        {
-
+        foreach ($doctorQuestions as $doctorQuestion) {
             $doctorId = $doctorQuestion->getPractoAccountId();
 
 
@@ -79,7 +75,7 @@ class RetrieveDoctorProfileUtil
 
 
 
-        if(is_null($docArr)) {
+        if (is_null($docArr)) {
             return null;
         }
 
@@ -88,19 +84,16 @@ class RetrieveDoctorProfileUtil
         $doc = new DoctorEntity();
 
 
-        if(array_key_exists('doctor_name', $docArr)) {
-
+        if (array_key_exists('doctor_name', $docArr)) {
             $doc->setName($docArr['doctor_name']);
         }
 
-        if(array_key_exists('profile_picture', $docArr)) {
+        if (array_key_exists('profile_picture', $docArr)) {
             $doc->setProfilePicture($docArr['profile_picture']);
         }
 
-        if(array_key_exists('specialties', $docArr)) {
-
-            foreach($docArr['specialties'] as $specialties)
-            {
+        if (array_key_exists('specialties', $docArr)) {
+            foreach ($docArr['specialties'] as $specialties) {
                 $doc->setSpecialty($specialties['specialty']);
             }
         }
@@ -109,5 +102,4 @@ class RetrieveDoctorProfileUtil
 
 
     }
-
 }

@@ -29,7 +29,7 @@ class QuestionBookmarkRepository extends EntityRepository
         $questionBookmark = $qb->getQuery()->getResult();
 
         if (is_null($questionBookmark)) {
-            return null; 
+            return null;
         }
         return $questionBookmark;
     }

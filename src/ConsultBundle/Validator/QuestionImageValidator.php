@@ -8,7 +8,6 @@
 
 namespace ConsultBundle\Validator;
 
-
 use ConsultBundle\Entity\BaseEntity;
 
 class QuestionImageValidator implements Validator

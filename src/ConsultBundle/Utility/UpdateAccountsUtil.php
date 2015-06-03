@@ -14,7 +14,6 @@ use GuzzleHttp\Message\Response;
 use GuzzleHttp\Client;
 use GuzzleHttp\Post\PostBody;
 
-
 class UpdateAccountsUtil
 {
 
@@ -35,8 +34,8 @@ class UpdateAccountsUtil
     public function updateAccountDetails($profileToken, $data)
     {
 
-        if(empty($profileToken)) {
-            return null; 
+        if (empty($profileToken)) {
+            return null;
         }
 
 
@@ -45,25 +44,26 @@ class UpdateAccountsUtil
 
 
 
-        if(empty($postData)) {
+        if (empty($postData)) {
             return null;
         }
 
         $body = new PostBody();
         $body->replaceFields($postData);
         $request = new Request(
-            'POST', $this->accountHost."/update_profile_with_token",
-            array('X-Profile-Token' => $profileToken), $body 
+            'POST',
+            $this->accountHost."/update_profile_with_token",
+            array('X-Profile-Token' => $profileToken),
+            $body
         );
 
         $client = new Client();
 
-        try{
+        try {
             $client->send($request);
 
-        }catch(\Exception $e)
-        {
-            //do nothing.
+        } catch (\Exception $e) {
+        //do nothing.
         }
 
 
@@ -76,31 +76,28 @@ class UpdateAccountsUtil
     {
 
         if (array_key_exists('user_profile_details', $params)) {
-            if (!(array_key_exists('is_someone_else', $params['user_profile_details']) 
+            if (!(array_key_exists('is_someone_else', $params['user_profile_details'])
                 and Utility::toBool($params['user_profile_details']['is_someone_else']) )
             ) {
-
                 $data = $params['user_profile_details'];
             }
         }
 
 
-        if(empty($data)) {
-            return null; 
+        if (empty($data)) {
+            return null;
         }
 
 
 
          $postData = array();
 
-        foreach(self::$fieldsToUpdate as $key => $value)
-        {
-            if(array_key_exists($key, $data) ) {
-                try{
+        foreach (self::$fieldsToUpdate as $key => $value) {
+            if (array_key_exists($key, $data)) {
+                try {
                     $val = trim($data[$key]);
-                    if(!empty($val)) {
-                        if($value === 'dob') {
-
+                    if (!empty($val)) {
+                        if ($value === 'dob') {
                             $dob = new \DateTime($val);
 
                             $val = $dob->format("Y-m-d");
@@ -110,9 +107,7 @@ class UpdateAccountsUtil
                         $postData[$value] = $val;
 
                     }
-                }catch (\Exception $e)
-                {
-
+                } catch (\Exception $e) {
                 }
 
             }
@@ -122,5 +117,4 @@ class UpdateAccountsUtil
 
         return $postData;
     }
-
 }

@@ -69,13 +69,11 @@ class QuestionBookmarkController extends Controller
             return View::create($e->getMessage(), Codes::HTTP_FORBIDDEN);
         }
         if (null === $questionBookmark) {
-            return View::create(null, Codes::HTTP_NOT_FOUND); 
-        }
-        else if ($questionBookmark->isSoftDeleted()) {
-            return View::create(null, Codes::HTTP_GONE); 
+            return View::create(null, Codes::HTTP_NOT_FOUND);
+        } elseif ($questionBookmark->isSoftDeleted()) {
+            return View::create(null, Codes::HTTP_GONE);
         }
 
         return $questionBookmark;
     }
-
 }

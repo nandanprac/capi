@@ -8,7 +8,6 @@
 
 namespace ConsultBundle\Manager;
 
-
 class Filemanager
 {
 

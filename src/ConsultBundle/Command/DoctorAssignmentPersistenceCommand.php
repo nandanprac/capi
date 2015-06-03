@@ -10,6 +10,7 @@ use ConsultBundle\Queue\AbstractQueue as Queue;
 use ConsultBundle\ConsultDomain;
 
 use Symfony\Component\HttpFoundation\Request;
+
 /**
  * Command to queue index
  */
@@ -64,7 +65,7 @@ class DoctorAssignmentPersistenceCommand extends ContainerAwareCommand
                 try {
                     if ($jobData['state'] == 'UNCLASSIFIED' or $jobData['state'] == 'MISMATCH') {
                         $this->questionManager->setState($jobData['question_id'], $jobData['state']);
-                    } elseif($jobData['state'] == 'ASSIGNED') {
+                    } elseif ($jobData['state'] == 'ASSIGNED') {
                         $this->doctorQuestionManager->setDoctorsForAQuestions($jobData['question_id'], $jobData['doctors']);
                         $this->questionManager->setState($jobData['question_id'], $jobData['state']);
                         $this->questionManager->setTagByQuestionId($jobData['question_id'], $jobData['speciality']);
@@ -81,7 +82,7 @@ class DoctorAssignmentPersistenceCommand extends ContainerAwareCommand
                     }
                     echo "Queue Message Persisted: ".json_encode($jobData);
                 } catch (\Exception $e) {
-                    $output->writeln("Dropping the queue message: ". json_encode($jobData));
+                    $output->writeln("Dropping the queue message: ".json_encode($jobData));
                     $this->queue->setQueueName(Queue::ASSIGNMENT_UPDATE)->deleteMessage($newJob);
                     $output->writeln($e->getMessage());
                 }

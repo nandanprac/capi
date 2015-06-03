@@ -11,7 +11,6 @@ namespace ConsultBundle\Manager;
 use ConsultBundle\Helper\Helper;
 use ConsultBundle\Validator\Validator;
 
-
 abstract class BaseManager
 {
 
@@ -50,4 +49,3 @@ abstract class BaseManager
         $this->validator->validate($entity);
     }
 }
-

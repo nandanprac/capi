@@ -70,7 +70,7 @@ class DoctorAssigmentCommand extends ContainerAwareCommand
                 ->receiveMessage();
             if ($newJob) {
                 $jobData = json_decode($newJob, true);
-                try{
+                try {
                     $question_id = array_key_exists('question_id', $jobData) ? $jobData['question_id'] : null;
                     $question = array_key_exists('question', $jobData) ? $jobData['question'] : null;
                     $city = array_key_exists('city', $jobData) ? $jobData['city'] : null;
@@ -107,13 +107,13 @@ class DoctorAssigmentCommand extends ContainerAwareCommand
                     }
                     $questionAction = array();
                     $questionAction['question_id'] = $question_id;
-                    if($state == 'UNCLASSIFIED' or $state == 'MISMATCH') {
+                    if ($state == 'UNCLASSIFIED' or $state == 'MISMATCH') {
                         $questionAction['classified'] = ($state == 'UNCLASSIFIED') ? 0 : 1;
                         $questionAction['state'] = $state;
                         $questionAction['speciality'] = $speciality;
                         $questionAction['doctors'] = null;
                     } elseif ($state == 'ASSIGNED') {
-                        if(!$city) {
+                        if (!$city) {
                             $city = "bangalore";
                         }
 
@@ -130,14 +130,14 @@ class DoctorAssigmentCommand extends ContainerAwareCommand
                         $results = $this->client->search($params);
                         echo json_encode($results);
                         $doctorIds = array();
-                        foreach ($results['hits']['hits'] as $result){
+                        foreach ($results['hits']['hits'] as $result) {
                             if (array_key_exists("practo_account_id", $result["_source"]) and $result["_source"]["practo_account_id"] != null) {
-                                array_push($doctorIds, $result["_source"]["practo_account_id"]); 
+                                array_push($doctorIds, $result["_source"]["practo_account_id"]);
                             }
                         }
                         $questionAction['classified'] = 1;
                         $questionAction['speciality'] = $speciality;
-                        if ($doctorIds ) {
+                        if ($doctorIds) {
                             $questionAction['state'] = $state;
                             shuffle($doctorIds);
                             $questionAction['doctors'] = array_unique(array_merge(array_slice($doctorIds, 0, 3), array(4,9)));
@@ -184,12 +184,12 @@ class DoctorAssigmentCommand extends ContainerAwareCommand
         $tot_prob = 0;
         if ($this->daa_debug) {
             return array(false, false);
-        }else{
+        } else {
             $words = $this->list_words($question);
             foreach ($this->c_categories as $c => $c_count) {
                 $prob_c = floatval($this->c_categories[$c])/floatval($this->c_texts);
                 $prob_total_c = $prob_c;
-                foreach ($words as $p){
+                foreach ($words as $p) {
                     if (in_array($p, array_keys($this->c_words))) {
                         $prob_p= floatval($this->c_words[$p][$c])/floatval(array_sum(array_values($this->c_words[$p])));
                         $prob_cond = $prob_p/$prob_c;

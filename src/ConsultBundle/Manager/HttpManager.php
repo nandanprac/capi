@@ -89,7 +89,7 @@ class HttpManager
     {
         try {
             if (count($params) > 0) {
-                $url = $url . '?' . Utility::buildQuery($params);
+                $url = $url.'?'.Utility::buildQuery($params);
             }
             $response = $this->buzz->get($url, $headers, $params);
 

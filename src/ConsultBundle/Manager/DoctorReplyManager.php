@@ -42,22 +42,22 @@ class DoctorReplyManager extends BaseManager
         $doctorReply = new DoctorReply();
         $doctorQuestion = $this->helper->loadById(
             $doctorQuestionId,
-        ConsultConstants::$DOCTOR_QUESTION_ENTITY_NAME
+            ConsultConstants::$DOCTOR_QUESTION_ENTITY_NAME
         );
 
         if (is_null($doctorQuestion->getQuestion())) {
             throw new \HttpException("Error:Doctor has not been assigned the question", Codes::HTTP_BAD_REQUEST);
         }
 
-        if($practoAccountId != $doctorQuestion->getPractoAccountId()) {
+        if ($practoAccountId != $doctorQuestion->getPractoAccountId()) {
             throw new \HttpException("You are not allowed to perform this operation", Codes::HTTP_FORBIDDEN);
         }
 
-        if($doctorQuestion->getRejectedAt()) {
+        if ($doctorQuestion->getRejectedAt()) {
               throw new \HttpException("The question has been rejected", Codes::HTTP_BAD_REQUEST);
         }
 
-        if($doctorQuestion->getState() != "UNANSWERED") {
+        if ($doctorQuestion->getState() != "UNANSWERED") {
             throw new \HttpException("The doctor is not allowed to answer this question", Codes::HTTP_BAD_REQUEST);
         }
 
@@ -92,8 +92,7 @@ class DoctorReplyManager extends BaseManager
 
         $practoAccountId = $postData['practo_account_id'];
 
-        if(array_key_exists("doctor_reply", $postData)) {
-
+        if (array_key_exists("doctor_reply", $postData)) {
             $doctorReply = $postData['doctor_reply'];
         } else {
             throw new \HttpException("doctor_reply is mandatory", Codes::HTTP_BAD_REQUEST);
@@ -107,7 +106,7 @@ class DoctorReplyManager extends BaseManager
         $id = $doctorReply['id'];
 
         $doctorReplyEntity = $this->helper->loadById($id, ConsultConstants::$DOCTOR_REPLY_ENTITY_NAME);
-        if(empty($doctorReplyEntity)) {
+        if (empty($doctorReplyEntity)) {
             throw new \HttpException("Not a valid Doctor Reply Id", Codes::HTTP_BAD_REQUEST);
         }
 
@@ -137,7 +136,7 @@ class DoctorReplyManager extends BaseManager
             }
         }
 
-        if(array_key_exists("like", $doctorReply)) {
+        if (array_key_exists("like", $doctorReply)) {
             $like = $doctorReply['like'];
             //$er = new EntityRepository();
             $er = $this->helper->getRepository(ConsultConstants::$DOCTOR_REPLY_RATING_ENTITY_NAME);
@@ -155,7 +154,7 @@ class DoctorReplyManager extends BaseManager
 
 
             //Like
-            if(!$doctorReplyRatingEntity && $like) {
+            if (!$doctorReplyRatingEntity && $like) {
                 $doctorReplyRatingEntity = new DoctorReplyRating();
                 $doctorReplyRatingEntity->setPractoAccountId($practoAccountId);
                 $doctorReplyRatingEntity->setDoctorReply($doctorReplyEntity);
@@ -166,7 +165,7 @@ class DoctorReplyManager extends BaseManager
 
 
             //Unlike
-            if($doctorReplyRatingEntity && !$like) {
+            if ($doctorReplyRatingEntity && !$like) {
                 $changed = true;
                 $this->helper->remove($doctorReplyRatingEntity);
 
@@ -174,7 +173,7 @@ class DoctorReplyManager extends BaseManager
 
         }
 
-        if($changed) {
+        if ($changed) {
             $this->helper->persist($doctorReplyEntity, true);
         }
 
@@ -183,8 +182,4 @@ class DoctorReplyManager extends BaseManager
 
 
     }
-
-
-
-
 }

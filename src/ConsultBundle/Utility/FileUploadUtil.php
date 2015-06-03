@@ -8,7 +8,6 @@
 
 namespace ConsultBundle\Utility;
 
-
 use Aws\Common\Enum\Region;
 use Aws\S3\S3Client;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -28,7 +27,7 @@ class FileUploadUtil
     protected $scheme;
     protected $region;
 
-    public function __construct($s3Key, $s3Secret, $region = 'ap-southeast-1', $scheme = 'https', $s3ResourceBucket, $fileName= 'TREATMENTPHOTO', $tempUrl=null)
+    public function __construct($s3Key, $s3Secret, $region = 'ap-southeast-1', $scheme = 'https', $s3ResourceBucket, $fileName = 'TREATMENTPHOTO', $tempUrl = null)
     {
 
 
@@ -38,11 +37,11 @@ class FileUploadUtil
 
         $this->scheme = $scheme;
         $this->region = $region;
-        if(!(is_null($fileName))) {
+        if (!(is_null($fileName))) {
             $this->fileName = $fileName;
         }
 
-        if(!(is_null($tempUrl))) {
+        if (!(is_null($tempUrl))) {
             $this->tempUrl = $tempUrl;
         }
 
@@ -66,7 +65,7 @@ class FileUploadUtil
     }
 
 
-    private function uploadFile($uploadedUri, $localFile, $contentType='image/jpeg')
+    private function uploadFile($uploadedUri, $localFile, $contentType = 'image/jpeg')
     {
 
 
@@ -90,11 +89,8 @@ class FileUploadUtil
     {
         $urls = new ArrayCollection();
 
-        foreach( $fileBag->all() as  $file)
-           {
-
-            if($file instanceof UploadedFile) {
-
+        foreach ($fileBag->all() as $file) {
+            if ($file instanceof UploadedFile) {
                 $uri = $this->processUploadedFile($file, $id);
 
                 $urls->add($uri);
@@ -134,15 +130,15 @@ class FileUploadUtil
             $bits .= @fread($fp, 128);
             @fclose($fp);
         }
-        $safeFileName = sha1($bits . time() . microtime()) . '.' . $uploadedFile->guessExtension();
+        $safeFileName = sha1($bits.time().microtime()).'.'.$uploadedFile->guessExtension();
 
 
 
         // Generate S3 Path
-        $uploadsSubPath = $subId . '/' . $this->fileName;
+        $uploadsSubPath = $subId.'/'.$this->fileName;
 
         // Create temporary directory if not exists already
-        $tmpDir = $this->tempUrl . $uploadsSubPath;
+        $tmpDir = $this->tempUrl.$uploadsSubPath;
         if (!is_dir($tmpDir)) {
             $ret = mkdir($tmpDir, 0755, true);
             if (!$ret) {
@@ -153,23 +149,23 @@ class FileUploadUtil
         // Copy uploaded file to temporary directory
         $uploadedFile->move($tmpDir, $safeFileName);
 
-        $localFile = $tmpDir . DIRECTORY_SEPARATOR . $safeFileName;
+        $localFile = $tmpDir.DIRECTORY_SEPARATOR.$safeFileName;
 
         //mpDir . DIRECTORY_SEPARATOR . $safeFileName;
         if ('application/x-base64-jpeg' === $uploadedFile->getClientMimeType()) {
             $base64Image = file_get_contents($localFile);
             unlink($localFile);
-            $safeFileName = sha1($bits . time() . microtime()) . '.jpg';
-            $localFile = $tmpDir . DIRECTORY_SEPARATOR . $safeFileName;
+            $safeFileName = sha1($bits.time().microtime()).'.jpg';
+            $localFile = $tmpDir.DIRECTORY_SEPARATOR.$safeFileName;
             file_put_contents($localFile, base64_decode($base64Image));
-        } else if ('application/x-base64-png' === $uploadedFile->getClientMimeType()) {
+        } elseif ('application/x-base64-png' === $uploadedFile->getClientMimeType()) {
             $base64Image = file_get_contents($localFile);
             unlink($localFile);
-            $safeFileName = sha1($bits . time() . microtime()) . '.png';
-            $localFile = $tmpDir . DIRECTORY_SEPARATOR . $safeFileName;
+            $safeFileName = sha1($bits.time().microtime()).'.png';
+            $localFile = $tmpDir.DIRECTORY_SEPARATOR.$safeFileName;
             file_put_contents($localFile, base64_decode($base64Image));
         }
-        $uploadedUri = $uploadsSubPath . DIRECTORY_SEPARATOR . $safeFileName;
+        $uploadedUri = $uploadsSubPath.DIRECTORY_SEPARATOR.$safeFileName;
 
 
 
@@ -184,5 +180,4 @@ class FileUploadUtil
 
         return $response->get('ObjectURL');
     }
-
 }

@@ -45,16 +45,17 @@ class AuthenticationUtils
     /**
      * @param $practoAccountId
      * @param $profileToken
+     *
      * @return bool
      */
     public function authenticateWithAccounts($practoAccountId, $profileToken)
     {
 
         if ($this->isAlreadyValidated($practoAccountId, $profileToken)) {
-            return true; 
+            return true;
         }
 
-        return $this->validateWithTokenNew($practoAccountId, $profileToken);
+        $this->validateWithTokenNew($practoAccountId, $profileToken);
     }
 
     /**
@@ -93,5 +94,4 @@ class AuthenticationUtils
             AuthenticationUtils::$authenticationMap->set($practoAccountId, $profileToken);
 
     }
-
 }

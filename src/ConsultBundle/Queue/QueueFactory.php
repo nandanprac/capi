@@ -16,18 +16,18 @@ class QueueFactory extends ContainerAware
      *
      * @return AbstractQueue
      */
-    public function get($uri=null)
+    public function get($uri = null)
     {
         if (!$uri) {
             $uri = $this->container->getParameter('consult_queue.uri');
         }
         $parts = parse_url($uri);
-        if (($parts['scheme'] == 'https' || $parts['scheme'] == 'http') 
-            && ($hParts = explode('.', $parts['host'], 3)) 
+        if (($parts['scheme'] == 'https' || $parts['scheme'] == 'http')
+            && ($hParts = explode('.', $parts['host'], 3))
             && ($hParts[0] == 'sqs' && $hParts[2] == 'amazonaws.com')
         ) {
             return new SQSQueue($uri);
-        } else if ($parts['scheme'] == 'beanstalk') {
+        } elseif ($parts['scheme'] == 'beanstalk') {
             return new BeanstalkQueue($uri);
         } else {
             throw new \Exception('Unsupported uri scheme');

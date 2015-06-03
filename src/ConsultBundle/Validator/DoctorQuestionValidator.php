@@ -8,7 +8,6 @@
 
 namespace ConsultBundle\Validator;
 
-
 use Symfony\Component\Validator\ValidatorInterface;
 use ConsultBundle\Entity\BaseEntity;
 use ConsultBundle\Manager\ValidationError;
@@ -37,7 +36,7 @@ class DoctorQuestionValidator implements Validator
             foreach ($validationErrors as $validationError) {
                 $pattern = '/([a-z])([A-Z])/';
                 $replace = function ($m) {
-                    return $m[1] . '_' . strtolower($m[2]);
+                    return $m[1].'_'.strtolower($m[2]);
                 };
                 $attribute = preg_replace_callback($pattern, $replace, $validationError->getPropertyPath());
                 @$errors[$attribute][] = $validationError->getMessage();
@@ -56,11 +55,10 @@ class DoctorQuestionValidator implements Validator
                             "X-Profile-Token");
         foreach ($parameters as $parameter) {
             if (array_key_exists($parameter, $requestParams)) {
-                unset($requestParams[$parameter]); 
-            } 
+                unset($requestParams[$parameter]);
+            }
         }
 
         return $requestParams;
     }
-
 }

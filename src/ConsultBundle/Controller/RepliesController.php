@@ -8,7 +8,6 @@
 
 namespace ConsultBundle\Controller;
 
-
 use ConsultBundle\Entity\DoctorReply;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Util\Codes;
@@ -34,12 +33,12 @@ class RepliesController extends FOSRestController
 
         try {
             $doctorReply = $doctorReplyManager->replyToAQuestion($doctorQuestionId, $practoAccountId, $answerText);
-        } catch(\HttpException $e) {
+        } catch (\HttpException $e) {
             return Views::create($e->getMessage(), $e->getCode());
         }
 
         return $doctorReply;
-     }
+        }
 
         /**
      * @param Request $request

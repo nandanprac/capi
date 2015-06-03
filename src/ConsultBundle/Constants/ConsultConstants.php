@@ -23,6 +23,4 @@ class ConsultConstants
     const QUESTION_BOOKMARK_ENTITY_NAME = "ConsultBundle:QuestionBookmark";
     const QUESTION_TAG_ENTITY_NAME = "ConsultBundle:QuestionTag";
     const DOCTOR_REPLY_RATING_ENTITY_NAME = "ConsultBundle:DoctorReplyRating";
-
-
 }

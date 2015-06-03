@@ -8,7 +8,6 @@
 
 namespace ConsultBundle\Controller;
 
-
 use ConsultBundle\Entity\DoctorQuestion;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Doctrine\Common\Collections\ArrayCollection;

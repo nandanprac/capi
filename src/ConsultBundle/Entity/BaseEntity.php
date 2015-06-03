@@ -7,11 +7,9 @@
 
 namespace ConsultBundle\Entity;
 
-
 use Doctrine\ORM\Mapping as ORM;
 use FOS\RestBundle\Util\Codes;
 use Symfony\Component\Validator\Constraints as Assert;
-
 
 /**
  * ConsultBundle\Entity\BaseEntity
@@ -105,19 +103,18 @@ abstract class BaseEntity
         foreach ($attributes as $attrSnake => $value) {
             //if ($this->isEditableAttribute($attrSnake)) {
                 $attrCamel = str_replace(' ', '', ucwords(str_replace('_', ' ', $attrSnake)));
-                $setter = 'set' . $attrCamel;
+                $setter = 'set'.$attrCamel;
             try {
                 if ('' === $value) {
                     $value = null;
                 }
-                if(method_exists($this, $setter)) {
+                if (method_exists($this, $setter)) {
                     $this->$setter($value);
 
-               }
+                }
 
             } catch (\Exception $e) {
-
-                throw new \HttpException($attrCamel. "is not a valid field in ".__CLASS__, Codes::HTTP_BAD_REQUEST);
+                throw new \HttpException($attrCamel."is not a valid field in ".__CLASS__, Codes::HTTP_BAD_REQUEST);
             }
             //} else {
             //    throw new BadAttributeException($attrSnake);
@@ -138,10 +135,9 @@ abstract class BaseEntity
 
         if (is_bool($value)) {
             $this->$field = $value;
-        } else if (is_numeric($value)) {
-
+        } elseif (is_numeric($value)) {
             $this->$field = (bool) $value;
-        } else if (null === $value || '' === $value) {
+        } elseif (null === $value || '' === $value) {
             $this->$field = null;
         } else {
             $this->$field = ('true' === $value);
@@ -188,11 +184,10 @@ abstract class BaseEntity
     {
         if ($value instanceof \DateTime) {
             $this->$field = $value;
-        } else if (!empty($value)) {
+        } elseif (!empty($value)) {
             $this->$field = new \DateTime($value);
         } else {
             $this->$field = null;
         }
     }
-
 }

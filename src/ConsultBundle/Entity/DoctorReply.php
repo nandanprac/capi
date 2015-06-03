@@ -170,7 +170,7 @@ class DoctorReply extends BaseEntity
      */
     public function addRating(DoctorReplyRating $like)
     {
-        if(!$like->isSoftDeleted()) {
+        if (!$like->isSoftDeleted()) {
             $this->likes[] = $like;
         }
 
