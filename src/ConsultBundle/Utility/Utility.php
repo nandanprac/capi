@@ -35,6 +35,11 @@ class Utility
     }
 
 
+    /**
+     * @param mixed $var
+     *
+     * @return bool
+     */
     public static function toBool($var)
     {
         if (empty($var)) {

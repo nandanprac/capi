@@ -9,17 +9,24 @@
 namespace ConsultBundle\Manager;
 
 use ConsultBundle\Constants\ConsultConstants;
-use ConsultBundle\Entity\DoctorQuestion;
 use ConsultBundle\Entity\DoctorReply;
 use ConsultBundle\Entity\DoctorReplyRating;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\EntityRepository;
 use FOS\RestBundle\Util\Codes;
 use ConsultBundle\Queue\AbstractQueue as Queue;
 
+/**
+ * Class DoctorReplyManager
+ *
+ * @package ConsultBundle\Manager
+ */
 class DoctorReplyManager extends BaseManager
 {
     public static $mandatoryFields;
+
+    /**
+     * @param \ConsultBundle\Queue\AbstractQueue $queue
+     */
     public function __construct(Queue $queue)
     {
         if (!isset(self::$mandatoryFields)) {
@@ -31,9 +38,9 @@ class DoctorReplyManager extends BaseManager
     }
 
     /**
-     * @param $doctorQuestionId
-     * @param $practoAccountId
-     * @param $answerText
+     * @param int    $doctorQuestionId
+     * @param int    $practoAccountId
+     * @param string $answerText
      * @return DoctorReply
      * @throws \HttpException
      */
@@ -42,7 +49,7 @@ class DoctorReplyManager extends BaseManager
         $doctorReply = new DoctorReply();
         $doctorQuestion = $this->helper->loadById(
             $doctorQuestionId,
-            ConsultConstants::$DOCTOR_QUESTION_ENTITY_NAME
+            ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME
         );
 
         if (is_null($doctorQuestion->getQuestion())) {
@@ -66,15 +73,7 @@ class DoctorReplyManager extends BaseManager
         $doctorReply->setDoctorQuestion($doctorQuestion);
         $doctorReply->setText($answerText);
 
-        /*
-        try {
-          $this->validate($doctorReply);
 
-        }catch(\Exception $e)
-        {
-          //To be implemented
-          throw new Exception($e, $e->getMessage());
-        }*/
         $this->queue->setQueueName(Queue::CONSULT_GCM)->sendMessage(json_encode(array("type"=>"query_answered", "message"=>"Your Query has been answered", "id"=>$doctorQuestion->getQuestion()->getId(), "user_ids"=>array($doctorQuestion->getQuestion()->getPractoAccountId()))));
         $this->helper->persist($doctorReply, true);
 
@@ -82,7 +81,7 @@ class DoctorReplyManager extends BaseManager
     }
 
     /**
-     * @param $postData
+     * @param array $postData
      * @return mixed
      * @throws \HttpException
      */
@@ -105,7 +104,7 @@ class DoctorReplyManager extends BaseManager
         //Fetch Doctor Reply
         $id = $doctorReply['id'];
 
-        $doctorReplyEntity = $this->helper->loadById($id, ConsultConstants::$DOCTOR_REPLY_ENTITY_NAME);
+        $doctorReplyEntity = $this->helper->loadById($id, ConsultConstants::DOCTOR_REPLY_ENTITY_NAME);
         if (empty($doctorReplyEntity)) {
             throw new \HttpException("Not a valid Doctor Reply Id", Codes::HTTP_BAD_REQUEST);
         }
@@ -139,7 +138,7 @@ class DoctorReplyManager extends BaseManager
         if (array_key_exists("like", $doctorReply)) {
             $like = $doctorReply['like'];
             //$er = new EntityRepository();
-            $er = $this->helper->getRepository(ConsultConstants::$DOCTOR_REPLY_RATING_ENTITY_NAME);
+            $er = $this->helper->getRepository(ConsultConstants::DOCTOR_REPLY_RATING_ENTITY_NAME);
 
 
 

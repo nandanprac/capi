@@ -9,9 +9,10 @@
 namespace ConsultBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity()
  * @ORM\Table(name="doctor_replies")
  * @ORM\HasLifecycleCallbacks()
  */
@@ -43,7 +44,10 @@ class DoctorReply extends BaseEntity
      */
     protected $likes;
 
-    public function _construct()
+    /**
+     * Construct the object
+     */
+    public function __construct()
     {
         $this->likes = new ArrayCollection();
     }
