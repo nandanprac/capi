@@ -16,7 +16,7 @@ use ConsultBundle\Manager\ValidationError;
 class QuestionsController extends Controller
 {
     /**
-     * @param Request $request
+     * @param Request $request - Request Object
      * @return View
      */
     public function postQuestionAction(Request $request)
@@ -51,7 +51,7 @@ class QuestionsController extends Controller
     }
 
     /**
-     * @param $questionId
+     * @param integer $questionId - Question Id
      * @return \ConsultBundle\Entity\Question|View
      */
     public function getQuestionAction($questionId)
@@ -73,6 +73,10 @@ class QuestionsController extends Controller
         return $question;
     }
 
+    /**
+     * @param Request $requestRec - request Object
+     * @return array Question - list of question objects
+     */
     public function getQuestionsAction(Request $requestRec)
     {
         $questionManager = $this->get('consult.question_manager');
@@ -91,6 +95,9 @@ class QuestionsController extends Controller
         return array('questions' => $questionList[0], 'count' => $questionList[1]);
     }
 
+    /**
+     * @return Question
+     */
     public function patchQuestionAction()
     {
         $questionManager = $this->get('consult.question_manager');

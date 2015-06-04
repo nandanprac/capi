@@ -48,8 +48,7 @@ class QuestionManager extends BaseManager
         RetrieveUserProfileUtil $retrieveUserProfileUtil,
         RetrieveDoctorProfileUtil $retrieveDoctorProfileUtil,
         UpdateAccountsUtil $updateAccountsUtil
-    )
-{
+    ) {
         $this->userManager = $userManager;
         $this->userProfileManager = $userProfileManager;
         $this->questionBookmarkManager = $questionBookmarkManager;
@@ -60,8 +59,8 @@ class QuestionManager extends BaseManager
     }
 
     /**
-     * @param $question
-     * @param $requestParams
+     * @param Question $question      - question obect to be updated
+     * @param array    $requestParams - data for the updation
      * @throws ValidationError
      */
     public function updateFields($question, $requestParams)
@@ -116,8 +115,8 @@ class QuestionManager extends BaseManager
 
     /**
      *
-     * @param array $requestParams
-     *
+     * @param array  $requestParams - parameters passed for creating new question object
+     * @param string $profileToken  - profile token of the user
      * @return Question
      */
     public function add($requestParams, $profileToken = null)
@@ -147,22 +146,16 @@ class QuestionManager extends BaseManager
         return $question;
     }
 
-    private function setQuestionTags($question, $tags)
-    {
-        foreach ($tags as $tag) {
-            $tagObj = new QuestionTag();
-            $tagObj->setTag($tag);
-            $tagObj->setUserDefined(true);
-            $tagObj->setQuestion($question);
-            $question->addTag($tagObj);
-        }
-    }
-
+    /**
+     * @param array $requestParams - data for the updation
+     * @throws ValidationError
+     * @return Question
+     */
     public function patch($requestParams)
     {
         $error = array();
         if (array_key_exists('question_id', $requestParams)) {
-            $question = $this->helper->loadById($requestParams['question_id'], ConsultConstants::$QUESTION_ENTITY_NAME);
+            $question = $this->helper->loadById($requestParams['question_id'], ConsultConstants::QUESTION_ENTITY_NAME);
             if (null === $question) {
                 throw new ValidationError();
             }
@@ -189,13 +182,13 @@ class QuestionManager extends BaseManager
 
             $questionComment = new QuestionComment();
             $questionComment->setAttributes($commentParams);
-            $questionComment->setQuestion($question);
-            $question->addComment($questionComment);
             try {
-                $this->validator->validateComment($questionComment);
+                $this->validator->validate($questionComment);
             } catch (ValidationError $e) {
                 throw new ValidationError($e->getMessage());
             }
+            $questionComment->setQuestion($question);
+            $question->addComment($questionComment);
         }
 
         $params = $this->validator->validatePatchArguments($requestParams);
@@ -217,7 +210,7 @@ class QuestionManager extends BaseManager
         /**
          * @var Question $question
          */
-        $question = $this->helper->loadById($questionId, ConsultConstants::$QUESTION_ENTITY_NAME);
+        $question = $this->helper->loadById($questionId, ConsultConstants::QUESTION_ENTITY_NAME);
 
         if (is_null($question)) {
             return null;
@@ -233,8 +226,13 @@ class QuestionManager extends BaseManager
     }
 
 
-
-
+    /**
+     * Load Questions
+     *
+     * @param array $request - filters
+     *
+     * @return array Question objects
+     */
     public function loadByFilters($request)
     {
 
@@ -251,31 +249,57 @@ class QuestionManager extends BaseManager
             $modifiedAfter->format('Y-m-d H:i:s');
         }
 
-        $er =  $this->helper->getRepository(ConsultConstants::$QUESTION_ENTITY_NAME);
+        $er =  $this->helper->getRepository(ConsultConstants::QUESTION_ENTITY_NAME);
         $questionList = $er->findQuestionsByFilters($practoAccountId, $bookmark, $state, $category, $modifiedAfter, $limit, $offset);
 
         return $questionList;
     }
 
-    public function setState($question_id, $state)
+    /**
+     * @param integer $questionId - Question Id
+     * @param string  $state      - state of the question
+     *
+     */
+    public function setState($questionId, $state)
     {
-        $question = $this->helper->loadById($question_id, ConsultConstants::$QUESTION_ENTITY_NAME);
+        $question = $this->helper->loadById($questionId, ConsultConstants::QUESTION_ENTITY_NAME);
         if ($question) {
             $question->setState($state);
             $this->helper->persist($question, 'true');
         } else {
-            throw new \Exception("Question with id ".$question_id." doesn't exist.");
+            throw new \Exception("Question with id ".$questionId." doesn't exist.");
         }
     }
 
-    public function setTagByQuestionId($question_id, $tag)
+    /**
+     * @param integer $questionId - Question Id
+     * @param string  $tag        - text for the tag
+     *
+     */
+    public function setTagByQuestionId($questionId, $tag)
     {
-        $question = $this->helper->loadById($question_id, ConsultConstants::$QUESTION_ENTITY_NAME);
+        $question = $this->helper->loadById($questionId, ConsultConstants::QUESTION_ENTITY_NAME);
         $tagObj = new QuestionTag();
         $tagObj->setTag($tag);
         $tagObj->setUserDefined(false);
         $tagObj->setQuestion($question);
         $question->addTag($tagObj);
         $this->helper->persist($question, 'true');
+    }
+
+    /**
+     * @param Question $question - Question object
+     * @param string $tags - text for the tags
+     *
+     */
+    private function setQuestionTags($question, $tags)
+    {
+        foreach ($tags as $tag) {
+            $tagObj = new QuestionTag();
+            $tagObj->setTag($tag);
+            $tagObj->setUserDefined(true);
+            $tagObj->setQuestion($question);
+            $question->addTag($tagObj);
+        }
     }
 }
