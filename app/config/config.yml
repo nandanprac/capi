@@ -3,7 +3,7 @@ imports:
   #  - { resource: queueServices.yml }
     - { resource: security.yml }
     - { resource: @ConsultBundle/Resources/config/services.yml }
-    - { resource: @ConsultBundle/Resources/config/securityServices.yml}
+  #    - { resource: @ConsultBundle/Resources/config/securityServices.yml}
 
 framework:
     #esi:             ~
@@ -108,3 +108,28 @@ jms_serializer:
         # class: My\FooBundle\Entity\User
         # expected path: @MyFooBundle/Resources/config/serializer/Entity.User.(yml|xml|php)
         auto_detection: true
+
+snc_redis:
+    clients:
+        default:
+            type: predis
+            alias: default
+            dsn: redis://localhost
+        cache:
+            type: predis
+            alias: cache
+            dsn: redis://localhost/1
+            logging: true
+    doctrine:
+        metadata_cache:
+            client: cache
+            entity_manager: default
+            document_manager: default
+        result_cache:
+            client: cache
+            entity_manager: [default, read]
+            document_manager: [default, slave1, slave2]
+            namespace: "dcrc:"
+        query_cache:
+            client: cache
+            entity_manager: default

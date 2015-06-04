@@ -163,3 +163,14 @@ services:
       calls:
         - [ setConsultDomain, ['@?consult.consult_domain=']]
 
+
+    consult.redis:
+        class: ConsultBundle\Manager\RedisClient
+        arguments:
+            - @snc_redis.default
+
+    consult.classification:
+        class: ConsultBundle\Manager\ClassificationManager
+        arguments:
+             - @consult.redis
+
