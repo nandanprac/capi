@@ -18,8 +18,8 @@ class QuestionBookmarkManager extends BaseManager
 
 
     /**
-     * @param $questionBookmark
-     * @param $data
+     * @param QuestionBookmark $questionBookmark - bookmark object
+     * @param array            $data             - data to be updated
      * @throws ValidationError
      */
     public function updateFields($questionBookmark, $data)
@@ -39,6 +39,9 @@ class QuestionBookmarkManager extends BaseManager
         return;
     }
 
+    /**
+     * @param array $requestParams - data for bookmark deletion
+     */
     public function remove($requestParams)
     {
         $error = array();
@@ -53,7 +56,7 @@ class QuestionBookmarkManager extends BaseManager
             throw new ValidationError($error);
         }
 
-        $er =  $this->helper->getRepository(ConsultConstants::$QUESTION_BOOKMARK_ENTITY_NAME);
+        $er =  $this->helper->getRepository(ConsultConstants::QUESTION_BOOKMARK_ENTITY_NAME);
         $questionBookmark = $er->findBookmark($requestParams['practo_account_id'], $requestParams['question_id']);
 
         if (empty($questionBookmark)) {
@@ -65,7 +68,7 @@ class QuestionBookmarkManager extends BaseManager
     }
 
     /**
-     * @param $requestParams
+     * @param array $requestParams - params for bookmark addition
      * @return QuestionBookmark
      * @throws ValidationError
      */
@@ -83,7 +86,7 @@ class QuestionBookmarkManager extends BaseManager
         }
 
         $questionId = $requestParams['question_id'];
-        $question = $this->helper->loadById($questionId, ConsultConstants::$QUESTION_ENTITY_NAME);
+        $question = $this->helper->loadById($questionId, ConsultConstants::QUESTION_ENTITY_NAME);
 
         if (empty($question)) {
             @$error['question_id'] = 'Question with this id doesnt exist';
@@ -121,11 +124,12 @@ class QuestionBookmarkManager extends BaseManager
      */
     public function load($questionBookmarkId)
     {
-        $questionBookmark = $this->helper->loadById($questionBookmarkId, ConsultConstants::$QUESTION_BOOKMARK_ENTITY_NAME);
+        $questionBookmark = $this->helper->loadById($questionBookmarkId, ConsultConstants::QUESTION_BOOKMARK_ENTITY_NAME);
 
         if (is_null($questionBookmark)) {
             return null;
         }
+
         return $questionBookmark;
     }
 }

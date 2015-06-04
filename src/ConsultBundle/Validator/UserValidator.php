@@ -6,6 +6,9 @@ use Symfony\Component\Validator\ValidatorInterface;
 use ConsultBundle\Entity\BaseEntity;
 use ConsultBundle\Manager\ValidationError;
 
+/**
+ * Validator for user profile object
+ */
 class UserValidator implements Validator
 {
     private $validator;
@@ -20,6 +23,10 @@ class UserValidator implements Validator
         $this->validator = $validator;
     }
 
+    /**
+     * @param User $user - User object to be validated
+     * @return null
+     */
     public function validate(BaseEntity $user)
     {
         $errors = array();

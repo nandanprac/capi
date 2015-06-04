@@ -12,6 +12,9 @@ use Symfony\Component\Validator\ValidatorInterface;
 use ConsultBundle\Entity\BaseEntity;
 use ConsultBundle\Manager\ValidationError;
 
+/**
+ * Question Bookmark Validator
+ */
 class QuestionBookmarkValidator implements Validator
 {
     private $validator;
@@ -26,10 +29,14 @@ class QuestionBookmarkValidator implements Validator
         $this->validator = $validator;
     }
 
-    public function validate(BaseEntity $bookmark)
+    /**
+     * @param BaseEntity $entity - entity to be validated
+     * @return null
+     */
+    public function validate(BaseEntity $entity)
     {
         $errors = array();
-        $validationErrors = $this->validator->validate($bookmark);
+        $validationErrors = $this->validator->validate($entity);
         if (0 < count($validationErrors)) {
             foreach ($validationErrors as $validationError) {
                 $pattern = '/([a-z])([A-Z])/';
@@ -48,8 +55,11 @@ class QuestionBookmarkValidator implements Validator
 
     }
 
-
-
+    /**
+     * @param Question $question        - question object
+     * @param integer  $practoAccountId - User's id
+     * @return bool
+     */
     public function checkUniqueness($question, $practoAccountId)
     {
         foreach ($question->getBookmarks() as $bookmark) {

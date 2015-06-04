@@ -14,7 +14,7 @@ class UserManager extends BaseManager
     /**
      * Update Fields
      *
-     * @param UserInfo $userEntry
+     * @param UserInfo $userEntry     - UserInfo object
      * @param array    $requestParams - Request parameters
      *
      * @return null
@@ -48,11 +48,12 @@ class UserManager extends BaseManager
     /**
      * Load User's Additional Info By Id
      *
+     * @param integer $userId - User's id
      * @return userEntry
      */
     public function load($userId)
     {
-        $userEntry = $this->helper->getRepository(ConsultConstants::$USER_ENTITY_NAME)->findOneBy(
+        $userEntry = $this->helper->getRepository(ConsultConstants::USER_ENTITY_NAME)->findOneBy(
             array('practoAccountId' => $userId),
             array('createdAt' => 'DESC')
         );
