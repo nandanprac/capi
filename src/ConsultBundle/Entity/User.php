@@ -92,31 +92,61 @@ class User extends BaseEntity
         return $this->gender;
     }
 
+    /**
+     * Set blood group
+     *
+     * @param string $bloodGroup - Blood Group
+     */
     public function setBloodGroup($bloodGroup)
     {
         $this->bloodGroup = $bloodGroup;
     }
 
+    /**
+     * Get blood group
+     *
+     * @return string
+     */
     public function getBloodGroup()
     {
         return $this->bloodGroup;
     }
 
+    /**
+     * Set height
+     *
+     * @param float $height - Height
+     */
     public function setHeightInCms($height)
     {
         $this->heightInCms = $height;
     }
 
+    /**
+     * Get height
+     *
+     * @return float
+     */
     public function getHeightInCms()
     {
         return $this->heightInCms;
     }
 
+    /**
+     * Set weight
+     *
+     * @param float $weight - Weight
+     */
     public function setWeightInKgs($weight)
     {
         $this->weightInKgs = $weight;
     }
 
+    /**
+     * Get weight
+     *
+     * @return float
+     */
     public function getWeightInKgs()
     {
         return $this->weightInKgs;

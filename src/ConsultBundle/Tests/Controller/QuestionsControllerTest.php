@@ -10,7 +10,7 @@ use ConsultBundle\EventListener\SecurityListener;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use FOS\RestBundle\Util\Codes;
 
-/** 
+/**
   * This class has testcases for all question related APIs
   */
 class QuestionsControllerTest extends WebTestCase
@@ -19,7 +19,7 @@ class QuestionsControllerTest extends WebTestCase
     private $conn = null;
 
     /**
-     * Setup
+     * Setup the class
      *
      * @return null
      */
@@ -28,23 +28,32 @@ class QuestionsControllerTest extends WebTestCase
         print "==== Starting QuestionsControllerTest ====";
     }
 
+    /**
+     * Setup
+     *
+     * @return null
+     */
     public function setUp()
-    { 
+    {
         $this->client = static::createClient();
         $practoAccountId = 1;
         $profileToken = 'junk_value';
 
         $authenticationStub = $this->getMockBuilder('ConsultBundle\Utility\AuthenticationUtils')->setMethods(['authenticateWithAccounts'])->disableOriginalConstructor()->getMock();
-        $authenticationStub->expects($this->any())->method('authenticateWithAccounts')->will($this->returnCallback(function ($practoAccountId, $profileToken) {
-            return true;
-        }));
+        $authenticationStub->expects($this->any())->method('authenticateWithAccounts')->will(
+            $this->returnCallback(
+                function ($practoAccountId, $profileToken) {
+                    return true;
+                }
+            )
+        );
         $this->client->getContainer()->set('consult.account_authenticator_util', $authenticationStub);
 
         $securityStub = $this->getMockBuilder('ConsultBundle\EventListener\SecurityListener')->disableOriginalConstructor()->getMock();
         $securityStub->expects($this->any())->method('onKernelRequest')->willReturn(true);
         //$securityStub->expects($this->once())->method('onKernelRequest')->will($this->returnValue($authenticationStub));
         $this->client->getContainer()->set('listener.security_listener', $securityStub);
-   
+
 
     }
 
@@ -84,20 +93,6 @@ class QuestionsControllerTest extends WebTestCase
      */
     public function testPostQuestionBadRequest()
     {
-        /*$practoAccountId = 1;
-        $profileToken = '9745b0c4-644f-49a5-b375-e53847a21bcc';
-
-        $authenticationStub = $this->getMockBuilder('ConsultBundle\Utility\AuthenticationUtils')->setMethods(['authenticateWithAccounts'])->disableOriginalConstructor()->getMock();
-        $authenticationStub->expects($this->any())->method('authenticateWithAccounts')->will($this->returnCallback(function ($practoAccountId, $profileToken) {
-            return true;
-        }));
-        $client->getContainer()->set('consult.account_authenticator_util', $authenticationStub);
-
-        $securityStub = $this->getMockBuilder('ConsultBundle\EventListener\SecurityListener')->disableOriginalConstructor()->getMock();
-        $securityStub->expects($this->any())->method('onKernelRequest')->willReturn(true);
-        //$securityStub->expects($this->once())->method('onKernelRequest')->will($this->returnValue($authenticationStub));
-        $client->getContainer()->set('listener.security_listener', $securityStub);
-       */ 
         $crawler = $this->client->request(
             'POST',
             '/questions',
@@ -158,9 +153,10 @@ class QuestionsControllerTest extends WebTestCase
         $crawler = $this->client->request(
             'POST',
             '/questions',
-            array('question' => '{"practo_account_id":"1","text":"test question",
-                                  "additional_info":{"allergies":"abcd"},
-                                  "user_profile_details":{"is_some_else":false}}'),
+            array('question' => '{"practo_account_id":"1",
+                                  "text":"test question",
+                                  "additional_info": {"allergies":"abcd"},
+                                  "user_profile_details": {"is_some_else":false}}', ),
             array(),
             array()
         );
@@ -191,7 +187,7 @@ class QuestionsControllerTest extends WebTestCase
             array('question' => '{"practo_account_id":"1","text":"test question",
                                   "additional_info":{"medications":"abcd"},
                                   "user_profile_details":{"is_some_else":true,
-                                                          "gender":"M"}}'),
+                                                          "gender":"M"}}', ),
             array(),
             array()
         );
@@ -246,7 +242,7 @@ class QuestionsControllerTest extends WebTestCase
             '/questions'
         );
         $response = $this->client->getResponse();
-//        echo $response->getContent();
+        //        echo $response->getContent();
         $this->assertEquals(
             Codes::HTTP_OK,
             $response->getStatusCode(),
@@ -258,6 +254,4 @@ class QuestionsControllerTest extends WebTestCase
             "Valid response was not sent"
         );
     }
-
-
 }

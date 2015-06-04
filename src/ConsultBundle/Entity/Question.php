@@ -61,23 +61,6 @@ class Question extends BaseEntity
      */
     protected $viewedAt;
 
-
-    /**
-     * @return mixed
-     */
-    public function getViewedAt()
-    {
-        return $this->viewedAt;
-    }
-
-    /**
-     * @param mixed $viewedAt
-     */
-    public function setViewedAt(\DateTime $viewedAt)
-    {
-        $this->viewedAt = $viewedAt;
-    }
-
     /**
     * @ORM\OneToMany(targetEntity="QuestionImage", mappedBy="question", cascade={"persist", "remove"})
     * @var ArrayCollection $images
@@ -133,6 +116,26 @@ class Question extends BaseEntity
      */
     protected $comments;
 
+
+    /**
+     * @return mixed
+     */
+    public function getViewedAt()
+    {
+        return $this->viewedAt;
+    }
+
+    /**
+     * @param mixed $viewedAt
+     */
+    public function setViewedAt(\DateTime $viewedAt)
+    {
+        $this->viewedAt = $viewedAt;
+    }
+
+    /**
+     * constructor
+     */
     public function __construct()
     {
         $this->images = new ArrayCollection();
@@ -146,11 +149,19 @@ class Question extends BaseEntity
         //$this->de
     }
 
+    /**
+     * get UserInfo object
+     * @return UserInfo
+     */
     public function getUserInfo()
     {
         return $this->userInfo;
     }
 
+    /**
+     * Set UserInfo object
+     * @param UserInfo $userInfo - UserInfo object
+     */
     public function setUserInfo(UserInfo $userInfo)
     {
         $this->userInfo = $userInfo;
@@ -184,7 +195,9 @@ class Question extends BaseEntity
         $this->images = new ArrayCollection();
     }
 
-
+    /**
+     * Set images
+     */
     public function setImages($images)
     {
         $this->images = $images;
@@ -448,7 +461,7 @@ class Question extends BaseEntity
     }
 
     /**
-     * @param integer
+     * @param integer $count - view count of the question
      */
     public function setViewCount($count)
     {
@@ -464,7 +477,7 @@ class Question extends BaseEntity
     }
 
     /**
-     * @param integer
+     * @param integer $count - share count of the question
      */
     public function setShareCount($count)
     {
@@ -484,7 +497,7 @@ class Question extends BaseEntity
     /**
      * Add Tag
      *
-     * @param QuestionComment $comments - Question Comment
+     * @param QuestionComment $comment - Question Comment
      */
     public function addComment(QuestionComment $comment)
     {
