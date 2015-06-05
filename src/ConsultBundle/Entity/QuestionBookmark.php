@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity(repositoryClass="ConsultBundle\Repository\QuestionBookmarkRepository")
+ * @ORM\Entity
  * @ORM\Table(name="question_bookmarks")
  * @ORM\HasLifecycleCallbacks()
  */

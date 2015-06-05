@@ -13,33 +13,23 @@ use ConsultBundle\Entity\User;
  */
 class UserProfileManager extends BaseManager
 {
-    /**
-     * @param User  $userInfo      - User object
-     * @param array $requestParams - parameters to be added
-     */
-    public function updateFields($userInfo, $requestParams)
-    {
+    public function updateFields($userInfo, $requestParams) {
         $userInfo->setAttributes($requestParams);
 
         try {
             $this->validator->validate($userInfo);
-        } catch (ValidationError $e) {
+        } catch(ValidationError $e) {
             throw new ValidationError($e->getMessage());
         }
-
         return;
     }
-
-    /**
-     * @param array $requestParams - parameters for User object
-     * @return User
-     */
-    public function add($requestParams)
-    {
+ 
+    public function add($requestParams) {
         $user = new User();
         $this->updateFields($user, $requestParams);
         $this->helper->persist($user, 'true');
-
         return $user;
     }
+
 }
+

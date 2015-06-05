@@ -10,49 +10,48 @@ namespace ConsultBundle\Helper;
 
 use ConsultBundle\Utility\CacheUtils;
 use Doctrine\Bundle\DoctrineBundle\Registry as Doctrine;
+use ConsultBundle\Validator\Validator;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityRepository;
 use FOS\RestBundle\Util\Codes;
-use ConsultBundle\Entity\BaseEntity;
+use GuzzleHttp\Message\Response;
 
-/**
- * Class Helper
- *
- * @package ConsultBundle\Helper
- */
 class Helper
 {
 
     /**
      * @var EntityManager
      */
-    protected $entityManager;
+    protected  $entityManager;
     protected $cacheUtils;
 
-    /**
-     * @param \Doctrine\Bundle\DoctrineBundle\Registry $doctrine
-     * @param \ConsultBundle\Utility\CacheUtils        $cacheUtils
-     */
     public function __construct(Doctrine $doctrine, CacheUtils $cacheUtils)
     {
-        $this->entityManager = $doctrine->getManager();
-        $this->cacheUtils = $cacheUtils;
+      $this->entityManager = $doctrine->getManager();
+      $this->cacheUtils = $cacheUtils;
 
     }
 
+    public function getEntityManager()
+    {
+        return $this->entityManager;
+    }
+
     /**
-     * @param String $entityName
+     * LoadAll
      *
-     * @return array|null
+     * @param  $entityName
+     *
+     * @return entity
      */
     public function loadAll($entityName)
     {
-
+        //$entity = $this->entityManager->getRepository($entityName)->findAll();
         $entity = $this->entityManager->getRepository($entityName)->findBy(array('softDeleted' => 0));
 
 
-        if (empty($entity)) {
+        if (is_null($entity)) {
             return null;
         }
 
@@ -60,18 +59,18 @@ class Helper
     }
 
     /**
-     * @param int    $id
-     * @param string $entityName
+     * @param $id
+     * @param $entityName
      *
      * @return mixed
      */
-    public function loadById($id, $entityName)
+    public function  loadById($id, $entityName)
     {
 
         $entity = $this->entityManager->getRepository($entityName)->find($id);
 
 
-        if (empty($entity)) {
+        if (is_null($entity)) {
             return null;
         }
 
@@ -79,16 +78,18 @@ class Helper
     }
 
     /**
-     * @param string $entityName
+     * @param $entityName
      * @return EntityRepository|null
      */
+
     public function getRepository($entityName)
     {
 
         $entityRepository = $this->entityManager->getRepository($entityName);
 
-        if (is_null($entityRepository)) {
-            return null;
+        if(is_null($entityRepository))
+        {
+          return null;
         }
 
 
@@ -96,9 +97,6 @@ class Helper
     }
 
 
-    /**
-     * @param BaseEntity $entity
-     */
     public function remove($entity)
     {
         $this->entityManager->remove($entity);
@@ -107,38 +105,53 @@ class Helper
 
 
 
-
+    /**
+     * @param $entity
+     * @param $params
+     * @return mixed
+     */
+    public function update($entity, $params)
+    {
+        // TODO: Implement update() method.
+    }
 
     /**
-     * @param BaseEntity $entity
-     * @param boolean    $flush
+     * @param $entity
+     * @param $flush
      */
-    public function persist($entity, $flush = null)
+    public function persist($entity, $flush=null)
     {
-        if ($entity != null) {
+        if($entity != null){
             $this->entityManager->persist($entity);
         }
 
-        if ($flush) {
+        if($flush)
+        {
             $this->entityManager->flush();
         }
     }
 
     /**
-     * @param array $fields
+     * @param $fields
      * @param array $data
      * @throws \HttpException
      */
-    public function checkForMandatoryFields($fields, array $data)
+    public function checkForMandatoryFields($fields, array $data )
     {
         $errors = new ArrayCollection();
-        foreach ($fields as $field) {
-            if (!array_key_exists($field, $data)) {
-                 $errors->add($field." is Mandatory");
+        //var_dump($data);
+        foreach($fields as $field)
+        {
+            //var_dump($field);
+            if(!array_key_exists($field, $data))
+            {
+
+                 $errors->add($field . " is Mandatory");
             }
         }
 
-        if ($errors->count() > 0) {
+        if($errors->count()>0)
+        {
             throw new \HttpException(json_encode($errors->getValues()), Codes::HTTP_BAD_REQUEST);
         }
     }
