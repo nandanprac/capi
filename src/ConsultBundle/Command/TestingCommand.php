@@ -8,7 +8,6 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use ConsultBundle\Queue\AbstractQueue as Queue;
 use ConsultBundle\ConsultDomain;
-use Pheanstalk_Pheanstalk as Pheanstalk;
 
 use Symfony\Component\HttpFoundation\Request;
 
@@ -37,6 +36,8 @@ class TestingCommand extends ContainerAwareCommand
         $this
             ->setName('consult:queue:indexing:test')
             ->setDescription('queue for indexing for search results.')
+            ->addArgument('question', InputArgument::OPTIONAL)
+            ->addArgument('tags', InputArgument::OPTIONAL)
             ->addArgument('domain', InputArgument::OPTIONAL, 'Consult Domain', 'https://consult.practo.com');
     }
 
@@ -51,11 +52,14 @@ class TestingCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $request = Request::create($input->getArgument('domain'));
+        $question = $input->getArgument('question');
+        $tags = $input->getArgument('tags');
         $consultDomain = new ConsultDomain($request);
         $this->container->set('consult.consult_domain', $consultDomain);
         $this->queue->setConsultDomain($consultDomain);
+        var_dump($this->queue->getQueueName());
         $this->queue
-            ->setQueueName(Queue::CONSULT_GCM)
-            ->sendMessage(json_encode(array('user_id'=>2645, 'message'=>'I smoke alot. Is there any chance to lung cancer?')));
+              ->setQueueName(Queue::DAA)
+              ->sendMessage(json_encode(array('question'=>$question ? $question : '', 'tags'=>$tags?$tags:'')));
     }
 }

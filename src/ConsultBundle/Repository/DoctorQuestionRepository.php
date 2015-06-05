@@ -21,15 +21,20 @@ class DoctorQuestionRepository extends EntityRepository
      */
     public function findByFilters($doctorId, $filters)
     {
-        $qb = $this->_em->createQueryBuilder();
+		$qb = $this->_em->createQueryBuilder();
         $questions = null;
         $limit = array_key_exists('limit', $filters) ? $filters['limit'] : 500;
         $offset = array_key_exists('offset', $filters) ? $filters['offset'] : 0;
         try {
-             $qb->select(array('q'))
-                 ->from("ConsultBundle:Question", 'q')
-                 ->innerJoin('q.doctorQuestions', 'dq')
-                 ->where('dq.practoAccountId = :doctorId');
+            $qb->select(array('q'))
+               ->from("ConsultBundle:Question", 'q')
+			   ->innerJoin('q.doctorQuestions', 'dq')
+			   ->where('dq.softDeleted = 0');
+
+			if ($doctorId != -1) {
+				$qb->andWhere('dq.practoAccountId = :doctorId')
+                   ->setParameter('doctorId', $doctorId);
+			}
 
             if (array_key_exists('reject', $filters)) {
                 $state = $filters['reject'];
@@ -57,12 +62,10 @@ class DoctorQuestionRepository extends EntityRepository
 
              $qb->setFirstResult($offset)
                  ->setMaxResults($limit)
-                 ->addOrderBy('q.modifiedAt', 'DESC')
-                 ->setParameter('doctorId', $doctorId);
+                 ->addOrderBy('q.modifiedAt', 'DESC');
              $questions = $qb->getQuery()->getResult();
              $paginator = new Paginator($qb->getQuery(), $fetchJoinCollection = true);
              $count = count($paginator);
-
         } catch (\Exception $e) {
             return $e->getMessage();
         }

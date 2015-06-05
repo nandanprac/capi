@@ -42,7 +42,7 @@ class DoctorReplyManager extends BaseManager
         $doctorReply = new DoctorReply();
         $doctorQuestion = $this->helper->loadById(
             $doctorQuestionId,
-            ConsultConstants::$DOCTOR_QUESTION_ENTITY_NAME
+            ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME
         );
 
         if (is_null($doctorQuestion->getQuestion())) {
@@ -105,7 +105,7 @@ class DoctorReplyManager extends BaseManager
         //Fetch Doctor Reply
         $id = $doctorReply['id'];
 
-        $doctorReplyEntity = $this->helper->loadById($id, ConsultConstants::$DOCTOR_REPLY_ENTITY_NAME);
+        $doctorReplyEntity = $this->helper->loadById($id, ConsultConstants::DOCTOR_REPLY_ENTITY_NAME);
         if (empty($doctorReplyEntity)) {
             throw new \HttpException("Not a valid Doctor Reply Id", Codes::HTTP_BAD_REQUEST);
         }
@@ -139,7 +139,7 @@ class DoctorReplyManager extends BaseManager
         if (array_key_exists("like", $doctorReply)) {
             $like = $doctorReply['like'];
             //$er = new EntityRepository();
-            $er = $this->helper->getRepository(ConsultConstants::$DOCTOR_REPLY_RATING_ENTITY_NAME);
+            $er = $this->helper->getRepository(ConsultConstants::DOCTOR_REPLY_RATING_ENTITY_NAME);
 
 
 

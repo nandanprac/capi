@@ -12,6 +12,9 @@ use Symfony\Component\Validator\ValidatorInterface;
 use ConsultBundle\Entity\BaseEntity;
 use ConsultBundle\Manager\ValidationError;
 
+/**
+ * Doctor Question Validation
+ */
 class DoctorQuestionValidator implements Validator
 {
 
@@ -27,7 +30,11 @@ class DoctorQuestionValidator implements Validator
         $this->validator = $validator;
     }
 
-
+    /**
+     * @param BaseEntity $question - Object of Base Entity
+     *
+     * @return null
+     */
     public function validate(BaseEntity $question)
     {
         $errors = array();
@@ -48,11 +55,14 @@ class DoctorQuestionValidator implements Validator
         }
     }
 
+    /**
+     * @param Array $requestParams - Query Params of get request
+     *
+     * @return Array
+     */
     public function validatePatchArguments($requestParams)
     {
-        $parameters = array("question_id", "_method", "state",
-                            "practo_account_id", "created_at", "comment",
-                            "X-Profile-Token");
+        $parameters = array("question_id", "_method", "state", "practo_account_id", "created_at", "comment", "X-Profile-Token");
         foreach ($parameters as $parameter) {
             if (array_key_exists($parameter, $requestParams)) {
                 unset($requestParams[$parameter]);
