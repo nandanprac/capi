@@ -42,14 +42,6 @@ class Helper
     }
 
     /**
-     * @return \Doctrine\ORM\EntityManager
-     */
-    public function getEntityManager()
-    {
-        return $this->entityManager;
-    }
-
-    /**
      * @param String $entityName
      *
      * @return array|null
