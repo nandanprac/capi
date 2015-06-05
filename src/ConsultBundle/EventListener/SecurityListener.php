@@ -12,15 +12,26 @@ use ConsultBundle\Utility\AuthenticationUtils;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 
+/**
+ * Class SecurityListener
+ * @package ConsultBundle\EventListener
+ */
 class SecurityListener
 {
     private $authenticationUtils;
 
+
+    /**
+     * @param AuthenticationUtils $authenticationUtils
+     */
     public function __construct(AuthenticationUtils $authenticationUtils)
     {
         $this->authenticationUtils = $authenticationUtils;
     }
 
+    /**
+     * @param GetResponseEvent $event
+     */
     public function onKernelRequest(GetResponseEvent $event)
     {
         $request = $event->getRequest();
@@ -32,7 +43,6 @@ class SecurityListener
         $session = $request->getSession();
 
         if ($session->get("isValidated") === true) {
-
             return;
         }
 
@@ -48,8 +58,9 @@ class SecurityListener
         }
 
         try {
-            $this->authenticationUtils->authenticateWithAccounts($practoAccountID, $profileToken);
-        } catch(\Exception $e) {
+            $this->authenticationUtils
+                ->authenticateWithAccounts($practoAccountID, $profileToken);
+        } catch (\Exception $e) {
             $responseRet = new Response();
             $responseRet->setStatusCode(Response::HTTP_FORBIDDEN);
             $event->setResponse($responseRet);

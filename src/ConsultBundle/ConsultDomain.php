@@ -22,11 +22,12 @@ class ConsultDomain
 
     /**
      * Get Host
+     *
      * @param string $subdomain - Subdomain
      *
      * @return string
      */
-    public function getHost($subdomain=null)
+    public function getHost($subdomain = null)
     {
         $consultHost = $this->request->getSchemeAndHttpHost();
         if (!$subdomain) {

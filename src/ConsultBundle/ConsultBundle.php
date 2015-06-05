@@ -8,9 +8,14 @@
 
 namespace ConsultBundle;
 
-
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-class ConsultBundle extends Bundle {
+/**
+ * Class ConsultBundle
+ *
+ * @package ConsultBundle
+ */
+class ConsultBundle extends Bundle
+{
 
 }

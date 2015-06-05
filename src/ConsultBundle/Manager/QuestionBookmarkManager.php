@@ -18,8 +18,8 @@ class QuestionBookmarkManager extends BaseManager
 
 
     /**
-     * @param $questionBookmark
-     * @param $data
+     * @param QuestionBookmark $questionBookmark - bookmark object
+     * @param array            $data             - data to be updated
      * @throws ValidationError
      */
     public function updateFields($questionBookmark, $data)
@@ -27,34 +27,48 @@ class QuestionBookmarkManager extends BaseManager
         if (array_key_exists('question_id', $data)) {
             unset($data['question_id']);
         }
-        $questionBookmark->setAttributes($data);            
+        $questionBookmark->setAttributes($data);
         $questionBookmark->setModifiedAt(new \DateTime('now'));
 
         try {
             $this->validator->validate($questionBookmark);
-        } catch(ValidationError $e) {
+        } catch (ValidationError $e) {
             throw new ValidationError($e->getMessage());
         }
 
         return;
     }
 
-    public function remove($bookmarkId)
+    /**
+     * @param array $requestParams - data for bookmark deletion
+     */
+    public function remove($requestParams)
     {
         $error = array();
 
-        $questionBookmark = $this->load($bookmarkId);
-        if (is_null($questionBookmark)) {
-            $error = array();
-            @$error['error']='Bookmark doesnt exist';
+        if (!array_key_exists('question_id', $requestParams)) {
+            @$error['question_id'] = 'This cannot be blank';
             throw new ValidationError($error);
         }
-        else
-            $this->helper->remove($questionBookmark);
+
+        if (!array_key_exists('practo_account_id', $requestParams)) {
+            @$error['practo_account_id'] = 'This cannot be blank';
+            throw new ValidationError($error);
+        }
+
+        $er =  $this->helper->getRepository(ConsultConstants::QUESTION_BOOKMARK_ENTITY_NAME);
+        $questionBookmark = $er->findBookmark($requestParams['practo_account_id'], $requestParams['question_id']);
+
+        if (empty($questionBookmark)) {
+            @$error['error']='Bookmark doesnt exist';
+            throw new ValidationError($error);
+        } else {
+            $this->helper->remove($questionBookmark[0]);
+        }
     }
 
     /**
-     * @param $requestParams
+     * @param array $requestParams - params for bookmark addition
      * @return QuestionBookmark
      * @throws ValidationError
      */
@@ -72,14 +86,14 @@ class QuestionBookmarkManager extends BaseManager
         }
 
         $questionId = $requestParams['question_id'];
-        $question = $this->helper->loadById($questionId, ConsultConstants::$QUESTION_ENTITY_NAME);
+        $question = $this->helper->loadById($questionId, ConsultConstants::QUESTION_ENTITY_NAME);
 
         if (empty($question)) {
             @$error['question_id'] = 'Question with this id doesnt exist';
             throw new ValidationError($error);
         }
 
-        if($question->getPractoAccountId() == $requestParams['practo_account_id']) {
+        if ($question->getPractoAccountId() == $requestParams['practo_account_id']) {
             @$error['error'] = 'User cannot bookmark the question';
             throw new ValidationError($error);
         }
@@ -110,13 +124,12 @@ class QuestionBookmarkManager extends BaseManager
      */
     public function load($questionBookmarkId)
     {
-        $questionBookmark = $this->helper->loadById($questionBookmarkId, ConsultConstants::$QUESTION_BOOKMARK_ENTITY_NAME);
+        $questionBookmark = $this->helper->loadById($questionBookmarkId, ConsultConstants::QUESTION_BOOKMARK_ENTITY_NAME);
 
         if (is_null($questionBookmark)) {
             return null;
         }
+
         return $questionBookmark;
     }
-
 }
-

@@ -10,6 +10,7 @@ use ConsultBundle\Queue\AbstractQueue as Queue;
 use ConsultBundle\ConsultDomain;
 
 use Symfony\Component\HttpFoundation\Request;
+
 /**
  * Command to queue index
  */
@@ -62,27 +63,27 @@ class DoctorAssignmentPersistenceCommand extends ContainerAwareCommand
             if ($newJob) {
                 $jobData = json_decode($newJob, true);
                 try {
-                  if ($jobData['state'] == 'UNCLASSIFIED' or $jobData['state'] == 'MISMATCH') {
-                      $this->questionManager->setState($jobData['question_id'], $jobData['state']);
-                  } elseif($jobData['state'] == 'ASSIGNED') {
-                      $this->doctorQuestionManager->setDoctorsForAQuestions($jobData['question_id'], $jobData['doctors']);
-                      $this->questionManager->setState($jobData['question_id'], $jobData['state']);
-                      $this->questionManager->setTagByQuestionId($jobData['question_id'],$jobData['speciality']);
-                      $jobData['type'] = 'new_question';
-                      $jobData['user_ids'] = $jobData['doctors'];
-                      $jobData['message'] = $jobData['question_id'];
-                      unset($jobData['doctors']);
-                      $this->queue
-                        ->setQueueName(Queue::CONSULT_GCM)
-                        ->sendMessage(json_encode($jobData));
-                  } elseif ($jobData['state'] == 'GENERIC'  or $jobData['state'] == 'DOCNOTFOUND') {
-                      $this->questionManager->setState($jobData['question_id'], $jobData['state']);
-                      $this->questionManager->setTagByQuestionId($jobData['question_id'],$jobData['speciality']);
-                  }
-                echo "Queue Message Persisted: ".json_encode($jobData);
+                    if ($jobData['state'] == 'UNCLASSIFIED' or $jobData['state'] == 'MISMATCH') {
+                        $this->questionManager->setState($jobData['question_id'], $jobData['state']);
+                    } elseif ($jobData['state'] == 'ASSIGNED') {
+                        $this->doctorQuestionManager->setDoctorsForAQuestions($jobData['question_id'], $jobData['doctors']);
+                        $this->questionManager->setState($jobData['question_id'], $jobData['state']);
+                        $this->questionManager->setTagByQuestionId($jobData['question_id'], $jobData['speciality']);
+                        $jobData['type'] = 'new_question';
+                        $jobData['user_ids'] = $jobData['doctors'];
+                        $jobData['message'] = $jobData['question_id'];
+                        unset($jobData['doctors']);
+                        $this->queue
+                            ->setQueueName(Queue::CONSULT_GCM)
+                            ->sendMessage(json_encode($jobData));
+                    } elseif ($jobData['state'] == 'GENERIC'  or $jobData['state'] == 'DOCNOTFOUND') {
+                        $this->questionManager->setState($jobData['question_id'], $jobData['state']);
+                        $this->questionManager->setTagByQuestionId($jobData['question_id'], $jobData['speciality']);
+                    }
+                    echo "Queue Message Persisted: ".json_encode($jobData);
                 } catch (\Exception $e) {
-		    $output->writeln("Dropping the queue message: ". json_encode($jobData));
-		    $this->queue->setQueueName(Queue::ASSIGNMENT_UPDATE)->deleteMessage($newJob);
+                    $output->writeln("Dropping the queue message: ".json_encode($jobData));
+                    $this->queue->setQueueName(Queue::ASSIGNMENT_UPDATE)->deleteMessage($newJob);
                     $output->writeln($e->getMessage());
                 }
                 $this->queue->setQueueName(Queue::ASSIGNMENT_UPDATE)->deleteMessage($newJob);

@@ -11,6 +11,7 @@ use ConsultBundle\ConsultDomain;
 use Pheanstalk_Pheanstalk as Pheanstalk;
 
 use Symfony\Component\HttpFoundation\Request;
+
 /**
  * Command to queue index
  */
@@ -54,7 +55,7 @@ class TestingCommand extends ContainerAwareCommand
         $this->container->set('consult.consult_domain', $consultDomain);
         $this->queue->setConsultDomain($consultDomain);
         $this->queue
-              ->setQueueName(Queue::CONSULT_GCM)
-              ->sendMessage(json_encode(array('user_id'=>2645, 'message'=>'I smoke alot. Is there any chance to lung cancer?')));
+            ->setQueueName(Queue::CONSULT_GCM)
+            ->sendMessage(json_encode(array('user_id'=>2645, 'message'=>'I smoke alot. Is there any chance to lung cancer?')));
     }
 }

@@ -14,11 +14,14 @@ use FOS\RestBundle\Util\Codes;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use ConsultBundle\Manager\ValidationError;
 
+/**
+ * Controller for User's additional info updation
+ */
 class UserController extends FOSRestController
 {
     /**
      * Additional info of user addition
-     *
+     * @return View
      */
     public function postUserConsultinfoAction()
     {
@@ -28,18 +31,17 @@ class UserController extends FOSRestController
         try {
             $userConsultEntry = $userManager->add($postData);
         } catch (ValidationError $e) {
-            return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
+            return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
         }
 
         return View::create(
             $userConsultEntry,
-            Codes::HTTP_CREATED);
+            Codes::HTTP_CREATED
+        );
     }
 
     /**
      * Load additional info of a User
-     *
-     * @param interger $practoId
      *
      * @return View
      */
@@ -57,7 +59,7 @@ class UserController extends FOSRestController
 
         if (null === $userConsultEntry) {
             return View::create(null, Codes::HTTP_NOT_FOUND);
-        } else if ($userConsultEntry->isSoftDeleted()) {
+        } elseif ($userConsultEntry->isSoftDeleted()) {
             return View::create(null, Codes::HTTP_GONE);
         }
 
