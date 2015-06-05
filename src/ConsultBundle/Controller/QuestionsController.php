@@ -12,51 +12,60 @@ use ConsultBundle\Manager\ValidationError;
 
 /**
  * Questions Controller
+ *
  */
 class QuestionsController extends Controller
 {
     /**
-     * @param Request $request - Request Object
+     * @param Request $request
      * @return View
      */
     public function postQuestionAction(Request $request)
     {
         $postData = $request->request->get('question');
         $profileToken = $request->headers->get('X-Profile-Token');
-
+        //var_dump($postData);
+        //var_dump(json_decode($postData));die;
+       // $question = $post
         $questionManager = $this->get('consult.question_manager');
 
         try {
-            $question = $questionManager->add((array) json_decode($postData, true), $profileToken);
+
+            $question = $questionManager->add((array)json_decode($postData, true), $profileToken);
 
         } catch (ValidationError $e) {
-            return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
+            return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
         } catch (Exception $e) {
-            return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
+            return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
         }
 
         $files = $request->files;
+//        var_dump($files);die;
         $questionImageManager = $this->get('consult.question_image_manager');
 
         try {
-            $questionImageManager->add($question, $files);
-        } catch (\Exception $e) {
-            return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
+           $questionImageManager->add($question, $files);
+        } catch(\Exception $e) {
+            return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
         }
 
         return View::create(
             array("question" => $question),
-            Codes::HTTP_CREATED
-        );
+            Codes::HTTP_CREATED);
     }
 
     /**
-     * @param integer $questionId - Question Id
-     * @return \ConsultBundle\Entity\Question|View
+     * Get Question Action
+     *
+     * @param integer $question
+     *
+     * @return Array
+     *
      */
     public function getQuestionAction($questionId)
     {
         $questionManager = $this->get('consult.question_manager');
+        $request = $this->getRequest();
 
         try {
             $question = $questionManager->load($questionId);
@@ -66,21 +75,18 @@ class QuestionsController extends Controller
 
         if (null === $question) {
             return View::create(null, Codes::HTTP_NOT_FOUND);
-        } elseif ($question->isSoftDeleted()) {
+        } else if ($question->isSoftDeleted()) {
             return View::create(null, Codes::HTTP_GONE);
         }
 
         return $question;
     }
 
-    /**
-     * @param Request $requestRec - request Object
-     * @return array Question - list of question objects
-     */
     public function getQuestionsAction(Request $requestRec)
     {
         $questionManager = $this->get('consult.question_manager');
         $request = $requestRec->query->all();
+        $questionList = array();
 
         try {
             $questionList = $questionManager->loadByFilters($request);
@@ -88,16 +94,12 @@ class QuestionsController extends Controller
             return View::create($e->getMessage(), Codes::HTTP_FORBIDDEN);
         }
 
-        if (null === $questionList) {
+        if (null === $questionList)
             return View::create(null, Codes::HTTP_NOT_FOUND);
-        }
 
         return array('questions' => $questionList[0], 'count' => $questionList[1]);
     }
 
-    /**
-     * @return Question
-     */
     public function patchQuestionAction()
     {
         $questionManager = $this->get('consult.question_manager');
@@ -106,13 +108,12 @@ class QuestionsController extends Controller
         try {
             $questionFinal = $questionManager->patch($request);
         } catch (ValidationError $e) {
-            return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
-        }
+            return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
+        } 
 
         return View::create(
             array("question" => $questionFinal),
-            Codes::HTTP_CREATED
-        );
+            Codes::HTTP_CREATED);
 
     }
 }

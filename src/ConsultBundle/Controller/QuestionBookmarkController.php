@@ -11,6 +11,7 @@ use ConsultBundle\Manager\ValidationError;
 
 /**
  * Questions Controller
+ *
  */
 class QuestionBookmarkController extends Controller
 {
@@ -26,33 +27,28 @@ class QuestionBookmarkController extends Controller
         try {
             $questionBookmark = $questionBookmarkManager->add($postData);
         } catch (ValidationError $e) {
-            return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
+            return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
         }
 
         return View::create(
             array("question_bookmark" => $questionBookmark),
-            Codes::HTTP_CREATED
-        );
+            Codes::HTTP_CREATED);
     }
 
-    /**
-     * @return View
-     */
-    public function deleteQuestionBookmarkAction()
+    public function deleteQuestionBookmarkAction($bookmarkId)
     {
-        $requestParams = $this->getRequest()->request->all();
+        $postData = $this->getRequest()->request->all();
         $questionBookmarkManager = $this->get('consult.question_bookmark_manager');
 
         try {
-            $questionBookmarkManager->remove($requestParams);
+            $questionBookmarkManager->remove($bookmarkId);
         } catch (ValidationError $e) {
-            return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
+            return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
         }
 
         return View::create(
             'Bookmark deleted',
-            Codes::HTTP_CREATED
-        );
+            Codes::HTTP_CREATED);
     }
 
     /**
@@ -61,8 +57,9 @@ class QuestionBookmarkController extends Controller
      * @param integer $questionBookmarkId
      *
      * @return Array
+     *
      */
-    public function getQuestionBookmarkAction($questionBookmarkId)
+    public function getQuestionbookmarkAction($questionBookmarkId)
     {
         $questionBookmarkManager = $this->get('consult.question_bookmark_manager');
 
@@ -71,12 +68,12 @@ class QuestionBookmarkController extends Controller
         } catch (AccessDeniedException $e) {
             return View::create($e->getMessage(), Codes::HTTP_FORBIDDEN);
         }
-        if (null === $questionBookmark) {
+        if (null === $questionBookmark)
             return View::create(null, Codes::HTTP_NOT_FOUND);
-        } elseif ($questionBookmark->isSoftDeleted()) {
+        else if ($questionBookmark->isSoftDeleted())
             return View::create(null, Codes::HTTP_GONE);
-        }
 
         return $questionBookmark;
     }
+
 }

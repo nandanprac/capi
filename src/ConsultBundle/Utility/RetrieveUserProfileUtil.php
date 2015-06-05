@@ -16,22 +16,15 @@ use GuzzleHttp\Message\Response;
 use GuzzleHttp\Client;
 use GuzzleHttp\Post\PostBody;
 
-/**
- * Class RetrieveUserProfileUtil
- *
- * @package ConsultBundle\Utility
- */
-class RetrieveUserProfileUtil
-{
+
+class RetrieveUserProfileUtil {
 
     private $accountHost;
     private $accountsSigningKey;
 
 
-    /**
-     * @param string $accountHost
-     * @param string $accountsSigningKey
-     */
+
+
     public function __construct($accountHost = 'http://accounts.practo.local', $accountsSigningKey = 'software-accounts-key')
     {
         $this->accountHost = $accountHost;
@@ -41,37 +34,27 @@ class RetrieveUserProfileUtil
     }
 
 
-
-
-    /**
-     * @param \ConsultBundle\Entity\Question $question
-     */
-    public function loadUserDetailInQuestion(Question $question)
+    public function retrieveUserProfile($accountId)
     {
-
-        $userInfo = $question->getUserInfo();
-        if (is_null($userInfo)) {
-            $userInfo = new UserInfo();
+        $postData = array(
+            'service'           => 'software',
+            'practo_account_id' => $accountId,
+            'signed'            => 'service,practo_account_id,signed'
+        );
+        $this->signEndpointPostData($postData, $this->accountsSigningKey);
+        $practoDomain = new PractoDomain($this->request);
+        $accountsHost = $practoDomain->getHost('accounts');
+        /**
+         * @var Response $response
+         */
+        $response = $this->browser->submit($accountsHost. "/_enquire_profile", $postData);
+        if (!$response->isSuccessful()) {
+            return null;
         }
-
-        $userProfile = $userInfo->getUserProfileDetails();
-
-        if (is_null($userProfile)) {
-            $userProfile = $this->retrieveUserProfileNew($question->getPractoAccountId());
-
-            $userInfo->setUserProfileDetails($userProfile);
-            $question->setUserInfo($userInfo);
-        }
-
-
+        //var_dump($response->getContent());
     }
 
 
-    /**
-     * @param int $accountId
-     *
-     * @return \ConsultBundle\Entity\User
-     */
     public function retrieveUserProfileNew($accountId)
     {
         $postData = array(
@@ -87,8 +70,9 @@ class RetrieveUserProfileUtil
 
         $body = new PostBody();
         $body->replaceFields($postData);
-        $request = new Request('POST', $this->accountHost."/_enquire_profile", [], $body);
+        $request = new Request('POST', $this->accountHost."/_enquire_profile", [], $body );
 
+        //var_dump($postData);die;
 
         $client = new Client();
         $res = $client->send($request);
@@ -108,7 +92,7 @@ class RetrieveUserProfileUtil
         $signedData = array();
         $urlKeys = explode(',', $postData['signed']);
         foreach ($urlKeys as $key) {
-            $signedData[] = $key.'='.urlencode($postData[$key]);
+            $signedData[] = $key . '=' . urlencode($postData[$key]);
         }
         $signedData = implode('&', $signedData);
 
@@ -120,7 +104,8 @@ class RetrieveUserProfileUtil
     private function populateUserFromAccounts(array $userProfile)
     {
 
-        if (is_null($userProfile)) {
+        if(is_null($userProfile))
+        {
             return null;
         }
 
@@ -132,23 +117,28 @@ class RetrieveUserProfileUtil
 
 
 
-        if (array_key_exists('dob', $userProfile)) {
+        if(array_key_exists('dob', $userProfile))
+        {
             $user->setDateOfBirth($userProfile['dob']);
         }
 
-        if (array_key_exists('gender', $userProfile)) {
+        if(array_key_exists('gender', $userProfile))
+        {
             $user->setGender($userProfile['gender']);
         }
 
-        if (array_key_exists('height', $userProfile)) {
+        if(array_key_exists('height', $userProfile))
+        {
             $user->setHeightInCms($userProfile['height']);
         }
 
-        if (array_key_exists('weight', $userProfile)) {
+        if(array_key_exists('weight', $userProfile)) {
+
             $user->setWeightInKgs($userProfile['weight']);
         }
 
-        if (array_key_exists('blood_group', $userProfile)) {
+        if(array_key_exists('blood_group', $userProfile))
+        {
             $user->setBloodGroup($userProfile['blood_group']);
 
         }
@@ -159,6 +149,35 @@ class RetrieveUserProfileUtil
 
 
     }
+
+
+    public function loadUserDetailInQuestion(Question $question)
+    {
+
+        //var_dump(json_encode($question->getPractoAccountId()));
+        $userInfo = $question->getUserInfo();
+        if(is_null($userInfo))
+        {
+            //var_dump("1234");die;
+            $userInfo = new UserInfo();
+        }
+
+        $userProfile = $userInfo->getUserProfileDetails();
+
+        if(is_null($userProfile))
+        {
+
+            $userProfile = $this->retrieveUserProfileNew($question->getPractoAccountId());
+            //var_dump($userProfile);die;
+            $userInfo->setUserProfileDetails($userProfile);
+            $question->setUserInfo($userInfo);
+        }
+
+
+    }
+
+
+
 
 
 }

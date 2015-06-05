@@ -22,12 +22,11 @@ class FabricDomain
 
     /**
      * Get Host
-     *
      * @param string $subdomain - Subdomain
      *
      * @return string
      */
-    public function getHost($subdomain = null)
+    public function getHost($subdomain=null)
     {
         $fabricHost = $this->request->getSchemeAndHttpHost();
         if (!$subdomain) {

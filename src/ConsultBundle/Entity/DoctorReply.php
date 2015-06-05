@@ -9,16 +9,15 @@
 namespace ConsultBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * @ORM\Entity()
+ * @ORM\Entity
  * @ORM\Table(name="doctor_replies")
  * @ORM\HasLifecycleCallbacks()
  */
 class DoctorReply extends BaseEntity
 {
-    /**
+   /**
     * @ORM\OneToOne(targetEntity="DoctorQuestion", inversedBy = "doctorReply")
     */
     protected $doctorQuestion;
@@ -44,10 +43,7 @@ class DoctorReply extends BaseEntity
      */
     protected $likes;
 
-    /**
-     * Construct the object
-     */
-    public function __construct()
+    public function _construct()
     {
         $this->likes = new ArrayCollection();
     }
@@ -174,7 +170,8 @@ class DoctorReply extends BaseEntity
      */
     public function addRating(DoctorReplyRating $like)
     {
-        if (!$like->isSoftDeleted()) {
+        if(!$like->isSoftDeleted())
+        {
             $this->likes[] = $like;
         }
 
