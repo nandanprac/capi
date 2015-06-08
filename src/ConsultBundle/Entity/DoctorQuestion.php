@@ -19,15 +19,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 class DoctorQuestion extends BaseEntity
 {
     /**
-     * @ORM\ManyToOne(targetEntity = "Question", inversedBy ="doctorQuestion")
+     * @ORM\ManyToOne(targetEntity = "Question")
      * @ORM\JoinColumn(name = "question_id", referencedColumnName = "id")
      */
     protected $question;
 
-    /**
-     * @var DoctorEntity $doctor
-     */
-    private $doctor;
 
     /**
      * @return DoctorEntity

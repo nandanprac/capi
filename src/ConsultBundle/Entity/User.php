@@ -12,13 +12,33 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks()
  */
-class User extends BaseEntity
+class User extends UserInfo
 {
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="practo_account_id", type="integer")
+     */
+    private $practoAccountId;
 
     /**
-     * @var \DateTime
+     * @var string
      *
-     * @ORM\Column(name="date_of_birth", type="datetime", nullable=true)
+     * @ORM\Column(name="relative_name", type="string", nullable=true)
+     */
+    private $name;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="is_relative", type="boolean")
+     */
+    private $isRelative=true;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="age", type="integer", nullable=true)
      */
     private $dateOfBirth;
 
@@ -50,6 +70,55 @@ class User extends BaseEntity
      * @ORM\Column(name="weight_in_kgs", type="float", nullable=true)
      */
     private $weightInKgs;
+
+    /**
+     * @return int
+     */
+    public function getPractoAccountId()
+    {
+        return $this->practoAccountId;
+    }
+
+    /**
+     * @param int $practoAccountId
+     */
+    public function setPractoAccountId($practoAccountId)
+    {
+        $this->practoAccountId = $practoAccountId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isIsRelative()
+    {
+        return $this->isRelative;
+    }
+
+    /**
+     * @param boolean $isRelative
+     */
+    public function setIsRelative($isRelative)
+    {
+        $this->isRelative = $isRelative;
+    }
+
 
     /**
      * Set dateOfBirth

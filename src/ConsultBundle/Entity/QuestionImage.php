@@ -11,7 +11,7 @@ namespace ConsultBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="ConsultBundle\Repository\QuestionImageRepository")
+ * @ORM\Entity(repositoryClass=ConsultBundle\Repository\QuestionImageRepository")
  * @ORM\Table(name="question_images")
  * @ORM\HasLifecycleCallbacks()
  */

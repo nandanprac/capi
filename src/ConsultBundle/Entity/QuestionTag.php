@@ -18,7 +18,7 @@ use Doctrine\ORM\Mapping as ORM;
 class QuestionTag extends BaseEntity
 {
     /**
-     * @ORM\ManyToOne(targetEntity = "Question", inversedBy = "tags")
+     * @ORM\ManyToOne(targetEntity = "Question")
      * @ORM\JoinColumn(name = "question_id", referencedColumnName = "id")
      */
     protected $question;

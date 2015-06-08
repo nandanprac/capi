@@ -14,7 +14,8 @@ class QuestionCommentVote extends BaseEntity
 {
     /**
      * @var integer
-     * @ORM\Column(name="question_comment_id", type="integer")
+     * @ORM\ManyToOne(targetEntity="ConsultBundle\Entity\QuestionComment")
+     * @ORM\JoinColumn(name="question_comment_id", referencedColumnName="id")
      */
     private $questionCommentId;
 

@@ -18,14 +18,19 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Question extends BaseEntity
 {
+
     /**
-     * @ORM\Column(type="integer", name="practo_account_id")
-     *
-     * @var integer $practoAccountId
-     *
-     * @Assert\NotBlank
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      */
-    protected $practoAccountId;
+    protected $userInfo;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="subject", type="string", length=32)
+     */
+    private $subject;
 
     /**
      * @ORM\Column(length=360, name="text")
@@ -41,10 +46,6 @@ class Question extends BaseEntity
      */
     protected $state="NEW";
 
-    /**
-     * @ORM\Column(type="smallint", name="user_anonymous")
-     */
-    protected $userAnonymous=1;
 
     /**
      * @ORM\Column(type="integer", name="view_count")
@@ -61,6 +62,7 @@ class Question extends BaseEntity
      */
     protected $viewedAt;
 
+
     /**
     * @ORM\OneToMany(targetEntity="QuestionImage", mappedBy="question", cascade={"persist", "remove"})
     * @var ArrayCollection $images
@@ -68,53 +70,27 @@ class Question extends BaseEntity
     protected $images;
 
     /**
-     * @ORM\OneToMany(targetEntity="DoctorQuestion", mappedBy="question", cascade={"persist", "remove"})
-     * @var ArrayCollection $doctorQuestions
-     */
-    protected $doctorQuestions;
-
-    /**
-     * @ORM\OneToMany(targetEntity="QuestionTag", mappedBy="question", cascade={"persist", "remove"})
-     * @var ArrayCollection $tags
-     */
-    protected $tags;
-
-    /**
-     * @ORM\OneToMany(targetEntity="QuestionBookmark", mappedBy="question", cascade={"persist", "remove"})
-     * @var ArrayCollection $bookmarks
-     */
-    protected $bookmarks;
-
-    /**
-     * @ORM\OneToMany(targetEntity="QuestionView", mappedBy="question", cascade={"persist"})
-     * @var ArrayCollection $views
-     */
-    protected $views;
-
-    /**
-     * @ORM\OneToMany(targetEntity="UserNotification", mappedBy="question", cascade={"persist", "remove"})
-     * @var ArrayCollection $userNotifications
-     */
-    protected $userNotifications;
-
-    /**
-     * @ORM\OneToMany(targetEntity="DoctorNotification", mappedBy="question", cascade={"persist", "remove"})
-     * @var ArrayCollection $doctorNotifications
-     */
-    protected $doctorNotifications;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="UserInfo")
-     * @ORM\JoinColumn(name="user_info_id", referencedColumnName="id")
-     */
-    protected $userInfo;
-
-    /**
      * @ORM\OneToMany(targetEntity="QuestionComment", mappedBy="question", cascade={"persist", "remove"})
      * @ORM\OrderBy({"createdAt" = "DESC"})
      * @var ArrayCollection $comments
      */
     protected $comments;
+
+    /**
+     * @return mixed
+     */
+    public function getSubject()
+    {
+        return $this->subject;
+    }
+
+    /**
+     * @param mixed $subject
+     */
+    public function setSubject($subject)
+    {
+        $this->subject = $subject;
+    }
 
 
     /**
@@ -140,13 +116,7 @@ class Question extends BaseEntity
     {
         $this->images = new ArrayCollection();
         $this->doctorQuestions = new ArrayCollection();
-        $this->tags = new ArrayCollection();
-        $this->bookmarks = new ArrayCollection();
-        $this->views = new ArrayCollection();
-        $this->userNotifications = new ArrayCollection();
-        $this->doctorNotifications = new ArrayCollection();
         $this->comments = new ArrayCollection();
-        //$this->de
     }
 
     /**
@@ -196,201 +166,13 @@ class Question extends BaseEntity
     }
 
     /**
-     * Set images
+     * @param array $images
      */
     public function setImages($images)
     {
         $this->images = $images;
     }
 
-    /**
-     * Get Doctor Questions
-     *
-     * @return ArrayCollection
-     */
-    public function getDoctorQuestions()
-    {
-        return $this->doctorQuestions;
-    }
-
-    /**
-     * Add Doctor Question
-     *
-     * @param DoctorQuestion $questionDoctor - Question Doctor
-     */
-    public function addQuestionDoctor(DoctorQuestion $questionDoctor)
-    {
-        $this->$doctorQuestions->add($questionDoctor);
-    }
-
-    /**
-     * Clear Doctor Questions
-     */
-    public function clearDoctorQuestion()
-    {
-        $this->$doctorQuestions = new ArrayCollection();
-    }
-
-    /**
-     * Get tags
-     *
-     * @return ArrayCollection
-     */
-    public function getTags()
-    {
-        return $this->tags;
-    }
-
-    /**
-     * Add Tag
-     *
-     * @param QuestionTag $tag - Question Tag
-     */
-    public function addTag(QuestionTag $tag)
-    {
-        $this->tags->add($tag);
-    }
-
-    /**
-     * Clear Question Tags
-     */
-    public function clearTags()
-    {
-        $this->tags = new ArrayCollection();
-    }
-
-    /**
-     * Get bookmarks
-     *
-     * @return ArrayCollection
-     */
-    public function getBookmarks()
-    {
-        return $this->bookmarks;
-    }
-
-    /**
-     * Add Bookmark
-     *
-     * @param QuestionBookmark $bookmark - Question Bookmark
-     */
-    public function addBookmark(QuestionBookmark $bookmark)
-    {
-        $this->bookmarks->add($bookmark);
-    }
-
-    /**
-     * Clear Question Bookmarks
-     */
-    public function clearBookmarks()
-    {
-        $this->bookmarks = new ArrayCollection();
-    }
-
-    /**
-     * Get views
-     *
-     * @return ArrayCollection
-     */
-    public function getViews()
-    {
-        return $this->views;
-    }
-
-    /**
-     * Add Views
-     *
-     * @param QuestionView $view - Question View
-     */
-    public function addView(QuestionView $view)
-    {
-        $this->views->add($view);
-    }
-
-    /**
-     * Clear Question Views
-     */
-    public function clearViews()
-    {
-        $this->views = new ArrayCollection();
-    }
-
-    /**
-     * Get user notification
-     *
-     * @return ArrayCollection
-     */
-    public function getUserNotifications()
-    {
-        return $this->userNotifications;
-    }
-
-    /**
-     * Add User Notification
-     *
-     * @param QuestionNotification $userNotification - User Notification
-     */
-    public function addUserNotification(UserNotification $notification)
-    {
-        $this->userNotifications->add($notification);
-    }
-
-    /**
-     * Clear User Notifications
-     */
-    public function clearUserNotifications()
-    {
-        $this->userNotifications = new ArrayCollection();
-    }
-
-    /**
-     * Get Doctor Notifications
-     *
-     * @return ArrayCollection
-     */
-    public function getDoctorNotifications()
-    {
-        return $this->doctorNotifications;
-    }
-
-    /**
-     * Add Doctor Notification
-     *
-     * @param    DoctorNotification $notification
-     * @internal param DoctorNotification $doctorNotification - Doctor Notification
-     */
-    public function addDoctorNotification(DoctorNotification $notification)
-    {
-        $this->doctorNotifications->add($notification);
-    }
-
-    /**
-     * Clear Doctor Notifications
-     */
-    public function clearDoctorNotifications()
-    {
-        $this->doctorNotifications = new ArrayCollection();
-    }
-
-    /**
-     * Get PractoAccountId
-     *
-     * @return integer
-     */
-    public function getPractoAccountId()
-    {
-        return $this->practoAccountId;
-    }
-
-    /**
-     * Set PractoAccountId
-     *
-     * @param integer $practoAccountId - PractoAccountId
-     */
-    public function setPractoAccountId($practoAccountId)
-    {
-        $this->setInt('practoAccountId', $practoAccountId);
-    }
 
     /**
      * Get text
@@ -512,23 +294,5 @@ class Question extends BaseEntity
         $this->comments = new ArrayCollection();
     }
 
-    /**
-     * Get Details
-     *
-     * @return ArrayCollection
-     */
-    /* public function getDetails()
-    {
-        return $this->details;
-    }*/
 
-    /**
-     * Add Payment Detail
-     *
-     * @param PaymentDetail $paymentDetail - Payment Detail
-     */
-    /*public function addDetail(PaymentDetail $paymentDetail)
-    {
-        $this->details->add($paymentDetail);
-    }*/
 }

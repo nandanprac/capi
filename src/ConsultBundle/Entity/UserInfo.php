@@ -11,16 +11,10 @@ namespace ConsultBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity
- * @ORM\Table(name="user_info")
- * @ORM\HasLifecycleCallbacks()
+ * @ORM\MappedSuperclass()
  */
 class UserInfo extends BaseEntity
 {
-    /**
-     * @ORM\Column(type="integer", name="practo_account_id")
-     */
-    protected $practoAccountId;
     /**
      * @ORM\Column(type="text", name="allergies", nullable=true)
      */
@@ -49,26 +43,6 @@ class UserInfo extends BaseEntity
 
 
     /**
-     * Get PractoAccountId
-     *
-     * @return integer
-     */
-    public function getPractoAccountId()
-    {
-        return $this->practoAccountId;
-    }
-
-    /**
-     * Set PractoAccountId
-     *
-     * @param integer $practoAccountId - PractoAccountId
-     */
-    public function setPractoAccountId($practoAccountId)
-    {
-        $this->setInt('practoAccountId', $practoAccountId);
-    }
-
-    /**
      * Get allergies
      *
      * @return string
@@ -85,7 +59,7 @@ class UserInfo extends BaseEntity
      */
     public function setAllergies($allergies)
     {
-        $this->setString('allergies', $allergies);
+        $this->allergies = $allergies;
     }
 
     /**
@@ -105,7 +79,7 @@ class UserInfo extends BaseEntity
      */
     public function setMedications($medications)
     {
-        $this->setString('medications', $medications);
+        $this->medications = $medications;
     }
 
     /**
@@ -125,7 +99,7 @@ class UserInfo extends BaseEntity
      */
     public function setPrevDiagnosedConditions($prevDiagnosedConditions)
     {
-        $this->setString('prevDiagnosedConditions', $prevDiagnosedConditions);
+        $this->prevDiagnosedConditions = $prevDiagnosedConditions;
     }
 
     /**
@@ -145,23 +119,8 @@ class UserInfo extends BaseEntity
      */
     public function setAdditionalDetails($additionalDetails)
     {
-        $this->setString('additionalDetails', $additionalDetails);
+        $this->additionalDetails = $additionalDetails;
     }
 
-    /**
-     * Set user profile information
-     * @param User $user - User object
-     */
-    public function setUserProfileDetails(User $user)
-    {
-        $this->userProfileDetails = $user;
-    }
 
-    /**
-     * @return User
-     */
-    public function getUserProfileDetails()
-    {
-        return $this->userProfileDetails;
-    }
 }

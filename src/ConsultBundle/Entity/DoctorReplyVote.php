@@ -14,9 +14,10 @@ class DoctorReplyVote extends BaseEntity
 {
     /**
      * @var integer
-     * @ORM\Column(name="reply_id", type="integer")
+     * @ORM\ManyToMany(targetEntity="ConsultBundle\Entity\DoctorReply")
+     * @ORM\JoinColumn(name="reply_id", referencedColumnName="id")
      */
-    private $replyId;
+    private $reply;
 
 
     /**
@@ -90,21 +91,23 @@ class DoctorReplyVote extends BaseEntity
         return $this->vote;
     }
 
-
-
     /**
      * @return int
      */
-    public function getReplyId()
+    public function getReply()
     {
-        return $this->replyId;
+        return $this->reply;
     }
 
     /**
-     * @param int $replyId
+     * @param int $reply
      */
-    public function setReplyId($replyId)
+    public function setReply($reply)
     {
-        $this->replyId = $replyId;
+        $this->reply = $reply;
     }
+
+
+
+
 }
