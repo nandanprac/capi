@@ -9,6 +9,7 @@
 namespace ConsultBundle\Manager;
 
 use ConsultBundle\Constants\ConsultConstants;
+use ConsultBundle\Manager\NotificationManager;
 use ConsultBundle\Entity\DoctorQuestion;
 use ConsultBundle\Entity\DoctorReply;
 use ConsultBundle\Entity\DoctorReplyRating;
@@ -20,7 +21,7 @@ use ConsultBundle\Queue\AbstractQueue as Queue;
 class DoctorReplyManager extends BaseManager
 {
     public static $mandatoryFields;
-    public function __construct(Queue $queue)
+    public function __construct(Queue $queue, NotificationManager $notification)
     {
         if (!isset(self::$mandatoryFields)) {
             self::$mandatoryFields = new ArrayCollection();
@@ -28,6 +29,7 @@ class DoctorReplyManager extends BaseManager
             self::$mandatoryFields->add("id");
         }
         $this->queue = $queue;
+        $this->notification = $notification;
     }
 
     /**
@@ -75,7 +77,8 @@ class DoctorReplyManager extends BaseManager
           //To be implemented
           throw new Exception($e, $e->getMessage());
         }*/
-        $this->queue->setQueueName(Queue::CONSULT_GCM)->sendMessage(json_encode(array("type"=>"query_answered", "message"=>"Your Query has been answered", "id"=>$doctorQuestion->getQuestion()->getId(), "user_ids"=>array($doctorQuestion->getQuestion()->getPractoAccountId()))));
+        $this->notification->createPatientNotification($doctorQuestion->getQuestion()->getId(), $doctorQuestion->getQuestion()->getPractoAccountId(), "Your Query has been answered");
+        $this->queue->setQueueName(Queue::CONSULT_GCM)->sendMessage(json_encode(array("type"=>"query_answered", "send_to"=>"fabric", "message"=>"Your Query has been answered", "id"=>$doctorQuestion->getQuestion()->getId(), "user_ids"=>array($doctorQuestion->getQuestion()->getPractoAccountId()))));
         $this->helper->persist($doctorReply, true);
 
         return $doctorReply->getDoctorQuestion()->getQuestion();

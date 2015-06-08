@@ -151,6 +151,7 @@ class DoctorAssigmentCommand extends ContainerAwareCommand
                         $questionAction['state'] = $state;
                         $questionAction['doctors'] = null;
                     }
+                    $questionAction['send_to'] = 'synapse';
                     echo json_encode($questionAction);
                     $this->queue
                         ->setQueueName(Queue::ASSIGNMENT_UPDATE)
