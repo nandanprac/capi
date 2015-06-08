@@ -15,6 +15,15 @@ namespace ConsultBundle\Response;
  */
 class CommentResponseObject extends ConsultResponseObject
 {
+    /**
+     * @var int
+     */
+    private $practoAccountId;
+
+    /**
+     * @var string
+     */
+    private $numToIdentify;
 
     private $text;
 
@@ -51,4 +60,37 @@ class CommentResponseObject extends ConsultResponseObject
     {
         $this->votes = $votes;
     }
+
+    /**
+     * @return int
+     */
+    public function getPractoAccountId()
+    {
+        return $this->practoAccountId;
+    }
+
+    /**
+     * @param int $practoAccountId
+     */
+    public function setPractoAccountId($practoAccountId)
+    {
+        $this->practoAccountId = $practoAccountId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNumToIdentify()
+    {
+        return $this->numToIdentify;
+    }
+
+    /**
+     * @param string $numToIdentify
+     */
+    public function setNumToIdentify($numToIdentify)
+    {
+        $this->numToIdentify = $numToIdentify;
+    }
+
 }

@@ -6,11 +6,9 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * User
+ * Class User  NOT IN USE
  *
- * @ORM\Table(name="users")
- * @ORM\Entity
- * @ORM\HasLifecycleCallbacks()
+ * @package ConsultBundle\Entity
  */
 class User extends UserInfo
 {
@@ -33,7 +31,7 @@ class User extends UserInfo
      *
      * @ORM\Column(name="is_relative", type="boolean")
      */
-    private $isRelative=true;
+    private $isRelative=false;
 
     /**
      * @var integer

@@ -20,7 +20,7 @@ class Question extends BaseEntity
 {
 
     /**
-     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\ManyToOne(targetEntity="ConsultBundle\Entity\UserInfo")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      */
     private $userInfo;

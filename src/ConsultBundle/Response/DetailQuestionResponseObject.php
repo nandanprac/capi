@@ -24,9 +24,9 @@ class DetailQuestionResponseObject extends BasicQuestionResponseObject
     private $patientInfo;
 
     /**
-     * @var int $bookmarkId
+     * @var bool $bookmarkId
      */
-    private $bookmarkId;
+    private $isBookmarked;
 
     /**
      * @var array
@@ -96,20 +96,21 @@ class DetailQuestionResponseObject extends BasicQuestionResponseObject
     }
 
     /**
-     * @return int
+     * @return boolean
      */
-    public function getBookmarkId()
+    public function isIsBookmarked()
     {
-        return $this->bookmarkId;
+        return $this->isBookmarked;
     }
 
     /**
-     * @param int $bookmarkId
+     * @param boolean $isBookmarked
      */
-    public function setBookmarkId($bookmarkId)
+    public function setIsBookmarked($isBookmarked)
     {
-        $this->bookmarkId = $bookmarkId;
+        $this->isBookmarked = $isBookmarked;
     }
+
 
     /**
      * @return array
