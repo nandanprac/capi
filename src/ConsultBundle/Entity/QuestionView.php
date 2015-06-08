@@ -55,7 +55,7 @@ class QuestionView extends BaseEntity
     public function getQuestionId()
     {
         if ($this->question) {
-            return $this->question->getId();
+            return $this->getQuestion()->getId();
         }
 
         return null;

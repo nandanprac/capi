@@ -58,5 +58,4 @@ class DoctorQuestionResponseObject extends DetailQuestionResponseObject
     {
         $this->patientInfo = $patientInfo;
     }
-
 }

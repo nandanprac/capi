@@ -19,28 +19,12 @@ use Doctrine\Common\Collections\ArrayCollection;
 class DoctorQuestion extends BaseEntity
 {
     /**
+     * @var Question $question
+     *
      * @ORM\ManyToOne(targetEntity = "Question")
      * @ORM\JoinColumn(name = "question_id", referencedColumnName = "id")
      */
     protected $question;
-
-
-    /**
-     * @return DoctorEntity
-     */
-    public function getDoctor()
-    {
-        return $this->doctor;
-    }
-
-    /**
-     * @param DoctorEntity $doctor
-     */
-    public function setDoctor($doctor)
-    {
-        $this->doctor = $doctor;
-    }
-
 
     /**
      * @ORM\Column(name="practo_account_id", type="integer")
@@ -130,7 +114,7 @@ class DoctorQuestion extends BaseEntity
     /**
      * Get rejectedAt
      *
-     * @return DateTime
+     * @return \DateTime
      */
     public function getRejectedAt()
     {
@@ -144,7 +128,7 @@ class DoctorQuestion extends BaseEntity
      */
     public function getRejectedAtStr()
     {
-        return $this->getDateTimeStr('rejectedAt');
+        return $this->getDateTimeStr($this->rejectedAt);
     }
 
     /**
@@ -160,7 +144,7 @@ class DoctorQuestion extends BaseEntity
     /**
      * Get viewedAt
      *
-     * @return DateTime
+     * @return \DateTime
      */
     public function getViewedAt()
     {
@@ -174,7 +158,7 @@ class DoctorQuestion extends BaseEntity
      */
     public function getViewedAtStr()
     {
-        return $this->getDateTimeStr('viewedAt');
+        return $this->getDateTimeStr($this->viewedAt);
     }
 
     /**

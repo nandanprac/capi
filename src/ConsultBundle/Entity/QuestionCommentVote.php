@@ -105,6 +105,4 @@ class QuestionCommentVote extends BaseEntity
     {
         $this->questionCommentId = $questionCommentId;
     }
-
-
 }

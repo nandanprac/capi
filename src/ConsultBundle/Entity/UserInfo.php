@@ -121,6 +121,4 @@ class UserInfo extends BaseEntity
     {
         $this->additionalDetails = $additionalDetails;
     }
-
-
 }

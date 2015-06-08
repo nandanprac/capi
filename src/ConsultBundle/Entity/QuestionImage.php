@@ -11,7 +11,7 @@ namespace ConsultBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=ConsultBundle\Repository\QuestionImageRepository")
+ * @ORM\Entity
  * @ORM\Table(name="question_images")
  * @ORM\HasLifecycleCallbacks()
  */
@@ -50,7 +50,7 @@ class QuestionImage extends BaseEntity
      */
     public function setUrl($url)
     {
-        $this->setString('url', $url);
+        $this->url = $url;
     }
 
     /**
@@ -81,7 +81,7 @@ class QuestionImage extends BaseEntity
     public function getQuestionId()
     {
         if ($this->question) {
-            return $this->question->getId();
+            return $this->getQuestion()->getId();
         }
 
         return null;

@@ -51,6 +51,4 @@ class CommentResponseObject extends ConsultResponseObject
     {
         $this->votes = $votes;
     }
-
-
 }

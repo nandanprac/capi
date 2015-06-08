@@ -29,6 +29,15 @@ class DetailQuestionResponseObject extends BasicQuestionResponseObject
     private $bookmarkId;
 
     /**
+     * @var array
+     */
+    private $comments;
+
+    /**
+     * @var integer
+     */
+    private $commentsCount;
+    /**
      * @return mixed
      */
     public function getId()
@@ -102,6 +111,35 @@ class DetailQuestionResponseObject extends BasicQuestionResponseObject
         $this->bookmarkId = $bookmarkId;
     }
 
+    /**
+     * @return array
+     */
+    public function getComments()
+    {
+        return $this->comments;
+    }
 
+    /**
+     * @param array $comments
+     */
+    public function setComments($comments)
+    {
+        $this->comments = $comments;
+    }
 
+    /**
+     * @return int
+     */
+    public function getCommentsCount()
+    {
+        return $this->commentsCount;
+    }
+
+    /**
+     * @param int $commentsCount
+     */
+    public function setCommentsCount($commentsCount)
+    {
+        $this->commentsCount = $commentsCount;
+    }
 }

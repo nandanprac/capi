@@ -23,6 +23,11 @@ class ReplyResponseObject extends ConsultResponseObject
     private $doctor;
 
     /**
+     * @var int
+     */
+    private $doctorId;
+
+    /**
      * @var string $text
      */
     private $text;
@@ -101,6 +106,19 @@ class ReplyResponseObject extends ConsultResponseObject
         $this->votes = $votes;
     }
 
+    /**
+     * @return int
+     */
+    public function getDoctorId()
+    {
+        return $this->doctorId;
+    }
 
-
+    /**
+     * @param int $doctorId
+     */
+    public function setDoctorId($doctorId)
+    {
+        $this->doctorId = $doctorId;
+    }
 }

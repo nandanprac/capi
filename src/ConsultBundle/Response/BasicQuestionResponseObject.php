@@ -161,5 +161,4 @@ class BasicQuestionResponseObject extends ConsultResponseObject
     {
         $this->specialty = $specialty;
     }
-
 }

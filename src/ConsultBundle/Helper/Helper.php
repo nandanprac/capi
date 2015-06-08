@@ -8,7 +8,7 @@
 
 namespace ConsultBundle\Helper;
 
-use ConsultBundle\Utility\CacheUtils;
+//use ConsultBundle\Utility\CacheUtils;
 use Doctrine\Bundle\DoctrineBundle\Registry as Doctrine;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
@@ -32,12 +32,11 @@ class Helper
 
     /**
      * @param \Doctrine\Bundle\DoctrineBundle\Registry $doctrine
-     * @param \ConsultBundle\Utility\CacheUtils        $cacheUtils
      */
-    public function __construct(Doctrine $doctrine, CacheUtils $cacheUtils)
+    public function __construct(Doctrine $doctrine)
     {
         $this->entityManager = $doctrine->getManager();
-        $this->cacheUtils = $cacheUtils;
+        //$this->cacheUtils = $cacheUtils;
 
     }
 

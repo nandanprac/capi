@@ -12,14 +12,15 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * @ORM\Entity()
+ * @ORM\Entity
  * @ORM\Table(name="doctor_replies")
  * @ORM\HasLifecycleCallbacks()
  */
 class DoctorReply extends BaseEntity
 {
     /**
-    * @ORM\OneToOne(targetEntity="DoctorQuestion", inversedBy = "doctorReply")
+     * @ORM\OneToOne(targetEntity="DoctorQuestion", inversedBy = "doctorReply")
+     * @ORM\JoinColumn(name="doctor_question_id", referencedColumnName="id")
     */
     protected $doctorQuestion;
 
@@ -29,9 +30,10 @@ class DoctorReply extends BaseEntity
     protected $text;
 
     /**
-     * @ORM\Column(type="smallint", name="selected")
+     * rating by the person who asked the question
+     * @ORM\Column(type="smallint", name="rating", nullable=true)
      */
-    protected $selected = 0;
+    protected $rating = null;
 
     /**
      * @ORM\Column(type="datetime", name="viewed_at", nullable=true)
@@ -39,10 +41,10 @@ class DoctorReply extends BaseEntity
     protected $viewedAt;
 
     /**
-     * @ORM\OneToMany(targetEntity="DoctorReplyRating", mappedBy="doctorReply", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="DoctorReplyVote", mappedBy="reply", cascade={"persist", "remove"})
      * @var ArrayCollection $likes
      */
-    protected $likes;
+    protected $votes;
 
     /**
      * Construct the object
@@ -80,7 +82,7 @@ class DoctorReply extends BaseEntity
     public function getDoctorQuestionId()
     {
         if ($this->doctorQuestion) {
-            return $this->doctorQuestion->getId();
+            return $this->getDoctorQuestion()->getId();
         }
 
         return null;
@@ -106,30 +108,12 @@ class DoctorReply extends BaseEntity
         $this->setString('text', $text);
     }
 
-    /**
-     * Is Selected
-     *
-     * @return boolean
-     */
-    public function isSelected()
-    {
-        return $this->selected;
-    }
 
-    /**
-     * Set selected
-     *
-     * @param boolean $selected - Selected
-     */
-    public function setSelected($selected)
-    {
-        $this->setBoolean('selected', $selected);
-    }
 
     /**
      * Get viewedAt
      *
-     * @return DateTime
+     * @return \DateTime
      */
     public function getViewedAt()
     {
@@ -143,7 +127,7 @@ class DoctorReply extends BaseEntity
      */
     public function getViewedAtStr()
     {
-        return $this->getDateTimeStr('viewedAt');
+        return $this->getDateTimeStr($this->viewedAt);
     }
 
     /**
@@ -157,40 +141,47 @@ class DoctorReply extends BaseEntity
         $this->viewedAt = $viewedAt;
     }
 
-    /**
-     * Get ratings
-     *
-     * @return ArrayCollection
-     */
-    public function getLikes()
-    {
-        return $this->likes;
-    }
 
     /**
-     * Add Ratings
-     *
-     * @param DoctorReplyRating $rating - Doctor Reply Rating
+     * @param \ConsultBundle\Entity\DoctorReplyVote $vote
      */
-    public function addRating(DoctorReplyRating $like)
+    public function addVote(DoctorReplyVote $vote)
     {
-        if (!$like->isSoftDeleted()) {
-            $this->likes[] = $like;
+        if (!$vote->isSoftDeleted()) {
+            $this->votes[] = $vote;
         }
 
     }
 
-
-    public function setLikes($likes)
+    /**
+     * @return mixed
+     */
+    public function getRating()
     {
-        $this->likes = $likes;
+        return $this->rating;
     }
 
     /**
-     * Clear Ratings
+     * @param mixed $rating
      */
-    public function clearRatings()
+    public function setRating($rating)
     {
-        $this->likes = new ArrayCollection();
+        $this->rating = $rating;
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getVotes()
+    {
+        return $this->votes;
+    }
+
+    /**
+     * @param ArrayCollection $votes
+     */
+    public function setVotes($votes)
+    {
+        $this->votes = $votes;
     }
 }
