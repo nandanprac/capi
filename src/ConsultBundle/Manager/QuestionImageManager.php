@@ -18,6 +18,9 @@ class QuestionImageManager extends BaseManager
      */
     protected $fileUploadUtil;
 
+    /**
+     * @param \ConsultBundle\Utility\FileUploadUtil $fileUploadUtil
+     */
     public function __construct(FileUploadUtil $fileUploadUtil)
     {
         $this->fileUploadUtil = $fileUploadUtil;

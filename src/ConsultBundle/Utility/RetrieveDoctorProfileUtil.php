@@ -12,6 +12,11 @@ use ConsultBundle\Entity\DoctorEntity;
 use ConsultBundle\Entity\Question;
 use Elasticsearch\Client;
 
+/**
+ * Class RetrieveDoctorProfileUtil
+ *
+ * @package ConsultBundle\Utility
+ */
 class RetrieveDoctorProfileUtil
 {
 
@@ -20,6 +25,11 @@ class RetrieveDoctorProfileUtil
      */
     private $client;
 
+    /**
+     * @param int $practoAccntId
+     *
+     * @return \ConsultBundle\Entity\DoctorEntity|null
+     */
     public function retrieveDoctorProfile($practoAccntId = 5)
     {
         $this->client = new Client();
@@ -52,6 +62,9 @@ class RetrieveDoctorProfileUtil
     }
 
 
+    /**
+     * @param \ConsultBundle\Entity\Question $question
+     */
     public function retrieveDoctorProfileForQuestion(Question $question)
     {
 
@@ -70,6 +83,11 @@ class RetrieveDoctorProfileUtil
     }
 
 
+    /**
+     * @param array $docArr
+     *
+     * @return \ConsultBundle\Entity\DoctorEntity|null
+     */
     private function populateDoctorObject(array $docArr)
     {
 

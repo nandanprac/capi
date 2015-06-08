@@ -14,10 +14,14 @@ use FOS\RestBundle\Util\Codes;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use ConsultBundle\Manager\ValidationError;
 
+/**
+ * Controller for User's additional info updation
+ */
 class UserController extends FOSRestController
 {
     /**
      * Additional info of user addition
+     * @return View
      */
     public function postUserConsultinfoAction()
     {
@@ -38,8 +42,6 @@ class UserController extends FOSRestController
 
     /**
      * Load additional info of a User
-     *
-     * @param interger $practoId
      *
      * @return View
      */

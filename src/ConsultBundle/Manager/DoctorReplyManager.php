@@ -14,13 +14,22 @@ use ConsultBundle\Entity\DoctorQuestion;
 use ConsultBundle\Entity\DoctorReply;
 use ConsultBundle\Entity\DoctorReplyRating;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\EntityRepository;
 use FOS\RestBundle\Util\Codes;
 use ConsultBundle\Queue\AbstractQueue as Queue;
 
+/**
+ * Class DoctorReplyManager
+ *
+ * @package ConsultBundle\Manager
+ */
 class DoctorReplyManager extends BaseManager
 {
     public static $mandatoryFields;
+
+    /**
+     * @param \ConsultBundle\Queue\AbstractQueue $queue
+     * @param \ConsultBundle\Manager\NotificationManager $notification
+     */
     public function __construct(Queue $queue, NotificationManager $notification)
     {
         if (!isset(self::$mandatoryFields)) {
@@ -33,9 +42,9 @@ class DoctorReplyManager extends BaseManager
     }
 
     /**
-     * @param $doctorQuestionId
-     * @param $practoAccountId
-     * @param $answerText
+     * @param int    $doctorQuestionId
+     * @param int    $practoAccountId
+     * @param string $answerText
      * @return DoctorReply
      * @throws \HttpException
      */
@@ -68,24 +77,25 @@ class DoctorReplyManager extends BaseManager
         $doctorReply->setDoctorQuestion($doctorQuestion);
         $doctorReply->setText($answerText);
 
-        /*
+/*
         try {
-          $this->validate($doctorReply);
+            $this->validate($doctorReply);
 
         }catch(\Exception $e)
         {
-          //To be implemented
-          throw new Exception($e, $e->getMessage());
+            //To be implemented
+            throw new Exception($e, $e->getMessage());
         }*/
         $this->notification->createPatientNotification($doctorQuestion->getQuestion()->getId(), $doctorQuestion->getQuestion()->getPractoAccountId(), "Your Query has been answered");
         $this->queue->setQueueName(Queue::CONSULT_GCM)->sendMessage(json_encode(array("type"=>"query_answered", "send_to"=>"fabric", "message"=>"Your Query has been answered", "id"=>$doctorQuestion->getQuestion()->getId(), "user_ids"=>array($doctorQuestion->getQuestion()->getPractoAccountId()))));
-        $this->helper->persist($doctorReply, true);
+
+		$this->helper->persist($doctorReply, true);
 
         return $doctorReply->getDoctorQuestion()->getQuestion();
     }
 
     /**
-     * @param $postData
+     * @param array $postData
      * @return mixed
      * @throws \HttpException
      */

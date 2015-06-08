@@ -14,6 +14,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\FileBag;
 
+/**
+ * Class FileUploadUtil
+ *
+ * @package ConsultBundle\Utility
+ */
 class FileUploadUtil
 {
 
@@ -27,8 +32,24 @@ class FileUploadUtil
     protected $scheme;
     protected $region;
 
-    public function __construct($s3Key, $s3Secret, $region = 'ap-southeast-1', $scheme = 'https', $s3ResourceBucket, $fileName = 'TREATMENTPHOTO', $tempUrl = null)
-    {
+    /**
+     * @param string $s3Key
+     * @param string $s3Secret
+     * @param string $region
+     * @param string $scheme
+     * @param string $s3ResourceBucket
+     * @param string $fileName
+     * @param null   $tempUrl
+     */
+    public function __construct(
+        $s3Key,
+        $s3Secret,
+        $region,
+        $scheme,
+        $s3ResourceBucket,
+        $fileName = 'TREATMENTPHOTO',
+        $tempUrl = null
+    ) {
 
 
         $this->s3ResourcesBucket = $s3ResourceBucket;
@@ -50,41 +71,12 @@ class FileUploadUtil
 
     }
 
-    private function createS3Client()
-    {
-         $s3Client = S3Client::factory(
-             array(
-             'key' => $this->s3Key,
-             'secret' => $this->s3Secret,
-             'region' => Region::AP_SOUTHEAST_1,
-             'scheme' => 'https'
-             )
-         );
-
-         return $s3Client;
-    }
-
-
-    private function uploadFile($uploadedUri, $localFile, $contentType = 'image/jpeg')
-    {
-
-
-               $client = $this->createS3Client();
-
-           $response = $client->putObject(
-               array(
-               'Bucket'     => $this->s3ResourcesBucket,
-               'Key'        => $uploadedUri,
-               'SourceFile' => $localFile,
-               'ACL'    => 'public-read'
-               )
-           );
-
-
-
-           return $response;
-    }
-
+    /**
+     * @param \Symfony\Component\HttpFoundation\FileBag $fileBag
+     * @param int                                       $id
+     *
+     * @return \Doctrine\Common\Collections\ArrayCollection
+     */
     public function add(FileBag $fileBag, $id)
     {
         $urls = new ArrayCollection();
@@ -179,5 +171,46 @@ class FileUploadUtil
         unlink($localFile);
 
         return $response->get('ObjectURL');
+    }
+
+    /**
+     * @return \Aws\S3\S3Client
+     */
+    private function createS3Client()
+    {
+        $s3Client = S3Client::factory(array('key' => $this->s3Key,
+            'secret' => $this->s3Secret,
+            'region' => Region::AP_SOUTHEAST_1,
+            'scheme' => 'https'));
+
+        return $s3Client;
+    }
+
+
+    /**
+     * @param        $uploadedUri
+     * @param        $localFile
+     * @param string $contentType
+     *
+     * @return \Guzzle\Service\Resource\Model
+     */
+    private function uploadFile($uploadedUri, $localFile, $contentType = 'image/jpeg')
+    {
+
+
+        $client = $this->createS3Client();
+
+        $response = $client->putObject(
+            array(
+                'Bucket'     => $this->s3ResourcesBucket,
+                'Key'        => $uploadedUri,
+                'SourceFile' => $localFile,
+                'ACL'    => 'public-read'
+            )
+        );
+
+
+
+        return $response;
     }
 }

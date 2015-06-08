@@ -35,6 +35,9 @@ class QuestionBookmarkController extends Controller
         );
     }
 
+    /**
+     * @return View
+     */
     public function deleteQuestionBookmarkAction()
     {
         $requestParams = $this->getRequest()->request->all();

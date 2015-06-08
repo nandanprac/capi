@@ -10,13 +10,14 @@ namespace ConsultBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use FOS\RestBundle\Util\Codes;
 use Symfony\Component\Validator\Constraints as Assert;
+use ConsultBundle\Manager\ValidationError;
 
 /**
  * ConsultBundle\Entity\BaseEntity
  *
- * @ORM\MappedSuperclass
+ * @ORM\MappedSuperclass()
  */
-abstract class BaseEntity
+class BaseEntity
 {
     /**
      * @ORM\Id
@@ -92,9 +93,8 @@ abstract class BaseEntity
     }
 
     /**
-     * @param $attributes
+     * @param array $attributes
      * @return bool
-     * @throws BadAttributeException
      * @throws ValidationError
      * @throws \Exception
      */

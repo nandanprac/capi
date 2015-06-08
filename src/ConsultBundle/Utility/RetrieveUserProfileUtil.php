@@ -16,6 +16,11 @@ use GuzzleHttp\Message\Response;
 use GuzzleHttp\Client;
 use GuzzleHttp\Post\PostBody;
 
+/**
+ * Class RetrieveUserProfileUtil
+ *
+ * @package ConsultBundle\Utility
+ */
 class RetrieveUserProfileUtil
 {
 
@@ -23,8 +28,10 @@ class RetrieveUserProfileUtil
     private $accountsSigningKey;
 
 
-
-
+    /**
+     * @param string $accountHost
+     * @param string $accountsSigningKey
+     */
     public function __construct($accountHost = 'http://accounts.practo.local', $accountsSigningKey = 'software-accounts-key')
     {
         $this->accountHost = $accountHost;
@@ -34,26 +41,37 @@ class RetrieveUserProfileUtil
     }
 
 
-    public function retrieveUserProfile($accountId)
+
+
+    /**
+     * @param \ConsultBundle\Entity\Question $question
+     */
+    public function loadUserDetailInQuestion(Question $question)
     {
-        $postData = array(
-            'service'           => 'software',
-            'practo_account_id' => $accountId,
-            'signed'            => 'service,practo_account_id,signed'
-        );
-        $this->signEndpointPostData($postData, $this->accountsSigningKey);
-        $practoDomain = new PractoDomain($this->request);
-        $accountsHost = $practoDomain->getHost('accounts');
-        /**
-         * @var Response $response
-         */
-        $response = $this->browser->submit($accountsHost."/_enquire_profile", $postData);
-        if (!$response->isSuccessful()) {
-            return null;
+
+        $userInfo = $question->getUserInfo();
+        if (is_null($userInfo)) {
+            $userInfo = new UserInfo();
         }
+
+        $userProfile = $userInfo->getUserProfileDetails();
+
+        if (is_null($userProfile)) {
+            $userProfile = $this->retrieveUserProfileNew($question->getPractoAccountId());
+
+            $userInfo->setUserProfileDetails($userProfile);
+            $question->setUserInfo($userInfo);
+        }
+
+
     }
 
 
+    /**
+     * @param int $accountId
+     *
+     * @return \ConsultBundle\Entity\User
+     */
     public function retrieveUserProfileNew($accountId)
     {
         $postData = array(
@@ -143,23 +161,4 @@ class RetrieveUserProfileUtil
     }
 
 
-    public function loadUserDetailInQuestion(Question $question)
-    {
-
-        $userInfo = $question->getUserInfo();
-        if (is_null($userInfo)) {
-            $userInfo = new UserInfo();
-        }
-
-        $userProfile = $userInfo->getUserProfileDetails();
-
-        if (is_null($userProfile)) {
-            $userProfile = $this->retrieveUserProfileNew($question->getPractoAccountId());
-
-            $userInfo->setUserProfileDetails($userProfile);
-            $question->setUserInfo($userInfo);
-        }
-
-
-    }
 }

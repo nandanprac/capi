@@ -28,7 +28,7 @@ class AuthenticationUtils
 
 
     /**
-     * @param $accountHost
+     * @param string $accountHost
      */
     public function __construct($accountHost)
     {
@@ -43,8 +43,8 @@ class AuthenticationUtils
     }
 
     /**
-     * @param $practoAccountId
-     * @param $profileToken
+     * @param int    $practoAccountId
+     * @param string $profileToken
      *
      * @return bool
      */
@@ -61,6 +61,7 @@ class AuthenticationUtils
     /**
      * @param $practoAccountId
      * @param $profileToken
+     *
      * @return bool
      */
     private function isAlreadyValidated($practoAccountId, $profileToken)
@@ -69,13 +70,16 @@ class AuthenticationUtils
     }
 
 
-
+    /**
+     * @param $practoAccountId
+     * @param $profileToken
+     */
     private function validateWithTokenNew($practoAccountId, $profileToken)
     {
 
             $client = new Client(
-                ['base_url' => $this->accountHost,
-                'defaults' => ['headers' => ['X-Profile-Token' => $profileToken]]]
+                array('base_url' => $this->accountHost,
+                'defaults' => array('headers' => array('X-Profile-Token' => $profileToken)))
             );
             $res = $client->get('/get_profile_with_token');
 

@@ -10,13 +10,17 @@ namespace ConsultBundle\Helper;
 
 use ConsultBundle\Utility\CacheUtils;
 use Doctrine\Bundle\DoctrineBundle\Registry as Doctrine;
-use ConsultBundle\Validator\Validator;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityRepository;
 use FOS\RestBundle\Util\Codes;
-use GuzzleHttp\Message\Response;
+use ConsultBundle\Entity\BaseEntity;
 
+/**
+ * Class Helper
+ *
+ * @package ConsultBundle\Helper
+ */
 class Helper
 {
 
@@ -26,6 +30,10 @@ class Helper
     protected $entityManager;
     protected $cacheUtils;
 
+    /**
+     * @param \Doctrine\Bundle\DoctrineBundle\Registry $doctrine
+     * @param \ConsultBundle\Utility\CacheUtils        $cacheUtils
+     */
     public function __construct(Doctrine $doctrine, CacheUtils $cacheUtils)
     {
         $this->entityManager = $doctrine->getManager();
@@ -33,17 +41,10 @@ class Helper
 
     }
 
-    public function getEntityManager()
-    {
-        return $this->entityManager;
-    }
-
     /**
-     * LoadAll
+     * @param String $entityName
      *
-     * @param $entityName
-     *
-     * @return entity
+     * @return array|null
      */
     public function loadAll($entityName)
     {
@@ -59,8 +60,8 @@ class Helper
     }
 
     /**
-     * @param $id
-     * @param $entityName
+     * @param int    $id
+     * @param string $entityName
      *
      * @return mixed
      */
@@ -78,10 +79,9 @@ class Helper
     }
 
     /**
-     * @param $entityName
+     * @param string $entityName
      * @return EntityRepository|null
      */
-
     public function getRepository($entityName)
     {
 
@@ -96,6 +96,9 @@ class Helper
     }
 
 
+    /**
+     * @param BaseEntity $entity
+     */
     public function remove($entity)
     {
         $this->entityManager->remove($entity);
@@ -104,19 +107,11 @@ class Helper
 
 
 
-    /**
-     * @param $entity
-     * @param $params
-     * @return mixed
-     */
-    public function update($entity, $params)
-    {
-        // TODO: Implement update() method.
-    }
+
 
     /**
-     * @param $entity
-     * @param $flush
+     * @param BaseEntity $entity
+     * @param boolean    $flush
      */
     public function persist($entity, $flush = null)
     {
@@ -130,8 +125,8 @@ class Helper
     }
 
     /**
-     * @param $fields
-     * @param array  $data
+     * @param array $fields
+     * @param array $data
      * @throws \HttpException
      */
     public function checkForMandatoryFields($fields, array $data)
@@ -143,7 +138,7 @@ class Helper
             }
         }
 
-        if ($errors->count()>0) {
+        if ($errors->count() > 0) {
             throw new \HttpException(json_encode($errors->getValues()), Codes::HTTP_BAD_REQUEST);
         }
     }

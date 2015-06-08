@@ -14,6 +14,11 @@ use GuzzleHttp\Message\Response;
 use GuzzleHttp\Client;
 use GuzzleHttp\Post\PostBody;
 
+/**
+ * Class UpdateAccountsUtil
+ *
+ * @package ConsultBundle\Utility
+ */
 class UpdateAccountsUtil
 {
 
@@ -25,12 +30,20 @@ class UpdateAccountsUtil
                                      'gender' => 'gender',
                                       'blood_group' => 'blood_group');
 
+    /**
+     * @param string $accountHost
+     */
     public function __construct($accountHost)
     {
         $this->accountHost = $accountHost;
     }
 
-
+    /**
+     * @param string $profileToken
+     * @param array  $data
+     *
+     * @return null
+     */
     public function updateAccountDetails($profileToken, $data)
     {
 
@@ -72,6 +85,11 @@ class UpdateAccountsUtil
 
     }
 
+    /**
+     * @param $params
+     *
+     * @return array|null
+     */
     private function populatePostData($params)
     {
 
