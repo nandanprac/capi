@@ -6,13 +6,11 @@ use ConsultBundle\Constants\ConsultConstants;
 use ConsultBundle\Entity\UserInfo;
 use ConsultBundle\Utility\RetrieveDoctorProfileUtil;
 use ConsultBundle\Utility\RetrieveUserProfileUtil;
-use ConsultBundle\Utility\UpdateAccountsUtil;
-use ConsultBundle\Utils\Utility;
+use ConsultBundle\Utility\Utility;
 use Doctrine\Bundle\DoctrineBundle\Registry as Doctrine;
 use ConsultBundle\Entity\Question;
 use ConsultBundle\Entity\QuestionComment;
 use ConsultBundle\Entity\QuestionImage;
-use ConsultBundle\Entity\QuestionBookmark;
 use ConsultBundle\Entity\QuestionTag;
 use ConsultBundle\Manager\ValidationError;
 use ConsultBundle\Queue\AbstractQueue as Queue;
@@ -23,39 +21,27 @@ use ConsultBundle\Queue\AbstractQueue as Queue;
 class QuestionManager extends BaseManager
 {
 
-    protected $questionBookmarkManager;
     protected $userManager;
-    protected $userProfileManager;
     protected $queue;
     protected $retrieveUserProfileUtil;
     protected $retrieveDoctorProfileUtil;
-    protected $updateAccountsUtil;
 
     /**
      * @param UserManager               $userManager
-     * @param UserProfileManager        $userProfileManager
-     * @param QuestionBookmarkManager   $questionBookmarkManager
      * @param Queue                     $queue
      * @param RetrieveUserProfileUtil   $retrieveUserProfileUtil
      * @param RetrieveDoctorProfileUtil $retrieveDoctorProfileUtil
-     * @param UpdateAccountsUtil        $updateAccountsUtil
      */
     public function __construct(
         UserManager $userManager,
-        UserProfileManager $userProfileManager,
-        QuestionBookmarkManager $questionBookmarkManager,
         Queue $queue,
         RetrieveUserProfileUtil $retrieveUserProfileUtil,
-        RetrieveDoctorProfileUtil $retrieveDoctorProfileUtil,
-        UpdateAccountsUtil $updateAccountsUtil
+        RetrieveDoctorProfileUtil $retrieveDoctorProfileUtil
     ) {
         $this->userManager = $userManager;
-        $this->userProfileManager = $userProfileManager;
-        $this->questionBookmarkManager = $questionBookmarkManager;
         $this->queue = $queue;
         $this->retrieveUserProfileUtil = $retrieveUserProfileUtil;
         $this->retrieveDoctorProfileUtil = $retrieveDoctorProfileUtil;
-        $this->updateAccountsUtil = $updateAccountsUtil;
     }
 
     /**
@@ -65,42 +51,6 @@ class QuestionManager extends BaseManager
      */
     public function updateFields($question, $requestParams)
     {
-        if (array_key_exists('user_profile_details', $requestParams)) {
-            if (array_key_exists('is_someone_else', $requestParams['user_profile_details'])
-                and Utility::toBool($requestParams['user_profile_details']['is_someone_else'])
-            ) {
-                $userProfileArray = $requestParams['user_profile_details'];
-                unset($userProfileArray['is_someone_else']);
-                $userProfile = $this->userProfileManager->add($userProfileArray);
-                unset($requestParams['user_profile_details']);
-            }
-        }
-
-        if (array_key_exists('additional_info', $requestParams) or isset($userProfile)) {
-            $userInfoArray = array();
-            if (array_key_exists('additional_info', $requestParams) and !empty($requestParams['additional_info'])) {
-                $userInfoArray = $requestParams['additional_info'];
-                unset($requestParams['additional_info']);
-            }
-            if (array_key_exists('practo_account_id', $requestParams)) {
-                $userInfoArray['practo_account_id'] = $requestParams['practo_account_id'];
-            } else {
-                $userInfoArray['practo_account_id'] = $question->getPractoAccountId();        //in case of patch
-            }
-            $userEntry = $this->userManager->add($userInfoArray);
-
-            if (isset($userProfile)) {
-                $userEntry->setUserProfileDetails($userProfile);
-            }
-
-            $question->setUserInfo($userEntry);
-        }
-
-        if (array_key_exists('tags', $requestParams)) {
-            $this->setQuestionTags($question, explode(",", $requestParams['tags']));
-            unset($requestParams['tags']);
-        }
-
         $question->setAttributes($requestParams);
         $question->setViewedAt(new \DateTime('now'));
 
@@ -119,7 +69,7 @@ class QuestionManager extends BaseManager
      * @param string $profileToken  - profile token of the user
      * @return Question
      */
-    public function add($requestParams, $profileToken = null)
+    public function add($requestParams, $practoAccountId, $profileToken = null)
     {
         $question = new Question();
         $question->setSoftDeleted(false);
@@ -128,14 +78,19 @@ class QuestionManager extends BaseManager
             $job['city'] = $requestParams['city'];
         }
         if (array_key_exists('tags', $requestParams)) {
-            $job['tags'] = $requestParams['tags'];
+            $job['speciality'] = $requestParams['speciality'];
+            $job['tags'] = $requestParams['speciality'];
         }
+
+        if (array_key_exists('user_info', $requestParams)) {
+            $requestParams['user_info']['practo_account_id'] = $practoAccountId;
+            $userEntry = $this->userManager->add($requestParams['user_info'], $profileToken);
+            $question->setUserInfo($userEntry);
+            unset($requestParams['user_info']);
+        }
+
         $params = $this->validator->validatePostArguments($requestParams);
-
         $this->updateFields($question, $params);
-
-        $this->updateAccountsUtil->updateAccountDetails($profileToken, $params);
-
         $this->helper->persist($question, 'true');
 
         $job['question_id'] = $question->getId();

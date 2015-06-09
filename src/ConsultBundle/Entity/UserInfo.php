@@ -22,6 +22,7 @@ class UserInfo extends BaseEntity
      * @var integer
      *
      * @ORM\Column(name="practo_account_id", type="integer")
+     * @Assert\NotBlank
      */
     private $practoAccountId;
 
