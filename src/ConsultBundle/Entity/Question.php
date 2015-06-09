@@ -42,9 +42,9 @@ class Question extends BaseEntity
 
     /**
      * @var string
-     * @ORM\Column(name="specialty", type="string", length=255, nullable=true)
+     * @ORM\Column(name="speciality", type="string", length=255, nullable=true)
      */
-    private $specialty;
+    private $speciality;
 
     /**
      * @ORM\Column(length=20, name="state")
@@ -293,17 +293,17 @@ class Question extends BaseEntity
     /**
      * @return string
      */
-    public function getSpecialty()
+    public function getSpeciality()
     {
-        return $this->specialty;
+        return $this->speciality;
     }
 
     /**
-     * @param string $specialty
+     * @param string $speciality
      */
-    public function setSpecialty($specialty)
+    public function setSpeciality($speciality)
     {
-        $this->specialty = $specialty;
+        $this->speciality = $speciality;
     }
 
     /**

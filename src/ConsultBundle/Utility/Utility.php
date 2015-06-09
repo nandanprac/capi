@@ -1,6 +1,6 @@
 <?php
 
-namespace ConsultBundle\Utils;
+namespace ConsultBundle\Utility;
 
 /**
  * General purpose utility functions.
