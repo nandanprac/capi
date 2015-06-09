@@ -22,6 +22,9 @@ class AuthenticationUtils
 {
 
 
+    /**
+     * @var array
+     */
     private static $authenticationMap;
 
     private $accountHost;
@@ -55,7 +58,7 @@ class AuthenticationUtils
             return true;
         }
 
-        $this->validateWithTokenNew($practoAccountId, $profileToken);
+        return $this->validateWithTokenNew($practoAccountId, $profileToken);
     }
 
     /**
@@ -66,36 +69,40 @@ class AuthenticationUtils
      */
     private function isAlreadyValidated($practoAccountId, $profileToken)
     {
-        return ($profileToken === AuthenticationUtils::$authenticationMap->get($practoAccountId));
+        return ($profileToken === AuthenticationUtils::$authenticationMap[$practoAccountId]);
     }
 
 
     /**
      * @param $practoAccountId
      * @param $profileToken
+     *
+     * @return bool
      */
     private function validateWithTokenNew($practoAccountId, $profileToken)
     {
 
-            $client = new Client(
-                array('base_url' => $this->accountHost,
+        $client = new Client(
+            array('base_url' => $this->accountHost,
                 'defaults' => array('headers' => array('X-Profile-Token' => $profileToken)))
-            );
-            $res = $client->get('/get_profile_with_token');
+        );
+        $res = $client->get('/get_profile_with_token');
 
 
-            $userJson = $res->json();
+        $userJson = $res->json();
 
-            $userId = $userJson["id"];
+        $userId = $userJson["id"];
 
 
-            $code = $res->getStatusCode();
+        $code = $res->getStatusCode();
 
-            if (is_null($userId) || $userId != $practoAccountId || $code[0] > 3) {
-                throw new HttpException(Response::HTTP_FORBIDDEN);
-            }
+        if (is_null($userId) || $userId != $practoAccountId || $code[0] > 3) {
+            throw new HttpException(Response::HTTP_FORBIDDEN);
+        }
 
-            AuthenticationUtils::$authenticationMap->set($practoAccountId, $profileToken);
+        AuthenticationUtils::$authenticationMap[$practoAccountId] =  $profileToken;
+
+        return true;
 
     }
 }

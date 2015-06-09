@@ -17,7 +17,7 @@ class QuestionRepository extends EntityRepository
      * @param string   $state           - state of the question
      * @param string   $category        - category of question
      * @param DateTime $modifiedAfter   - time for the filter
-     * @param interger $limit           - limit
+     * @param int      $limit           - limit
      * @param integer  $offset          - offset
      * @return array (Question,count) - list of question objects and the count
      */

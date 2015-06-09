@@ -11,27 +11,27 @@ namespace ConsultBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="ConsultBundle\Repository\QuestionTagRepository")
+ * @ORM\Entity
  * @ORM\Table(name="question_tags")
  * @ORM\HasLifecycleCallbacks()
  */
 class QuestionTag extends BaseEntity
 {
     /**
-     * @ORM\ManyToOne(targetEntity = "Question", inversedBy = "tags")
+     * @ORM\ManyToOne(targetEntity = "Question")
      * @ORM\JoinColumn(name = "question_id", referencedColumnName = "id")
      */
-    protected $question;
+    private $question;
 
     /**
      * @ORM\Column(type="string", length=127, name="tag")
      */
-    protected $tag;
+    private $tag;
 
     /**
      * @ORM\Column(type="smallint", name="user_defined")
      */
-    protected $userDefined = 0;
+    private $userDefined = 0;
 
     /**
      * Set Question
@@ -61,7 +61,7 @@ class QuestionTag extends BaseEntity
     public function getQuestionId()
     {
         if ($this->question) {
-            return $this->question->getId();
+            return $this->getQuestion()->getId();
         }
 
         return null;
@@ -108,18 +108,18 @@ class QuestionTag extends BaseEntity
     }
 
     /**
-     * @return mixed
+     * @return Question
      */
     public function getQuestions()
     {
-        return $this->questions;
+        return $this->question;
     }
 
     /**
-     * @param mixed $questions
+     * @param \ConsultBundle\Entity\Question $question
      */
-    public function setQuestions($questions)
+    public function setQuestions(Question $question)
     {
-        $this->questions = $questions;
+        $this->question = $question;
     }
 }

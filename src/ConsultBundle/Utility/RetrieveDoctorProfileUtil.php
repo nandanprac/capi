@@ -10,6 +10,8 @@ namespace ConsultBundle\Utility;
 
 use ConsultBundle\Entity\DoctorEntity;
 use ConsultBundle\Entity\Question;
+use ConsultBundle\Response\DetailQuestionResponseObject;
+use ConsultBundle\Response\ReplyResponseObject;
 use Elasticsearch\Client;
 
 /**
@@ -47,10 +49,13 @@ class RetrieveDoctorProfileUtil
             return null;
         }
 
+        $doc = null;
+
         foreach ($results['hits']['hits'] as $result) {
             $doc = $this->populateDoctorObject($result['_source']);
 
         }
+
 
         if (is_null($doc)) {
             return null;
@@ -63,24 +68,40 @@ class RetrieveDoctorProfileUtil
 
 
     /**
-     * @param \ConsultBundle\Entity\Question $question
+     * @param \ConsultBundle\Response\DetailQuestionResponseObject $questionResponseObject
      */
-    public function retrieveDoctorProfileForQuestion(Question $question)
+    public function retrieveDoctorProfileForQuestionResponse(DetailQuestionResponseObject $questionResponseObject)
     {
 
-        $doctorQuestions = $question->getDoctorQuestions();
+        $replies = $questionResponseObject->getReplies();
 
-        foreach ($doctorQuestions as $doctorQuestion) {
-            $doctorId = $doctorQuestion->getPractoAccountId();
-
-
+        /**
+         * @var ReplyResponseObject $reply
+         */
+        foreach ($replies as $reply) {
+            $doctorId = $reply->getDoctorId();
             $doc = $this->retrieveDoctorProfile($doctorId);
-
-            $doctorQuestion->setDoctor($doc);
+            $reply->setDoctor($doc);
         }
 
 
     }
+
+    /**
+     * @deprecated
+     * @param \ConsultBundle\Entity\Question $question
+     *
+     * @return null
+     */
+    public function retrieveDoctorProfileForQuestion(Question $question)
+    {
+
+        return $question;
+
+    }
+
+
+
 
 
     /**

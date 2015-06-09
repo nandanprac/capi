@@ -3,6 +3,7 @@
 namespace ConsultBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * DoctorReplyVote
@@ -13,16 +14,18 @@ use Doctrine\ORM\Mapping as ORM;
 class DoctorReplyVote extends BaseEntity
 {
     /**
-     * @var integer
-     * @ORM\Column(name="reply_id", type="integer")
+     * @var DoctorReply
+     * @ORM\ManyToOne(targetEntity="ConsultBundle\Entity\DoctorReply")
+     * @ORM\JoinColumn(name="reply_id", referencedColumnName="id")
      */
-    private $replyId;
+    private $reply;
 
 
     /**
      * @var integer
      *
      * @ORM\Column(name="practo_account_id", type="integer")
+     * @Assert\NotBlank()
      */
     private $practoAccountId;
 
@@ -30,6 +33,7 @@ class DoctorReplyVote extends BaseEntity
      * @var integer
      *
      * @ORM\Column(name="vote", type="smallint")
+     * @Assert\NotBlank()
      */
     private $vote;
 
@@ -90,21 +94,19 @@ class DoctorReplyVote extends BaseEntity
         return $this->vote;
     }
 
-
-
     /**
      * @return int
      */
-    public function getReplyId()
+    public function getReply()
     {
-        return $this->replyId;
+        return $this->reply;
     }
 
     /**
-     * @param int $replyId
+     * @param int $reply
      */
-    public function setReplyId($replyId)
+    public function setReply($reply)
     {
-        $this->replyId = $replyId;
+        $this->reply = $reply;
     }
 }

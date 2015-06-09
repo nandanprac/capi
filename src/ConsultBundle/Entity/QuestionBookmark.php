@@ -19,7 +19,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class QuestionBookmark extends BaseEntity
 {
     /**
-     * @ORM\ManyToOne(targetEntity = "Question", inversedBy ="bookmarks")
+     * @ORM\ManyToOne(targetEntity = "Question")
      * @ORM\JoinColumn(name = "question_id", referencedColumnName = "id")
      */
     protected $question;
@@ -102,7 +102,7 @@ class QuestionBookmark extends BaseEntity
     public function getQuestionId()
     {
         if ($this->question) {
-            return $this->question->getId();
+            return $this->getQuestion()->getId();
         }
 
         return null;

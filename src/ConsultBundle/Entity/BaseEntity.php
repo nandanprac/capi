@@ -190,4 +190,18 @@ class BaseEntity
             $this->$field = null;
         }
     }
+
+    /**
+     * @param \DateTime $dateTime
+     *
+     * @return string
+     */
+    public function getDateTimeStr(\DateTime $dateTime)
+    {
+        if (empty($dateTime)) {
+            $dateTime = new \DateTime();
+        }
+
+        return $dateTime->format('Y-m-d H:i:s');
+    }
 }

@@ -31,7 +31,7 @@ class QuestionsController extends Controller
 
         } catch (ValidationError $e) {
             return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
         }
 
@@ -96,7 +96,7 @@ class QuestionsController extends Controller
     }
 
     /**
-     * @return Question
+     * returns Question
      */
     public function patchQuestionAction()
     {

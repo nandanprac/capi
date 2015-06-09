@@ -32,7 +32,7 @@ class RetrieveUserProfileUtil
      * @param string $accountHost
      * @param string $accountsSigningKey
      */
-    public function __construct($accountHost = 'http://accounts.practo.local', $accountsSigningKey = 'software-accounts-key')
+    public function __construct($accountHost, $accountsSigningKey)
     {
         $this->accountHost = $accountHost;
 
@@ -50,30 +50,25 @@ class RetrieveUserProfileUtil
     {
 
         $userInfo = $question->getUserInfo();
-        if (is_null($userInfo)) {
-            $userInfo = new UserInfo();
-        }
-
-        $userProfile = $userInfo->getUserProfileDetails();
-
-        if (is_null($userProfile)) {
-            $userProfile = $this->retrieveUserProfileNew($question->getPractoAccountId());
-
-            $userInfo->setUserProfileDetails($userProfile);
+        if (!$userInfo->isIsRelative()) {
+            $userInfo = $this->retrieveUserProfileNew($userInfo);
             $question->setUserInfo($userInfo);
-        }
 
+        }
 
     }
 
-
     /**
-     * @param int $accountId
+     * @param \ConsultBundle\Entity\User $userInfo
      *
-     * @return \ConsultBundle\Entity\User
+     * @return null
      */
-    public function retrieveUserProfileNew($accountId)
+    public function retrieveUserProfileNew(User $userInfo)
     {
+        if (empty($userInfo) || empty($userInfo->getPractoAccountId())) {
+            return null;
+        }
+        $accountId = $userInfo->getPractoAccountId();
         $postData = array(
             'service'           => 'software',
             'practo_account_id' => $accountId,
@@ -94,9 +89,9 @@ class RetrieveUserProfileUtil
         $res = $client->send($request);
 
 
-        $user = $this->populateUserFromAccounts($res->json());
+        $userInfo = $this->populateUserFromAccounts($res->json(), $userInfo);
 
-        return $user;
+        return $userInfo;
     }
 
     /**
@@ -117,7 +112,13 @@ class RetrieveUserProfileUtil
         return $postData;
     }
 
-    private function populateUserFromAccounts(array $userProfile)
+    /**
+     * @param array                      $userProfile
+     * @param \ConsultBundle\Entity\User $user
+     *
+     * @return \ConsultBundle\Entity\User|null
+     */
+    private function populateUserFromAccounts(array $userProfile, User $user)
     {
 
         if (is_null($userProfile)) {
@@ -125,8 +126,10 @@ class RetrieveUserProfileUtil
         }
 
 
+        if (empty($user)) {
+            $user = new User();
+        }
 
-        $user = new User();
 
 
 
@@ -156,9 +159,5 @@ class RetrieveUserProfileUtil
 
 
         return $user;
-
-
     }
-
-
 }

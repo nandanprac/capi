@@ -29,8 +29,8 @@ services:
          arguments:
            - @validator
 
-    consult.cacheUtil:
-        class: ConsultBundle\Utility\CacheUtils
+  #  consult.cacheUtil:
+  #      class: ConsultBundle\Utility\CacheUtils
 
     consult.fileUploadUtil:
         class: ConsultBundle\Utility\FileUploadUtil
@@ -48,7 +48,7 @@ services:
         class: ConsultBundle\Helper\Helper
         arguments:
         - @doctrine
-        - @consult.cacheUtil
+       # - @consult.cacheUtil
 
     consult.question_manager:
         class: ConsultBundle\Manager\QuestionManager
@@ -105,7 +105,7 @@ services:
         class: ConsultBundle\Manager\UserProfileManager
         calls:
             - [setHelper, ["@consult.helper"]]
-            - [setValidator, ["@consult.UserValidator"]]
+    #        - [setValidator, ["@consult.UserValidator"]]
 
 
 
