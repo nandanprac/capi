@@ -9,7 +9,6 @@
 namespace ConsultBundle\Utility;
 
 use GuzzleHttp\Client;
-use PhpCollection\Map;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -36,12 +35,6 @@ class AuthenticationUtils
     public function __construct($accountHost)
     {
         $this->accountHost = $accountHost;
-
-        if (AuthenticationUtils::$authenticationMap === null) {
-            AuthenticationUtils::$authenticationMap = new Map();
-
-        }
-
 
     }
 
