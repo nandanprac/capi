@@ -21,7 +21,7 @@ class Question extends BaseEntity
 
     /**
      * @ORM\ManyToOne(targetEntity="ConsultBundle\Entity\UserInfo")
-     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="user_info_id", referencedColumnName="id")
      */
     private $userInfo;
 
@@ -206,7 +206,7 @@ class Question extends BaseEntity
      */
     public function setText($text)
     {
-        $this->setString('text', $text);
+        $this->text = trim($text);
     }
 
     /**
@@ -226,7 +226,7 @@ class Question extends BaseEntity
      */
     public function setState($state)
     {
-        $this->setString('state', $state);
+        $this->state = trim($state);
     }
 
 
