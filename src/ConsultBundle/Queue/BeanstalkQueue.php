@@ -48,6 +48,19 @@ class BeanstalkQueue extends AbstractQueue
     }
 
     /**
+     * Delete Message
+     *
+     * @param Message $message - Message
+     */
+    public function deleteMessage($message)
+    {
+        $job = new Pheanstalk_Job($message->getId(), strval($message));
+        $this->pheanstalk
+            ->useTube($this->getQueueName())
+            ->delete($job);
+    }
+
+    /**
      * Actual Send Message
      *
      * @param Message $message - Message
@@ -64,18 +77,5 @@ class BeanstalkQueue extends AbstractQueue
                 $this->getVisibilityTimeout()
             );
         $message->setId($messageId);
-    }
-
-    /**
-     * Delete Message
-     *
-     * @param Message $message - Message
-     */
-    public function deleteMessage($message)
-    {
-        $job = new Pheanstalk_Job($message->getId(), strval($message));
-        $this->pheanstalk
-            ->useTube($this->getQueueName())
-            ->delete($job);
     }
 }

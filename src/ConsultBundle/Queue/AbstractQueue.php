@@ -39,14 +39,6 @@ abstract class AbstractQueue
     }
 
     /**
-     * Actual Send Message
-     *
-     * @param Message $message - Message
-     * @param integer $delay   - Delay
-     */
-    abstract protected function doSendMessage(Message $message, $delay = null);
-
-    /**
      * Delete Message
      *
      * @param Message $message - Message
@@ -115,4 +107,12 @@ abstract class AbstractQueue
                 return 60;
         }
     }
+
+    /**
+     * Actual Send Message
+     *
+     * @param Message $message - Message
+     * @param integer $delay   - Delay
+     */
+    abstract protected function doSendMessage(Message $message, $delay = null);
 }

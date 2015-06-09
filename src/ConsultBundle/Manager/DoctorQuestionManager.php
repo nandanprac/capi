@@ -14,6 +14,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use ConsultBundle\Manager\ValidationError;
 use ConsultBundle\Utility\RetrieveDoctorProfileUtil;
 use ConsultBundle\Utility\RetrieveUserProfileUtil;
+use ConsultBundle\Manager\NotificationManager;
 
 /**
  * Doctor Question Assignment manager
@@ -21,11 +22,13 @@ use ConsultBundle\Utility\RetrieveUserProfileUtil;
 class DoctorQuestionManager extends BaseManager
 {
     /**
+     * @param NotificationManager       $notification
      * @param RetrieveUserProfileUtil   $retrieveUserProfileUtil
      * @param RetrieveDoctorProfileUtil $retrieveDoctorProfileUtil
      */
-    public function __construct(RetrieveUserProfileUtil $retrieveUserProfileUtil, RetrieveDoctorProfileUtil $retrieveDoctorProfileUtil)
+    public function __construct(NotificationManager $notification, RetrieveUserProfileUtil $retrieveUserProfileUtil, RetrieveDoctorProfileUtil $retrieveDoctorProfileUtil)
     {
+        $this->notification = $notification;
         $this->retrieveUserProfileUtil = $retrieveUserProfileUtil;
         $this->retrieveDoctorProfileUtil = $retrieveDoctorProfileUtil;
     }
@@ -41,6 +44,7 @@ class DoctorQuestionManager extends BaseManager
         $question = $this->helper->loadById($questionId, ConsultConstants::QUESTION_ENTITY_NAME);
         foreach ($doctorsId as $doctorId) {
             $this->createDoctorQuestionEntity($question, $doctorId);
+            $this->notification->createDoctorNotification($question, $doctorId);
         }
 
         $this->helper->persist(null, true);
@@ -113,19 +117,19 @@ class DoctorQuestionManager extends BaseManager
     }
 
     /**
-     * @param Integer $doctorId    - Doctor Practo Account Id
-     * @param Array   $queryParams - filter parameters
+     * @param Array $queryParams - filter parameters
      *
      * @return DoctorQuestion
      */
     public function loadAllByDoctor($queryParams)
-	{
-		$doctorId = array_key_exists('practo_account_id', $queryParams) ? $queryParams['practo_account_id'] : -1;
-		return $this->getRepository()->findByFilters($doctorId, $queryParams);
+    {
+        $doctorId = array_key_exists('practo_account_id', $queryParams) ? $queryParams['practo_account_id'] : -1;
+
+        return $this->getRepository()->findByFilters($doctorId, $queryParams);
     }
 
     /**
-     * @param      $question    - Object of Question Entity 
+     * @param      $question    - Object of Question Entity
      * @param      $doctorId    - Doctor's Practo Account Id
      *
      * @return null

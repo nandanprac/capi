@@ -11,30 +11,34 @@ namespace ConsultBundle\Repository;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 
+/**
+ * Doctor Question Repository
+ */
 class DoctorQuestionRepository extends EntityRepository
 {
 
     /**
-     * @param $doctorId
-     * @param $state
+     * @param integer $doctorId - Practo Account Id of doctor
+     * @param array   $filters  - Filters to find questions assigned to doctors
+     *
      * @return array
      */
     public function findByFilters($doctorId, $filters)
     {
-		$qb = $this->_em->createQueryBuilder();
+        $qb = $this->_em->createQueryBuilder();
         $questions = null;
         $limit = array_key_exists('limit', $filters) ? $filters['limit'] : 500;
         $offset = array_key_exists('offset', $filters) ? $filters['offset'] : 0;
         try {
             $qb->select(array('q'))
                ->from("ConsultBundle:Question", 'q')
-			   ->innerJoin('q.doctorQuestions', 'dq')
-			   ->where('dq.softDeleted = 0');
+               ->innerJoin('q.doctorQuestions', 'dq')
+               ->where('dq.softDeleted = 0');
 
-			if ($doctorId != -1) {
-				$qb->andWhere('dq.practoAccountId = :doctorId')
+            if ($doctorId != -1) {
+                $qb->andWhere('dq.practoAccountId = :doctorId')
                    ->setParameter('doctorId', $doctorId);
-			}
+            }
 
             if (array_key_exists('reject', $filters)) {
                 $state = $filters['reject'];
@@ -76,9 +80,10 @@ class DoctorQuestionRepository extends EntityRepository
 
 
     /**
-     * @param $doctorId
-     * @param $state
-     * @param null     $maxResults
+     * @param integer $doctorId   - Doctor Practo Account Id
+     * @param string  $state      - State of Doctor Question Mapping
+     * @param integer $maxResults - No. of Max Results
+     *
      * @return array
      */
     public function findDoctorQuestionsForAState($doctorId, $state = null, $maxResults = null)
@@ -99,7 +104,7 @@ class DoctorQuestionRepository extends EntityRepository
             $query->setParameter('state', $state);
         }
 
-        if ($maxResults!= null) {
+        if ($maxResults != null) {
             $query->setMaxResults($maxResults);
         }
 

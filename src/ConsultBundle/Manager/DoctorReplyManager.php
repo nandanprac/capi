@@ -89,7 +89,7 @@ class DoctorReplyManager extends BaseManager
         $this->notification->createPatientNotification($doctorQuestion->getQuestion()->getId(), $doctorQuestion->getQuestion()->getPractoAccountId(), "Your Query has been answered");
         $this->queue->setQueueName(Queue::CONSULT_GCM)->sendMessage(json_encode(array("type"=>"query_answered", "send_to"=>"fabric", "message"=>"Your Query has been answered", "id"=>$doctorQuestion->getQuestion()->getId(), "user_ids"=>array($doctorQuestion->getQuestion()->getPractoAccountId()))));
 
-		$this->helper->persist($doctorReply, true);
+        $this->helper->persist($doctorReply, true);
 
         return $doctorReply->getDoctorQuestion()->getQuestion();
     }
