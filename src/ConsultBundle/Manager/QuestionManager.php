@@ -77,17 +77,19 @@ class QuestionManager extends BaseManager
         if (array_key_exists('city', $requestParams)) {
             $job['city'] = $requestParams['city'];
         }
-        if (array_key_exists('tags', $requestParams)) {
+        if (array_key_exists('speciality', $requestParams)) {
             $job['speciality'] = $requestParams['speciality'];
             $job['tags'] = $requestParams['speciality'];
         }
 
+        $userInfoParams = array();
         if (array_key_exists('user_info', $requestParams)) {
-            $requestParams['user_info']['practo_account_id'] = $practoAccountId;
-            $userEntry = $this->userManager->add($requestParams['user_info'], $profileToken);
-            $question->setUserInfo($userEntry);
+            $userInfoParams = $requestParams['user_info'];
             unset($requestParams['user_info']);
         }
+        $userInfoParams['practo_account_id'] = $practoAccountId;
+        $userEntry = $this->userManager->add($userInfoParams, $profileToken);
+        $question->setUserInfo($userEntry);
 
         $params = $this->validator->validatePostArguments($requestParams);
         $this->updateFields($question, $params);

@@ -57,7 +57,7 @@ class UserManager extends BaseManager
             throw new ValidationError($error);
         }
 
-        if (array_key_exists('id', $requestParams) and isset($requestParams['id'])) {
+        if (array_key_exists('id', $requestParams) and !empty($requestParams['id'])) {
             $userEntry = $this->helper->loadById($requestParams['id'], ConsultConstants::USER_ENTITY_NAME);
 
             if(empty($userEntry)) {
@@ -75,7 +75,14 @@ class UserManager extends BaseManager
                         
         } else {
             $userEntry = new UserInfo();
-            if (array_key_exists('is_relative', $requestParams) and !(Utility::toBool($requestParams['is_relative']))) {
+            if (!array_key_exists('is_relative', $requestParams) or 
+                (array_key_exists('is_relative', $requestParams) and !(Utility::toBool($requestParams['is_relative'])))) {
+
+                $er = $this->helper->getRepository(ConsultConstants::USER_ENTITY_NAME);
+                $entry = $er->findOneBy(array('practoAccountId' => $requestParams['practo_account_id'], 'isRelative' => 0));
+                if (!empty($entry)) {
+                    $userEntry = $entry;
+                }
                 $this->updateAccountsUtil->updateAccountDetails($profileToken, $requestParams);
             }
         }
@@ -96,7 +103,7 @@ class UserManager extends BaseManager
     {
         $userEntries = $this->helper->getRepository(ConsultConstants::USER_ENTITY_NAME)->findBy(
             array('practoAccountId' => $userId),
-            array('createdAt' => 'ASCC')
+            array('createdAt' => 'ASC')
         );
 
         if (empty($userEntries)) {
