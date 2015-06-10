@@ -22,18 +22,19 @@ class QuestionsController extends Controller
     public function postQuestionAction(Request $request)
     {
         $postData = $request->request->get('question');
+        $practoAccountId = $request->request->get('practo_account_id');
         $profileToken = $request->headers->get('X-Profile-Token');
 
         $questionManager = $this->get('consult.question_manager');
 
         try {
-            $question = $questionManager->add((array) json_decode($postData, true), $profileToken);
+            $question = $questionManager->add((array) json_decode($postData, true), $practoAccountId, $profileToken);
 
         } catch (ValidationError $e) {
             return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
-        } catch (\Exception $e) {
+        } /*catch (\Exception $e) {
             return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
-        }
+        }*/
 
         $files = $request->files;
         $questionImageManager = $this->get('consult.question_image_manager');

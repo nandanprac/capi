@@ -79,7 +79,7 @@ class QuestionValidator implements Validator
     public function validatePostArguments($requestParams)
     {
         $parameters = array("view", "share", "question_id", "state",
-                            "created_at", "modified_at", "X-Profile-Token", );
+                            "created_at", "modified_at");
         foreach ($parameters as $parameter) {
             if (array_key_exists($parameter, $requestParams)) {
                 unset($requestParams[$parameter]);
