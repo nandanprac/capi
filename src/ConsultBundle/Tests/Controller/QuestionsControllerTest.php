@@ -124,7 +124,7 @@ class QuestionsControllerTest extends WebTestCase
         $crawler = $this->client->request(
             'POST',
             '/questions',
-            array('question' => '{"practo_account_id":"1","text":"test question"}'),
+            array('practo_account_id' => '1', 'question' => '{"subject":"question subject", "text":"test question"}'),
             array(),
             array()
         );
@@ -153,10 +153,11 @@ class QuestionsControllerTest extends WebTestCase
         $crawler = $this->client->request(
             'POST',
             '/questions',
-            array('question' => '{"practo_account_id":"1",
+            array('question' => '{"subject":"question subject",
                                   "text":"test question",
                                   "additional_info": {"allergies":"abcd"},
-                                  "user_profile_details": {"is_some_else":false}}', ),
+                                  "user_info": {"is_relative":false}}',
+                  'practo_account_id' => '1'),
             array(),
             array()
         );
@@ -184,10 +185,11 @@ class QuestionsControllerTest extends WebTestCase
         $crawler = $this->client->request(
             'POST',
             '/questions',
-            array('question' => '{"practo_account_id":"1","text":"test question",
-                                  "additional_info":{"medications":"abcd"},
-                                  "user_profile_details":{"is_some_else":true,
-                                                          "gender":"M"}}', ),
+            array('question' => '{"subject":"question subject","text":"test question",
+                                  "user_info":{"is_relative":true,
+                                                          "medications":"abcd",
+                                                          "gender":"M"}}',
+                    'practo_account_id' => '1'),
             array(),
             array()
         );
@@ -217,6 +219,7 @@ class QuestionsControllerTest extends WebTestCase
             '/questions/1'
         );
         $response = $this->client->getResponse();
+        echo $response->getContent();
         $this->assertEquals(
             Codes::HTTP_OK,
             $response->getStatusCode(),
