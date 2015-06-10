@@ -93,11 +93,11 @@ class QuestionsController extends Controller
             return View::create(null, Codes::HTTP_NOT_FOUND);
         }
 
-        return array('questions' => $questionList[0], 'count' => $questionList[1]);
+        return $questionList;
     }
 
     /**
-     * returns Question
+     * @return \FOS\RestBundle\View\View
      */
     public function patchQuestionAction()
     {

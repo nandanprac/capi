@@ -4,6 +4,9 @@ namespace ConsultBundle\Manager;
 
 use ConsultBundle\Constants\ConsultConstants;
 use ConsultBundle\Entity\UserInfo;
+use ConsultBundle\Mapper\BasicQuestionMapper;
+use ConsultBundle\Repository\QuestionRepository;
+use ConsultBundle\Response\DetailQuestionResponseObject;
 use ConsultBundle\Utility\RetrieveDoctorProfileUtil;
 use ConsultBundle\Utility\RetrieveUserProfileUtil;
 use ConsultBundle\Utility\Utility;
@@ -129,7 +132,6 @@ class QuestionManager extends BaseManager
         }
 
         $params = $this->validator->validatePatchArguments($requestParams);
-        $this->updateFields($question, $params);
         $this->helper->persist($question, 'true');
 
         return $question;
@@ -149,17 +151,7 @@ class QuestionManager extends BaseManager
          */
         $question = $this->helper->loadById($questionId, ConsultConstants::QUESTION_ENTITY_NAME);
 
-        if (is_null($question)) {
-            return null;
-        }
-
-        $this->retrieveUserProfileUtil->loadUserDetailInQuestion($question);
-
-        $this->retrieveDoctorProfileUtil->retrieveDoctorProfileForQuestion($question);
-
-
-
-        return $question;
+        return $this->fetchDetailQuestionObject($question);
     }
 
 
@@ -185,17 +177,26 @@ class QuestionManager extends BaseManager
             $modifiedAfter = new \DateTime($request['modified_after']);
             $modifiedAfter->format('Y-m-d H:i:s');
         }
-
+        /**
+         * @var QuestionRepository $er
+         */
         $er =  $this->helper->getRepository(ConsultConstants::QUESTION_ENTITY_NAME);
-        $questionList = $er->findQuestionsByFilters($practoAccountId, $bookmark, $state, $category, $modifiedAfter, $limit, $offset);
 
-        return $questionList;
+        $questionList = $er->findQuestionsByFilters($practoAccountId, $bookmark, $state, $category, $modifiedAfter, $limit, $offset);
+        if (empty($questionList)) {
+            return null;
+        }
+
+        $questionResponseList = BasicQuestionMapper::mapQuestionList($questionList['questions']);
+
+        return array("questions" => $questionResponseList, "count" => $questionList['count']);
     }
 
     /**
-     * @param integer $questionId - Question Id
-     * @param string  $state      - state of the question
+     * @param int    $questionId
+     * @param string $state
      *
+     * @throws \Exception
      */
     public function setState($questionId, $state)
     {
@@ -238,5 +239,23 @@ class QuestionManager extends BaseManager
             $tagObj->setQuestion($question);
             $question->addTag($tagObj);
         }
+    }
+
+    /**
+     * @param \ConsultBundle\Entity\Question $questionEntity
+     *
+     * @return \ConsultBundle\Response\DetailQuestionResponseObject
+     */
+    private function fetchDetailQuestionObject(Question $questionEntity)
+    {
+        $question = new DetailQuestionResponseObject($questionEntity);
+        if (!empty($questionEntity)) {
+            $question
+            $this->retrieveDoctorProfileUtil->retrieveDoctorProfileForQuestion($question);
+            $this->retrieveUserProfileUtil->loadUserDetailInQuestion($question);
+        }
+
+
+        return $question;
     }
 }

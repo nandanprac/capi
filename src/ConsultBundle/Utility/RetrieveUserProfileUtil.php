@@ -59,11 +59,11 @@ class RetrieveUserProfileUtil
     }
 
     /**
-     * @param \ConsultBundle\Entity\User $userInfo
+     * @param \ConsultBundle\Entity\UserInfo $userInfo
      *
-     * @return null
+     * @return \ConsultBundle\Entity\User|\ConsultBundle\Entity\UserInfo|null
      */
-    public function retrieveUserProfileNew(User $userInfo)
+    public function retrieveUserProfileNew(UserInfo $userInfo)
     {
         if (empty($userInfo) || empty($userInfo->getPractoAccountId())) {
             return null;
@@ -113,12 +113,12 @@ class RetrieveUserProfileUtil
     }
 
     /**
-     * @param array                      $userProfile
-     * @param \ConsultBundle\Entity\User $user
+     * @param array                          $userProfile
+     * @param \ConsultBundle\Entity\UserInfo $user
      *
-     * @return \ConsultBundle\Entity\User|null
+     * @return \ConsultBundle\Entity\User|\ConsultBundle\Entity\UserInfo|null
      */
-    private function populateUserFromAccounts(array $userProfile, User $user)
+    private function populateUserFromAccounts(array $userProfile, UserInfo $user)
     {
 
         if (is_null($userProfile)) {
@@ -127,7 +127,7 @@ class RetrieveUserProfileUtil
 
 
         if (empty($user)) {
-            $user = new User();
+            $user = new UserInfo();
         }
 
 

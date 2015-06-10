@@ -7,6 +7,7 @@
  */
 
 namespace ConsultBundle\Response;
+use ConsultBundle\Entity\Question;
 
 /**
  * Class QuestionResponseObject
@@ -15,6 +16,7 @@ namespace ConsultBundle\Response;
  */
 class BasicQuestionResponseObject extends ConsultResponseObject
 {
+
     /**
      * @var string
      */
@@ -28,7 +30,7 @@ class BasicQuestionResponseObject extends ConsultResponseObject
     /**
      * @var string $text
      */
-    private $specialty;
+    private $speciality;
 
     /**
      * @var string $text
@@ -49,6 +51,48 @@ class BasicQuestionResponseObject extends ConsultResponseObject
      * @var int $bookmarkCount
      */
     private $bookmarkCount;
+
+    /**
+     * @var \DateTime
+     */
+    private $viewedAt;
+
+
+    /**
+     * @param \ConsultBundle\Entity\Question $questionEntity
+     */
+    public function __construct(Question $questionEntity = null)
+    {
+        parent::__construct($questionEntity);
+
+        if (!is_null($questionEntity)) {
+            $this->setSpecialty($questionEntity->getSpeciality());
+            $this->setViewCount($questionEntity->getViewCount());
+            $this->setShareCount($questionEntity->getSpeciality());
+            $this->setSubject($questionEntity->getSubject());
+            $this->setText($questionEntity->getText());
+            $this->viewedAt($questionEntity->getViewedAt());
+        }
+
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getViewedAt()
+    {
+        return $this->viewedAt;
+    }
+
+    /**
+     * @param \DateTime $viewedAt
+     */
+    public function setViewedAt($viewedAt)
+    {
+        $this->viewedAt = $viewedAt;
+    }
+
+
 
     /**
      * @return string
@@ -149,16 +193,16 @@ class BasicQuestionResponseObject extends ConsultResponseObject
     /**
      * @return mixed
      */
-    public function getSpecialty()
+    public function getSpeciality()
     {
-        return $this->specialty;
+        return $this->speciality;
     }
 
     /**
-     * @param mixed $specialty
+     * @param $speciality
      */
-    public function setSpecialty($specialty)
+    public function setSpeciality($speciality)
     {
-        $this->specialty = $specialty;
+        $this->speciality = $speciality;
     }
 }
