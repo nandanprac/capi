@@ -6,6 +6,10 @@ questionBookmarks:
     resource: ConsultBundle\Controller\QuestionBookmarkController
     type:     rest
 
+questionComments:
+    resource: ConsultBundle\Controller\QuestionCommentsController
+    type:     rest
+
 doctorQuestions:
    resource: ConsultBundle\Controller\DoctorQuestionsController
    type:     rest

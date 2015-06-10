@@ -3,26 +3,30 @@
 namespace ConsultBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * QuestionCommentVote
  *
  * @ORM\Table(name="questions_comments_votes")
  * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks()
  */
 class QuestionCommentVote extends BaseEntity
 {
     /**
-     * @var integer
      * @ORM\ManyToOne(targetEntity="ConsultBundle\Entity\QuestionComment")
      * @ORM\JoinColumn(name="question_comment_id", referencedColumnName="id")
      */
-    private $questionCommentId;
+    private $questionComment;
 
     /**
      * @var integer
      *
      * @ORM\Column(name="vote", type="smallint")
+     *
+     * @Assert\Choice(choices = {"1","-1"}, message="Valid value for upvote/downvote is 1/-1 ")
+     * @Assert\NotBlank
      */
     private $vote;
 
@@ -35,26 +39,13 @@ class QuestionCommentVote extends BaseEntity
 
 
     /**
-     * Get id
-     *
-     * @return integer
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
      * Set vote
      *
      * @param integer $vote
-     * @return QuestionCommentVote
      */
     public function setVote($vote)
     {
         $this->vote = $vote;
-
-        return $this;
     }
 
     /**
@@ -71,13 +62,10 @@ class QuestionCommentVote extends BaseEntity
      * Set practoAccountId
      *
      * @param integer $practoAccountId
-     * @return QuestionCommentVote
      */
     public function setPractoAccountId($practoAccountId)
     {
         $this->practoAccountId = $practoAccountId;
-
-        return $this;
     }
 
     /**
@@ -91,18 +79,18 @@ class QuestionCommentVote extends BaseEntity
     }
 
     /**
-     * @return mixed
+     * @return QuestionComment
      */
-    public function getQuestionCommentId()
+    public function getQuestionComment()
     {
-        return $this->questionCommentId;
+        return $this->questionComment;
     }
 
     /**
-     * @param mixed $questionCommentId
+     * @param QuestionComment $questionComment
      */
-    public function setQuestionCommentId($questionCommentId)
+    public function setQuestionComment($questionComment)
     {
-        $this->questionCommentId = $questionCommentId;
+        $this->questionComment = $questionComment;
     }
 }
