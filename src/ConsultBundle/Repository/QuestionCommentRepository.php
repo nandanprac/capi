@@ -27,7 +27,7 @@ class QuestionCommentRepository extends EntityRepository
                     'c.text as text',
                     'COALESCE(SUM(cv.vote), 0) as votes')
             ->from(ConsultConstants::QUESTION_COMMENT_ENTITY_NAME, 'c')
-            ->leftJoin(ConsultConstants::QUESTION_COMMENT_VOTE_ENTITY_NAME, 'cv', 'WITH', 'c = cv.questionComment')
+            ->leftJoin(ConsultConstants::QUESTION_COMMENT_VOTE_ENTITY_NAME, 'cv', 'WITH', 'c = cv.questionComment and cv.softDeleted = 0')
             ->where('c.softDeleted = 0')
             ->andWhere('c.question = :question')
             ->setParameter('question', $question)
@@ -40,7 +40,6 @@ class QuestionCommentRepository extends EntityRepository
 
         //paginator cannot be used to retrieve count of queries where more than one table is involved
         $countQuery = $qb->getQuery();
-        $countQuery->setHint(CountWalker::HINT_DISTINCT, true);
         $countQuery->setFirstResult(null)->setMaxResults(null);
         $count =  count($countQuery->getArrayResult());
 

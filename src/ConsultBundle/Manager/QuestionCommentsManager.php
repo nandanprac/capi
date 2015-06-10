@@ -23,7 +23,7 @@ class QuestionCommentsManager extends BaseManager
      * @param array            $data           - data to be updated
      * @throws ValidationError
      */
-    public function updateFields($entity, $data)
+    private function updateFields($entity, $data)
     {
         if (array_key_exists('question_id', $data)) {
             unset($data['question_id']);
