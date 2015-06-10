@@ -128,26 +128,6 @@ class QuestionManager extends BaseManager
             $question->setShareCount($question->getShareCount() + 1);
         }
 
-        if (array_key_exists('comment', $requestParams)) {
-            $commentParams = array();
-            if (array_key_exists('practo_account_id', $requestParams)) {
-                 $commentParams['practo_account_id'] = $requestParams['practo_account_id'];
-            }
-            if (array_key_exists('c_text', $requestParams)) {
-                 $commentParams['text'] = $requestParams['c_text'];
-            }
-
-            $questionComment = new QuestionComment();
-            $questionComment->setAttributes($commentParams);
-            try {
-                $this->validator->validate($questionComment);
-            } catch (ValidationError $e) {
-                throw new ValidationError($e->getMessage());
-            }
-            $questionComment->setQuestion($question);
-            $question->addComment($questionComment);
-        }
-
         $params = $this->validator->validatePatchArguments($requestParams);
         $this->updateFields($question, $params);
         $this->helper->persist($question, 'true');

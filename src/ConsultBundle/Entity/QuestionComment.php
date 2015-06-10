@@ -6,7 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="ConsultBundle\Repository\QuestionCommentRepository")
  * @ORM\Table(name="question_comments")
  * @ORM\HasLifecycleCallbacks()
  */
@@ -21,6 +21,15 @@ class QuestionComment extends BaseEntity
      * @Assert\NotBlank
      */
     protected $practoAccountId;
+
+    /**
+     *  @ORM\Column(type="string", name="phone_number")
+     *
+     *  @var string $phoneNumber
+     *
+     *  @Assert\NotBlank
+     */
+    protected $phoneNumber;
 
     /**
      * @ORM\Column(type="text", name="text")
@@ -45,6 +54,7 @@ class QuestionComment extends BaseEntity
     {
         $this->setInt('practoAccountId', $practoAccountId);
     }
+
 
     /**
      * Get practoAccountId
@@ -77,6 +87,25 @@ class QuestionComment extends BaseEntity
         return $this->text;
     }
 
+    /**
+     * Set phone number
+     *
+     * @param  string $text
+     */
+    public function setPhoneNumber($phoneNumber)
+    {
+        $this->setString('phoneNumber', $phoneNumber);
+    }
+
+    /**
+     * Get phone number
+     *
+     * @return string
+     */
+    public function getPhoneNumber()
+    {
+        return $this->phoneNumber;
+    }
     /**
      * Set question
      *
