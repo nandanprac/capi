@@ -204,4 +204,22 @@ class BaseEntity
 
         return $dateTime->format('Y-m-d H:i:s');
     }
+
+    /**
+     * @return mixed
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getModifiedAt()
+    {
+        return $this->modifiedAt;
+    }
+
+
 }
