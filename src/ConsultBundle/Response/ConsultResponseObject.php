@@ -116,7 +116,7 @@ class ConsultResponseObject
     }
 
     /**
-     * @param $value
+     * @param boolean $value
      *
      * Just a placeholder
      */
@@ -124,8 +124,4 @@ class ConsultResponseObject
     {
         //Do Nothing
     }
-
-
-
-
 }

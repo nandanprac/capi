@@ -79,7 +79,7 @@ class QuestionCommentsController extends Controller
         }
         if (empty($questionCommentList)) {
             return View::create(null, Codes::HTTP_NOT_FOUND);
-        } 
+        }
 
         return $questionCommentList;
     }

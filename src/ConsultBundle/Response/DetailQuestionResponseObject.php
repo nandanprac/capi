@@ -8,6 +8,9 @@
 
 namespace ConsultBundle\Response;
 
+use ConsultBundle\Entity\Question;
+use ConsultBundle\Entity\UserInfo;
+
 /**
  * Class DetailQuestionResponseObject
  *
@@ -16,11 +19,15 @@ namespace ConsultBundle\Response;
 class DetailQuestionResponseObject extends BasicQuestionResponseObject
 {
 
+
     /**
      * @var array $replies
      */
     private $replies;
 
+    /**
+     * @var BasicPatientInfoResponse
+     */
     private $patientInfo;
 
     /**
@@ -37,6 +44,16 @@ class DetailQuestionResponseObject extends BasicQuestionResponseObject
      * @var integer
      */
     private $commentsCount;
+
+    /**
+     * @param Question $question
+     */
+    public function __construct(Question $question)
+    {
+        parent::__construct($question);
+        $this->populatePatientInfo($question->getUserInfo());
+    }
+
     /**
      * @return mixed
      */
@@ -56,7 +73,7 @@ class DetailQuestionResponseObject extends BasicQuestionResponseObject
 
 
     /**
-     * @return mixed
+     * @return BasicPatientInfoResponse
      */
     public function getPatientInfo()
     {
@@ -64,9 +81,9 @@ class DetailQuestionResponseObject extends BasicQuestionResponseObject
     }
 
     /**
-     * @param mixed $patientInfo
+     * @param \ConsultBundle\Response\BasicPatientInfoResponse $patientInfo
      */
-    public function setPatientInfo($patientInfo)
+    public function setPatientInfo(BasicPatientInfoResponse $patientInfo)
     {
         $this->patientInfo = $patientInfo;
     }
@@ -142,5 +159,13 @@ class DetailQuestionResponseObject extends BasicQuestionResponseObject
     public function setCommentsCount($commentsCount)
     {
         $this->commentsCount = $commentsCount;
+    }
+
+    protected function populatePatientInfo(UserInfo $userInfo)
+    {
+        $patientInfo = new BasicPatientInfoResponse();
+        $patientInfo->setAge($userInfo->getAge());
+        $patientInfo->setGender($userInfo->getGender());
+        $this->patientInfo = $patientInfo;
     }
 }

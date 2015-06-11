@@ -22,7 +22,7 @@ class QuestionCommentRepository extends EntityRepository
     public function getComments($question, $limit, $offset)
     {
         $qb = $this->_em->createQueryBuilder();
-        $qb->select('c.practoAccountId as practo_account_id', 
+        $qb->select('c.practoAccountId as practo_account_id',
                     'c.phoneNumber as number_to_identify',
                     'c.text as text',
                     'COALESCE(SUM(cv.vote), 0) as votes')

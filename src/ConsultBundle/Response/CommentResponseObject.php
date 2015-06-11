@@ -92,5 +92,4 @@ class CommentResponseObject extends ConsultResponseObject
     {
         $this->numToIdentify = $numToIdentify;
     }
-
 }

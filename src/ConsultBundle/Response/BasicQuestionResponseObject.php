@@ -7,6 +7,7 @@
  */
 
 namespace ConsultBundle\Response;
+
 use ConsultBundle\Entity\Question;
 
 /**
@@ -66,12 +67,12 @@ class BasicQuestionResponseObject extends ConsultResponseObject
         parent::__construct($questionEntity);
 
         if (!is_null($questionEntity)) {
-            $this->setSpecialty($questionEntity->getSpeciality());
+            $this->setSpeciality($questionEntity->getSpeciality());
             $this->setViewCount($questionEntity->getViewCount());
-            $this->setShareCount($questionEntity->getSpeciality());
+            //$this->setShareCount($questionEntity->getSpeciality());
             $this->setSubject($questionEntity->getSubject());
             $this->setText($questionEntity->getText());
-            $this->viewedAt($questionEntity->getViewedAt());
+            $this->viewedAt = $questionEntity->getViewedAt();
         }
 
     }
@@ -199,7 +200,7 @@ class BasicQuestionResponseObject extends ConsultResponseObject
     }
 
     /**
-     * @param $speciality
+     * @param string $speciality
      */
     public function setSpeciality($speciality)
     {

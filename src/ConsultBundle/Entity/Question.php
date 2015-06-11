@@ -95,6 +95,13 @@ class Question extends BaseEntity
      */
     private $bookmarks;
 
+    /**
+     * @var array
+     *
+     * @ORM\OneToMany(targetEntity="ConsultBundle\Entity\DoctorQuestion", mappedBy="question", fetch="EXTRA_LAZY", cascade={"persist", "remove"})
+     */
+    private $doctorQuestions;
+
 
     /**
      * @return mixed
@@ -138,6 +145,23 @@ class Question extends BaseEntity
         $this->doctorQuestions = new ArrayCollection();
         $this->comments = new ArrayCollection();
     }
+
+    /**
+     * @return mixed
+     */
+    public function getDoctorQuestions()
+    {
+        return $this->doctorQuestions;
+    }
+
+    /**
+     * @param mixed $doctorQuestions
+     */
+    public function setDoctorQuestions($doctorQuestions)
+    {
+        $this->doctorQuestions = $doctorQuestions;
+    }
+
 
     /**
      * get User object

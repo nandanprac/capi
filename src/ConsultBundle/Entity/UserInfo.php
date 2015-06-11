@@ -45,7 +45,7 @@ class UserInfo extends BaseEntity
      *
      * @ORM\Column(name="age", type="integer", nullable=true)
      */
-    private $dateOfBirth;
+    private $age;
 
     /**
      * @var string
@@ -149,18 +149,19 @@ class UserInfo extends BaseEntity
     /**
      * @return int
      */
-    public function getDateOfBirth()
+    public function getAge()
     {
-        return $this->dateOfBirth;
+        return $this->age;
     }
 
     /**
-     * @param int $dateOfBirth
+     * @param int $age
      */
-    public function setDateOfBirth($dateOfBirth)
+    public function setAge($age)
     {
-        $this->dateOfBirth = $dateOfBirth;
+        $this->age = $age;
     }
+
 
     /**
      * @return string
