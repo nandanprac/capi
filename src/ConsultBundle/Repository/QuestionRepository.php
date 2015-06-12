@@ -13,7 +13,7 @@ use Doctrine\ORM\EntityRepository;
 class QuestionRepository extends EntityRepository
 {
     const SELECT_BASIC_QUESTION_QUERY = " SELECT question.id as id, subject as subject, text as text,
- specialty as specialty, view_count as view_count, share_count as share_count, question.viewed_at as viewed_at,
+ speciality as speciality, view_count as view_count, share_count as share_count, question.viewed_at as viewed_at,
  question.created_at as created_at,
  question.modified_at as modified_at,COUNT(question_bookmarks.id) as bookmark_count
  FROM questions question

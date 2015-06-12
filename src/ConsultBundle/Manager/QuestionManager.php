@@ -259,7 +259,7 @@ class QuestionManager extends BaseManager
      */
     private function fetchDetailQuestionObject(Question $questionEntity, $practoAccountId)
     {
-           $question = null;
+        $question = null;
         if (!empty($questionEntity)) {
             if (!$questionEntity->getUserInfo()->isIsRelative()) {
                 $this->retrieveUserProfileUtil->retrieveUserProfileNew($questionEntity->getUserInfo());
@@ -283,10 +283,19 @@ class QuestionManager extends BaseManager
 
             $question->setReplies($replies);
 
+            $er = $this->helper->getRepository(ConsultConstants::QUESTION_BOOKMARK_ENTITY_NAME);
 
+            if (!empty($practoAccountId)) {
+                $bookmark = $er->findOneBy(array("practoAccountId" => $practoAccountId,
+                    "question" => $questionEntity,
+                    "softDeleted" => 0));
 
+                if (!empty($bookmark)) {
+                    $question->setIsBookmarked(true);
+
+                }
+            }
         }
-
 
         return $question;
     }
