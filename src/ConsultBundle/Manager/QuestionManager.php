@@ -31,17 +31,20 @@ class QuestionManager extends BaseManager
      * @param Queue                     $queue
      * @param RetrieveUserProfileUtil   $retrieveUserProfileUtil
      * @param RetrieveDoctorProfileUtil $retrieveDoctorProfileUtil
+     * @param QuestionBookmarkManager   $questionBookmarkManager
      */
     public function __construct(
         UserManager $userManager,
         Queue $queue,
         RetrieveUserProfileUtil $retrieveUserProfileUtil,
-        RetrieveDoctorProfileUtil $retrieveDoctorProfileUtil
+        RetrieveDoctorProfileUtil $retrieveDoctorProfileUtil,
+        QuestionBookmarkManager $questionBookmarkManager
     ) {
         $this->userManager = $userManager;
         $this->queue = $queue;
         $this->retrieveUserProfileUtil = $retrieveUserProfileUtil;
         $this->retrieveDoctorProfileUtil = $retrieveDoctorProfileUtil;
+        $this->questionBookmarkManager = $questionBookmarkManager;
     }
 
     /**
@@ -114,7 +117,8 @@ class QuestionManager extends BaseManager
         if (array_key_exists('question_id', $requestParams)) {
             $question = $this->helper->loadById($requestParams['question_id'], ConsultConstants::QUESTION_ENTITY_NAME);
             if (null === $question) {
-                throw new ValidationError();
+                @$error['question_id']='Question with this id does not exist';
+                throw new ValidationError($error);
             }
         } else {
             @$error['question_id']='This value cannot be blank';
@@ -132,9 +136,21 @@ class QuestionManager extends BaseManager
 
         if (array_key_exists('bookmark', $requestParams)) {
             if (Utility::toBool($requestParams['bookmark'])) {
+                try {
+                    $questionBookmark = $this->questionBookmarkManager->add($requestParams);
+                } catch (ValidationError $e) {
+                    throw new ValidationError($e->getMessage());
+                }
 
+                return $questionBookmark;
             } else {
+                try {
+                    $this->questionBookmarkManager->remove($requestParams);
+                } catch (ValidationError $e) {
+                    throw new ValidationError($e->getMessage());
+                }
 
+               return 'Bookmark Deleted';
             } 
         }
 
