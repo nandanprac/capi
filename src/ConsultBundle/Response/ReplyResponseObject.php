@@ -43,9 +43,9 @@ class ReplyResponseObject extends ConsultResponseObject
     private $rating;
 
     /**
-     * @var
+     * @var int
      */
-    private $vote;
+    private $vote = 0;
 
     /**
      * @return int
@@ -140,6 +140,9 @@ class ReplyResponseObject extends ConsultResponseObject
      */
     public function setVote($vote)
     {
-        $this->vote = $vote;
+        if (!empty($vote)) {
+            $this->vote = $vote;
+        }
+
     }
 }
