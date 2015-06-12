@@ -27,6 +27,10 @@ class DoctorQuestionResponseObject extends DetailQuestionResponseObject
      */
     private $patientInfo;
 
+    //doctor
+
+
+
     /**
      * @return array
      */

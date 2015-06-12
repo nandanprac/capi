@@ -9,6 +9,7 @@
 namespace ConsultBundle\Manager;
 
 use ConsultBundle\Constants\ConsultConstants;
+use ConsultBundle\Entity\DoctorQuestion;
 use ConsultBundle\Entity\DoctorReply;
 use ConsultBundle\Entity\DoctorReplyRating;
 use ConsultBundle\Entity\DoctorReplyVote;
@@ -46,6 +47,9 @@ class DoctorReplyManager extends BaseManager
     public function replyToAQuestion($doctorQuestionId, $practoAccountId, $answerText)
     {
         $doctorReply = new DoctorReply();
+        /**
+         * @var DoctorQuestion $doctorQuestion
+         */
         $doctorQuestion = $this->helper->loadById(
             $doctorQuestionId,
             ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME
@@ -73,7 +77,13 @@ class DoctorReplyManager extends BaseManager
         $doctorReply->setText($answerText);
 
 
-        $this->queue->setQueueName(Queue::CONSULT_GCM)->sendMessage(json_encode(array("type"=>"query_answered", "message"=>"Your Query has been answered", "id"=>$doctorQuestion->getQuestion()->getId(), "user_ids"=>array($doctorQuestion->getQuestion()->getPractoAccountId()))));
+        $this->queue->setQueueName(Queue::CONSULT_GCM)
+            ->sendMessage(json_encode(array(
+                "type"=>"query_answered",
+                "message"=>"Your Query has been answered",
+                "id"=>$doctorQuestion->getQuestion()->getId(),
+                "user_ids"=>array($doctorQuestion->getQuestion()->getUserInfo()->getPractoAccountId()))));
+
         $this->helper->persist($doctorReply, true);
 
         return $doctorReply;
@@ -111,7 +121,7 @@ class DoctorReplyManager extends BaseManager
             throw new \HttpException("Not a valid Doctor Reply Id", Codes::HTTP_BAD_REQUEST);
         }
 
-        $ownerId = $doctorReplyEntity->getDoctorQuestion()->getQuestion()->getPractoAccountId();
+        $ownerId = $doctorReplyEntity->getDoctorQuestion()->getQuestion()->getUserInfo()->getPractoAccountId();
 
         //Mark As Best Answer
         if (array_key_exists("rating", $doctorReply)) {
@@ -119,8 +129,8 @@ class DoctorReplyManager extends BaseManager
                 throw new \HttpException("Only the one who has asked the question can rate it", Codes::HTTP_BAD_REQUEST);
             }
 
-            if (!empty($doctorReplyEntity->getRating())) {
-                $doctorReplyEntity->setRating(true);
+            if (empty($doctorReplyEntity->getRating())) {
+                $doctorReplyEntity->setRating($doctorReply['rating']);
                 $changed = true;
             } else {
                 throw new \HttpException("Answer is already rated", Codes::HTTP_BAD_REQUEST);
@@ -147,7 +157,7 @@ class DoctorReplyManager extends BaseManager
 
             $doctorReplyVoteEntity = $er->findOneBy(
                 array("practoAccountId" => $practoAccountId,
-                    "doctorReply" => $doctorReplyEntity,
+                    "reply" => $doctorReplyEntity,
 
                 )
             );
@@ -157,6 +167,7 @@ class DoctorReplyManager extends BaseManager
                 $doctorReplyVoteEntity = new DoctorReplyVote();
                 $doctorReplyVoteEntity->setPractoAccountId($practoAccountId);
                 $doctorReplyVoteEntity->setReply($doctorReplyEntity);
+                $doctorReplyVoteEntity->setVote($vote);
                 $doctorReplyEntity->addVote($doctorReplyVoteEntity);
                 $changed = true;
             } else {

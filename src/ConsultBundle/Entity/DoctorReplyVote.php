@@ -10,6 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @ORM\Table(name="doctor_replies_votes")
  * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks()
  */
 class DoctorReplyVote extends BaseEntity
 {
