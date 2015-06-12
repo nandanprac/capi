@@ -84,7 +84,7 @@ class QuestionTag extends BaseEntity
      */
     public function setTag($tag)
     {
-        $this->setString('tag', $tag);
+        $this->tag = $tag;
     }
 
     /**
@@ -104,7 +104,7 @@ class QuestionTag extends BaseEntity
      */
     public function setUserDefined($userDefined)
     {
-        $this->setBoolean('userDefined', $userDefined);
+        $this->userDefined = $userDefined;
     }
 
     /**

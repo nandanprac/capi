@@ -102,6 +102,11 @@ class Question extends BaseEntity
      */
     private $doctorQuestions;
 
+    /**
+     * @ORM\OneToMany(targetEntity="QuestionTag", mappedBy="question", cascade={"persist", "remove"})
+     * @var ArrayCollection $tags
+     */
+     protected $tags;
 
     /**
      * @return mixed
@@ -145,6 +150,7 @@ class Question extends BaseEntity
         $this->doctorQuestions = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->bookmarks = new ArrayCollection();
+        $this->tags = new ArrayCollection();
     }
 
     /**
@@ -392,5 +398,32 @@ class Question extends BaseEntity
     public function addBookmark(QuestionBookmark $bookmark)
     {
         $this->bookmarks->add($bookmark);
+    }
+
+    /**
+     * Get tags
+     *
+     * @return ArrayCollection
+     */
+    public function getTags()
+    {
+        return $this->tags;
+    }
+    /**
+     * Add Tag
+     *
+     * @param QuestionTag $tag - Question Tag
+     */
+    public function addTag(QuestionTag $tag)
+    {
+        $this->tags->add($tag);
+    }
+
+    /**
+     * Clear Question Tags
+     */
+    public function clearTags()
+    {
+        $this->tags = new ArrayCollection();
     }
 }

@@ -152,8 +152,6 @@ class DoctorQuestionRepository extends EntityRepository
 
         $doctorQuestions = $qb->getQuery()->getArrayResult();
 
-        //var_dump($doctorQuestions);die;
-
         return $doctorQuestions;
     }
 }

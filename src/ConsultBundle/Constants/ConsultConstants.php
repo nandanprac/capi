@@ -26,4 +26,6 @@ class ConsultConstants
     const QUESTION_TAG_ENTITY_NAME = "ConsultBundle:QuestionTag";
     const DOCTOR_REPLY_RATING_ENTITY_NAME = "ConsultBundle:DoctorReplyRating";
     const DOCTOR_REPLY_VOTE_ENTITY = "ConsultBundle:DoctorReplyVote";
+    const DOCTOR_NOTIFICATION_ENTITY_NAME = "ConsultBundle:DoctorNotification";
+    const USER_NOTIFICATION_ENTITY_NAME = "ConsultBundle:UserNotification";
 }

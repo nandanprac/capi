@@ -88,7 +88,6 @@ class QuestionManager extends BaseManager
         }
         if (array_key_exists('speciality', $requestParams)) {
             $job['speciality'] = $requestParams['speciality'];
-            $job['tags'] = $requestParams['speciality'];
         }
 
         $userInfoParams = array();
@@ -106,6 +105,7 @@ class QuestionManager extends BaseManager
 
         $job['question_id'] = $question->getId();
         $job['question'] = $question->getText();
+        $job['subject'] = $question->getSubject();
 
         $this->queue->setQueueName(Queue::DAA)->sendMessage(json_encode($job));
 
@@ -239,17 +239,13 @@ class QuestionManager extends BaseManager
 
     /**
      * @param integer $questionId - Question Id
-     * @param string  $tag        - text for the tag
+     * @param string  $tags       - text for the tag
      *
      */
-    public function setTagByQuestionId($questionId, $tag)
+    public function setTagsByQuestionId($questionId, $tags)
     {
         $question = $this->helper->loadById($questionId, ConsultConstants::QUESTION_ENTITY_NAME);
-        $tagObj = new QuestionTag();
-        $tagObj->setTag($tag);
-        $tagObj->setUserDefined(false);
-        $tagObj->setQuestion($question);
-        $question->addTag($tagObj);
+        $this->setQuestionTags($question, $tags);
         $this->helper->persist($question, 'true');
     }
 
