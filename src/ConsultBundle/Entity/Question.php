@@ -20,7 +20,7 @@ class Question extends BaseEntity
 {
 
     /**
-     * @ORM\ManyToOne(targetEntity="ConsultBundle\Entity\UserInfo")
+     * @ORM\ManyToOne(targetEntity="ConsultBundle\Entity\UserInfo", fetch="EXTRA_LAZY")
      * @ORM\JoinColumn(name="user_info_id", referencedColumnName="id")
      */
     private $userInfo;
@@ -71,13 +71,13 @@ class Question extends BaseEntity
 
 
     /**
-    * @ORM\OneToMany(targetEntity="QuestionImage", mappedBy="question", cascade={"persist", "remove"})
+    * @ORM\OneToMany(targetEntity="QuestionImage", mappedBy="question", fetch="EXTRA_LAZY", cascade={"persist", "remove"})
     * @var ArrayCollection $images
     */
     private $images;
 
     /**
-     * @ORM\OneToMany(targetEntity="QuestionComment", mappedBy="question", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="QuestionComment", mappedBy="question", fetch="EXTRA_LAZY", cascade={"persist", "remove"})
      * @ORM\OrderBy({"createdAt" = "DESC"})
      * @var ArrayCollection $comments
      */
@@ -86,9 +86,21 @@ class Question extends BaseEntity
     /**
      * @var array
      *
-     * @ORM\OneToMany(targetEntity="ConsultBundle\Entity\QuestionView", mappedBy="question", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="ConsultBundle\Entity\QuestionView", mappedBy="question", fetch="EXTRA_LAZY", cascade={"persist", "remove"})
      */
     private $views;
+
+    /**
+     * @ORM\OneToMany(targetEntity="ConsultBundle\Entity\QuestionBookmark", mappedBy="question", fetch="EXTRA_LAZY")
+     */
+    private $bookmarks;
+
+    /**
+     * @var array
+     *
+     * @ORM\OneToMany(targetEntity="ConsultBundle\Entity\DoctorQuestion", mappedBy="question", fetch="EXTRA_LAZY", cascade={"persist", "remove"})
+     */
+    private $doctorQuestions;
 
 
     /**
@@ -132,7 +144,25 @@ class Question extends BaseEntity
         $this->images = new ArrayCollection();
         $this->doctorQuestions = new ArrayCollection();
         $this->comments = new ArrayCollection();
+        $this->bookmarks = new ArrayCollection();
     }
+
+    /**
+     * @return mixed
+     */
+    public function getDoctorQuestions()
+    {
+        return $this->doctorQuestions;
+    }
+
+    /**
+     * @param mixed $doctorQuestions
+     */
+    public function setDoctorQuestions($doctorQuestions)
+    {
+        $this->doctorQuestions = $doctorQuestions;
+    }
+
 
     /**
      * get User object
@@ -328,5 +358,39 @@ class Question extends BaseEntity
     public function addViews(QuestionView $view)
     {
         $this->views[] = $view;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBookmarks()
+    {
+        return $this->bookmarks;
+    }
+
+    /**
+     * @param mixed $bookmarks
+     */
+    public function setBookmarks($bookmarks)
+    {
+        $this->bookmarks = $bookmarks;
+    }
+
+
+    /**
+     * get count of bookmarks
+     * @return int
+     */
+    public function getBookmarkCount()
+    {
+        return $this->bookmarks->count();
+    }
+
+    /**
+     * @param \ConsultBundle\Entity\QuestionBookmark $bookmark
+     */
+    public function addBookmark(QuestionBookmark $bookmark)
+    {
+        $this->bookmarks->add($bookmark);
     }
 }

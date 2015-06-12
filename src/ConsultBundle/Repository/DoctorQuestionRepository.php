@@ -8,6 +8,8 @@
 
 namespace ConsultBundle\Repository;
 
+use ConsultBundle\Constants\ConsultConstants;
+use ConsultBundle\Entity\Question;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 
@@ -113,5 +115,45 @@ class DoctorQuestionRepository extends EntityRepository
         return $questions;
 
 
+    }
+
+    /**
+     * @param \ConsultBundle\Entity\Question $question
+     * @param int                            $practoAccountId
+     *
+     * @return array
+     */
+    public function findRepliesByQuestion(Question $question, $practoAccountId = 0)
+    {
+        $qb = $this->_em->createQueryBuilder();
+
+        $qb->select('dq.practoAccountId AS doctorId', 'r.id AS id', 'r.text AS text', 'r.rating', 'r.createdAt AS createdAt' , 'COALESCE(SUM(rv.vote),0) AS votes', 'rv1.vote as vote')
+            ->from(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME, 'dq')
+            ->innerJoin(ConsultConstants::DOCTOR_REPLY_ENTITY_NAME, 'r', 'WITH', 'r.doctorQuestion = dq AND r.softDeleted = 0 ')
+            ->leftJoin(
+                ConsultConstants::DOCTOR_REPLY_VOTE_ENTITY,
+                'rv',
+                'WITH',
+                'rv.reply = r AND rv.softDeleted = 0 '
+            )
+            ->leftJoin(
+                ConsultConstants::DOCTOR_REPLY_VOTE_ENTITY,
+                'rv1',
+                'WITH',
+                'r = rv1.reply AND rv1.practoAccountId= :practoAccountId AND rv1.softDeleted = 0 '
+            )
+            ->where('dq.question = :question')
+            ->andWhere('dq.softDeleted = 0 ')
+            ->addGroupBy('r')
+            ->addOrderBy('votes', 'DESC');
+
+        $qb->setParameter('practoAccountId', $practoAccountId);
+        $qb->setParameter('question', $question);
+
+        $doctorQuestions = $qb->getQuery()->getArrayResult();
+
+        //var_dump($doctorQuestions);die;
+
+        return $doctorQuestions;
     }
 }

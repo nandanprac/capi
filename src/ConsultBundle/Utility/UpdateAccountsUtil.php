@@ -76,7 +76,7 @@ class UpdateAccountsUtil
             $client->send($request);
 
         } catch (\Exception $e) {
-        //do nothing.
+            //do nothing.
         }
 
 

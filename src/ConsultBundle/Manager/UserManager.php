@@ -44,11 +44,11 @@ class UserManager extends BaseManager
     }
 
     /**
-     * Add additional info entry for a user
+     * @param $requestParams
+     * @param $profileToken
      *
-     * @param array $requestParams
-     *
-     * @return Added Entry
+     * @return \ConsultBundle\Entity\UserInfo|mixed
+     * @throws \ConsultBundle\Manager\ValidationError
      */
     public function add($requestParams, $profileToken)
     {
@@ -71,11 +71,11 @@ class UserManager extends BaseManager
 
             if (!$userEntry->isIsRelative()) {
                 $this->updateAccountsUtil->updateAccountDetails($profileToken, $requestParams);
-            } 
-                        
+            }
+
         } else {
             $userEntry = new UserInfo();
-            if (!array_key_exists('is_relative', $requestParams) or 
+            if (!array_key_exists('is_relative', $requestParams) or
                 (array_key_exists('is_relative', $requestParams) and !(Utility::toBool($requestParams['is_relative'])))) {
 
                 $er = $this->helper->getRepository(ConsultConstants::USER_ENTITY_NAME);

@@ -178,10 +178,12 @@ class FileUploadUtil
      */
     private function createS3Client()
     {
-        $s3Client = S3Client::factory(array('key' => $this->s3Key,
+        $s3Client = S3Client::factory(
+            array('key' => $this->s3Key,
             'secret' => $this->s3Secret,
             'region' => Region::AP_SOUTHEAST_1,
-            'scheme' => 'https'));
+            'scheme' => 'https')
+        );
 
         return $s3Client;
     }
@@ -190,7 +192,7 @@ class FileUploadUtil
     /**
      * @param        $uploadedUri
      * @param        $localFile
-     * @param string $contentType
+     * @param string      $contentType
      *
      * @return \Guzzle\Service\Resource\Model
      */
