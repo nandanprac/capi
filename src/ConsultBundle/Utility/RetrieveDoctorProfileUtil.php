@@ -133,7 +133,7 @@ class RetrieveDoctorProfileUtil
 
         if (array_key_exists('specialties', $docArr)) {
             foreach ($docArr['specialties'] as $specialties) {
-                $doc->setSpecialty($specialties['specialty']);
+                $doc->setSpeciality($specialties['specialty']);
             }
         }
 

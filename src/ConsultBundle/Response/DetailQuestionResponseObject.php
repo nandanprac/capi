@@ -33,7 +33,7 @@ class DetailQuestionResponseObject extends BasicQuestionResponseObject
     /**
      * @var bool $bookmarkId
      */
-    private $isBookmarked;
+    private $isBookmarked=false;
 
     /**
      * @var array

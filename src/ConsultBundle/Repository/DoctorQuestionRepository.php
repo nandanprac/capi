@@ -119,17 +119,20 @@ class DoctorQuestionRepository extends EntityRepository
     {
         $qb = $this->_em->createQueryBuilder();
 
-        $qb->select('dq.practoAccountId AS doctorId', 'r.id AS id', 'r.text AS text', 'r.rating', 'COALESCE(SUM(rv.vote),0) AS votes', 'rv1.vote as vote')
+        $qb->select('dq.practoAccountId AS doctorId', 'r.id AS id', 'r.text AS text', 'r.rating', 'r.createdAt AS createdAt' , 'COALESCE(SUM(rv.vote),0) AS votes', 'rv1.vote as vote')
             ->from(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME, 'dq')
             ->innerJoin(ConsultConstants::DOCTOR_REPLY_ENTITY_NAME, 'r', 'WITH', 'r.doctorQuestion = dq AND r.softDeleted = 0 ')
             ->leftJoin(
-                ConsultConstants::DOCTOR_REPLY_VOTE_ENTITY, 'rv', 'WITH', 'rv.reply = r
-               AND rv.softDeleted = 0 '
+                ConsultConstants::DOCTOR_REPLY_VOTE_ENTITY,
+                'rv',
+                'WITH',
+                'rv.reply = r AND rv.softDeleted = 0 '
             )
             ->leftJoin(
-                ConsultConstants::DOCTOR_REPLY_VOTE_ENTITY, 'rv1', 'WITH', 'r = rv1.reply
-              AND rv1.practoAccountId= :practoAccountId
-              AND rv1.softDeleted = 0 '
+                ConsultConstants::DOCTOR_REPLY_VOTE_ENTITY,
+                'rv1',
+                'WITH',
+                'r = rv1.reply AND rv1.practoAccountId= :practoAccountId AND rv1.softDeleted = 0 '
             )
             ->where('dq.question = :question')
             ->andWhere('dq.softDeleted = 0 ')

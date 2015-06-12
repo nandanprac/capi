@@ -144,6 +144,7 @@ class Question extends BaseEntity
         $this->images = new ArrayCollection();
         $this->doctorQuestions = new ArrayCollection();
         $this->comments = new ArrayCollection();
+        $this->bookmarks = new ArrayCollection();
     }
 
     /**
@@ -383,5 +384,13 @@ class Question extends BaseEntity
     public function getBookmarkCount()
     {
         return $this->bookmarks->count();
+    }
+
+    /**
+     * @param \ConsultBundle\Entity\QuestionBookmark $bookmark
+     */
+    public function addBookmark(QuestionBookmark $bookmark)
+    {
+        $this->bookmarks->add($bookmark);
     }
 }
