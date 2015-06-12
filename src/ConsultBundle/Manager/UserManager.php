@@ -45,12 +45,11 @@ class UserManager extends BaseManager
     }
 
     /**
-     * Add additional info entry for a user
-     *
      * @param array  $requestParams
      * @param string $profileToken
      *
-     * @return Added Entry
+     * @return \ConsultBundle\Entity\UserInfo|mixed
+     * @throws \ConsultBundle\Manager\ValidationError
      */
     public function add($requestParams, $profileToken)
     {

@@ -52,23 +52,25 @@ class QuestionsController extends Controller
     }
 
     /**
-     * @param integer $questionId - Question Id
-     * @return \ConsultBundle\Entity\Question|View
+     * @param int                                       $questionId
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *
+     * @return \ConsultBundle\Entity\Question|\FOS\RestBundle\View\View
      */
-    public function getQuestionAction($questionId)
+    public function getQuestionAction($questionId, Request $request)
     {
+        $practoAccountId = $request->query->get('practo_account_id');
+
         $questionManager = $this->get('consult.question_manager');
 
         try {
-            $question = $questionManager->load($questionId);
+            $question = $questionManager->load($questionId, $practoAccountId);
         } catch (AccessDeniedException $e) {
             return View::create($e->getMessage(), Codes::HTTP_FORBIDDEN);
         }
 
         if (null === $question) {
             return View::create(null, Codes::HTTP_NOT_FOUND);
-        } elseif ($question->isSoftDeleted()) {
-            return View::create(null, Codes::HTTP_GONE);
         }
 
         return $question;
@@ -93,11 +95,11 @@ class QuestionsController extends Controller
             return View::create(null, Codes::HTTP_NOT_FOUND);
         }
 
-        return array('questions' => $questionList[0], 'count' => $questionList[1]);
+        return $questionList;
     }
 
     /**
-     * @return Question
+     * @return \FOS\RestBundle\View\View
      */
     public function patchQuestionAction()
     {

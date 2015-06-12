@@ -28,8 +28,8 @@ class DoctorQuestionManager extends BaseManager
     }
 
     /**
-     * @param $questionId
-     * @param array      $doctorsId
+     * @param int   $questionId
+     * @param array $doctorsId
      */
     public function setDoctorsForAQuestions($questionId, Array $doctorsId)
     {

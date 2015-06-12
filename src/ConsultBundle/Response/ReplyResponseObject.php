@@ -43,6 +43,11 @@ class ReplyResponseObject extends ConsultResponseObject
     private $rating;
 
     /**
+     * @var
+     */
+    private $vote;
+
+    /**
      * @return int
      */
     public function getRating()
@@ -120,5 +125,21 @@ class ReplyResponseObject extends ConsultResponseObject
     public function setDoctorId($doctorId)
     {
         $this->doctorId = $doctorId;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getVote()
+    {
+        return $this->vote;
+    }
+
+    /**
+     * @param mixed $vote
+     */
+    public function setVote($vote)
+    {
+        $this->vote = $vote;
     }
 }

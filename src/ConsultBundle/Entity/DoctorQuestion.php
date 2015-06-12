@@ -222,7 +222,7 @@ class DoctorQuestion extends BaseEntity
     /**
      * Get Doctor Reply
      *
-     * @return ArrayCollection
+     * @return DoctorReply
      */
     public function getDoctorReplies()
     {
@@ -236,7 +236,7 @@ class DoctorQuestion extends BaseEntity
      */
     public function addDoctorReply(DoctorReply $doctorReply)
     {
-        $this->doctorReply[] = $doctorReply;
+        $this->doctorReply = $doctorReply;
     }
 
     /**

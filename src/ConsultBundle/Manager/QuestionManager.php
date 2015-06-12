@@ -4,6 +4,11 @@ namespace ConsultBundle\Manager;
 
 use ConsultBundle\Constants\ConsultConstants;
 use ConsultBundle\Entity\UserInfo;
+use ConsultBundle\Mapper\QuestionMapper;
+use ConsultBundle\Repository\DoctorQuestionRepository;
+use ConsultBundle\Repository\QuestionRepository;
+use ConsultBundle\Response\DetailQuestionResponseObject;
+use ConsultBundle\Response\ReplyResponseObject;
 use ConsultBundle\Utility\RetrieveDoctorProfileUtil;
 use ConsultBundle\Utility\RetrieveUserProfileUtil;
 use ConsultBundle\Utility\Utility;
@@ -67,11 +72,11 @@ class QuestionManager extends BaseManager
     }
 
     /**
-     *
      * @param array   $requestParams   - parameters passed for creating new question object
      * @param integer $practoAccountId - practo account id
      * @param string  $profileToken    - profile token of the user
-     * @return Question
+     * @return \ConsultBundle\Entity\Question
+     * @throws \ConsultBundle\Manager\ValidationError
      */
     public function add($requestParams, $practoAccountId, $profileToken = null)
     {
@@ -161,28 +166,20 @@ class QuestionManager extends BaseManager
     /**
      * Load Question By Id
      *
-     * @param integer $questionId - Question Id
+     * @param integer $questionId      - Question Id
      *
-     * @return Question
+     * @param null    $practoAccountId
+     *
+     * @return \ConsultBundle\Entity\Question
      */
-    public function load($questionId)
+    public function load($questionId, $practoAccountId = null)
     {
         /**
          * @var Question $question
          */
         $question = $this->helper->loadById($questionId, ConsultConstants::QUESTION_ENTITY_NAME);
 
-        if (is_null($question)) {
-            return null;
-        }
-
-        $this->retrieveUserProfileUtil->loadUserDetailInQuestion($question);
-
-        $this->retrieveDoctorProfileUtil->retrieveDoctorProfileForQuestion($question);
-
-
-
-        return $question;
+        return $this->fetchDetailQuestionObject($question, $practoAccountId);
     }
 
 
@@ -208,17 +205,26 @@ class QuestionManager extends BaseManager
             $modifiedAfter = new \DateTime($request['modified_after']);
             $modifiedAfter->format('Y-m-d H:i:s');
         }
-
+        /**
+         * @var QuestionRepository $er
+         */
         $er =  $this->helper->getRepository(ConsultConstants::QUESTION_ENTITY_NAME);
-        $questionList = $er->findQuestionsByFilters($practoAccountId, $bookmark, $state, $category, $modifiedAfter, $limit, $offset);
 
-        return $questionList;
+        $questionList = $er->findQuestionsByFilters($practoAccountId, $bookmark, $state, $category, $modifiedAfter, $limit, $offset);
+        if (empty($questionList)) {
+            return null;
+        }
+
+        $questionResponseList = QuestionMapper::mapQuestionList($questionList['questions']);
+
+        return array("questions" => $questionResponseList, "count" => $questionList['count']);
     }
 
     /**
-     * @param integer $questionId - Question Id
-     * @param string  $state      - state of the question
+     * @param int    $questionId
+     * @param string $state
      *
+     * @throws \Exception
      */
     public function setState($questionId, $state)
     {
@@ -259,7 +265,60 @@ class QuestionManager extends BaseManager
             $tagObj->setTag($tag);
             $tagObj->setUserDefined(true);
             $tagObj->setQuestion($question);
-            $question->addTag($tagObj);
+            //$question->addTag($tagObj);
         }
+    }
+
+    /**
+     * @param \ConsultBundle\Entity\Question $questionEntity
+     *
+     * @param                                $practoAccountId
+     *
+     * @return \ConsultBundle\Response\DetailQuestionResponseObject
+     * @throws \HttpException
+     * @internal param int $practoAccountid
+     *
+     */
+    private function fetchDetailQuestionObject(Question $questionEntity, $practoAccountId)
+    {
+        $question = null;
+        if (!empty($questionEntity)) {
+            if (!$questionEntity->getUserInfo()->isIsRelative()) {
+                $this->retrieveUserProfileUtil->retrieveUserProfileNew($questionEntity->getUserInfo());
+            }
+
+            $question = new DetailQuestionResponseObject($questionEntity);
+
+            /**
+             * @var DoctorQuestionRepository $er
+             */
+            $er = $this->helper->getRepository(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME);
+            $doctorQuestions = $er->findRepliesByQuestion($questionEntity, $practoAccountId);
+            $replies = array();
+            foreach ($doctorQuestions as $doctorQuestion) {
+                $reply = new ReplyResponseObject();
+                $reply->setAttributes($doctorQuestion);
+                $doc = $this->retrieveDoctorProfileUtil->retrieveDoctorProfile($reply->getDoctorId());
+                $reply->setDoctor($doc);
+                $replies[] = $reply;
+            }
+
+            $question->setReplies($replies);
+
+            $er = $this->helper->getRepository(ConsultConstants::QUESTION_BOOKMARK_ENTITY_NAME);
+
+            if (!empty($practoAccountId)) {
+                $bookmark = $er->findOneBy(array("practoAccountId" => $practoAccountId,
+                    "question" => $questionEntity,
+                    "softDeleted" => 0));
+
+                if (!empty($bookmark)) {
+                    $question->setIsBookmarked(true);
+
+                }
+            }
+        }
+
+        return $question;
     }
 }
