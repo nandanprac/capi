@@ -23,13 +23,13 @@ class QuestionComment extends BaseEntity
     protected $practoAccountId;
 
     /**
-     *  @ORM\Column(type="string", name="phone_number")
+     *  @ORM\Column(type="string", name="identifier")
      *
-     *  @var string $phoneNumber
+     *  @var string $identifier
      *
      *  @Assert\NotBlank
      */
-    protected $phoneNumber;
+    protected $identifier;
 
     /**
      * @ORM\Column(type="text", name="text")
@@ -52,7 +52,7 @@ class QuestionComment extends BaseEntity
      */
     public function setPractoAccountId($practoAccountId)
     {
-        $this->setInt('practoAccountId', $practoAccountId);
+        $this->practoAccountId = $practoAccountId;
     }
 
 
@@ -65,6 +65,7 @@ class QuestionComment extends BaseEntity
     {
         return $this->practoAccountId;
     }
+
 
     /**
      * Set text
@@ -88,23 +89,23 @@ class QuestionComment extends BaseEntity
     }
 
     /**
-     * Set phone number
+     * Set identifier
      *
-     * @param  string $text
+     * @param  string $identifier
      */
-    public function setPhoneNumber($phoneNumber)
+    public function setIdentifier($identifier)
     {
-        $this->setString('phoneNumber', $phoneNumber);
+        $this->identifier = $identifier;
     }
 
     /**
-     * Get phone number
+     * Get identifier
      *
      * @return string
      */
-    public function getPhoneNumber()
+    public function getIdentifier()
     {
-        return $this->phoneNumber;
+        return $this->identifier;
     }
     /**
      * Set question

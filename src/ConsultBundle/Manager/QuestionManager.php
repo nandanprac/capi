@@ -117,20 +117,26 @@ class QuestionManager extends BaseManager
                 throw new ValidationError();
             }
         } else {
-            @$error['question_id']='This cannot be blank';
+            @$error['question_id']='This value cannot be blank';
             throw new ValidationError($error);
         }
 
         if (array_key_exists('view', $requestParams)) {
             $question->setViewCount($question->getViewCount() + 1);
+            $this->helper->persist($question, 'true');
         }
         if (array_key_exists('share', $requestParams)) {
             $question->setShareCount($question->getShareCount() + 1);
+            $this->helper->persist($question, 'true');
         }
 
-        $params = $this->validator->validatePatchArguments($requestParams);
-        $this->updateFields($question, $params);
-        $this->helper->persist($question, 'true');
+        if (array_key_exists('bookmark', $requestParams)) {
+            if (Utility::toBool($requestParams['bookmark'])) {
+
+            } else {
+
+            } 
+        }
 
         return $question;
     }

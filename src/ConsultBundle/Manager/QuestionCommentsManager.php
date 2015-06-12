@@ -71,12 +71,29 @@ class QuestionCommentsManager extends BaseManager
 
         $questionComment = new QuestionComment();
         $questionComment->setQuestion($question);
+        $identifier = $requestParams['identifier'];
+        $initials = $this->generateInitials($identifier);
+        $requestParams['identifier'] = $initials;
         $this->updateFields($questionComment, $requestParams);
         $question->addComment($questionComment);
         $question->setModifiedAt(new \DateTime('now'));
         $this->helper->persist($questionComment, true);
 
         return $questionComment;
+    }
+
+    private function generateInitials($identifier)
+    {
+        $list = explode(' ', $identifier);
+        if (count($list) >= 2)
+            return strtoupper($list[0][0].$list[1][0]);
+
+        if(ctype_alpha($list[0]))
+            return strtoupper($list[0][0]);
+
+        $temp = explode('@', $identifier);
+        $list = preg_split('/[.+_-\d]+/', $temp[0]);
+        return ((count($list) >= 2 and !empty($list[0][0]) and !empty($list[1][0])) ? strtoupper($list[0][0].$list[1][0]): ((count($list) > 0 and !empty($list[0][0])) ? strtoupper($list[0][0]): 'ZZ'));
     }
 
     /**
@@ -104,18 +121,26 @@ class QuestionCommentsManager extends BaseManager
         }
 
         $er = $this->helper->getRepository(ConsultConstants::QUESTION_COMMENT_VOTE_ENTITY_NAME);
-        $hasVoted = $er->findBy(array('questionComment' => $questionComment, 'practoAccountId' => $requestParams['practo_account_id']));
-        if (!empty($hasVoted)) {
-            @$error['error'] = 'This user cannot re-vote on this comment';
-            throw new ValidationError($error);
+        $vote = $er->findBy(array('questionComment' => $questionComment, 'practoAccountId' => $requestParams['practo_account_id'], 'softDeleted' => 0));
+        if (!empty($vote[0])) {
+            $vote = $vote[0];
         }
 
-        $commentVote = new QuestionCommentVote();
-        $commentVote->setQuestionComment($questionComment);
-        $this->updateFields($commentVote, $requestParams);
-        $this->helper->persist($commentVote, true);
-
-        return $commentVote;
+        if (!empty($vote) and ($vote->getVote() == $requestParams['vote'])) {
+            @$error['error'] = 'The user has already voted on this comment';
+            throw new ValidationError($error);
+        } else if (!empty($vote) and ($vote->getVote() != $requestParams['vote'])) {
+            $vote->setVote($requestParams['vote']);
+            $vote->setCount($vote->getCount() + 1);
+            $this->helper->persist($vote, true);
+            return $vote;
+        } else {
+            $commentVote = new QuestionCommentVote();
+            $commentVote->setQuestionComment($questionComment);
+            $this->updateFields($commentVote, $requestParams);
+            $this->helper->persist($commentVote, true);
+            return $commentVote;
+        }
 
     }
 
@@ -135,6 +160,7 @@ class QuestionCommentsManager extends BaseManager
         }
         $limit = (array_key_exists('limit', $requestParams)) ? $requestParams['limit'] : 10;
         $offset = (array_key_exists('offset', $requestParams)) ? $requestParams['offset'] : 0;
+        $practoAccountId = (array_key_exists('practo_account_id', $requestParams)) ? $requestParams['practo_account_id'] : null;
 
         $question = $this->helper->loadById($requestParams['question_id'], ConsultConstants::QUESTION_ENTITY_NAME);
         if(is_null($question)) {
@@ -142,7 +168,7 @@ class QuestionCommentsManager extends BaseManager
             throw new ValidationError($error);
         }
         $er = $this->helper->getRepository(ConsultConstants::QUESTION_COMMENT_ENTITY_NAME);
-        $questionCommentList = $er->getComments($question, $limit, $offset);
+        $questionCommentList = $er->getComments($question, $limit, $offset, $practoAccountId);
 
         if (empty($questionCommentList)) {
             return null;
