@@ -95,7 +95,7 @@ class DoctorReplyVote extends BaseEntity
     }
 
     /**
-     * @return int
+     * @return DoctorReply
      */
     public function getReply()
     {
@@ -103,7 +103,7 @@ class DoctorReplyVote extends BaseEntity
     }
 
     /**
-     * @param int $reply
+     * @param DoctorReply $reply
      */
     public function setReply($reply)
     {
