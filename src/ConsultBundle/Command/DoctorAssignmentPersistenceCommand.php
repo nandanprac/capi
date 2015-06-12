@@ -68,7 +68,7 @@ class DoctorAssignmentPersistenceCommand extends ContainerAwareCommand
                     } elseif ($jobData['state'] == 'ASSIGNED') {
                         $this->doctorQuestionManager->setDoctorsForAQuestions($jobData['question_id'], $jobData['doctors']);
                         $this->questionManager->setState($jobData['question_id'], $jobData['state']);
-                        $this->questionManager->setTagByQuestionId($jobData['question_id'], $jobData['speciality']);
+                        $this->questionManager->setTagsByQuestionId($jobData['question_id'], array_merge(array($jobData['speciality']), $jobData['tags']));
                         $jobData['type'] = 'new_question';
                         $jobData['user_ids'] = $jobData['doctors'];
                         $jobData['message'] = $jobData['question_id'];
@@ -78,7 +78,7 @@ class DoctorAssignmentPersistenceCommand extends ContainerAwareCommand
                             ->sendMessage(json_encode($jobData));
                     } elseif ($jobData['state'] == 'GENERIC'  or $jobData['state'] == 'DOCNOTFOUND') {
                         $this->questionManager->setState($jobData['question_id'], $jobData['state']);
-                        $this->questionManager->setTagByQuestionId($jobData['question_id'], $jobData['speciality']);
+                        $this->questionManager->setTagByQuestionId($jobData['question_id'], array_merge(array($jobData['speciality']), $jobData['tags']));
                     }
                     echo "Queue Message Persisted: ".json_encode($jobData);
                 } catch (\Exception $e) {
