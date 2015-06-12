@@ -48,5 +48,4 @@ class QuestionCommentValidator implements Validator
 
 
     }
-
 }

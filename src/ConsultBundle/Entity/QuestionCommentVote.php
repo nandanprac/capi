@@ -37,6 +37,34 @@ class QuestionCommentVote extends BaseEntity
      */
     private $practoAccountId;
 
+    /**
+     * @ORM\Column(type="integer", name="count_of_changed_vote")
+     *
+     * @var integer $count
+     */
+    private $count = 0;
+
+    /**
+     * Set count
+     *
+     * @param integer $count
+     */
+    public function setCount($count)
+    {
+        $this->count = $count;
+    }
+
+
+    /**
+     * Get count
+     *
+     * @return integer
+     */
+    public function getCount()
+    {
+        return $this->count;
+    }
+
 
     /**
      * Set vote
