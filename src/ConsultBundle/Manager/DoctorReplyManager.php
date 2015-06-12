@@ -9,8 +9,10 @@
 namespace ConsultBundle\Manager;
 
 use ConsultBundle\Constants\ConsultConstants;
+use ConsultBundle\Entity\DoctorQuestion;
 use ConsultBundle\Entity\DoctorReply;
 use ConsultBundle\Entity\DoctorReplyRating;
+use ConsultBundle\Entity\DoctorReplyVote;
 use Doctrine\Common\Collections\ArrayCollection;
 use FOS\RestBundle\Util\Codes;
 use ConsultBundle\Queue\AbstractQueue as Queue;
@@ -30,9 +32,7 @@ class DoctorReplyManager extends BaseManager
     public function __construct(Queue $queue)
     {
         if (!isset(self::$mandatoryFields)) {
-            self::$mandatoryFields = new ArrayCollection();
-            self::$mandatoryFields->add("doctor_question_id");
-            self::$mandatoryFields->add("id");
+            self::$mandatoryFields = array("id");
         }
         $this->queue = $queue;
     }
@@ -47,6 +47,9 @@ class DoctorReplyManager extends BaseManager
     public function replyToAQuestion($doctorQuestionId, $practoAccountId, $answerText)
     {
         $doctorReply = new DoctorReply();
+        /**
+         * @var DoctorQuestion $doctorQuestion
+         */
         $doctorQuestion = $this->helper->loadById(
             $doctorQuestionId,
             ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME
@@ -74,10 +77,16 @@ class DoctorReplyManager extends BaseManager
         $doctorReply->setText($answerText);
 
 
-        $this->queue->setQueueName(Queue::CONSULT_GCM)->sendMessage(json_encode(array("type"=>"query_answered", "message"=>"Your Query has been answered", "id"=>$doctorQuestion->getQuestion()->getId(), "user_ids"=>array($doctorQuestion->getQuestion()->getPractoAccountId()))));
+        $this->queue->setQueueName(Queue::CONSULT_GCM)
+            ->sendMessage(json_encode(array(
+                "type"=>"query_answered",
+                "message"=>"Your Query has been answered",
+                "id"=>$doctorQuestion->getQuestion()->getId(),
+                "user_ids"=>array($doctorQuestion->getQuestion()->getUserInfo()->getPractoAccountId()))));
+
         $this->helper->persist($doctorReply, true);
 
-        return $doctorReply->getDoctorQuestion()->getQuestion();
+        return $doctorReply;
     }
 
     /**
@@ -104,22 +113,27 @@ class DoctorReplyManager extends BaseManager
         //Fetch Doctor Reply
         $id = $doctorReply['id'];
 
+        /**
+         * @var DoctorReply $doctorReplyEntity
+         */
         $doctorReplyEntity = $this->helper->loadById($id, ConsultConstants::DOCTOR_REPLY_ENTITY_NAME);
         if (empty($doctorReplyEntity)) {
             throw new \HttpException("Not a valid Doctor Reply Id", Codes::HTTP_BAD_REQUEST);
         }
 
-        $ownerId = $doctorReplyEntity->getDoctorQuestion()->getQuestion()->getPractoAccountId();
+        $ownerId = $doctorReplyEntity->getDoctorQuestion()->getQuestion()->getUserInfo()->getPractoAccountId();
 
         //Mark As Best Answer
-        if (array_key_exists("selected", $doctorReply)) {
+        if (array_key_exists("rating", $doctorReply)) {
             if ($ownerId != $practoAccountId) {
-                throw new \HttpException("Only the one who has asked the question can mark it as best answer", Codes::HTTP_BAD_REQUEST);
+                throw new \HttpException("Only the one who has asked the question can rate it", Codes::HTTP_BAD_REQUEST);
             }
 
-            if (!$doctorReplyEntity->isSelected()) {
-                $doctorReplyEntity->setSelected(true);
+            if (empty($doctorReplyEntity->getRating())) {
+                $doctorReplyEntity->setRating($doctorReply['rating']);
                 $changed = true;
+            } else {
+                throw new \HttpException("Answer is already rated", Codes::HTTP_BAD_REQUEST);
             }
         }
 
@@ -135,50 +149,39 @@ class DoctorReplyManager extends BaseManager
             }
         }
 
-        if (array_key_exists("like", $doctorReply)) {
-            $like = $doctorReply['like'];
-            //$er = new EntityRepository();
-            $er = $this->helper->getRepository(ConsultConstants::DOCTOR_REPLY_RATING_ENTITY_NAME);
+        //Vote
+        if (array_key_exists("vote", $doctorReply)) {
+            $vote = $doctorReply['vote'];
+            $er = $this->helper->getRepository(ConsultConstants::DOCTOR_REPLY_VOTE_ENTITY);
 
 
-
-            $doctorReplyRatingEntity = $er->findOneBy(
+            $doctorReplyVoteEntity = $er->findOneBy(
                 array("practoAccountId" => $practoAccountId,
-                "doctorReply" => $doctorReplyEntity,
+                    "reply" => $doctorReplyEntity,
 
                 )
             );
 
 
-
-
-            //Like
-            if (!$doctorReplyRatingEntity && $like) {
-                $doctorReplyRatingEntity = new DoctorReplyRating();
-                $doctorReplyRatingEntity->setPractoAccountId($practoAccountId);
-                $doctorReplyRatingEntity->setDoctorReply($doctorReplyEntity);
-                $doctorReplyEntity->addRating($doctorReplyRatingEntity);
+            if (!$doctorReplyVoteEntity) {
+                $doctorReplyVoteEntity = new DoctorReplyVote();
+                $doctorReplyVoteEntity->setPractoAccountId($practoAccountId);
+                $doctorReplyVoteEntity->setReply($doctorReplyEntity);
+                $doctorReplyVoteEntity->setVote($vote);
+                $doctorReplyEntity->addVote($doctorReplyVoteEntity);
+                $changed = true;
+            } else {
+                $doctorReplyVoteEntity->setVote($vote);
+                $this->helper->persist($doctorReplyVoteEntity);
                 $changed = true;
             }
-
-
-
-            //Unlike
-            if ($doctorReplyRatingEntity && !$like) {
-                $changed = true;
-                $this->helper->remove($doctorReplyRatingEntity);
-
-            }
-
         }
+
 
         if ($changed) {
             $this->helper->persist($doctorReplyEntity, true);
         }
 
-
         return $doctorReplyEntity;
-
-
     }
 }
