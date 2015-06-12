@@ -19,3 +19,7 @@ replies:
 users:
     resource: ConsultBundle\Controller\UserController
     type:      rest
+
+notification:
+    resource: ConsultBundle\Controller\NotificationController
+    type:      rest

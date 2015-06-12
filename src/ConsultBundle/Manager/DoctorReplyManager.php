@@ -27,7 +27,7 @@ class DoctorReplyManager extends BaseManager
     public static $mandatoryFields;
 
     /**
-     * @param \ConsultBundle\Queue\AbstractQueue $queue
+     * @param \ConsultBundle\Queue\AbstractQueue         $queue
      * @param \ConsultBundle\Manager\NotificationManager $notification
      */
     public function __construct(Queue $queue, NotificationManager $notification)
@@ -77,6 +77,7 @@ class DoctorReplyManager extends BaseManager
         $doctorReply->setDoctorQuestion($doctorQuestion);
         $doctorReply->setText($answerText);
 
+        var_dump("1");
 /*
         try {
             $this->validate($doctorReply);
@@ -86,10 +87,15 @@ class DoctorReplyManager extends BaseManager
             //To be implemented
             throw new Exception($e, $e->getMessage());
         }*/
-        $this->notification->createPatientNotification($doctorQuestion->getQuestion()->getId(), $doctorQuestion->getQuestion()->getPractoAccountId(), "Your Query has been answered");
-        $this->queue->setQueueName(Queue::CONSULT_GCM)->sendMessage(json_encode(array("type"=>"query_answered", "send_to"=>"fabric", "message"=>"Your Query has been answered", "id"=>$doctorQuestion->getQuestion()->getId(), "user_ids"=>array($doctorQuestion->getQuestion()->getPractoAccountId()))));
+
+        //$bookmarkUserObject = $this->helper->loadById($doctorQuestion->getQuestion()->getId(), ConsultConstants::QUESTION_BOOKMARK_ENTITY_NAME);
+        //var_dump(count($bookmarkUserObject));die;
 
         $this->helper->persist($doctorReply, true);
+
+        $this->notification->createPatientNotification($doctorQuestion->getQuestion()->getId(), $doctorQuestion->getQuestion()->getUserInfo()->getPractoAccountId(), "Your Query has been answered");
+
+        $this->queue->setQueueName(Queue::CONSULT_GCM)->sendMessage(json_encode(array("type"=>"query_answered", "send_to"=>"fabric", "message"=>"Your Query has been answered", "id"=>$doctorQuestion->getQuestion()->getId(), "user_ids"=>array($doctorQuestion->getQuestion()->getUserInfo()->getPractoAccountId()))));
 
         return $doctorReply->getDoctorQuestion()->getQuestion();
     }
