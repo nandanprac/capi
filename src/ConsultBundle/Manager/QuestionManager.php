@@ -68,8 +68,9 @@ class QuestionManager extends BaseManager
 
     /**
      *
-     * @param array  $requestParams - parameters passed for creating new question object
-     * @param string $profileToken  - profile token of the user
+     * @param array   $requestParams   - parameters passed for creating new question object
+     * @param integer $practoAccountId - practo account id
+     * @param string  $profileToken    - profile token of the user
      * @return Question
      */
     public function add($requestParams, $practoAccountId, $profileToken = null)
@@ -150,8 +151,8 @@ class QuestionManager extends BaseManager
                     throw new ValidationError($e->getMessage());
                 }
 
-               return 'Bookmark Deleted';
-            } 
+                return 'Bookmark Deleted';
+            }
         }
 
         return $question;

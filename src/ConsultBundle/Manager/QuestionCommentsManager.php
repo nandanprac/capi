@@ -19,30 +19,6 @@ class QuestionCommentsManager extends BaseManager
 
 
     /**
-     * @param QuestionComment $questionComment - comment object
-     * @param array            $data           - data to be updated
-     * @throws ValidationError
-     */
-    private function updateFields($entity, $data)
-    {
-        if (array_key_exists('question_id', $data)) {
-            unset($data['question_id']);
-        }
-        if (array_key_exists('question_comment_id', $data)) {
-            unset($data['question_comment_id']);
-        }
-        $entity->setAttributes($data);
-
-        try {
-            $this->validator->validate($entity);
-        } catch (ValidationError $e) {
-            throw new ValidationError($e->getMessage());
-        }
-
-        return;
-    }
-
-    /**
      * @param array $requestParams - params for comment addition
      * @return QuestionComment
      * @throws ValidationError
@@ -82,20 +58,6 @@ class QuestionCommentsManager extends BaseManager
         return $questionComment;
     }
 
-    private function generateInitials($identifier)
-    {
-        $list = explode(' ', $identifier);
-        if (count($list) >= 2)
-            return strtoupper($list[0][0].$list[1][0]);
-
-        if(ctype_alpha($list[0]))
-            return strtoupper($list[0][0]);
-
-        $temp = explode('@', $identifier);
-        $list = preg_split('/[.+_-\d]+/', $temp[0]);
-        return ((count($list) >= 2 and !empty($list[0][0]) and !empty($list[1][0])) ? strtoupper($list[0][0].$list[1][0]): ((count($list) > 0 and !empty($list[0][0])) ? strtoupper($list[0][0]): 'ZZ'));
-    }
-
     /**
      * Patch comment for upvote/downvote
      *
@@ -129,16 +91,18 @@ class QuestionCommentsManager extends BaseManager
         if (!empty($vote) and ($vote->getVote() == $requestParams['vote'])) {
             @$error['error'] = 'The user has already voted on this comment';
             throw new ValidationError($error);
-        } else if (!empty($vote) and ($vote->getVote() != $requestParams['vote'])) {
+        } elseif (!empty($vote) and ($vote->getVote() != $requestParams['vote'])) {
             $vote->setVote($requestParams['vote']);
             $vote->setCount($vote->getCount() + 1);
             $this->helper->persist($vote, true);
+
             return $vote;
         } else {
             $commentVote = new QuestionCommentVote();
             $commentVote->setQuestionComment($questionComment);
             $this->updateFields($commentVote, $requestParams);
             $this->helper->persist($commentVote, true);
+
             return $commentVote;
         }
 
@@ -148,7 +112,7 @@ class QuestionCommentsManager extends BaseManager
     /**
      * Load Comments By QuestionId
      *
-     * @param Request $request - Request object
+     * @param array $requestParams
      *
      * @return array QuestionComment
      */
@@ -163,7 +127,7 @@ class QuestionCommentsManager extends BaseManager
         $practoAccountId = (array_key_exists('practo_account_id', $requestParams)) ? $requestParams['practo_account_id'] : null;
 
         $question = $this->helper->loadById($requestParams['question_id'], ConsultConstants::QUESTION_ENTITY_NAME);
-        if(is_null($question)) {
+        if (is_null($question)) {
             @$error['question_id'] = 'Question with this id does not exist';
             throw new ValidationError($error);
         }
@@ -175,5 +139,51 @@ class QuestionCommentsManager extends BaseManager
         }
 
         return $questionCommentList;
+    }
+
+    /**
+     * @param QuestionComment $questionComment - comment object
+     * @param array            $data           - data to be updated
+     * @throws ValidationError
+     */
+    private function updateFields($entity, $data)
+    {
+        if (array_key_exists('question_id', $data)) {
+            unset($data['question_id']);
+        }
+        if (array_key_exists('question_comment_id', $data)) {
+            unset($data['question_comment_id']);
+        }
+        $entity->setAttributes($data);
+
+        try {
+            $this->validator->validate($entity);
+        } catch (ValidationError $e) {
+            throw new ValidationError($e->getMessage());
+        }
+
+        return;
+    }
+
+    /**
+     * @param string $identifier
+     *
+     * @return string
+     */
+    private function generateInitials($identifier)
+    {
+        $list = explode(' ', $identifier);
+        if (count($list) >= 2) {
+            return strtoupper($list[0][0].$list[1][0]);
+        }
+
+        if (ctype_alpha($list[0])) {
+            return strtoupper($list[0][0]);
+        }
+
+        $temp = explode('@', $identifier);
+        $list = preg_split('/[.+_-\d]+/', $temp[0]);
+
+        return ((count($list) >= 2 and !empty($list[0][0]) and !empty($list[1][0])) ? strtoupper($list[0][0].$list[1][0]): ((count($list) > 0 and !empty($list[0][0])) ? strtoupper($list[0][0]): 'ZZ'));
     }
 }

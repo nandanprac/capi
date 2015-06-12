@@ -97,7 +97,7 @@ class QuestionsController extends Controller
     }
 
     /**
-     * returns Question
+     * @return Question
      */
     public function patchQuestionAction()
     {

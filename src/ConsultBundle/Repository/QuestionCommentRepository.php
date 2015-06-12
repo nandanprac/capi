@@ -14,19 +14,23 @@ use Doctrine\ORM\EntityRepository;
 class QuestionCommentRepository extends EntityRepository
 {
     /**
-     * @param integer $questionId - Question id
-     * @param integer $limit      - limit
-     * @param integer $offset     - offset
+     * @param integer $question        - Question object
+     * @param integer $limit           - limit
+     * @param integer $offset          - offset
+     * @param integer $practoAccountId - practo account id
      * @return array (comments, count)
      */
     public function getComments($question, $limit, $offset, $practoAccountId)
     {
         // query for getting comment details with total votes
         $qb = $this->_em->createQueryBuilder();
-        $qb->select('c.id','c.practoAccountId as practo_account_id', 
-                    'c.identifier as identifier',
-                    'c.text as text',
-                    'COALESCE(SUM(cv.vote), 0) as total_votes');
+        $qb->select(
+            'c.id',
+            'c.practoAccountId as practo_account_id',
+            'c.identifier as identifier',
+            'c.text as text',
+            'COALESCE(SUM(cv.vote), 0) as total_votes'
+        );
 
         $qb->from(ConsultConstants::QUESTION_COMMENT_ENTITY_NAME, 'c')
             ->leftJoin(ConsultConstants::QUESTION_COMMENT_VOTE_ENTITY_NAME, 'cv', 'WITH', 'c = cv.questionComment and cv.softDeleted = 0')
@@ -40,7 +44,7 @@ class QuestionCommentRepository extends EntityRepository
 
         // query for getting vote details for a particulat practo_account_id
         if (!empty($practoAccountId)) {
-        $qb1 = $this->_em->createQueryBuilder();
+            $qb1 = $this->_em->createQueryBuilder();
             $qb1->select('c.id', 'CASE
                             WHEN cv.practoAccountId = :practoAccountId then cv.vote
                             ELSE 0
@@ -54,10 +58,10 @@ class QuestionCommentRepository extends EntityRepository
         $commentList = $qb->getQuery()->getArrayResult();
         $voteList = $qb1->getQuery()->getArrayResult();
 
-        $refined_comments = array();
+        $refinedComments = array();
         foreach ($commentList as $comment) {
-            $comment = $this->merge_vote($voteList, $comment);
-            array_push($refined_comments, $comment);
+            $comment = $this->mergeVote($voteList, $comment);
+            array_push($refinedComments, $comment);
         }
 
 
@@ -66,22 +70,24 @@ class QuestionCommentRepository extends EntityRepository
         $countQuery->setFirstResult(null)->setMaxResults(null);
         $count =  count($countQuery->getArrayResult());
 
-        if (is_null($refined_comments)) {
+        if (is_null($refinedComments)) {
             return null;
         }
 
-        return array('comments' => $refined_comments, 'count' => $count);
+        return array('comments' => $refinedComments, 'count' => $count);
     }
 
-    private function merge_vote($voteList, $comment)
+    private function mergeVote($voteList, $comment)
     {
-        foreach($voteList as $vote) {
+        foreach ($voteList as $vote) {
             if ($vote['id'] == $comment['id']) {
                 $comment['has_voted'] = $vote['has_voted'];
+
                 return $comment;
             }
         }
         $comment['has_voted'] = 0;
+
         return $comment;
     }
 }
