@@ -42,6 +42,8 @@ class QuestionCommentRepository extends EntityRepository
             ->setMaxResults($limit)
             ->setFirstResult($offset);
 
+        $commentList = $qb->getQuery()->getArrayResult();
+
         // query for getting vote details for a particulat practo_account_id
         if (!empty($practoAccountId)) {
             $qb1 = $this->_em->createQueryBuilder();
@@ -53,15 +55,14 @@ class QuestionCommentRepository extends EntityRepository
                 ->where('cv.practoAccountId = :practoAccountId')
                 ->leftJoin(ConsultConstants::QUESTION_COMMENT_ENTITY_NAME, 'c', 'WITH', 'c = cv.questionComment')
             ->setParameter('practoAccountId', $practoAccountId);
-        }
 
-        $commentList = $qb->getQuery()->getArrayResult();
-        $voteList = $qb1->getQuery()->getArrayResult();
+            $voteList = $qb1->getQuery()->getArrayResult();
 
-        $refinedComments = array();
-        foreach ($commentList as $comment) {
-            $comment = $this->mergeVote($voteList, $comment);
-            array_push($refinedComments, $comment);
+            $refinedComments = array();
+            foreach ($commentList as $comment) {
+                $comment = $this->mergeVote($voteList, $comment);
+                array_push($refinedComments, $comment);
+            }
         }
 
 
@@ -70,11 +71,15 @@ class QuestionCommentRepository extends EntityRepository
         $countQuery->setFirstResult(null)->setMaxResults(null);
         $count =  count($countQuery->getArrayResult());
 
-        if (is_null($refinedComments)) {
+        if (!empty($refinedComments)) {
+            $comments = $refinedComments;
+        } else if (!empty($commentList)) {
+            $comments = $commentList;
+        } else {
             return null;
         }
 
-        return array('comments' => $refinedComments, 'count' => $count);
+        return array('comments' => $comments, 'count' => $count);
     }
 
     private function mergeVote($voteList, $comment)
