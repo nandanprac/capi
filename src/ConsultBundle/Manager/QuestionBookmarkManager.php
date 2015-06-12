@@ -93,8 +93,8 @@ class QuestionBookmarkManager extends BaseManager
             throw new ValidationError($error);
         }
 
-        if ($question->getPractoAccountId() == $requestParams['practo_account_id']) {
-            @$error['error'] = 'User cannot bookmark the question';
+        if ($question->getUserInfo()->getPractoAccountId() == $requestParams['practo_account_id']) {
+            @$error['error'] = 'Asker cannot bookmark the question';
             throw new ValidationError($error);
         }
 

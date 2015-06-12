@@ -16,9 +16,10 @@ class UserManager extends BaseManager
     protected $updateAccountsUtil;
 
     /**
-     * @param UpdateAccountsUtil        $updateAccountsUtil
+     * @param UpdateAccountsUtil $updateAccountsUtil
      */
-    public function __construct(UpdateAccountsUtil $updateAccountsUtil) {
+    public function __construct(UpdateAccountsUtil $updateAccountsUtil)
+    {
         $this->updateAccountsUtil = $updateAccountsUtil;
     }
 
@@ -44,8 +45,8 @@ class UserManager extends BaseManager
     }
 
     /**
-     * @param $requestParams
-     * @param $profileToken
+     * @param array  $requestParams
+     * @param string $profileToken
      *
      * @return \ConsultBundle\Entity\UserInfo|mixed
      * @throws \ConsultBundle\Manager\ValidationError
@@ -60,11 +61,11 @@ class UserManager extends BaseManager
         if (array_key_exists('id', $requestParams) and !empty($requestParams['id'])) {
             $userEntry = $this->helper->loadById($requestParams['id'], ConsultConstants::USER_ENTITY_NAME);
 
-            if(empty($userEntry)) {
+            if (empty($userEntry)) {
                 @$error['error'] = 'Invalid user_info id';
                 throw new ValidationError($error);
             }
-            if($userEntry->getPractoAccountId() != $requestParams['practo_account_id']) {
+            if ($userEntry->getPractoAccountId() != $requestParams['practo_account_id']) {
                 @$error['error'] = 'This user_info id does not belong to this practo_account_id';
                 throw new ValidationError($error);
             }
@@ -77,7 +78,6 @@ class UserManager extends BaseManager
             $userEntry = new UserInfo();
             if (!array_key_exists('is_relative', $requestParams) or
                 (array_key_exists('is_relative', $requestParams) and !(Utility::toBool($requestParams['is_relative'])))) {
-
                 $er = $this->helper->getRepository(ConsultConstants::USER_ENTITY_NAME);
                 $entry = $er->findOneBy(array('practoAccountId' => $requestParams['practo_account_id'], 'isRelative' => 0));
                 if (!empty($entry)) {

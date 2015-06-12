@@ -157,7 +157,7 @@ class QuestionsControllerTest extends WebTestCase
                                   "text":"test question",
                                   "additional_info": {"allergies":"abcd"},
                                   "user_info": {"is_relative":false}}',
-                  'practo_account_id' => '1'),
+                  'practo_account_id' => '1', ),
             array(),
             array()
         );
@@ -189,7 +189,7 @@ class QuestionsControllerTest extends WebTestCase
                                   "user_info":{"is_relative":true,
                                                           "medications":"abcd",
                                                           "gender":"M"}}',
-                    'practo_account_id' => '1'),
+                    'practo_account_id' => '1', ),
             array(),
             array()
         );
