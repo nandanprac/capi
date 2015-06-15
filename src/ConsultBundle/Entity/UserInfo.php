@@ -143,7 +143,7 @@ class UserInfo extends BaseEntity
      */
     public function setIsRelative($isRelative)
     {
-        $this->isRelative = $isRelative;
+        $this->isRelative = self::toBool($isRelative);
     }
 
     /**
