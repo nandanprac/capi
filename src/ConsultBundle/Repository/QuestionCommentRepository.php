@@ -2,6 +2,7 @@
 
 namespace ConsultBundle\Repository;
 
+use ConsultBundle\Entity\Question;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\ORM\Tools\Pagination\CountWalker;
 use ConsultBundle\Constants\ConsultConstants;
@@ -14,7 +15,7 @@ use Doctrine\ORM\EntityRepository;
 class QuestionCommentRepository extends EntityRepository
 {
     /**
-     * @param integer $question        - Question object
+     * @param Question $question        - Question object
      * @param integer $limit           - limit
      * @param integer $offset          - offset
      * @param integer $practoAccountId - practo account id

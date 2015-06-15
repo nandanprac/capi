@@ -8,12 +8,10 @@
 
 namespace ConsultBundle\Controller;
 
-use ConsultBundle\Entity\DoctorQuestion;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Doctrine\Common\Collections\ArrayCollection;
 use FOS\RestBundle\View\View;
 use FOS\RestBundle\Util\Codes;
-use Doctrine\Common\Persistence\ObjectRepository;
 use ConsultBundle\Manager\ValidationError;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -30,31 +28,33 @@ class DoctorQuestionsController extends Controller
     {
         $request = $this->get('request');
         $queryParams = $request->query->all();
-		try{
-        	$doctorQuestionManager = $this->get('consult.doctorQuestionManager');
-        	$questionsList = $doctorQuestionManager->loadAllByDoctor($queryParams);
-		} catch (\Exception $e) {
-			return View::create(json_encode($e->getMessage(), true), Codes::HTTP_INTERNAL_SERVER_ERROR);
-		}
+        try {
+            $doctorQuestionManager = $this->get('consult.doctorQuestionManager');
+            $questionsList = $doctorQuestionManager->loadAllByDoctor($queryParams);
+        } catch (\Exception $e) {
+            return View::create(json_encode($e->getMessage(), true), Codes::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
         return $questionsList;
     }
 
-	/**
-    *
-    * @return mixed
-    */
-    public function patchDoctorQuestionAction()
+    /**
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *
+     * @return \FOS\RestBundle\View\View
+     */
+    public function patchDoctorQuestionAction(Request $request)
     {
-        $updateData = $this->getRequest()->request->all();
+        $updateData = $request->request->all();
         $doctorQuestionManager = $this->get('consult.doctorQuestionManager');
 
         try {
-            $doctorQuestionMapping = $doctorQuestionManager->patch($updateData);
+            $doctorQuestionRes = $doctorQuestionManager->patch($updateData);
         } catch (ValidationError $e) {
             return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
         }
 
-        return View::create(array("question" => $doctorQuestionMapping), Codes::HTTP_CREATED);
+        return View::create(array("question" => $doctorQuestionRes), Codes::HTTP_CREATED);
     }
 
     /**

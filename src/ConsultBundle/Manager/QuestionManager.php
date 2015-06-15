@@ -6,6 +6,7 @@ use ConsultBundle\Constants\ConsultConstants;
 use ConsultBundle\Entity\UserInfo;
 use ConsultBundle\Mapper\QuestionMapper;
 use ConsultBundle\Repository\DoctorQuestionRepository;
+use ConsultBundle\Repository\QuestionCommentRepository;
 use ConsultBundle\Repository\QuestionRepository;
 use ConsultBundle\Response\DetailQuestionResponseObject;
 use ConsultBundle\Response\ReplyResponseObject;
@@ -272,7 +273,7 @@ class QuestionManager extends BaseManager
      *
      * @return \ConsultBundle\Response\DetailQuestionResponseObject
      * @throws \HttpException
-     * @internal param int $practoAccountid
+     * @internal param int $practoAccountId
      *
      */
     private function fetchDetailQuestionObject(Question $questionEntity, $practoAccountId)
@@ -302,6 +303,15 @@ class QuestionManager extends BaseManager
             $question->setReplies($replies);
 
             $er = $this->helper->getRepository(ConsultConstants::QUESTION_BOOKMARK_ENTITY_NAME);
+
+            //Set comments
+            /**
+             * @var QuestionCommentRepository $ecr
+             */
+            $ecr = $this->helper->getRepository(ConsultConstants::QUESTION_COMMENT_ENTITY_NAME);
+            $questionCommentList = $ecr->getComments($questionEntity, 10, 0, $practoAccountId);
+
+            $question->setComments($questionCommentList);
 
             if (!empty($practoAccountId)) {
                 $bookmark = $er->findOneBy(array("practoAccountId" => $practoAccountId,

@@ -8,6 +8,7 @@
 
 namespace ConsultBundle\Response;
 
+use ConsultBundle\Entity\DoctorQuestion;
 use ConsultBundle\Entity\UserInfo;
 
 /**
@@ -23,13 +24,15 @@ class DoctorQuestionResponseObject extends DetailQuestionResponseObject
     private $images;
 
     /**
-     * @var UserInfo $patientInfo
+     * @param \ConsultBundle\Entity\DoctorQuestion $doctorQuestion
      */
-    private $patientInfo;
-
-    //doctor
-
-
+    public function __construct(DoctorQuestion $doctorQuestion)
+    {
+        parent::__construct($doctorQuestion->getQuestion());
+        $this->setId($doctorQuestion->getId());
+        $this->setState($doctorQuestion->getState());
+        $this->images = $doctorQuestion->getQuestion()->getImages();
+    }
 
     /**
      * @return array
@@ -47,19 +50,18 @@ class DoctorQuestionResponseObject extends DetailQuestionResponseObject
         $this->images = $images;
     }
 
-    /**
-     * @return UserInfo
-     */
-    public function getPatientInfo()
+    protected function populatePatientInfo(UserInfo $userInfo)
     {
-        return $this->patientInfo;
+        $patientInfo = new DetailPatientInfoResponse();
+        $patientInfo->setAllergies($userInfo->getAllergies());
+        $patientInfo->setMedications($userInfo->getMedications());
+        $patientInfo->setPrevDiagnosedConditions($userInfo->getPrevDiagnosedConditions());
+        $patientInfo->setHeightInCms($userInfo->getHeightInCms());
+        $patientInfo->setWeightInKgs($userInfo->getWeightInKgs());
+        $patientInfo->setBloodGroup($userInfo->getBloodGroup());
+        $patientInfo->setAge($userInfo->getAge());
+        $patientInfo->setGender($userInfo->getGender());
+        $this->setPatientInfo($patientInfo);
     }
 
-    /**
-     * @param UserInfo $patientInfo
-     */
-    public function setPatientInfo($patientInfo)
-    {
-        $this->patientInfo = $patientInfo;
-    }
 }
