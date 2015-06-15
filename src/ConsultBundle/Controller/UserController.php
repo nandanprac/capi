@@ -11,6 +11,7 @@ namespace ConsultBundle\Controller;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
 use FOS\RestBundle\Util\Codes;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use ConsultBundle\Manager\ValidationError;
 
@@ -20,12 +21,13 @@ use ConsultBundle\Manager\ValidationError;
 class UserController extends FOSRestController
 {
     /**
+     * @param Request $request
      * @return View
      */
-    public function postUserInfoAction()
+    public function postUserInfoAction(Request $request)
     {
-        $requestParams = $this->getRequest()->request->all();
-        $profileToken = $this->getRequest()->headers->get('X-Profile-Token');
+        $requestParams = $request->request->all();
+        $profileToken = $request->headers->get('X-Profile-Token');
         $userManager = $this->get('consult.user_manager');
 
         try {
@@ -43,12 +45,13 @@ class UserController extends FOSRestController
     /**
      * Load additional info of a User
      *
+     * @param Request $request
      * @return View
      */
-    public function getUserInfoAction()
+    public function getUserInfoAction(Request $request)
     {
         $userManager = $this->get('consult.user_manager');
-        $requestParams = $this->getRequest()->query->all();
+        $requestParams = $request->query->all();
 
         try {
             $userProfiles = $userManager->load($requestParams);
