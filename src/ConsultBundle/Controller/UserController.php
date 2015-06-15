@@ -11,25 +11,27 @@ namespace ConsultBundle\Controller;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
 use FOS\RestBundle\Util\Codes;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use ConsultBundle\Manager\ValidationError;
 
 /**
- * Controller for User's additional info updation
+ * Controller for User's profile info updation
  */
 class UserController extends FOSRestController
 {
     /**
-     * Additional info of user addition
+     * @param Request $request
      * @return View
      */
-    public function postUserConsultinfoAction()
+    public function postUserInfoAction(Request $request)
     {
-        $postData = $this->getRequest()->request->all();
+        $requestParams = $request->request->all();
+        $profileToken = $request->headers->get('X-Profile-Token');
         $userManager = $this->get('consult.user_manager');
 
         try {
-            $userConsultEntry = $userManager->add($postData);
+            $userConsultEntry = $userManager->add($requestParams, $profileToken);
         } catch (ValidationError $e) {
             return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
         }
@@ -43,26 +45,26 @@ class UserController extends FOSRestController
     /**
      * Load additional info of a User
      *
+     * @param Request $request
      * @return View
      */
-    public function getUserConsultinfoAction()
+    public function getUserInfoAction(Request $request)
     {
         $userManager = $this->get('consult.user_manager');
-        $formData = $this->getRequest()->request->all();
-        $practoAccountId = $formData['practo_account_id'];
+        $requestParams = $request->query->all();
 
         try {
-            $userConsultEntry = $userManager->load($practoAccountId);
+            $userProfiles = $userManager->load($requestParams);
         } catch (AccessDeniedException $e) {
             return View::create($e->getMessage(), Codes::HTTP_FORBIDDEN);
+        } catch (ValidationError $e) {
+            return View::create($e->getMessage(), Codes::HTTP_BAD_REQUEST);
         }
 
-        if (null === $userConsultEntry) {
+        if (empty($userProfiles)) {
             return View::create(null, Codes::HTTP_NOT_FOUND);
-        } elseif ($userConsultEntry->isSoftDeleted()) {
-            return View::create(null, Codes::HTTP_GONE);
         }
 
-        return $userConsultEntry;
+        return $userProfiles;
     }
 }
