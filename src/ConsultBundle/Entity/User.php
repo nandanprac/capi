@@ -114,7 +114,7 @@ class User extends UserInfo
      */
     public function setIsRelative($isRelative)
     {
-        $this->isRelative = $isRelative;
+        $this->isRelative = self::toBool($isRelative);
     }
 
 

@@ -15,21 +15,21 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use ConsultBundle\Manager\ValidationError;
 
 /**
- * Controller for User's additional info updation
+ * Controller for User's profile info updation
  */
 class UserController extends FOSRestController
 {
     /**
-     * Additional info of user addition
      * @return View
      */
-    public function postUserConsultinfoAction()
+    public function postUserInfoAction()
     {
-        $postData = $this->getRequest()->request->all();
+        $requestParams = $this->getRequest()->request->all();
+        $profileToken = $this->getRequest()->headers->get('X-Profile-Token');
         $userManager = $this->get('consult.user_manager');
 
         try {
-            $userConsultEntry = $userManager->add($postData);
+            $userConsultEntry = $userManager->add($requestParams, $profileToken);
         } catch (ValidationError $e) {
             return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
         }
@@ -45,24 +45,23 @@ class UserController extends FOSRestController
      *
      * @return View
      */
-    public function getUserConsultinfoAction()
+    public function getUserInfoAction()
     {
         $userManager = $this->get('consult.user_manager');
-        $formData = $this->getRequest()->request->all();
-        $practoAccountId = $formData['practo_account_id'];
+        $requestParams = $this->getRequest()->query->all();
 
         try {
-            $userConsultEntry = $userManager->load($practoAccountId);
+            $userProfiles = $userManager->load($requestParams);
         } catch (AccessDeniedException $e) {
             return View::create($e->getMessage(), Codes::HTTP_FORBIDDEN);
+        } catch (ValidationError $e) {
+            return View::create($e->getMessage(), Codes::HTTP_BAD_REQUEST);
         }
 
-        if (null === $userConsultEntry) {
+        if (empty($userProfiles)) {
             return View::create(null, Codes::HTTP_NOT_FOUND);
-        } elseif ($userConsultEntry->isSoftDeleted()) {
-            return View::create(null, Codes::HTTP_GONE);
         }
 
-        return $userConsultEntry;
+        return $userProfiles;
     }
 }
