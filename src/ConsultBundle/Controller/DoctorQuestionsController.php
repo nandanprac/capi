@@ -30,22 +30,16 @@ class DoctorQuestionsController extends Controller
     {
         $request = $this->get('request');
         $queryParams = $request->query->all();
-        //TODO Move this in manager
-        // practo_account_id is not mandatory
-        //if (array_key_exists('practo_account_id', $queryParams)) {
-        //    $doctorId = $queryParams['practo_account_id'];
-        //} else {
-        //    return View::create("Atleast <practo_account_id> is needed.", Codes::HTTP_BAD_REQUEST);
-        //}
-
-        $doctorQuestionManager = $this->get('consult.doctorQuestionManager');
-        list($questions, $count) = $doctorQuestionManager->loadAllByDoctor($queryParams);
-
-
-        return array("questions"=>$questions, "count"=>$count);
+		try{
+        	$doctorQuestionManager = $this->get('consult.doctorQuestionManager');
+        	$questionsList = $doctorQuestionManager->loadAllByDoctor($queryParams);
+		} catch (\Exception $e) {
+			return View::create(json_encode($e->getMessage(), true), Codes::HTTP_INTERNAL_SERVER_ERROR);
+		}
+        return $questionsList;
     }
 
-    /**
+	/**
     *
     * @return mixed
     */

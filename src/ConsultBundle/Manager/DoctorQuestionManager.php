@@ -14,6 +14,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use ConsultBundle\Manager\ValidationError;
 use ConsultBundle\Utility\RetrieveDoctorProfileUtil;
 use ConsultBundle\Utility\RetrieveUserProfileUtil;
+use ConsultBundle\Mapper\QuestionMapper;
 use ConsultBundle\Manager\NotificationManager;
 
 /**
@@ -21,7 +22,7 @@ use ConsultBundle\Manager\NotificationManager;
  */
 class DoctorQuestionManager extends BaseManager
 {
-    protected NotificationManager $notification;
+    protected $notification;
 
     /**
      * @param NotificationManager       $notification
@@ -127,7 +128,16 @@ class DoctorQuestionManager extends BaseManager
     {
         $doctorId = array_key_exists('practo_account_id', $queryParams) ? $queryParams['practo_account_id'] : -1;
 
-        return $this->getRepository()->findByFilters($doctorId, $queryParams);
+		try {
+        	$doctorQuestionList = $this->getRepository()->findByFilters($doctorId, $queryParams);
+		} catch (\Exception $e) {
+			throw new \Exception($e->getMessage());
+		}
+        if (null == $doctorQuestionList) {
+            return null;
+		}
+        $doctorQuestionResponseList = QuestionMapper::mapDoctorQuestionList($doctorQuestionList['question'], true);
+        return array("questions"=>$doctorQuestionResponseList, "count"=>$doctorQuestionList['count']);
     }
 
     /**

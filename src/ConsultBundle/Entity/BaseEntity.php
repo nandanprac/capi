@@ -53,6 +53,17 @@ class BaseEntity
     }
 
     /**
+     * Set id
+     *
+     * @return null
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+
+    /**
      * @ORM\PrePersist
      */
     public function setCreatedAt()

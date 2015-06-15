@@ -26,21 +26,32 @@ class DoctorQuestionRepository extends EntityRepository
      * @return array
      */
     public function findByFilters($doctorId, $filters)
-    {
+	{
         $qb = $this->_em->createQueryBuilder();
         $questions = null;
+        $bookmark = array_key_exists('bookmark', $filters) ? $filters['bookmark'] : null;
+        $state = array_key_exists('state', $filters) ? $filters['state'] : null;
+        $modifiedAfter = array_key_exists('modifiedAfter', $filters) ? $filters['modifiedAfter'] : null;
         $limit = array_key_exists('limit', $filters) ? $filters['limit'] : 500;
         $offset = array_key_exists('offset', $filters) ? $filters['offset'] : 0;
         try {
-            $qb->select(array('q'))
-               ->from("ConsultBundle:Question", 'q')
-               ->innerJoin('q.doctorQuestions', 'dq')
-               ->where('dq.softDeleted = 0');
+            //$qb->select('q.text as text', 'q.subject as subject', 'q.viewCount as view_count', 'q.shareCount AS share_count','dq.id AS id', 'dq.state AS state', 'count(b.id) AS bookmarkCount', 'dq.viewedAt as viewed_at', 'dq.createdAt AS created_at')
+            $qb->select('q AS question', 'count(b.id) AS bookmarkCount')
+               ->from(ConsultConstants::QUESTION_ENTITY_NAME, 'q')
+               ->innerJoin(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME, 'dq', 'WITH', 'q = dq.question')
+               ->leftJoin(ConsultConstants::QUESTION_BOOKMARK_ENTITY_NAME, 'b', 'WITH', 'q = b.question AND b.softDeleted = 0 ')
+			   ->where('dq.softDeleted = 0');
 
-            if ($doctorId != -1) {
-                $qb->andWhere('dq.practoAccountId = :doctorId')
-                   ->setParameter('doctorId', $doctorId);
-            }
+			if (isset($modifiedAfter)) {
+				$qb->andWhere('dq.modifiedAt > :modifiedAt');
+				$qb->setParameter('modifiedAt', $modifiedAfter);
+			}
+
+			if ($doctorId != -1) {
+				$qb->andWhere(' dq.practoAccountId = :doctorId');
+				$qb->setParameter('doctorId', $doctorId);
+			}
+
 
             if (array_key_exists('reject', $filters)) {
                 $state = $filters['reject'];
@@ -66,18 +77,17 @@ class DoctorQuestionRepository extends EntityRepository
                     ->setParameter('state', $state);
             }
 
-             $qb->setFirstResult($offset)
-                 ->setMaxResults($limit)
-                 ->addOrderBy('q.modifiedAt', 'DESC');
+            $qb->setFirstResult($offset)
+               ->setMaxResults($limit)
+			   ->addOrderBy('dq.createdAt', 'DESC');
              $questions = $qb->getQuery()->getResult();
-             $paginator = new Paginator($qb->getQuery(), $fetchJoinCollection = true);
-             $count = count($paginator);
+             $paginator = new Paginator($qb, $fetchJoinCollection = true);
+			 $count = count($paginator);
         } catch (\Exception $e) {
-            return $e->getMessage();
-        }
-
-        return array($questions, $count);
-
+			throw new \Exception($e->getMessage());
+		}
+		var_dump($questions[1]['bookmarkCount']);die;
+        return array("question"=>$questions, "count"=>$count);
     }
 
 
