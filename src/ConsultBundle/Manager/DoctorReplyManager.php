@@ -79,7 +79,6 @@ class DoctorReplyManager extends BaseManager
         $doctorReply->setDoctorQuestion($doctorQuestion);
         $doctorReply->setText($answerText);
 
-        var_dump("1");
 /*
         try {
             $this->validate($doctorReply);
@@ -93,10 +92,10 @@ class DoctorReplyManager extends BaseManager
         //$bookmarkUserObject = $this->helper->loadById($doctorQuestion->getQuestion()->getId(), ConsultConstants::QUESTION_BOOKMARK_ENTITY_NAME);
         //var_dump(count($bookmarkUserObject));die;
 
-		$this->notification
-			->createPatientNotification($doctorQuestion->getQuestion()->getId(), $doctorQuestion->getQuestion()->getUserInfo()->getPractoAccountId(), "Your Query has been answered");
+        $this->notification
+            ->createPatientNotification($doctorQuestion->getQuestion()->getId(), $doctorQuestion->getQuestion()->getUserInfo()->getPractoAccountId(), "Your Query has been answered");
 
-		$this->queue->setQueueName(Queue::CONSULT_GCM)
+        $this->queue->setQueueName(Queue::CONSULT_GCM)
             ->sendMessage(json_encode(array(
                 "type"=>"query_answered",
                 "message"=>"Your Query has been answered",

@@ -99,7 +99,6 @@ class NotificationManager extends BaseManager
                 @$error['notification_id'] = "No Notification for this id";
                 throw new ValidationError(@$error);
             }
-            var_dump($notification->getPractoAccountId() != intval($requestParams['practo_account_id']));
             if ($notification->getPractoAccountId() != intval($requestParams['practo_account_id'])) {
                 @$error['invalid_access'] = "You cannot patch this notification";
                 throw new ValidationError(@$error);
