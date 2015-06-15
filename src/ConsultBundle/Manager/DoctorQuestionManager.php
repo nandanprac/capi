@@ -128,15 +128,16 @@ class DoctorQuestionManager extends BaseManager
     {
         $doctorId = array_key_exists('practo_account_id', $queryParams) ? $queryParams['practo_account_id'] : -1;
 
-		try {
-        	$doctorQuestionList = $this->getRepository()->findByFilters($doctorId, $queryParams);
-		} catch (\Exception $e) {
-			throw new \Exception($e->getMessage());
-		}
+        try {
+            $doctorQuestionList = $this->getRepository()->findByFilters($doctorId, $queryParams);
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
         if (null == $doctorQuestionList) {
             return null;
-		}
+        }
         $doctorQuestionResponseList = QuestionMapper::mapDoctorQuestionList($doctorQuestionList['question'], true);
+
         return array("questions"=>$doctorQuestionResponseList, "count"=>$doctorQuestionList['count']);
     }
 

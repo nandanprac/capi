@@ -10,8 +10,8 @@ namespace ConsultBundle\Mapper;
 
 use ConsultBundle\Entity\DoctorQuestion;
 use ConsultBundle\Entity\Question;
-use ConsultBundle\Response\BasicQuestionResponseObject;
 use ConsultBundle\Response\BasicDoctorQuestionResponseObject;
+use ConsultBundle\Response\BasicQuestionResponseObject;
 use ConsultBundle\Response\DetailQuestionResponseObject;
 use ConsultBundle\Response\ReplyResponseObject;
 
@@ -82,7 +82,7 @@ class QuestionMapper
                  * @var DoctorQuestion $doctorQuestionEntity
                  */
                 if (!empty($doctorQuestionEntity)||$doctorQuestionEntity->isSoftDeleted()||empty($doctorQuestionEntity->getDoctorReplies()
-                    ||$doctorQuestionEntity->getDoctorReplies()->isSoftDeleted())
+                        ||$doctorQuestionEntity->getDoctorReplies()->isSoftDeleted())
                 ) {
                     $reply = new ReplyResponseObject();
                     self::mapDoctorQuestion($doctorQuestionEntity, $reply);
@@ -97,6 +97,30 @@ class QuestionMapper
 
         return $questionResponseObject;
     }
+
+    /**
+     * @param array $doctorQuestionList
+     *
+     * @return array
+     */
+    public static function mapDoctorQuestionList(array $doctorQuestionList)
+    {
+        $doctorQuestionResponseList =  array();
+
+        if (!empty($doctorQuestionList)) {
+            foreach ($doctorQuestionList as $questionArray) {
+                $doctorQuestionResponse = new BasicDoctorQuestionResponseObject($questionArray['doctorQuestion']);
+                $doctorQuestionResponse->setVotes($questionArray['votes']);
+                $doctorQuestionResponse->setRating($questionArray['rating']);
+                $doctorQuestionResponseList[] = $doctorQuestionResponse;
+            }
+
+        }
+
+        return $doctorQuestionResponseList;
+
+    }
+
 
     private static function mapBasicQuestion(Question $questionEntity, BasicQuestionResponseObject $question)
     {
@@ -114,34 +138,7 @@ class QuestionMapper
     private static function mapDoctorQuestion(DoctorQuestion $doctorQuestionEntity, ReplyResponseObject $reply)
     {
 
-	}
-
-    /**
-     * @param array $questionList
-     *
-     * @return array
-     */
-    public static function mapDoctorQuestionList(array $doctorQuestionList)
-	{
-		var_dump(1);
-        $doctorQuestionResponseList =  array();
-        if (!empty($doctorQuestionList)) {
-			foreach ($doctorQuestionList as $questionArray) {
-			//	var_dump($questionArray);die;
-                $doctorQuestionResponse = new BasicDoctorQuestionResponseObject($questionArray);
-//				$doctorQuestionResponse->setAttributes();
-				//$doctorQuestionResponse->setText($questionArray['question']['text']);
-				//$doctorQuestionResponse->setSubject($questionArray['question']['subject']);
-				//$doctorQuestionResponse->setViewCount($questionArray['question']['view_count']);
-				//$doctorQuestionResponse->setShareCount($questionArray['question']['share_count']);
-                $questionResponse->setBookmarkCount($questionArray['bookmarkCount']);
-                $doctorQuestionResponseList[] = $questionResponse;
-            }
-
-        }
-
-        return $doctorQuestionResponseList;
-
     }
+
 
 }

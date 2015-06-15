@@ -20,55 +20,33 @@ class DoctorQuestionRepository extends EntityRepository
 {
 
     /**
-     * @param integer $doctorId - Practo Account Id of doctor
-     * @param array   $filters  - Filters to find questions assigned to doctors
+     * @param int   $doctorId
+     * @param array $filters
      *
      * @return array
+     * @throws \Exception
      */
     public function findByFilters($doctorId, $filters)
-	{
+    {
+
         $qb = $this->_em->createQueryBuilder();
         $questions = null;
-        $bookmark = array_key_exists('bookmark', $filters) ? $filters['bookmark'] : null;
-        $state = array_key_exists('state', $filters) ? $filters['state'] : null;
         $modifiedAfter = array_key_exists('modifiedAfter', $filters) ? $filters['modifiedAfter'] : null;
-        $limit = array_key_exists('limit', $filters) ? $filters['limit'] : 500;
+        $limit = array_key_exists('limit', $filters) ? $filters['limit'] : 30;
         $offset = array_key_exists('offset', $filters) ? $filters['offset'] : 0;
         try {
-            //$qb->select('q.text as text', 'q.subject as subject', 'q.viewCount as view_count', 'q.shareCount AS share_count','dq.id AS id', 'dq.state AS state', 'count(b.id) AS bookmarkCount', 'dq.viewedAt as viewed_at', 'dq.createdAt AS created_at')
-            $qb->select('q AS question', 'count(b.id) AS bookmarkCount')
-               ->from(ConsultConstants::QUESTION_ENTITY_NAME, 'q')
-               ->innerJoin(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME, 'dq', 'WITH', 'q = dq.question')
-               ->leftJoin(ConsultConstants::QUESTION_BOOKMARK_ENTITY_NAME, 'b', 'WITH', 'q = b.question AND b.softDeleted = 0 ')
-			   ->where('dq.softDeleted = 0');
+             $qb->select('dq AS doctorQuestion', 'r.rating AS rating', 'count(DISTINCT b.id) AS bookmarkCount', '(count(DISTINCT rv.id) - count(DISTINCT rvn.id)) AS votes')
+                ->from(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME, 'dq')
+                ->leftJoin(ConsultConstants::DOCTOR_REPLY_ENTITY_NAME, 'r', 'WITH', 'r.doctorQuestion = dq AND r.softDeleted = 0')
+                ->leftJoin(ConsultConstants::DOCTOR_REPLY_VOTE_ENTITY, 'rv', 'WITH', 'rv.reply = r AND  rv.vote = 1 AND rv.softDeleted = 0')
+                ->leftJoin(ConsultConstants::DOCTOR_REPLY_VOTE_ENTITY, 'rvn', 'WITH', 'rvn.reply = r AND rvn.vote = -1 AND rvn.softDeleted = 0')
+                ->leftJoin(ConsultConstants::QUESTION_BOOKMARK_ENTITY_NAME, 'b', 'WITH', 'dq.question = b.question AND b.softDeleted = 0 ')
+                ->where('dq.softDeleted = 0')
+                ->groupBy('dq.id');
 
-			if (isset($modifiedAfter)) {
-				$qb->andWhere('dq.modifiedAt > :modifiedAt');
-				$qb->setParameter('modifiedAt', $modifiedAfter);
-			}
-
-			if ($doctorId != -1) {
-				$qb->andWhere(' dq.practoAccountId = :doctorId');
-				$qb->setParameter('doctorId', $doctorId);
-			}
-
-
-            if (array_key_exists('reject', $filters)) {
-                $state = $filters['reject'];
-                if (strtolower($state) == 'false') {
-                    $qb->andWhere('dq.rejectedAt is NULL');
-                } elseif (strtolower($state) == 'true') {
-                    $qb->andWhere('dq.rejectedAt is not NULL');
-                }
-            }
-
-            if (array_key_exists('view', $filters)) {
-                $state = $filters['view'];
-                if (strtolower($state) == 'false') {
-                    $qb->andWhere('dq.viewedAt is NULL');
-                } elseif (strtolower($state) == 'true') {
-                    $qb->andWhere('dq.viewedAt is not NULL');
-                }
+            if ($doctorId != -1) {
+                $qb->andWhere(' dq.practoAccountId = :doctorId');
+                $qb->setParameter('doctorId', $doctorId);
             }
 
             if (array_key_exists('state', $filters)) {
@@ -77,16 +55,23 @@ class DoctorQuestionRepository extends EntityRepository
                     ->setParameter('state', $state);
             }
 
+            if (isset($modifiedAfter)) {
+                $qb->andWhere('dq.modifiedAt > :modifiedAt');
+                $qb->setParameter('modifiedAt', $modifiedAfter);
+            }
+
+
+
             $qb->setFirstResult($offset)
-               ->setMaxResults($limit)
-			   ->addOrderBy('dq.createdAt', 'DESC');
-             $questions = $qb->getQuery()->getResult();
-             $paginator = new Paginator($qb, $fetchJoinCollection = true);
-			 $count = count($paginator);
+                ->setMaxResults($limit)
+                ->addOrderBy('dq.createdAt', 'DESC');
+            $questions = $qb->getQuery()->getResult();
+            $paginator = new Paginator($qb, $fetchJoinCollection = true);
+            $count = count($paginator);
         } catch (\Exception $e) {
-			throw new \Exception($e->getMessage());
-		}
-		var_dump($questions[1]['bookmarkCount']);die;
+            throw new \Exception($e->getMessage());
+        }
+
         return array("question"=>$questions, "count"=>$count);
     }
 
