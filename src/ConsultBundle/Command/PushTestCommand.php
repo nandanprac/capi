@@ -10,7 +10,6 @@ use Symfony\Component\HttpFoundation\Request;
 use ConsultBundle\Queue\AbstractQueue as Queue;
 use ConsultBundle\ConsultDomain;
 
-use Pheanstalk_Pheanstalk as Pheanstalk;
 
 /**
  * Command to merge the accounts and Make the necessary updates.

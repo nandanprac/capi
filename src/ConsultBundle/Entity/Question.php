@@ -18,48 +18,111 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Question extends BaseEntity
 {
+
     /**
-     * @ORM\Column(type="integer", name="practo_account_id")
-     *
-     * @var integer $practoAccountId
-     *
-     * @Assert\NotBlank
+     * @ORM\ManyToOne(targetEntity="ConsultBundle\Entity\UserInfo", fetch="EXTRA_LAZY")
+     * @ORM\JoinColumn(name="user_info_id", referencedColumnName="id")
      */
-    protected $practoAccountId;
+    private $userInfo;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="subject", type="string", length=32, nullable=true)
+     * @Assert\NotBlank()
+     */
+    private $subject;
 
     /**
      * @ORM\Column(length=360, name="text")
      *
      * @Assert\NotBlank
      */
-    protected $text;
+    private $text;
+
+    /**
+     * @var string
+     * @ORM\Column(name="speciality", type="string", length=255, nullable=true)
+     */
+    private $speciality;
 
     /**
      * @ORM\Column(length=20, name="state")
      *
      * @Assert\Choice(choices = {"NEW", "ASSIGNED", "DOCNOTFOUND", "MISMATCH", "ANSWERED", "GENERIC", "UNCLASSIFIED"}, message = "Invalid value for state of a question")
      */
-    protected $state="NEW";
+    private $state="NEW";
 
-    /**
-     * @ORM\Column(type="smallint", name="user_anonymous")
-     */
-    protected $userAnonymous=1;
 
     /**
      * @ORM\Column(type="integer", name="view_count")
      */
-    protected $viewCount = 0;
+    private $viewCount = 0;
 
     /**
      * @ORM\Column(type="integer", name="share_count")
      */
-    protected $shareCount = 0;
+    private $shareCount = 0;
 
     /**
      * @ORM\Column(type="datetime", name="viewed_at", nullable=true)
      */
-    protected $viewedAt;
+    private $viewedAt;
+
+
+    /**
+    * @ORM\OneToMany(targetEntity="QuestionImage", mappedBy="question", fetch="EXTRA_LAZY", cascade={"persist", "remove"})
+    * @var ArrayCollection $images
+    */
+    private $images;
+
+    /**
+     * @ORM\OneToMany(targetEntity="QuestionComment", mappedBy="question", fetch="EXTRA_LAZY", cascade={"persist", "remove"})
+     * @ORM\OrderBy({"createdAt" = "DESC"})
+     * @var ArrayCollection $comments
+     */
+    private $comments;
+
+    /**
+     * @var array
+     *
+     * @ORM\OneToMany(targetEntity="ConsultBundle\Entity\QuestionView", mappedBy="question", fetch="EXTRA_LAZY", cascade={"persist", "remove"})
+     */
+    private $views;
+
+    /**
+     * @ORM\OneToMany(targetEntity="ConsultBundle\Entity\QuestionBookmark", mappedBy="question", fetch="EXTRA_LAZY")
+     */
+    private $bookmarks;
+
+    /**
+     * @var array
+     *
+     * @ORM\OneToMany(targetEntity="ConsultBundle\Entity\DoctorQuestion", mappedBy="question", fetch="EXTRA_LAZY", cascade={"persist", "remove"})
+     */
+    private $doctorQuestions;
+
+    /**
+     * @ORM\OneToMany(targetEntity="QuestionTag", mappedBy="question", cascade={"persist", "remove"})
+     * @var ArrayCollection $tags
+     */
+     protected $tags;
+
+    /**
+     * @return mixed
+     */
+    public function getSubject()
+    {
+        return $this->subject;
+    }
+
+    /**
+     * @param mixed $subject
+     */
+    public function setSubject($subject)
+    {
+        $this->subject = $subject;
+    }
 
 
     /**
@@ -79,78 +142,47 @@ class Question extends BaseEntity
     }
 
     /**
-    * @ORM\OneToMany(targetEntity="QuestionImage", mappedBy="question", cascade={"persist", "remove"})
-    * @var ArrayCollection $images
-    */
-    protected $images;
-
-    /**
-     * @ORM\OneToMany(targetEntity="DoctorQuestion", mappedBy="question", cascade={"persist", "remove"})
-     * @var ArrayCollection $doctorQuestions
+     * constructor
      */
-    protected $doctorQuestions;
-
-    /**
-     * @ORM\OneToMany(targetEntity="QuestionTag", mappedBy="question", cascade={"persist", "remove"})
-     * @var ArrayCollection $tags
-     */
-    protected $tags;
-
-    /**
-     * @ORM\OneToMany(targetEntity="QuestionBookmark", mappedBy="question", cascade={"persist", "remove"})
-     * @var ArrayCollection $bookmarks
-     */
-    protected $bookmarks;
-
-    /**
-     * @ORM\OneToMany(targetEntity="QuestionView", mappedBy="question", cascade={"persist"})
-     * @var ArrayCollection $views
-     */
-    protected $views;
-
-    /**
-     * @ORM\OneToMany(targetEntity="UserNotification", mappedBy="question", cascade={"persist", "remove"})
-     * @var ArrayCollection $userNotifications
-     */
-    protected $userNotifications;
-
-    /**
-     * @ORM\OneToMany(targetEntity="DoctorNotification", mappedBy="question", cascade={"persist", "remove"})
-     * @var ArrayCollection $doctorNotifications
-     */
-    protected $doctorNotifications;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="UserInfo")
-     * @ORM\JoinColumn(name="user_info_id", referencedColumnName="id")
-     */
-    protected $userInfo;
-
-    /**
-     * @ORM\OneToMany(targetEntity="QuestionComment", mappedBy="question", cascade={"persist", "remove"})
-     * @ORM\OrderBy({"createdAt" = "DESC"})
-     * @var ArrayCollection $comments
-     */
-    protected $comments;
-
     public function __construct()
     {
         $this->images = new ArrayCollection();
         $this->doctorQuestions = new ArrayCollection();
-        $this->tags = new ArrayCollection();
-        $this->bookmarks = new ArrayCollection();
-        $this->views = new ArrayCollection();
-        $this->userNotifications = new ArrayCollection();
-        $this->doctorNotifications = new ArrayCollection();
         $this->comments = new ArrayCollection();
-        //$this->de
+        $this->bookmarks = new ArrayCollection();
+        $this->tags = new ArrayCollection();
     }
 
+    /**
+     * @return mixed
+     */
+    public function getDoctorQuestions()
+    {
+        return $this->doctorQuestions;
+    }
+
+    /**
+     * @param mixed $doctorQuestions
+     */
+    public function setDoctorQuestions($doctorQuestions)
+    {
+        $this->doctorQuestions = $doctorQuestions;
+    }
+
+
+    /**
+     * get User object
+     * @return User
+     */
     public function getUserInfo()
     {
         return $this->userInfo;
     }
 
+    /**
+     * Set UserInfo object
+     * @param UserInfo $userInfo - UserInfo object
+     */
     public function setUserInfo(UserInfo $userInfo)
     {
         $this->userInfo = $userInfo;
@@ -184,200 +216,14 @@ class Question extends BaseEntity
         $this->images = new ArrayCollection();
     }
 
-
+    /**
+     * @param array $images
+     */
     public function setImages($images)
     {
         $this->images = $images;
     }
 
-    /**
-     * Get Doctor Questions
-     *
-     * @return ArrayCollection
-     */
-    public function getDoctorQuestions()
-    {
-        return $this->doctorQuestions;
-    }
-
-    /**
-     * Add Doctor Question
-     *
-     * @param DoctorQuestion $questionDoctor - Question Doctor
-     */
-    public function addQuestionDoctor(DoctorQuestion $questionDoctor)
-    {
-        $this->$doctorQuestions->add($questionDoctor);
-    }
-
-    /**
-     * Clear Doctor Questions
-     */
-    public function clearDoctorQuestion()
-    {
-        $this->$doctorQuestions = new ArrayCollection();
-    }
-
-    /**
-     * Get tags
-     *
-     * @return ArrayCollection
-     */
-    public function getTags()
-    {
-        return $this->tags;
-    }
-
-    /**
-     * Add Tag
-     *
-     * @param QuestionTag $tag - Question Tag
-     */
-    public function addTag(QuestionTag $tag)
-    {
-        $this->tags->add($tag);
-    }
-
-    /**
-     * Clear Question Tags
-     */
-    public function clearTags()
-    {
-        $this->tags = new ArrayCollection();
-    }
-
-    /**
-     * Get bookmarks
-     *
-     * @return ArrayCollection
-     */
-    public function getBookmarks()
-    {
-        return $this->bookmarks;
-    }
-
-    /**
-     * Add Bookmark
-     *
-     * @param QuestionBookmark $bookmark - Question Bookmark
-     */
-    public function addBookmark(QuestionBookmark $bookmark)
-    {
-        $this->bookmarks->add($bookmark);
-    }
-
-    /**
-     * Clear Question Bookmarks
-     */
-    public function clearBookmarks()
-    {
-        $this->bookmarks = new ArrayCollection();
-    }
-
-    /**
-     * Get views
-     *
-     * @return ArrayCollection
-     */
-    public function getViews()
-    {
-        return $this->views;
-    }
-
-    /**
-     * Add Views
-     *
-     * @param QuestionView $view - Question View
-     */
-    public function addView(QuestionView $view)
-    {
-        $this->views->add($view);
-    }
-
-    /**
-     * Clear Question Views
-     */
-    public function clearViews()
-    {
-        $this->views = new ArrayCollection();
-    }
-
-    /**
-     * Get user notification
-     *
-     * @return ArrayCollection
-     */
-    public function getUserNotifications()
-    {
-        return $this->userNotifications;
-    }
-
-    /**
-     * Add User Notification
-     *
-     * @param QuestionNotification $userNotification - User Notification
-     */
-    public function addUserNotification(UserNotification $notification)
-    {
-        $this->userNotifications->add($notification);
-    }
-
-    /**
-     * Clear User Notifications
-     */
-    public function clearUserNotifications()
-    {
-        $this->userNotifications = new ArrayCollection();
-    }
-
-    /**
-     * Get Doctor Notifications
-     *
-     * @return ArrayCollection
-     */
-    public function getDoctorNotifications()
-    {
-        return $this->doctorNotifications;
-    }
-
-    /**
-     * Add Doctor Notification
-     *
-     * @param    DoctorNotification $notification
-     * @internal param DoctorNotification $doctorNotification - Doctor Notification
-     */
-    public function addDoctorNotification(DoctorNotification $notification)
-    {
-        $this->doctorNotifications->add($notification);
-    }
-
-    /**
-     * Clear Doctor Notifications
-     */
-    public function clearDoctorNotifications()
-    {
-        $this->doctorNotifications = new ArrayCollection();
-    }
-
-    /**
-     * Get PractoAccountId
-     *
-     * @return integer
-     */
-    public function getPractoAccountId()
-    {
-        return $this->practoAccountId;
-    }
-
-    /**
-     * Set PractoAccountId
-     *
-     * @param integer $practoAccountId - PractoAccountId
-     */
-    public function setPractoAccountId($practoAccountId)
-    {
-        $this->setInt('practoAccountId', $practoAccountId);
-    }
 
     /**
      * Get text
@@ -396,7 +242,7 @@ class Question extends BaseEntity
      */
     public function setText($text)
     {
-        $this->setString('text', $text);
+        $this->text = trim($text);
     }
 
     /**
@@ -416,28 +262,9 @@ class Question extends BaseEntity
      */
     public function setState($state)
     {
-        $this->setString('state', $state);
+        $this->state = trim($state);
     }
 
-    /**
-     * Is User Anonymous
-     *
-     * @return boolean
-     */
-    public function isUserAnonymous()
-    {
-        return $this->userAnonymous;
-    }
-
-    /**
-     * Set user anonymous
-     *
-     * @param boolean $userAnonymous - User Anonymous
-     */
-    public function setUserAnonymous($userAnonymous)
-    {
-        $this->setBoolean('userAnonymous', $userAnonymous);
-    }
 
     /**
      * @return integer
@@ -448,7 +275,7 @@ class Question extends BaseEntity
     }
 
     /**
-     * @param integer
+     * @param integer $count - view count of the question
      */
     public function setViewCount($count)
     {
@@ -464,7 +291,7 @@ class Question extends BaseEntity
     }
 
     /**
-     * @param integer
+     * @param integer $count - share count of the question
      */
     public function setShareCount($count)
     {
@@ -484,7 +311,7 @@ class Question extends BaseEntity
     /**
      * Add Tag
      *
-     * @param QuestionComment $comments - Question Comment
+     * @param QuestionComment $comment - Question Comment
      */
     public function addComment(QuestionComment $comment)
     {
@@ -500,22 +327,103 @@ class Question extends BaseEntity
     }
 
     /**
-     * Get Details
+     * @return string
+     */
+    public function getSpeciality()
+    {
+        return $this->speciality;
+    }
+
+    /**
+     * @param string $speciality
+     */
+    public function setSpeciality($speciality)
+    {
+        $this->speciality = $speciality;
+    }
+
+    /**
+     * @return array
+     */
+    public function getViews()
+    {
+        return $this->views;
+    }
+
+    /**
+     * @param array $views
+     */
+    public function setViews($views)
+    {
+        $this->views = $views;
+    }
+
+    /**
+     * @param \ConsultBundle\Entity\QuestionView $view
+     */
+    public function addViews(QuestionView $view)
+    {
+        $this->views[] = $view;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBookmarks()
+    {
+        return $this->bookmarks;
+    }
+
+    /**
+     * @param mixed $bookmarks
+     */
+    public function setBookmarks($bookmarks)
+    {
+        $this->bookmarks = $bookmarks;
+    }
+
+
+    /**
+     * get count of bookmarks
+     * @return int
+     */
+    public function getBookmarkCount()
+    {
+        return $this->bookmarks->count();
+    }
+
+    /**
+     * @param \ConsultBundle\Entity\QuestionBookmark $bookmark
+     */
+    public function addBookmark(QuestionBookmark $bookmark)
+    {
+        $this->bookmarks->add($bookmark);
+    }
+
+    /**
+     * Get tags
      *
      * @return ArrayCollection
      */
-    /* public function getDetails()
+    public function getTags()
     {
-        return $this->details;
-    }*/
+        return $this->tags;
+    }
+    /**
+     * Add Tag
+     *
+     * @param QuestionTag $tag - Question Tag
+     */
+    public function addTag(QuestionTag $tag)
+    {
+        $this->tags->add($tag);
+    }
 
     /**
-     * Add Payment Detail
-     *
-     * @param PaymentDetail $paymentDetail - Payment Detail
+     * Clear Question Tags
      */
-    /*public function addDetail(PaymentDetail $paymentDetail)
+    public function clearTags()
     {
-        $this->details->add($paymentDetail);
-    }*/
+        $this->tags = new ArrayCollection();
+    }
 }

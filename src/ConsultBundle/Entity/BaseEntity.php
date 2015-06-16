@@ -10,13 +10,14 @@ namespace ConsultBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use FOS\RestBundle\Util\Codes;
 use Symfony\Component\Validator\Constraints as Assert;
+use ConsultBundle\Manager\ValidationError;
 
 /**
  * ConsultBundle\Entity\BaseEntity
  *
- * @ORM\MappedSuperclass
+ * @ORM\MappedSuperclass()
  */
-abstract class BaseEntity
+class BaseEntity
 {
     /**
      * @ORM\Id
@@ -50,6 +51,17 @@ abstract class BaseEntity
     {
         return $this->id;
     }
+
+    /**
+     * Set id
+     *
+     * @return null
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
 
     /**
      * @ORM\PrePersist
@@ -92,9 +104,8 @@ abstract class BaseEntity
     }
 
     /**
-     * @param $attributes
+     * @param array $attributes
      * @return bool
-     * @throws BadAttributeException
      * @throws ValidationError
      * @throws \Exception
      */
@@ -102,8 +113,8 @@ abstract class BaseEntity
     {
         foreach ($attributes as $attrSnake => $value) {
             //if ($this->isEditableAttribute($attrSnake)) {
-                $attrCamel = str_replace(' ', '', ucwords(str_replace('_', ' ', $attrSnake)));
-                $setter = 'set'.$attrCamel;
+            $attrCamel = str_replace(' ', '', ucwords(str_replace('_', ' ', $attrSnake)));
+            $setter = 'set'.$attrCamel;
             try {
                 if ('' === $value) {
                     $value = null;
@@ -141,6 +152,24 @@ abstract class BaseEntity
             $this->$field = null;
         } else {
             $this->$field = ('true' === $value);
+        }
+    }
+
+    /**
+     * @param mixed $value
+     *
+     * @return bool|null
+     */
+    public static function toBool($value)
+    {
+        if (is_bool($value)) {
+            return $value;
+        } elseif (is_numeric($value)) {
+            return (bool) $value;
+        } elseif (null === $value || '' === $value) {
+            return null;
+        } else {
+            return ('true' === $value);
         }
     }
 
@@ -190,4 +219,36 @@ abstract class BaseEntity
             $this->$field = null;
         }
     }
+
+    /**
+     * @param \DateTime $dateTime
+     *
+     * @return string
+     */
+    public function getDateTimeStr(\DateTime $dateTime)
+    {
+        if (empty($dateTime)) {
+            $dateTime = new \DateTime();
+        }
+
+        return $dateTime->format('Y-m-d H:i:s');
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getModifiedAt()
+    {
+        return $this->modifiedAt;
+    }
+
+
 }

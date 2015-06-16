@@ -88,7 +88,7 @@ def polish():
                 '-path ./app/logs -prune -o '
                 '-type d -o '
                 '-print0 | '
-                'xargs -0 grep -Pn "^(<|=|>){7}(?![<=>])"'
+                'xargs -0 grep -rPn "^(<|=|>){7}(?![<=>])"'
             )
             found_errors = found_errors or result.return_code != 0
 

@@ -35,25 +35,26 @@ class SecurityListener
     public function onKernelRequest(GetResponseEvent $event)
     {
         $request = $event->getRequest();
+       /* if (!session_status() === PHP_SESSION_ACTIVE) {
+            session_start();
+        }*/
+        $request->getSession()->all();
 
-        if ($request->getMethod() === 'GET') {
-            return;
-        }
 
-        $session = $request->getSession();
 
-        if ($session->get("isValidated") === true) {
-            return;
-        }
+        /* if ($request->getMethod() === 'GET') {
+             return;
+         }*/
 
 
         $profileToken = $request->headers->get('X-PROFILE-TOKEN');
         $practoAccountID = $request->get("practo_account_id");
+        if (empty($practoAccountID)) {
+            $practoAccountID = $request->query->get('practo_account_id');
+        }
 
         if (is_null($profileToken) || is_null($practoAccountID)) {
-            $responseRet = new Response();
-            $responseRet->setStatusCode(Response::HTTP_FORBIDDEN);
-            $event->setResponse($responseRet);
+            $_SESSION['validated'] = false;
 
         }
 
@@ -63,6 +64,7 @@ class SecurityListener
         } catch (\Exception $e) {
             $responseRet = new Response();
             $responseRet->setStatusCode(Response::HTTP_FORBIDDEN);
+            $responseRet->setContent($e->getMessage());
             $event->setResponse($responseRet);
         }
     }

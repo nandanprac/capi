@@ -16,6 +16,11 @@ use GuzzleHttp\Message\Response;
 use GuzzleHttp\Client;
 use GuzzleHttp\Post\PostBody;
 
+/**
+ * Class RetrieveUserProfileUtil
+ *
+ * @package ConsultBundle\Utility
+ */
 class RetrieveUserProfileUtil
 {
 
@@ -23,9 +28,11 @@ class RetrieveUserProfileUtil
     private $accountsSigningKey;
 
 
-
-
-    public function __construct($accountHost = 'http://accounts.practo.local', $accountsSigningKey = 'software-accounts-key')
+    /**
+     * @param string $accountHost
+     * @param string $accountsSigningKey
+     */
+    public function __construct($accountHost, $accountsSigningKey)
     {
         $this->accountHost = $accountHost;
 
@@ -34,28 +41,34 @@ class RetrieveUserProfileUtil
     }
 
 
-    public function retrieveUserProfile($accountId)
+
+
+    /**
+     * @param \ConsultBundle\Entity\Question $question
+     */
+    public function loadUserDetailInQuestion(Question $question)
     {
-        $postData = array(
-            'service'           => 'software',
-            'practo_account_id' => $accountId,
-            'signed'            => 'service,practo_account_id,signed'
-        );
-        $this->signEndpointPostData($postData, $this->accountsSigningKey);
-        $practoDomain = new PractoDomain($this->request);
-        $accountsHost = $practoDomain->getHost('accounts');
-        /**
-         * @var Response $response
-         */
-        $response = $this->browser->submit($accountsHost."/_enquire_profile", $postData);
-        if (!$response->isSuccessful()) {
-            return null;
+
+        $userInfo = $question->getUserInfo();
+        if (!$userInfo->isIsRelative()) {
+            $userInfo = $this->retrieveUserProfileNew($userInfo);
+            $question->setUserInfo($userInfo);
+
         }
+
     }
 
-
-    public function retrieveUserProfileNew($accountId)
+    /**
+     * @param \ConsultBundle\Entity\UserInfo $userInfo
+     *
+     * @return \ConsultBundle\Entity\User|\ConsultBundle\Entity\UserInfo|null
+     */
+    public function retrieveUserProfileNew(UserInfo $userInfo)
     {
+        if (empty($userInfo) || empty($userInfo->getPractoAccountId())) {
+            return null;
+        }
+        $accountId = $userInfo->getPractoAccountId();
         $postData = array(
             'service'           => 'software',
             'practo_account_id' => $accountId,
@@ -76,9 +89,9 @@ class RetrieveUserProfileUtil
         $res = $client->send($request);
 
 
-        $user = $this->populateUserFromAccounts($res->json());
+        $userInfo = $this->populateUserFromAccounts($res->json(), $userInfo);
 
-        return $user;
+        return $userInfo;
     }
 
     /**
@@ -99,7 +112,13 @@ class RetrieveUserProfileUtil
         return $postData;
     }
 
-    private function populateUserFromAccounts(array $userProfile)
+    /**
+     * @param array                          $userProfile
+     * @param \ConsultBundle\Entity\UserInfo $user
+     *
+     * @return \ConsultBundle\Entity\User|\ConsultBundle\Entity\UserInfo|null
+     */
+    private function populateUserFromAccounts(array $userProfile, UserInfo $user)
     {
 
         if (is_null($userProfile)) {
@@ -107,15 +126,19 @@ class RetrieveUserProfileUtil
         }
 
 
+        if (empty($user)) {
+            $user = new UserInfo();
+        }
 
-        $user = new User();
 
 
 
 
 
         if (array_key_exists('dob', $userProfile)) {
-            $user->setDateOfBirth($userProfile['dob']);
+            $dob = new \DateTime($userProfile['dob']);
+            $age = $dob->diff(new \DateTime())->y;
+            $user->setAge($age);
         }
 
         if (array_key_exists('gender', $userProfile)) {
@@ -138,28 +161,5 @@ class RetrieveUserProfileUtil
 
 
         return $user;
-
-
-    }
-
-
-    public function loadUserDetailInQuestion(Question $question)
-    {
-
-        $userInfo = $question->getUserInfo();
-        if (is_null($userInfo)) {
-            $userInfo = new UserInfo();
-        }
-
-        $userProfile = $userInfo->getUserProfileDetails();
-
-        if (is_null($userProfile)) {
-            $userProfile = $this->retrieveUserProfileNew($question->getPractoAccountId());
-
-            $userInfo->setUserProfileDetails($userProfile);
-            $question->setUserInfo($userInfo);
-        }
-
-
     }
 }

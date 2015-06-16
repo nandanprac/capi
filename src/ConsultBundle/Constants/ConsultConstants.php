@@ -21,6 +21,11 @@ class ConsultConstants
     const DOCTOR_REPLY_ENTITY_NAME = "ConsultBundle:DoctorReply";
     const USER_ENTITY_NAME = "ConsultBundle:UserInfo";
     const QUESTION_BOOKMARK_ENTITY_NAME = "ConsultBundle:QuestionBookmark";
+    const QUESTION_COMMENT_ENTITY_NAME = "ConsultBundle:QuestionComment";
+    const QUESTION_COMMENT_VOTE_ENTITY_NAME = "ConsultBundle:QuestionCommentVote";
     const QUESTION_TAG_ENTITY_NAME = "ConsultBundle:QuestionTag";
     const DOCTOR_REPLY_RATING_ENTITY_NAME = "ConsultBundle:DoctorReplyRating";
+    const DOCTOR_REPLY_VOTE_ENTITY = "ConsultBundle:DoctorReplyVote";
+    const DOCTOR_NOTIFICATION_ENTITY_NAME = "ConsultBundle:DoctorNotification";
+    const USER_NOTIFICATION_ENTITY_NAME = "ConsultBundle:UserNotification";
 }

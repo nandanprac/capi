@@ -2,8 +2,8 @@ questions:
     resource: ConsultBundle\Controller\QuestionsController
     type:     rest
 
-questionBookmarks:
-    resource: ConsultBundle\Controller\QuestionBookmarkController
+questionComments:
+    resource: ConsultBundle\Controller\QuestionCommentsController
     type:     rest
 
 doctorQuestions:
@@ -18,4 +18,8 @@ replies:
 
 users:
     resource: ConsultBundle\Controller\UserController
+    type:      rest
+
+notification:
+    resource: ConsultBundle\Controller\NotificationController
     type:      rest

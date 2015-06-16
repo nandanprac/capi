@@ -10,6 +10,11 @@ namespace ConsultBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
+/**
+ * Class ConsultBundle
+ *
+ * @package ConsultBundle
+ */
 class ConsultBundle extends Bundle
 {
 

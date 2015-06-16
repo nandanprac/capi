@@ -8,22 +8,35 @@
 
 namespace ConsultBundle\Entity;
 
+/**
+ * Class DoctorEntity
+ *
+ * @package ConsultBundle\Entity
+ */
 class DoctorEntity
 {
 
     private $name;
 
-    private $specialty;
+    /**
+     * @var string
+     */
+    private $speciality;
 
     private $profilePicture;
 
+    /**
+     * @param null   $name
+     * @param null   $speciality
+     * @param string $profilePicture
+     */
     public function __construct(
         $name = null,
-        $specialty = null,
+        $speciality = null,
         $profilePicture = 'http://www.1stdoctor.com/wp-content/uploads/2013/11/woman_doctor_02.png'
-    )     {
+    ) {
         $this->name = $name;
-        $this->specialty = $specialty;
+        $this->speciality = $speciality;
         $this->profilePicture = $profilePicture;
     }
 
@@ -44,20 +57,21 @@ class DoctorEntity
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getSpecialty()
+    public function getSpeciality()
     {
-        return $this->specialty;
+        return $this->speciality;
     }
 
     /**
-     * @param mixed $specialty
+     * @param string $speciality
      */
-    public function setSpecialty($specialty)
+    public function setSpeciality($speciality)
     {
-        $this->specialty = $specialty;
+        $this->speciality = $speciality;
     }
+
 
     /**
      * @return mixed

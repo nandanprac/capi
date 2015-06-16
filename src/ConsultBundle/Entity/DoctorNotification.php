@@ -11,7 +11,7 @@ namespace ConsultBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="ConsultBundle\Repository\DoctorNotificationRepository")
+ * @ORM\Entity(repositoryClass="ConsultBundle\Repository\NotificationRepository")
  * @ORM\Table(name="doctor_notifications")
  * @ORM\HasLifecycleCallbacks()
  */
@@ -23,7 +23,9 @@ class DoctorNotification extends BaseEntity
     protected $practoAccountId;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Question", inversedBy="doctorNotification")
+     * @var Question $question
+     *
+     * @ORM\ManyToOne(targetEntity="Question")
      * @ORM\JoinColumn(name="question_id", referencedColumnName="id")
      */
     protected $question;
@@ -86,7 +88,7 @@ class DoctorNotification extends BaseEntity
     public function getQuestionId()
     {
         if ($this->question) {
-            return $this->question->getId();
+            return $this->getQuestion()->getId();
         }
 
         return null;

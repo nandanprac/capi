@@ -8,12 +8,16 @@
 
 namespace ConsultBundle\Utility;
 
-use ConsultBundle\Utils\Utility;
 use GuzzleHttp\Message\Request;
 use GuzzleHttp\Message\Response;
 use GuzzleHttp\Client;
 use GuzzleHttp\Post\PostBody;
 
+/**
+ * Class UpdateAccountsUtil
+ *
+ * @package ConsultBundle\Utility
+ */
 class UpdateAccountsUtil
 {
 
@@ -21,16 +25,24 @@ class UpdateAccountsUtil
 
     private static $fieldsToUpdate = array('weight_in_kgs' => 'weight',
                                      'height_in_cms' => 'height',
-                                      'date_of_birth' => 'dob',
+                                      'age' => 'dob',
                                      'gender' => 'gender',
                                       'blood_group' => 'blood_group');
 
+    /**
+     * @param string $accountHost
+     */
     public function __construct($accountHost)
     {
         $this->accountHost = $accountHost;
     }
 
-
+    /**
+     * @param string $profileToken
+     * @param array  $data
+     *
+     * @return null
+     */
     public function updateAccountDetails($profileToken, $data)
     {
 
@@ -63,7 +75,7 @@ class UpdateAccountsUtil
             $client->send($request);
 
         } catch (\Exception $e) {
-        //do nothing.
+            //do nothing.
         }
 
 
@@ -72,14 +84,19 @@ class UpdateAccountsUtil
 
     }
 
+    /**
+     * @param $params
+     *
+     * @return array|null
+     */
     private function populatePostData($params)
     {
 
-        if (array_key_exists('user_profile_details', $params)) {
-            if (!(array_key_exists('is_someone_else', $params['user_profile_details'])
-                and Utility::toBool($params['user_profile_details']['is_someone_else']) )
+        if (array_key_exists('user_info', $params)) {
+            if (!(array_key_exists('is_relative', $params['user_info'])
+                and Utility::toBool($params['user_info']['is_relative']) )
             ) {
-                $data = $params['user_profile_details'];
+                $data = $params['user_info'];
             }
         }
 
@@ -98,13 +115,14 @@ class UpdateAccountsUtil
                     $val = trim($data[$key]);
                     if (!empty($val)) {
                         if ($value === 'dob') {
-                            $dob = new \DateTime($val);
-
-                            $val = $dob->format("Y-m-d");
-
-
+                            $dob = $this->getCorrectedDOB($val);
+                            if (!empty($dob)) {
+                                $val = $dob->format("Y-m-d");
+                            }
                         }
-                        $postData[$value] = $val;
+                        if (!empty($val)) {
+                            $postData[$value] = $val;
+                        }
 
                     }
                 } catch (\Exception $e) {
@@ -116,5 +134,34 @@ class UpdateAccountsUtil
 
 
         return $postData;
+    }
+
+    /**
+     * @param \ConsultBundle\Utility\int $age
+     *
+     * @return \DateTime|null
+     */
+    private function getCorrectedDOB(int $age)
+    {
+        $dobStr = $_SESSION['authenticated_user']['dob'];
+
+        if (empty($dobStr)) {
+            $dob = new \DateTime();
+        } else {
+            $dob = new \DateTime($dobStr);
+        }
+
+        $currAge = $dob->diff(new \DateTime())->y;
+
+        if ($currAge == $age) {
+            return null;
+        } else {
+            $yearDiff = $age - $currAge;
+        }
+
+        $dateInterval = new \DateInterval("P".$yearDiff."Y");
+
+        return $dob->sub($dateInterval);
+
     }
 }

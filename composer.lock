@@ -952,17 +952,17 @@
         },
         {
             "name": "friendsofsymfony/rest-bundle",
-            "version": "1.6.0",
+            "version": "1.6.1",
             "target-dir": "FOS/RestBundle",
             "source": {
                 "type": "git",
                 "url": "https://github.com/FriendsOfSymfony/FOSRestBundle.git",
-                "reference": "832d08199cadf1770ec43c2cba68b42b4d5e7f9f"
+                "reference": "46a18702ad7ea33678c50914512ef5bf530e043b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSRestBundle/zipball/832d08199cadf1770ec43c2cba68b42b4d5e7f9f",
-                "reference": "832d08199cadf1770ec43c2cba68b42b4d5e7f9f",
+                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSRestBundle/zipball/46a18702ad7ea33678c50914512ef5bf530e043b",
+                "reference": "46a18702ad7ea33678c50914512ef5bf530e043b",
                 "shasum": ""
             },
             "require": {
@@ -1032,7 +1032,7 @@
             "keywords": [
                 "rest"
             ],
-            "time": "2015-05-22 20:17:35"
+            "time": "2015-06-04 07:49:44"
         },
         {
             "name": "guzzle/guzzle",
