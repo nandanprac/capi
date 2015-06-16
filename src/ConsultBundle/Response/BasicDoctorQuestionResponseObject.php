@@ -9,6 +9,7 @@
 namespace ConsultBundle\Response;
 
 use ConsultBundle\Entity\DoctorQuestion;
+use ConsultBundle\Utility\Utility;
 
 /**
  * Class BasicDoctorQuestionResponseObject
@@ -23,14 +24,22 @@ class BasicDoctorQuestionResponseObject extends BasicQuestionResponseObject
     private $rating;
 
     /**
+     * @var boolean
+     */
+    private $hasImages;
+
+    /**
      * @param \ConsultBundle\Entity\DoctorQuestion $doctorQuestion
      */
     public function __construct(DoctorQuestion $doctorQuestion)
     {
-        parent::__construct($doctorQuestion->getQuestion());
+        $question = $doctorQuestion->getQuestion();
+        parent::__construct($question);
+
 
         $this->setId($doctorQuestion->getId());
         $this->setState($doctorQuestion->getState());
+        $this->setHasImages(($question->getImages()->count()));
 
 
     }
@@ -66,6 +75,24 @@ class BasicDoctorQuestionResponseObject extends BasicQuestionResponseObject
     {
         $this->rating = $rating;
     }
+
+    /**
+     * @return boolean
+     */
+    public function isHasImages()
+    {
+        return $this->hasImages;
+    }
+
+    /**
+     * @param boolean $hasImages
+     */
+    public function setHasImages($hasImages)
+    {
+        $this->hasImages = Utility::toBool($hasImages);
+    }
+
+
 
 
 

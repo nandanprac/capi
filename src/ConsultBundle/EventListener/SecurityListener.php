@@ -36,9 +36,9 @@ class SecurityListener
     {
         $request = $event->getRequest();
 
-        if ($request->getMethod() === 'GET') {
+       /* if ($request->getMethod() === 'GET') {
             return;
-        }
+        }*/
 
         $session = $request->getSession();
 
@@ -49,6 +49,9 @@ class SecurityListener
 
         $profileToken = $request->headers->get('X-PROFILE-TOKEN');
         $practoAccountID = $request->get("practo_account_id");
+        if (empty($practoAccountID)) {
+            $practoAccountID = $request->query->get('practo_account_id');
+        }
 
         if (is_null($profileToken) || is_null($practoAccountID)) {
             $responseRet = new Response();
