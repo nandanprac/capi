@@ -83,6 +83,7 @@ class AuthenticationUtils
 
 
         $userJson = $res->json();
+        $_SESSION['authenticated_user'] = $userJson;
 
         $userId = $userJson["id"];
 

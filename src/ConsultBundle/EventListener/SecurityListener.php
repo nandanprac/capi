@@ -40,9 +40,8 @@ class SecurityListener
             return;
         }*/
 
-        $session = $request->getSession();
 
-        if ($session->get("isValidated") === true) {
+        if (array_key_exists("authenticated_user", $_SESSION)) {
             return;
         }
 
