@@ -35,10 +35,16 @@ class SecurityListener
     public function onKernelRequest(GetResponseEvent $event)
     {
         $request = $event->getRequest();
-
-       /* if ($request->getMethod() === 'GET') {
-            return;
+       /* if (!session_status() === PHP_SESSION_ACTIVE) {
+            session_start();
         }*/
+        $request->getSession()->all();
+
+
+
+        /* if ($request->getMethod() === 'GET') {
+             return;
+         }*/
 
 
         $profileToken = $request->headers->get('X-PROFILE-TOKEN');
@@ -58,6 +64,7 @@ class SecurityListener
         } catch (\Exception $e) {
             $responseRet = new Response();
             $responseRet->setStatusCode(Response::HTTP_FORBIDDEN);
+            $responseRet->setContent($e->getMessage());
             $event->setResponse($responseRet);
         }
     }

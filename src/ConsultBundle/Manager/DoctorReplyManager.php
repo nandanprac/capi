@@ -27,6 +27,12 @@ class DoctorReplyManager extends BaseManager
 {
     public static $mandatoryFields;
 
+    public static $mandatoryFieldsForPostReply = array(
+        "practo_account_id",
+        "doctor_question_id",
+        "text"
+    );
+
     /**
      * @param \ConsultBundle\Queue\AbstractQueue         $queue
      * @param \ConsultBundle\Manager\NotificationManager $notification
@@ -41,14 +47,18 @@ class DoctorReplyManager extends BaseManager
     }
 
     /**
-     * @param int    $doctorQuestionId
-     * @param int    $practoAccountId
-     * @param string $answerText
-     * @return DoctorReply
+     * @param array $postData
+     *
+     * @return \ConsultBundle\Entity\DoctorReply
      * @throws \HttpException
      */
-    public function replyToAQuestion($doctorQuestionId, $practoAccountId, $answerText)
+    public function replyToAQuestion($postData)
     {
+        $this->helper->checkForMandatoryFields(self::$mandatoryFieldsForPostReply, $postData);
+        $practoAccountId = $postData['practo_account_id'];
+        $doctorQuestionId = $postData['doctor_question_id'];
+        $answerText = $postData['text'];
+
         $doctorReply = new DoctorReply();
         /**
          * @var DoctorQuestion $doctorQuestion
