@@ -41,11 +41,6 @@ class SecurityListener
         }*/
 
 
-        if (array_key_exists("authenticated_user", $_SESSION)) {
-            return;
-        }
-
-
         $profileToken = $request->headers->get('X-PROFILE-TOKEN');
         $practoAccountID = $request->get("practo_account_id");
         if (empty($practoAccountID)) {
@@ -53,9 +48,7 @@ class SecurityListener
         }
 
         if (is_null($profileToken) || is_null($practoAccountID)) {
-            $responseRet = new Response();
-            $responseRet->setStatusCode(Response::HTTP_FORBIDDEN);
-            $event->setResponse($responseRet);
+            $_SESSION['validated'] = false;
 
         }
 

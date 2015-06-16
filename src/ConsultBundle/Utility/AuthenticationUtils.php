@@ -47,9 +47,9 @@ class AuthenticationUtils
     public function authenticateWithAccounts($practoAccountId, $profileToken)
     {
 
-        if ($this->isAlreadyValidated($practoAccountId, $profileToken)) {
+       /* if ($this->isAlreadyValidated($practoAccountId, $profileToken)) {
             return true;
-        }
+        }*/
 
         return $this->validateWithTokenNew($practoAccountId, $profileToken);
     }
@@ -59,7 +59,7 @@ class AuthenticationUtils
      * @param $profileToken
      *
      * @return bool
-     */
+
     private function isAlreadyValidated($practoAccountId, $profileToken)
     {
         return ($profileToken === AuthenticationUtils::$authenticationMap[$practoAccountId]);
@@ -74,6 +74,20 @@ class AuthenticationUtils
      */
     private function validateWithTokenNew($practoAccountId, $profileToken)
     {
+        $pId = intval($practoAccountId);
+        if (array_key_exists('authenticated_user', $_SESSION)) {
+            $userJson = $_SESSION['authenticated_user'];
+
+            if (!empty($userJson) && array_key_exists("id", $userJson)) {
+                $id = $userJson['id'];
+                if ($id == $pId) {
+                    $_SESSION['validated'] = true;
+
+                    return true;
+                }
+
+            }
+        }
 
         $client = new Client(
             array('base_url' => $this->accountHost,
@@ -83,18 +97,18 @@ class AuthenticationUtils
 
 
         $userJson = $res->json();
-        $_SESSION['authenticated_user'] = $userJson;
 
         $userId = $userJson["id"];
 
 
         $code = $res->getStatusCode();
 
-        if (is_null($userId) || $userId != $practoAccountId || $code[0] > 3) {
-            throw new HttpException(Response::HTTP_FORBIDDEN);
+        if (!(empty($userId) || $userId != $practoAccountId || $code[0] > 3)) {
+            $_SESSION['validated'] = true;
+            $_SESSION['authenticated_user'] = $userJson;
         }
 
-        AuthenticationUtils::$authenticationMap[$practoAccountId] =  $profileToken;
+//        AuthenticationUtils::$authenticationMap[$practoAccountId] =  $profileToken;
 
         return true;
 
