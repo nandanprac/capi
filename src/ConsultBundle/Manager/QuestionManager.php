@@ -2,6 +2,7 @@
 
 namespace ConsultBundle\Manager;
 
+use FOS\RestBundle\Util\Codes;
 use ConsultBundle\Constants\ConsultConstants;
 use ConsultBundle\Entity\UserInfo;
 use ConsultBundle\Mapper\QuestionMapper;
@@ -18,6 +19,7 @@ use ConsultBundle\Entity\Question;
 use ConsultBundle\Entity\QuestionComment;
 use ConsultBundle\Entity\QuestionImage;
 use ConsultBundle\Entity\QuestionTag;
+use ConsultBundle\Entity\QuestionView;
 use ConsultBundle\Manager\ValidationError;
 use ConsultBundle\Queue\AbstractQueue as Queue;
 
@@ -116,6 +118,7 @@ class QuestionManager extends BaseManager
     /**
      * @param array $requestParams - data for the updation
      * @throws ValidationError
+     * @throws HttpException
      * @return Question
      */
     public function patch($requestParams, $practoAccountId = null)
@@ -134,14 +137,31 @@ class QuestionManager extends BaseManager
 
         if (array_key_exists('view', $requestParams)) {
             $question->setViewCount($question->getViewCount() + 1);
+            if (!empty($practoAccountId)) {
+                $viewEntry = $this->helper->getRepository(ConsultConstants::QUESTION_VIEW_ENTITY_NAME)
+                                  ->findBy(array('question' => $question, 'practoAccountId' => $practoAccountId, 'softDeleted' => 0));
+                if (empty($viewEntry)) {
+                    $view = new QuestionView();
+                    $view->setQuestion($question);
+                    $view->setPractoAccountId($practoAccountId);
+                    $question->addViews($view);
+                }
+                if ($practoAccountId == $question->getUserInfo()->getPractoAccountId()) {
+                    $question->setViewedAt(new \DateTime('now'));
+                }
+            }
             $this->helper->persist($question, 'true');
         }
+
         if (array_key_exists('share', $requestParams)) {
             $question->setShareCount($question->getShareCount() + 1);
             $this->helper->persist($question, 'true');
         }
 
         if (array_key_exists('bookmark', $requestParams)) {
+            if (empty($practoAccountId)) {
+                throw new \HttpException('',Codes::HTTP_FORBIDDEN);
+            }
             if (Utility::toBool($requestParams['bookmark'])) {
                 try {
                     $questionBookmark = $this->questionBookmarkManager->add($requestParams);

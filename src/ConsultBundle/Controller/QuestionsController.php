@@ -117,6 +117,8 @@ class QuestionsController extends BaseConsultController
             $questionFinal = $questionManager->patch($request, $practoAccountId);
         } catch (ValidationError $e) {
             return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
+        } catch(\HttpException $e) {
+            return View::create(json_decode($e->getMessage(), true), Codes::HTTP_FORBIDDEN);
         }
 
         return View::create(
