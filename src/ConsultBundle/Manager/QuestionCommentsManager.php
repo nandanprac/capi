@@ -122,8 +122,8 @@ class QuestionCommentsManager extends BaseManager
             @$error['question_id'] = 'This cannot be blank';
             throw new ValidationError($error);
         }
-        $limit = (array_key_exists('limit', $requestParams)) ? $requestParams['limit'] : 10;
-        $offset = (array_key_exists('offset', $requestParams)) ? $requestParams['offset'] : 0;
+        $limit = (array_key_exists('limit', $requestParams)) ? $requestParams['limit'] : null;
+        $offset = (array_key_exists('offset', $requestParams)) ? $requestParams['offset'] : null;
         $practoAccountId = (array_key_exists('practo_account_id', $requestParams)) ? $requestParams['practo_account_id'] : null;
 
         $question = $this->helper->loadById($requestParams['question_id'], ConsultConstants::QUESTION_ENTITY_NAME);
