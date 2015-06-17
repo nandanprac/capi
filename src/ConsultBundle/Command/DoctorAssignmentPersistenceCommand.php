@@ -78,7 +78,7 @@ class DoctorAssignmentPersistenceCommand extends ContainerAwareCommand
                             ->sendMessage(json_encode($jobData));
                     } elseif ($jobData['state'] == 'GENERIC'  or $jobData['state'] == 'DOCNOTFOUND') {
                         $this->questionManager->setState($jobData['question_id'], $jobData['state']);
-                        $this->questionManager->setTagByQuestionId($jobData['question_id'], array_merge(array($jobData['speciality']), $jobData['tags']));
+                        $this->questionManager->setTagsByQuestionId($jobData['question_id'], array_merge(array($jobData['speciality']), $jobData['tags']));
                     }
                     echo "Queue Message Persisted: ".json_encode($jobData);
                 } catch (\Exception $e) {
