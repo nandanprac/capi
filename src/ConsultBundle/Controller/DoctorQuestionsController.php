@@ -8,7 +8,6 @@
 
 namespace ConsultBundle\Controller;
 
-use ConsultBundle\Annotations\NeedAuthentication;
 use FOS\RestBundle\Controller\Annotations\Get;
 use FOS\RestBundle\Controller\Annotations\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -27,7 +26,6 @@ class DoctorQuestionsController extends BaseConsultController
     /**
      * @return ArrayCollection
      *
-     * @NeedAuthentication()
      */
     public function getDoctorQuestionsAction()
     {
