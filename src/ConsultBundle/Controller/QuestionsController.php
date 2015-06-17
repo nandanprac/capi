@@ -118,7 +118,7 @@ class QuestionsController extends BaseConsultController
         } catch (ValidationError $e) {
             return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
         } catch(\HttpException $e) {
-            return View::create(json_decode($e->getMessage(), true), Codes::HTTP_FORBIDDEN);
+            return View::create(json_decode($e->getMessage(), true), $e->getCode());
         }
 
         return View::create(
