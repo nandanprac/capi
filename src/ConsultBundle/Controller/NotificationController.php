@@ -11,15 +11,16 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 /**
  * Notification Controller
  */
-class NotificationController extends Controller
+class NotificationController extends BaseConsultController
 {
     /**
      * @param Request $request - request Object
      *
      * @return View
      */
-    public function getDoctorNotificationAction(Request $request)
+    public function getDoctorNotificationsAction(Request $request)
     {
+        $this->authenticate();
         $requestParams = $request->query->all();
 
         try {
@@ -41,6 +42,7 @@ class NotificationController extends Controller
      */
     public function patchDoctorNotificationAction()
     {
+        $this->authenticate();
         $requestParams = $this->getRequest()->request->all();
 
         try {
@@ -64,6 +66,7 @@ class NotificationController extends Controller
      */
     public function getUserNotificationAction(Request $request)
     {
+        $this->authenticate();
         $requestParams = $request->query->all();
 
         try {
@@ -86,6 +89,7 @@ class NotificationController extends Controller
      */
     public function patchUserNotificationAction()
     {
+        $this->authenticate();
         $requestParams = $this->getRequest()->request->all();
 
         try {

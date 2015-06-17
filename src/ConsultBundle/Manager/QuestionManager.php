@@ -118,7 +118,7 @@ class QuestionManager extends BaseManager
      * @throws ValidationError
      * @return Question
      */
-    public function patch($requestParams)
+    public function patch($requestParams, $practoAccountId = null)
     {
         $error = array();
         if (array_key_exists('question_id', $requestParams)) {

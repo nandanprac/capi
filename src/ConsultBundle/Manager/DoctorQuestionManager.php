@@ -121,8 +121,9 @@ class DoctorQuestionManager extends BaseManager
     public function loadById($doctorQuestionId)
     {
 
-        $doctorQuestion =  $this->getRepository()->findById($doctorQuestionId);
-        $this->fetchDetailQuestionObject($doctorQuestion, $_SESSION['authenticated_user']);
+        $doctorQuestion =  $this->helper->loadById($doctorQuestionId, ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME);
+
+        return $this->fetchDetailQuestionObject($doctorQuestion, $_SESSION['authenticated_user']);
     }
 
     /**
@@ -195,10 +196,13 @@ class DoctorQuestionManager extends BaseManager
     private function fetchDetailQuestionObject(DoctorQuestion $doctorQuestionEntity, $practoAccountId)
     {
         $questionEntity = $doctorQuestionEntity->getQuestion();
+        //var_dump($questionEntity);die;
         $question = null;
         if (!empty($questionEntity)) {
             if (!$questionEntity->getUserInfo()->isIsRelative()) {
+
                 $this->retrieveUserProfileUtil->retrieveUserProfileNew($questionEntity->getUserInfo());
+
             }
 
             $question = new DoctorQuestionResponseObject($doctorQuestionEntity);
@@ -207,7 +211,7 @@ class DoctorQuestionManager extends BaseManager
              * @var DoctorQuestionRepository $er
              */
             $er = $this->helper->getRepository(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME);
-            $doctorQuestions = $er->findRepliesByQuestion($questionEntity, $practoAccountId);
+            $doctorQuestions = $er->findRepliesByQuestion($questionEntity);
             $replies = array();
             foreach ($doctorQuestions as $doctorQuestion) {
                 $reply = new ReplyResponseObject();

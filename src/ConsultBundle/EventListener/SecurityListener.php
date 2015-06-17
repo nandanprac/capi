@@ -30,42 +30,42 @@ class SecurityListener
     }
 
     /**
-     * @param GetResponseEvent $event
+     * @param \Symfony\Component\HttpKernel\Event\GetResponseEvent $event
+     *
+     * @return bool
      */
     public function onKernelRequest(GetResponseEvent $event)
     {
         $request = $event->getRequest();
-       /* if (!session_status() === PHP_SESSION_ACTIVE) {
-            session_start();
-        }*/
         $request->getSession()->all();
-
-
-
-        /* if ($request->getMethod() === 'GET') {
-             return;
-         }*/
-
+        $_SESSION['validated'] = false;
 
         $profileToken = $request->headers->get('X-PROFILE-TOKEN');
-        $practoAccountID = $request->get("practo_account_id");
-        if (empty($practoAccountID)) {
-            $practoAccountID = $request->query->get('practo_account_id');
+        $practoAccountId = $request->get("practo_account_id");
+
+        if (empty($practoAccountId)) {
+            $practoAccountId = $request->query->get('practo_account_id');
         }
 
-        if (is_null($profileToken) || is_null($practoAccountID)) {
+
+
+        if (is_null($profileToken) || is_null($practoAccountId)) {
             $_SESSION['validated'] = false;
+
+            return false;
 
         }
 
         try {
             $this->authenticationUtils
-                ->authenticateWithAccounts($practoAccountID, $profileToken);
+                ->authenticateWithAccounts($practoAccountId, $profileToken);
         } catch (\Exception $e) {
             $responseRet = new Response();
             $responseRet->setStatusCode(Response::HTTP_FORBIDDEN);
-            $responseRet->setContent($e->getMessage());
+            $responseRet->setContent("Unauthorised Access");
             $event->setResponse($responseRet);
         }
+
+
     }
 }

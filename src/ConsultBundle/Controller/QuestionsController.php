@@ -2,6 +2,7 @@
 
 namespace ConsultBundle\Controller;
 
+use ConsultBundle\Utility\Utility;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\View\View;
 use FOS\RestBundle\Util\Codes;
@@ -13,14 +14,17 @@ use ConsultBundle\Manager\ValidationError;
 /**
  * Questions Controller
  */
-class QuestionsController extends Controller
+class QuestionsController extends BaseConsultController
 {
     /**
-     * @param Request $request - Request Object
-     * @return View
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *
+     * @return \FOS\RestBundle\View\View
+     * @throws \HttpException
      */
     public function postQuestionAction(Request $request)
     {
+        $this->authenticate();
         $postData = $request->request->get('question');
         $practoAccountId = $request->request->get('practo_account_id');
         $profileToken = $request->headers->get('X-Profile-Token');
@@ -59,7 +63,7 @@ class QuestionsController extends Controller
      */
     public function getQuestionAction($questionId, Request $request)
     {
-        $practoAccountId = $request->query->get('practo_account_id');
+        $practoAccountId = $this->authenticate(false);
 
         $questionManager = $this->get('consult.question_manager');
 
@@ -99,15 +103,18 @@ class QuestionsController extends Controller
     }
 
     /**
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *
      * @return \FOS\RestBundle\View\View
      */
-    public function patchQuestionAction()
+    public function patchQuestionAction(Request $request)
     {
+        $practoAccountId = $this->authenticate(false);
         $questionManager = $this->get('consult.question_manager');
-        $request = $this->getRequest()->request->all();
+        $request = $request->request->all();
 
         try {
-            $questionFinal = $questionManager->patch($request);
+            $questionFinal = $questionManager->patch($request, $practoAccountId);
         } catch (ValidationError $e) {
             return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
         }

@@ -46,11 +46,6 @@ class AuthenticationUtils
      */
     public function authenticateWithAccounts($practoAccountId, $profileToken)
     {
-
-       /* if ($this->isAlreadyValidated($practoAccountId, $profileToken)) {
-            return true;
-        }*/
-
         return $this->validateWithTokenNew($practoAccountId, $profileToken);
     }
 
@@ -107,8 +102,6 @@ class AuthenticationUtils
             $_SESSION['validated'] = true;
             $_SESSION['authenticated_user'] = $userJson;
         }
-
-//        AuthenticationUtils::$authenticationMap[$practoAccountId] =  $profileToken;
 
         return true;
 
