@@ -136,8 +136,6 @@ class RetrieveUserProfileUtil
 
 
         if (array_key_exists('dob', $userProfile)) {
-            $user = $_SESSION['authenticated_user'];
-            $user['id'];
             $dob = new \DateTime($userProfile['dob']);
             $age = $dob->diff(new \DateTime())->y;
             $user->setAge($age);
