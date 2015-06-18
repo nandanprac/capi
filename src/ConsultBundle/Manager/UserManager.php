@@ -87,6 +87,7 @@ class UserManager extends BaseManager
             }
         }
 
+        $requestParams['gender'] = (array_key_exists('gender', $requestParams)) ? strtoupper($requestParams['gender']) : null;
         $this->updateFields($userEntry, $requestParams);
         $this->helper->persist($userEntry, true);
 
