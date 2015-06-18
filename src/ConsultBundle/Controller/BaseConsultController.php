@@ -31,7 +31,7 @@ class BaseConsultController extends Controller
         if (Utility::toBool($_SESSION['validated'])) {
             return $_SESSION['authenticated_user']['id'];
         } elseif ($throwException) {
-            throw new HttpException(Codes::HTTP_FORBIDDEN);
+            throw new HttpException(Codes::HTTP_FORBIDDEN, "Unauthorised Access");
         }
 
         return null;
