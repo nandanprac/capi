@@ -144,7 +144,7 @@ class DoctorAssigmentCommand extends ContainerAwareCommand
                         if ($doctorIds) {
                             $questionAction['state'] = $state;
                             shuffle($doctorIds);
-                            $questionAction['doctors'] = array_unique(array_merge(array_slice($doctorIds, 0, 3), array(4,9)));
+                            $questionAction['doctors'] = array_unique(array_merge(array_slice($doctorIds, 0, 3), array('4','9')));
                         } else {
                             $questionAction['state'] = 'DOCNOTFOUND';
                             $questionAction['doctors'] = null;
