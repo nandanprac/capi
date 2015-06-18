@@ -8,6 +8,7 @@
 
 namespace ConsultBundle\Controller;
 
+use ConsultBundle\Annotations\NeedAuthentication;
 use ConsultBundle\Entity\DoctorReply;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Util\Codes;
@@ -20,7 +21,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @package ConsultBundle\Controller
  */
-class RepliesController extends FOSRestController
+class RepliesController extends BaseConsultController
 {
 
     /**
@@ -28,9 +29,11 @@ class RepliesController extends FOSRestController
      * @return DoctorReply
      *
      * @View()
+     *
      */
     public function postDoctorReplyAction(Request $request)
     {
+        $this->authenticate();
         $postData = $request->request->all();
         $doctorReplyManager = $this->get('consult.doctorReplyManager');
 
@@ -52,6 +55,7 @@ class RepliesController extends FOSRestController
      */
     public function patchDoctorReplyAction(Request $request)
     {
+        $this->authenticate();
         $postData = $request->request->all();
         $doctorReplyManager = $this->get('consult.doctorReplyManager');
         try {

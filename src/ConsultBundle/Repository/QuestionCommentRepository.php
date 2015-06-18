@@ -39,9 +39,14 @@ class QuestionCommentRepository extends EntityRepository
             ->andWhere('c.question = :question')
             ->setParameter('question', $question)
             ->groupBy('c.id')
-            ->orderBy('c.createdAt', 'DESC')
-            ->setMaxResults($limit)
-            ->setFirstResult($offset);
+            ->orderBy('c.createdAt', 'DESC');
+
+        if (!empty($limit)) {
+            $qb->setMaxResults($limit);
+        }
+        if (!empty($offset)) {
+            $qb->setFirstResult($offset);
+        }
 
         if(!empty($practoAccountId)) {
             $qb->addSelect('COALESCE(cv1.vote, 0) as has_voted')

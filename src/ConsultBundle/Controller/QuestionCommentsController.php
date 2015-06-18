@@ -12,7 +12,7 @@ use ConsultBundle\Manager\ValidationError;
 /**
  * Question Comments Controller
  */
-class QuestionCommentsController extends Controller
+class QuestionCommentsController extends BaseConsultController
 {
     /**
      * @param Request $request
@@ -20,6 +20,7 @@ class QuestionCommentsController extends Controller
      */
     public function postQuestionCommentAction(Request $request)
     {
+        $this->authenticate();
         $postData = $request->request->all();
         $questionCommentsManager = $this->get('consult.question_comment_manager');
 
@@ -43,6 +44,7 @@ class QuestionCommentsController extends Controller
      */
     public function patchQuestionCommentAction(Request $request)
     {
+        $this->authenticate();
         $postData = $request->request->all();
         $questionCommentsManager = $this->get('consult.question_comment_manager');
 

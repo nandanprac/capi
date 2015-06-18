@@ -18,7 +18,7 @@ class DetailPatientInfoResponse extends BasicPatientInfoResponse
     /**
      * @var string
      */
-    private $bloodGroup;
+    private $bloodGroup="";
 
     /**
      * @var float
@@ -30,11 +30,11 @@ class DetailPatientInfoResponse extends BasicPatientInfoResponse
      */
     private $weightInKgs;
 
-    private $allergies = null;
+    private $allergies = "";
 
-    private $medications = null;
+    private $medications = "";
 
-    private $prevDiagnosedConditions = null;
+    private $prevDiagnosedConditions = "";
 
     /**
      * @return mixed

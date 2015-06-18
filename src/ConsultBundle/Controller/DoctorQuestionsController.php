@@ -8,6 +8,8 @@
 
 namespace ConsultBundle\Controller;
 
+use FOS\RestBundle\Controller\Annotations\Get;
+use FOS\RestBundle\Controller\Annotations\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Doctrine\Common\Collections\ArrayCollection;
 use FOS\RestBundle\View\View;
@@ -18,11 +20,12 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * Doctor Question Controller
  */
-class DoctorQuestionsController extends Controller
+class DoctorQuestionsController extends BaseConsultController
 {
 
     /**
      * @return ArrayCollection
+     *
      */
     public function getDoctorQuestionsAction()
     {
@@ -32,7 +35,7 @@ class DoctorQuestionsController extends Controller
             $doctorQuestionManager = $this->get('consult.doctorQuestionManager');
             $questionsList = $doctorQuestionManager->loadAllByDoctor($queryParams);
         } catch (\Exception $e) {
-            return View::create(json_encode($e->getMessage(), true), Codes::HTTP_INTERNAL_SERVER_ERROR);
+            return View::create(json_encode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
         }
 
         return $questionsList;
@@ -45,6 +48,7 @@ class DoctorQuestionsController extends Controller
      */
     public function patchDoctorQuestionAction(Request $request)
     {
+         $this->authenticate();
         $updateData = $request->request->all();
         $doctorQuestionManager = $this->get('consult.doctorQuestionManager');
 
@@ -57,12 +61,34 @@ class DoctorQuestionsController extends Controller
         return View::create(array("question" => $doctorQuestionRes), Codes::HTTP_CREATED);
     }
 
+
+    /**
+     * @param int $id
+     * @Get("/doctor/question/{id}")
+     *
+     * @return \ConsultBundle\Entity\DoctorQuestion|\FOS\RestBundle\View\View
+     */
+    public function getDoctorQuestionAction($id)
+    {
+        $this->authenticate();
+        $doctorQuestionManager = $this->get('consult.doctorQuestionManager');
+        try {
+            //$doctorQuestionManager = $this->get('consult.doctorQuestionManager');
+            $question = $doctorQuestionManager->loadById($id);
+        } catch (\Exception $e) {
+            return View::create(json_encode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
+        }
+
+        return $question;
+    }
+
     /**
      * @param Integer $doctorId
      * @return mixed
      */
     public function getAnsweredDoctorQuestionsAction($doctorId)
     {
+        $this->authenticate();
         $doctorQuestionManager = $this->get('consult.doctorQuestionManager');
         $questions =  $doctorQuestionManager->getAnsweredDoctorQuestionsForDoctor($doctorId);
 
