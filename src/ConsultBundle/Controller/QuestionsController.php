@@ -44,7 +44,7 @@ class QuestionsController extends BaseConsultController
         $questionImageManager = $this->get('consult.question_image_manager');
 
         try {
-            $questionImageManager->add($question, $files);
+            $questionImageManager->add($question->getId(), $files);
         } catch (\Exception $e) {
             return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
         }

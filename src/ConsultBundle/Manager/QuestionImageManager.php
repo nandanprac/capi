@@ -2,6 +2,7 @@
 
 namespace ConsultBundle\Manager;
 
+use ConsultBundle\Constants\ConsultConstants;
 use ConsultBundle\Entity\Question;
 use ConsultBundle\Entity\QuestionImage;
 use ConsultBundle\Utility\FileUploadUtil;
@@ -28,13 +29,14 @@ class QuestionImageManager extends BaseManager
 
 
     /**
-     * @param Question $question
-     * @param FileBag  $fileBag
+     * @param int     $questionId
+     * @param FileBag $fileBag
      */
-    public function add(Question $question, FileBag $fileBag)
+    public function add($questionId, FileBag $fileBag)
     {
 
-        $urls = $this->fileUploadUtil->add($fileBag, $question->getId());
+        $urls = $this->fileUploadUtil->add($fileBag, $questionId);
+        $question = $this->helper->loadById($questionId, ConsultConstants::QUESTION_ENTITY_NAME);
         $questionImages = new ArrayCollection();
 
         foreach ($urls as $url) {

@@ -339,6 +339,8 @@ class QuestionManager extends BaseManager
             }
 
             $question->setReplies($replies);
+            $bookmarkCount = $this->helper->getRepository(ConsultConstants::QUESTION_ENTITY_NAME)->getBookmarkCountForAQuestion($questionEntity);
+            $question->setBookmarkCount($bookmarkCount);
 
             $er = $this->helper->getRepository(ConsultConstants::QUESTION_BOOKMARK_ENTITY_NAME);
 
