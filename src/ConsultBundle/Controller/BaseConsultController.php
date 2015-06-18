@@ -11,8 +11,8 @@ namespace ConsultBundle\Controller;
 
 use FOS\RestBundle\Util\Codes;
 use ConsultBundle\Utility\Utility;
-use FOS\RestBundle\View\View;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Class BaseConsultController
@@ -25,14 +25,13 @@ class BaseConsultController extends Controller
      * @param bool $throwException
      *
      * @return null
-     * @throws \HttpException
      */
     protected function authenticate($throwException = true)
     {
         if (Utility::toBool($_SESSION['validated'])) {
             return $_SESSION['authenticated_user']['id'];
         } elseif ($throwException) {
-            return View::create(json_encode("Unauthorised Access", true), Codes::HTTP_FORBIDDEN);
+            throw new HttpException(Codes::HTTP_FORBIDDEN);
         }
 
         return null;
