@@ -63,6 +63,13 @@ class UserInfo extends BaseEntity
     private $bloodGroup;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="occupation", type="string", length=50, nullable=true)
+     */
+    private $occupation;
+
+    /**
      * @var float
      *
      * @ORM\Column(name="height_in_cms", type="float", nullable=true)
@@ -177,6 +184,22 @@ class UserInfo extends BaseEntity
     public function setGender($gender)
     {
         $this->gender = $gender;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOccupation()
+    {
+        return $this->occupation;
+    }
+
+    /**
+     * @param string $occupation
+     */
+    public function setOccupation($occupation)
+    {
+        $this->occupation = $occupation;
     }
 
     /**
