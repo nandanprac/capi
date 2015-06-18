@@ -212,6 +212,6 @@ class DoctorReplyManager extends BaseManager
             $this->helper->persist($doctorReplyEntity, true);
         }
 
-        return $doctorReplyEntity;
+        return new ReplyResponseObject($doctorReplyEntity);
     }
 }
