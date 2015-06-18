@@ -216,7 +216,7 @@ class DoctorQuestion extends BaseEntity
      */
     public function __construct()
     {
-        $this->doctorReply = new ArrayCollection();
+     //   $this->doctorReply = new ArrayCollection();
     }
 
     /**
@@ -240,10 +240,13 @@ class DoctorQuestion extends BaseEntity
     }
 
     /**
-     * Clear Doctor Reply
+     * Add Doctor Reply
+     *
+     * @param DoctorReply $doctorReply - Doctor Reply
      */
-    public function clearDoctorReplies()
+    public function setDoctorReply(DoctorReply $doctorReply)
     {
-        $this->doctorReply = new ArrayCollection();
+        $this->doctorReply = $doctorReply;
     }
+
 }

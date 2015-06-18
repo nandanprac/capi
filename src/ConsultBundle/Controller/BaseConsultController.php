@@ -8,8 +8,9 @@
 
 namespace ConsultBundle\Controller;
 
-use ConsultBundle\Utility\Utility;
+
 use FOS\RestBundle\Util\Codes;
+use ConsultBundle\Utility\Utility;
 use FOS\RestBundle\View\View;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
@@ -31,7 +32,7 @@ class BaseConsultController extends Controller
         if (Utility::toBool($_SESSION['validated'])) {
             return $_SESSION['authenticated_user']['id'];
         } elseif ($throwException) {
-            return View::create(json_encode("Unauthorised Access", true), Codes::HTTP_BAD_REQUEST);
+            return View::create(json_encode("Unauthorised Access", true), Codes::HTTP_FORBIDDEN);
         }
 
         return null;
