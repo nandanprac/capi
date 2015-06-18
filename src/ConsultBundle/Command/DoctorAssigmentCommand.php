@@ -92,8 +92,10 @@ class DoctorAssigmentCommand extends ContainerAwareCommand
                         } else {
                             $speciality = '';
                         }
+                        $questionAction['user_classified'] = 0;
                     } else {
                         $speciality = $user_speciality;
+                        $questionAction['user_classified'] = 1;
                     }
 
                     // Question State Creation
