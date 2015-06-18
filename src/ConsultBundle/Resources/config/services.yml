@@ -53,7 +53,7 @@ services:
         class: ConsultBundle\Helper\Helper
         arguments:
         - @doctrine
-       # - @consult.cacheUtil
+        - @logger
 
     consult.question_manager:
         class: ConsultBundle\Manager\QuestionManager

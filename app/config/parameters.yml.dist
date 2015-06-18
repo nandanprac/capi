@@ -45,3 +45,4 @@ parameters:
     daa_debug: false
     accounts_host: http://accounts.practo.local
     accounts_signing_key: software-accounts-key
+    kernel.debug: true

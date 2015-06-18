@@ -31,7 +31,7 @@ class DoctorQuestionResponseObject extends DetailQuestionResponseObject
         parent::__construct($doctorQuestion->getQuestion());
         $this->setId($doctorQuestion->getId());
         $this->setState($doctorQuestion->getState());
-        $this->images = $doctorQuestion->getQuestion()->getImages();
+        //$this->images = $doctorQuestion->getQuestion()->getImages();
     }
 
     /**

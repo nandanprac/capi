@@ -30,4 +30,5 @@ class ConsultConstants
     const DOCTOR_REPLY_VOTE_ENTITY = "ConsultBundle:DoctorReplyVote";
     const DOCTOR_NOTIFICATION_ENTITY_NAME = "ConsultBundle:DoctorNotification";
     const USER_NOTIFICATION_ENTITY_NAME = "ConsultBundle:UserNotification";
+    const QUESTION_IMAGE_ENTITY_NAME = "ConsultBundle:QuestionImage";
 }

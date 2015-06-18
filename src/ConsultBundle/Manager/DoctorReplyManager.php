@@ -14,6 +14,7 @@ use ConsultBundle\Entity\DoctorQuestion;
 use ConsultBundle\Entity\DoctorReply;
 use ConsultBundle\Entity\DoctorReplyRating;
 use ConsultBundle\Entity\DoctorReplyVote;
+use ConsultBundle\Response\ReplyResponseObject;
 use Doctrine\Common\Collections\ArrayCollection;
 use FOS\RestBundle\Util\Codes;
 use ConsultBundle\Queue\AbstractQueue as Queue;
@@ -115,7 +116,7 @@ class DoctorReplyManager extends BaseManager
 
         $this->helper->persist($doctorReply, true);
 
-        return $doctorReply;
+        return new ReplyResponseObject($doctorReply);
     }
 
     /**

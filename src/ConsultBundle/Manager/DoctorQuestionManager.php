@@ -203,6 +203,7 @@ class DoctorQuestionManager extends BaseManager
         }
         $questionEntity = $doctorQuestionEntity->getQuestion();
 
+
         $question = null;
 
         if (!empty($questionEntity)) {
@@ -225,9 +226,14 @@ class DoctorQuestionManager extends BaseManager
                 $reply->setDoctor($doc);
                 $replies[] = $reply;
             }
+            //var_dump(json_encode($questionEntity));die;
 
             $question->setReplies($replies);
-            $question->setBookmarkCount($questionEntity->getBookmarkCount());
+
+            $bookmarkCount = $this->helper->getRepository(ConsultConstants::QUESTION_ENTITY_NAME)->getBookmarkCountForAQuestion($questionEntity);
+            $question->setBookmarkCount($bookmarkCount);
+            $images = $this->helper->getRepository(ConsultConstants::QUESTION_ENTITY_NAME)->getImagesForAQuestion($questionEntity);
+            $question->setImages($images);
 
             //Set comments
             /**
