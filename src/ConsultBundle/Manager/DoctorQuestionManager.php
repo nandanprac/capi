@@ -107,10 +107,9 @@ class DoctorQuestionManager extends BaseManager
         $this->helper->persist($question, true);
 
 
-        $ques = $question->getQuestion();
 
 
-        return $ques;
+        return new DoctorQuestionResponseObject($question);
     }
 
     /**
@@ -122,6 +121,10 @@ class DoctorQuestionManager extends BaseManager
     {
 
         $doctorQuestion =  $this->helper->loadById($doctorQuestionId, ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME);
+
+        if (empty($doctorQuestion)) {
+            return null;
+        }
 
         return $this->fetchDetailQuestionObject($doctorQuestion, $_SESSION['authenticated_user']);
     }
@@ -195,14 +198,16 @@ class DoctorQuestionManager extends BaseManager
      */
     private function fetchDetailQuestionObject(DoctorQuestion $doctorQuestionEntity, $practoAccountId)
     {
+        if (empty($doctorQuestionEntity)) {
+            return null;
+        }
         $questionEntity = $doctorQuestionEntity->getQuestion();
-        //var_dump($questionEntity);die;
+
         $question = null;
+
         if (!empty($questionEntity)) {
             if (!$questionEntity->getUserInfo()->isIsRelative()) {
-
                 $this->retrieveUserProfileUtil->retrieveUserProfileNew($questionEntity->getUserInfo());
-
             }
 
             $question = new DoctorQuestionResponseObject($doctorQuestionEntity);
@@ -222,6 +227,7 @@ class DoctorQuestionManager extends BaseManager
             }
 
             $question->setReplies($replies);
+            $question->setBookmarkCount($questionEntity->getBookmarkCount());
 
             //Set comments
             /**

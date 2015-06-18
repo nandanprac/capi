@@ -38,6 +38,10 @@ class DoctorQuestionsController extends BaseConsultController
             return View::create(json_encode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
         }
 
+        if (null === $questionsList) {
+            return View::create(null, Codes::HTTP_NOT_FOUND);
+        }
+
         return $questionsList;
     }
 
@@ -77,6 +81,10 @@ class DoctorQuestionsController extends BaseConsultController
             $question = $doctorQuestionManager->loadById($id);
         } catch (\Exception $e) {
             return View::create(json_encode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
+        }
+
+        if (null === $question) {
+            return View::create(null, Codes::HTTP_NOT_FOUND);
         }
 
         return $question;
