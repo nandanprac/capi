@@ -69,6 +69,9 @@ class DoctorAssignmentPersistenceCommand extends ContainerAwareCommand
                         $this->doctorQuestionManager->setDoctorsForAQuestions($jobData['question_id'], $jobData['doctors']);
                         $this->questionManager->setState($jobData['question_id'], $jobData['state']);
                         $this->questionManager->setTagsByQuestionId($jobData['question_id'], array_merge(array($jobData['speciality']), $jobData['tags']));
+                        if ($jobData['user_classified'] == 0){
+                            $this->questionManager->setSpeciality($jobData['question_id'], $jobData['speciality']);
+                        }
                         $jobData['type'] = 'new_question';
                         $jobData['user_ids'] = $jobData['doctors'];
                         $jobData['message'] = $jobData['question_id'];
@@ -77,7 +80,10 @@ class DoctorAssignmentPersistenceCommand extends ContainerAwareCommand
                             ->setQueueName(Queue::CONSULT_GCM)
                             ->sendMessage(json_encode($jobData));
                     } elseif ($jobData['state'] == 'GENERIC'  or $jobData['state'] == 'DOCNOTFOUND') {
-                        $this->questionManager->setState($jobData['question_id'], $jobData['state']);
+                        if ($jobData['user_classified'] == 0){
+                            $this->questionManager->setSpeciality($jobData['question_id'], $jobData['speciality']);
+                        }
+                           $this->questionManager->setState($jobData['question_id'], $jobData['state']);
                         $this->questionManager->setTagsByQuestionId($jobData['question_id'], array_merge(array($jobData['speciality']), $jobData['tags']));
                     }
                     echo "Queue Message Persisted: ".json_encode($jobData);

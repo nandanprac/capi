@@ -259,6 +259,24 @@ class QuestionManager extends BaseManager
     }
 
     /**
+     * @param int    $questionId
+     * @param string $speciality
+     *
+     * @throws \Exception
+     */
+    public function setSpeciality($questionId, $speciality)
+    {
+        $question = $this->helper->loadById($questionId, ConsultConstants::QUESTION_ENTITY_NAME);
+        if ($question) {
+            $question->setSpeciality($speciality);
+            $this->helper->persist($question, 'true');
+        } else {
+            throw new \Exception("Question with id ".$questionId." doesn't exist.");
+        }
+    }
+
+
+    /**
      * @param integer $questionId - Question Id
      * @param string  $tags       - text for the tag
      *
@@ -282,7 +300,7 @@ class QuestionManager extends BaseManager
             $tagObj->setTag($tag);
             $tagObj->setUserDefined(true);
             $tagObj->setQuestion($question);
-            //$question->addTag($tagObj);
+            $question->addTag($tagObj);
         }
     }
 
