@@ -112,7 +112,7 @@ class QuestionManager extends BaseManager
 
         $this->queue->setQueueName(Queue::DAA)->sendMessage(json_encode($job));
 
-        return $question;
+        return new DetailQuestionResponseObject($question);
     }
 
     /**
@@ -181,7 +181,7 @@ class QuestionManager extends BaseManager
             }
         }
 
-        return $question;
+        return new DetailQuestionResponseObject($question);
     }
 
     /**
