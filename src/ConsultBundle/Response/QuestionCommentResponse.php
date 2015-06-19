@@ -33,6 +33,7 @@ class QuestionCommentResponse extends ConsultResponseObject {
         if (!empty($questionComment)) {
             parent::__construct($questionComment);
             $this->text = $questionComment->getText();
+            $this->identifier = $questionComment->getIdentifier();
         }
 
     }
