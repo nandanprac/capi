@@ -51,7 +51,7 @@ class UserInfo extends BaseEntity
      * @var string
      *
      * @ORM\Column(name="gender", type="string", length=1, nullable=true)
-     * @Assert\Choice(choices = {"M", "F", "m", "f"}, message="Input can only be M/F")
+     * @Assert\Choice(choices = {"M", "F"}, message="Input can only be M/F")
      */
     private $gender;
 
