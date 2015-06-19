@@ -62,6 +62,7 @@ class DoctorQuestionResponseObject extends DetailQuestionResponseObject
         $patientInfo->setAge($userInfo->getAge());
         $patientInfo->setGender($userInfo->getGender());
         $this->setPatientInfo($patientInfo);
+        $patientInfo->setOccupation($userInfo->getOccupation());
     }
 
 }

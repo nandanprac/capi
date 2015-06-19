@@ -66,12 +66,13 @@ class DoctorQuestionManager extends BaseManager
      */
     public function patch($updateData)
     {
-        if (array_key_exists('question_id', $updateData) and array_key_exists('practo_account_id', $updateData)) {
+        if (array_key_exists('id', $updateData) and array_key_exists('practo_account_id', $updateData)) {
+            $practoAccountId = $updateData['practo_account_id'];
             /**
              * @var DoctorQuestion $question
              */
-            $question = $this->getRepository()->findOneBy(array('practoAccountId'=>$updateData['practo_account_id'], 'question'=>$updateData['question_id']));
-            if (!$question) {
+            $question = $this->helper->loadById($updateData['id'], ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME);
+            if (empty($question) || $question->getPractoAccountId() != $practoAccountId) {
                 throw new ValidationError(array("error"=>"Question is not mapped to this doctor."));
             }
         } else {
