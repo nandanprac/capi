@@ -5,6 +5,7 @@ namespace ConsultBundle\Manager;
 use ConsultBundle\Constants\ConsultConstants;
 use ConsultBundle\Entity\QuestionCommentVote;
 use ConsultBundle\Entity\QuestionCommentFlag;
+use ConsultBundle\Response\QuestionCommentResponse;
 use FOS\RestBundle\Util\Codes;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 use Symfony\Component\Validator\ValidatorInterface;
@@ -56,15 +57,14 @@ class QuestionCommentsManager extends BaseManager
         $question->setModifiedAt(new \DateTime('now'));
         $this->helper->persist($questionComment, true);
 
-        return $questionComment;
+        return new QuestionCommentResponse($questionComment);
     }
 
     /**
-     * Patch comment for upvote/downvote
-     *
      * @param array $requestParams
      *
-     * @return QuestionComment
+     * @return array|\ConsultBundle\Entity\QuestionCommentFlag|\ConsultBundle\Entity\QuestionCommentFlag[]
+     * @throws \ConsultBundle\Manager\ValidationError
      */
     public function patch($requestParams)
     {
@@ -98,14 +98,14 @@ class QuestionCommentsManager extends BaseManager
                 $vote->setCount($vote->getCount() + 1);
                 $this->helper->persist($vote, true);
 
-                return $vote;
+               // return $vote;
             } else {
                 $commentVote = new QuestionCommentVote();
                 $commentVote->setQuestionComment($questionComment);
                 $this->updateFields($commentVote, $requestParams);
                 $this->helper->persist($commentVote, true);
 
-                return $commentVote;
+               // return $commentVote;
             }
         }
 
@@ -128,8 +128,10 @@ class QuestionCommentsManager extends BaseManager
             $this->updateFields($flag, $requestParams);
             $this->helper->persist($flag, true);
 
-            return $flag;
+            //return $flag;
         }
+
+        return new QuestionCommentResponse($questionComment);
 
     }
 
