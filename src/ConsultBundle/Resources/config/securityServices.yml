@@ -3,6 +3,8 @@ parameters:
 services:
    listener.security_listener:
         class: ConsultBundle\EventListener\SecurityListener
-        arguments: [ @consult.account_authenticator_util ]
+        arguments:
+         - @consult.account_authenticator_util
+         - @logger
         tags:
             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }

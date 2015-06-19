@@ -9,6 +9,7 @@
 namespace ConsultBundle\EventListener;
 
 use ConsultBundle\Utility\AuthenticationUtils;
+use Symfony\Bridge\Monolog\Logger;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 
@@ -19,14 +20,17 @@ use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 class SecurityListener
 {
     private $authenticationUtils;
+    private $logger;
 
 
     /**
-     * @param AuthenticationUtils $authenticationUtils
+     * @param \ConsultBundle\Utility\AuthenticationUtils $authenticationUtils
+     * @param \Symfony\Bridge\Monolog\Logger             $logger
      */
-    public function __construct(AuthenticationUtils $authenticationUtils)
+    public function __construct(AuthenticationUtils $authenticationUtils, Logger $logger)
     {
         $this->authenticationUtils = $authenticationUtils;
+        $this->logger = $logger;
     }
 
     /**
@@ -39,8 +43,7 @@ class SecurityListener
         $request = $event->getRequest();
         $request->getSession()->all();
         $_SESSION['validated'] = false;
-        $logger = $this->get('logger');
-        $logger->info($event->getRequestType()." ".$request->getHost()." ".$request);
+        $this->logger->info($event->getRequestType()." ".$request->getHost()." ".$request);
 
         $profileToken = $request->headers->get('X-PROFILE-TOKEN');
         $practoAccountId = $request->get("practo_account_id");
