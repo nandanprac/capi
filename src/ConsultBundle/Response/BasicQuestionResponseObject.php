@@ -51,7 +51,7 @@ class BasicQuestionResponseObject extends ConsultResponseObject
     /**
      * @var int $bookmarkCount
      */
-    private $bookmarkCount;
+    private $bookmarkCount=0;
 
     /**
      * @var \DateTime
@@ -172,6 +172,9 @@ class BasicQuestionResponseObject extends ConsultResponseObject
      */
     public function setBookmarkCount($bookmarkCount)
     {
+        if (!empty($bookmarkCount)) {
+            $this->bookmarkCount = $bookmarkCount;
+        }
         $this->bookmarkCount = $bookmarkCount;
     }
 
