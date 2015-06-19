@@ -39,6 +39,8 @@ class SecurityListener
         $request = $event->getRequest();
         $request->getSession()->all();
         $_SESSION['validated'] = false;
+        $logger = $this->get('logger');
+        $logger->info($event->getRequestType()." ".$request->getHost()." ".$request);
 
         $profileToken = $request->headers->get('X-PROFILE-TOKEN');
         $practoAccountId = $request->get("practo_account_id");

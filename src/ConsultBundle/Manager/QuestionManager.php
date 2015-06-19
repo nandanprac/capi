@@ -112,7 +112,7 @@ class QuestionManager extends BaseManager
 
         $this->queue->setQueueName(Queue::DAA)->sendMessage(json_encode($job));
 
-        return new DetailQuestionResponseObject($question);
+        return $this->fetchDetailQuestionObject($question, $practoAccountId);
     }
 
     /**
@@ -169,7 +169,7 @@ class QuestionManager extends BaseManager
                     throw new ValidationError($e->getMessage());
                 }
 
-                return $questionBookmark;
+                //return $questionBookmark;
             } else {
                 try {
                     $this->questionBookmarkManager->remove($requestParams);
@@ -181,7 +181,7 @@ class QuestionManager extends BaseManager
             }
         }
 
-        return new DetailQuestionResponseObject($question);
+        return $this->fetchDetailQuestionObject($question, $practoAccountId);
     }
 
     /**
@@ -199,6 +199,11 @@ class QuestionManager extends BaseManager
          * @var Question $question
          */
         $question = $this->helper->loadById($questionId, ConsultConstants::QUESTION_ENTITY_NAME);
+
+        if (empty($question)) {
+            return null;
+        }
+
 
         return $this->fetchDetailQuestionObject($question, $practoAccountId);
     }

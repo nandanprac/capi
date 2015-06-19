@@ -2,13 +2,10 @@
 
 namespace ConsultBundle\Controller;
 
-use ConsultBundle\Utility\Utility;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\View\View;
 use FOS\RestBundle\Util\Codes;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use ConsultBundle\Manager\ValidationError;
 
 /**
@@ -24,6 +21,8 @@ class QuestionsController extends BaseConsultController
      */
     public function postQuestionAction(Request $request)
     {
+        $logger = $this->get('logger');
+        $logger->info("Post Question".$request);
         $this->authenticate();
         $postData = $request->request->get('question');
         $practoAccountId = $request->request->get('practo_account_id');
@@ -63,6 +62,8 @@ class QuestionsController extends BaseConsultController
      */
     public function getQuestionAction($questionId, Request $request)
     {
+        $logger = $this->get('logger');
+        $logger->info("Get Question".$questionId);
         $practoAccountId = $this->authenticate(false);
 
         $questionManager = $this->get('consult.question_manager');
