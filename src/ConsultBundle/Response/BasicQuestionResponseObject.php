@@ -69,7 +69,7 @@ class BasicQuestionResponseObject extends ConsultResponseObject
         if (!is_null($questionEntity)) {
             $this->setSpeciality($questionEntity->getSpeciality());
             $this->setViewCount($questionEntity->getViewCount());
-            //$this->setShareCount($questionEntity->getSpeciality());
+            $this->state = $questionEntity->getState();
             $this->setSubject($questionEntity->getSubject());
             $this->setText($questionEntity->getText());
             $this->viewedAt = $questionEntity->getViewedAt();
