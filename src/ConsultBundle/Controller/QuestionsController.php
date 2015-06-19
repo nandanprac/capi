@@ -36,9 +36,9 @@ class QuestionsController extends BaseConsultController
 
         } catch (ValidationError $e) {
             return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
-        } /*catch (\Exception $e) {
+        } catch (\Exception $e) {
             return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
-        }*/
+        }
 
         $files = $request->files;
         $questionImageManager = $this->get('consult.question_image_manager');
