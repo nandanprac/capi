@@ -166,6 +166,7 @@ class DetailQuestionResponseObject extends BasicQuestionResponseObject
         $patientInfo = new BasicPatientInfoResponse();
         $patientInfo->setAge($userInfo->getAge());
         $patientInfo->setGender($userInfo->getGender());
+        $patientInfo->setLocation($userInfo->getLocation());
         $this->patientInfo = $patientInfo;
     }
 }
