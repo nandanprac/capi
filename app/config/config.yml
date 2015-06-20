@@ -114,11 +114,11 @@ snc_redis:
         default:
             type: predis
             alias: default
-            dsn: redis://localhost
+            dsn: redis://localhost/1
         cache:
             type: predis
             alias: cache
-            dsn: redis://localhost/1
+            dsn: redis://localhost/2
             logging: true
     doctrine:
         metadata_cache:

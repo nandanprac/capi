@@ -191,3 +191,8 @@ services:
         class: ConsultBundle\Manager\NotificationManager
         calls:
             - [setHelper, ["@consult.helper"]]
+
+    consult.master_manager:
+        class: ConsultBundle\Manager\MasterManager
+        calls:
+            - [setHelper, ["@consult.helper"]]

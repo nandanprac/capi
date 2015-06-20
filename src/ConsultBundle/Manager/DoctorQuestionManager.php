@@ -196,13 +196,10 @@ class DoctorQuestionManager extends BaseManager
     private function fetchDetailQuestionObject(DoctorQuestion $doctorQuestionEntity, $practoAccountId)
     {
         $questionEntity = $doctorQuestionEntity->getQuestion();
-        //var_dump($questionEntity);die;
         $question = null;
         if (!empty($questionEntity)) {
             if (!$questionEntity->getUserInfo()->isIsRelative()) {
-
                 $this->retrieveUserProfileUtil->retrieveUserProfileNew($questionEntity->getUserInfo());
-
             }
 
             $question = new DoctorQuestionResponseObject($doctorQuestionEntity);
@@ -231,8 +228,6 @@ class DoctorQuestionManager extends BaseManager
             $questionCommentList = $ecr->getComments($questionEntity, 10, 0, null);
 
             $question->setComments($questionCommentList);
-
-
         }
 
         return $question;
