@@ -28,18 +28,23 @@ class BasicDoctorQuestionResponseObject extends BasicQuestionResponseObject
      */
     private $hasImages;
 
+    private $hasAdditionalInfo=true;
+
     /**
      * @param \ConsultBundle\Entity\DoctorQuestion $doctorQuestion
      */
     public function __construct(DoctorQuestion $doctorQuestion)
     {
-        $question = $doctorQuestion->getQuestion();
-        parent::__construct($question);
+        if (!empty($doctorQuestion)) {
+            $question = $doctorQuestion->getQuestion();
+            parent::__construct($question);
 
 
-        $this->setId($doctorQuestion->getId());
-        $this->setState($doctorQuestion->getState());
-        $this->setHasImages(($question->getImages()->count()));
+            $this->setId($doctorQuestion->getId());
+            $this->setState($doctorQuestion->getState());
+            $this->setHasImages(($question->getImages()->count()));
+
+        }
 
 
     }
@@ -90,6 +95,22 @@ class BasicDoctorQuestionResponseObject extends BasicQuestionResponseObject
     public function setHasImages($hasImages)
     {
         $this->hasImages = Utility::toBool($hasImages);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getHasAdditionalInfo()
+    {
+        return $this->hasAdditionalInfo;
+    }
+
+    /**
+     * @param mixed $hasAdditionalInfo
+     */
+    public function setHasAdditionalInfo($hasAdditionalInfo)
+    {
+        $this->hasAdditionalInfo = $hasAdditionalInfo;
     }
 
 

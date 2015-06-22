@@ -61,8 +61,10 @@ class DoctorQuestionResponseObject extends DetailQuestionResponseObject
         $patientInfo->setBloodGroup($userInfo->getBloodGroup());
         $patientInfo->setAge($userInfo->getAge());
         $patientInfo->setGender($userInfo->getGender());
-        $this->setPatientInfo($patientInfo);
         $patientInfo->setOccupation($userInfo->getOccupation());
+        $patientInfo->setLocation($userInfo->getLocation());
+        $this->setPatientInfo($patientInfo);
+
     }
 
 }
