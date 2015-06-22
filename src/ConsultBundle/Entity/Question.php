@@ -2,8 +2,7 @@
 /**
  * @author Anshuman
  * Date: 29/04/15
- * Time:
-*/
+ * Time:*/
 
 namespace ConsultBundle\Entity;
 
@@ -70,8 +69,29 @@ class Question extends BaseEntity
     private $viewedAt;
 
 
+
     /**
+<<<<<<< HEAD
     * @ORM\OneToMany(targetEntity="QuestionImage", mappedBy="question", fetch="EXTRA_LAZY", cascade={"persist", "remove"})
+=======
+     * @return mixed
+     */
+    public function getViewedAt()
+    {
+        return $this->viewedAt;
+    }
+
+    /**
+     * @param mixed $viewedAt
+     */
+    public function setViewedAt(\DateTime $viewedAt)
+    {
+        $this->viewedAt = $viewedAt;
+    }
+
+   /**
+    * @ORM\OneToMany(targetEntity="QuestionImage", mappedBy="question", cascade={"persist", "remove"})
+>>>>>>> master
     * @var ArrayCollection $images
     */
     private $images;
@@ -124,26 +144,6 @@ class Question extends BaseEntity
         $this->subject = $subject;
     }
 
-
-    /**
-     * @return mixed
-     */
-    public function getViewedAt()
-    {
-        return $this->viewedAt;
-    }
-
-    /**
-     * @param mixed $viewedAt
-     */
-    public function setViewedAt(\DateTime $viewedAt)
-    {
-        $this->viewedAt = $viewedAt;
-    }
-
-    /**
-     * constructor
-     */
     public function __construct()
     {
         $this->images = new ArrayCollection();
@@ -153,6 +153,7 @@ class Question extends BaseEntity
         $this->tags = new ArrayCollection();
     }
 
+<<<<<<< HEAD
     /**
      * @return mixed
      */
@@ -174,15 +175,13 @@ class Question extends BaseEntity
      * get User object
      * @return User
      */
+=======
+>>>>>>> master
     public function getUserInfo()
     {
         return $this->userInfo;
     }
 
-    /**
-     * Set UserInfo object
-     * @param UserInfo $userInfo - UserInfo object
-     */
     public function setUserInfo(UserInfo $userInfo)
     {
         $this->userInfo = $userInfo;
@@ -216,9 +215,13 @@ class Question extends BaseEntity
         $this->images = new ArrayCollection();
     }
 
+<<<<<<< HEAD
     /**
      * @param array $images
      */
+=======
+
+>>>>>>> master
     public function setImages($images)
     {
         $this->images = $images;
@@ -248,7 +251,19 @@ class Question extends BaseEntity
     /**
      * Get state
      *
+<<<<<<< HEAD
      * @return string
+=======
+     * @param QuestionBookmark $bookmark - Question Bookmark
+     */
+    public function addBookmark(QuestionBookmark $bookmark)
+    {
+        $this->bookmarks->add($bookmark) ;
+    }
+
+    /**
+     * Clear Question Bookmarks
+>>>>>>> master
      */
     public function getState()
     {
@@ -303,7 +318,30 @@ class Question extends BaseEntity
      *
      * @return ArrayCollection
      */
+<<<<<<< HEAD
     public function getComments()
+=======
+    public function getDoctorNotifications()
+    {
+        return $this->doctorNotifications;
+    }
+
+    /**
+     * Add Doctor Notification
+     *
+     * @param DoctorNotification $notification
+     * @internal param DoctorNotification $doctorNotification - Doctor Notification
+     */
+    public function addDoctorNotification(DoctorNotification $notification)
+    {
+        $this->doctorNotifications->add($notification);
+    }
+
+    /**
+     * Clear Doctor Notifications
+     */
+    public function clearDoctorNotifications()
+>>>>>>> master
     {
         return $this->comments;
     }
@@ -382,6 +420,16 @@ class Question extends BaseEntity
         $this->bookmarks = $bookmarks;
     }
 
+<<<<<<< HEAD
+=======
+    /**
+     * @param integer
+     */
+    public function setViewCount($count)
+    {
+        $this->viewCount = $count;
+    }
+>>>>>>> master
 
     /**
      * get count of bookmarks
@@ -393,7 +441,11 @@ class Question extends BaseEntity
     }
 
     /**
+<<<<<<< HEAD
      * @param \ConsultBundle\Entity\QuestionBookmark $bookmark
+=======
+     * @param integer
+>>>>>>> master
      */
     public function addBookmark(QuestionBookmark $bookmark)
     {
@@ -412,7 +464,11 @@ class Question extends BaseEntity
     /**
      * Add Tag
      *
+<<<<<<< HEAD
      * @param QuestionTag $tag - Question Tag
+=======
+     * @param QuestionComment $comments - Question Comment
+>>>>>>> master
      */
     public function addTag(QuestionTag $tag)
     {
@@ -426,4 +482,27 @@ class Question extends BaseEntity
     {
         $this->tags = new ArrayCollection();
     }
+<<<<<<< HEAD
+=======
+
+    /**
+     * Get Details
+     *
+     * @return ArrayCollection
+     */
+   /* public function getDetails()
+    {
+        return $this->details;
+    }*/
+
+    /**
+     * Add Payment Detail
+     *
+     * @param PaymentDetail $paymentDetail - Payment Detail
+     */
+    /*public function addDetail(PaymentDetail $paymentDetail)
+    {
+        $this->details->add($paymentDetail);
+    }*/
+>>>>>>> master
 }

@@ -10,7 +10,6 @@ use ConsultBundle\Queue\AbstractQueue as Queue;
 use ConsultBundle\ConsultDomain;
 
 use Symfony\Component\HttpFoundation\Request;
-
 /**
  * Command to queue index
  */
@@ -59,7 +58,12 @@ class TestingCommand extends ContainerAwareCommand
         $this->queue->setConsultDomain($consultDomain);
         var_dump($this->queue->getQueueName());
         $this->queue
+<<<<<<< HEAD
               ->setQueueName(Queue::DAA)
               ->sendMessage(json_encode(array('question'=>$question ? $question : '', 'tags'=>$tags?$tags:'')));
+=======
+              ->setQueueName(Queue::CONSULT_GCM)
+              ->sendMessage(json_encode(array('user_id'=>2645, 'message'=>'I smoke alot. Is there any chance to lung cancer?')));
+>>>>>>> master
     }
 }

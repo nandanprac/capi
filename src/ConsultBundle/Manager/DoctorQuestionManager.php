@@ -8,6 +8,7 @@
 
 namespace ConsultBundle\Manager;
 
+
 use ConsultBundle\Constants\ConsultConstants;
 use ConsultBundle\Entity\DoctorQuestion;
 use ConsultBundle\Repository\DoctorQuestionRepository;
@@ -30,11 +31,18 @@ class DoctorQuestionManager extends BaseManager
     protected $notification;
 
     /**
+<<<<<<< HEAD
      * @param NotificationManager       $notification
      * @param RetrieveUserProfileUtil   $retrieveUserProfileUtil
      * @param RetrieveDoctorProfileUtil $retrieveDoctorProfileUtil
      */
     public function __construct(NotificationManager $notification, RetrieveUserProfileUtil $retrieveUserProfileUtil, RetrieveDoctorProfileUtil $retrieveDoctorProfileUtil)
+=======
+     * @param RetrieveUserProfileUtil $retrieveUserProfileUtil
+     * @param RetrieveDoctorProfileUtil $retrieveDoctorProfileUtil
+     */
+    public function __construct(RetrieveUserProfileUtil $retrieveUserProfileUtil, RetrieveDoctorProfileUtil $retrieveDoctorProfileUtil )
+>>>>>>> master
     {
         $this->notification = $notification;
         $this->retrieveUserProfileUtil = $retrieveUserProfileUtil;
@@ -42,6 +50,7 @@ class DoctorQuestionManager extends BaseManager
     }
 
     /**
+<<<<<<< HEAD
      * @param integer $questionId - Id of the Question
      * @param array   $doctorsId  - Array of doctor practo_account_id
      *
@@ -51,6 +60,15 @@ class DoctorQuestionManager extends BaseManager
     {
         $question = $this->helper->loadById($questionId, ConsultConstants::QUESTION_ENTITY_NAME);
         foreach ($doctorsId as $doctorId) {
+=======
+     * @param $questionId
+     * @param array $doctorsId
+     */
+    public function setDoctorsForAQuestions($questionId, Array $doctorsId)
+    {
+        $question = $this->helper->loadById($questionId, ConsultConstants::$QUESTION_ENTITY_NAME);
+        foreach($doctorsId as $doctorId) {
+>>>>>>> master
             $this->createDoctorQuestionEntity($question, $doctorId);
             $this->notification->createDoctorNotification($question, $doctorId);
         }
@@ -58,16 +76,33 @@ class DoctorQuestionManager extends BaseManager
         $this->helper->persist(null, true);
     }
 
+<<<<<<< HEAD
+=======
+    private function createDoctorQuestionEntity($question, $doctorId )
+    {
+        $doctorQuestion = new DoctorQuestion();
+        $doctorQuestion->setQuestion($question);
+        $doctorQuestion->setPractoAccountId($doctorId);
+        $this->helper->persist($doctorQuestion);
+    }
+
+>>>>>>> master
     /**
      * @param Array $updateData - data to be updated
      *
      * @return Question
      * @throws ValidationError
      */
+<<<<<<< HEAD
     public function patch($updateData)
     {
         if (array_key_exists('id', $updateData) and array_key_exists('practo_account_id', $updateData)) {
             $practoAccountId = $updateData['practo_account_id'];
+=======
+    public function patch($updateData) {
+
+        if (array_key_exists('question_id', $updateData) and array_key_exists('practo_account_id', $updateData)) {
+>>>>>>> master
             /**
              * @var DoctorQuestion $question
              */
@@ -95,12 +130,17 @@ class DoctorQuestionManager extends BaseManager
             } else {
                 throw new ValidationError(array("error" => "Question is already rejected by this doctor"));
             }
-        } elseif (array_key_exists('reject', $updateData) && $updateData['reject'] === false and array_key_exists('rejection_reason', $updateData)) {
-            throw new ValidationError(array("error"=> "Please dont pass rejection_reason if reject is false"));
-        }
+          } else if (array_key_exists('reject', $updateData) && $updateData['reject'] === false and array_key_exists('rejection_reason', $updateData)) {
+              throw new ValidationError(array("error"=> "Please dont pass rejection_reason if reject is false"));
+          }
 
+<<<<<<< HEAD
         if (array_key_exists('view', $updateData) && Utility::toBool($updateData['view'])) {
             if (empty($question->getViewedAt())) {
+=======
+        if (array_key_exists('view', $updateData) && $updateData['view'] == 'true') {
+            if(!$question->getViewedAt()) {
+>>>>>>> master
                 $question->setViewedAt(new \DateTime());
             }
         }
@@ -177,20 +217,25 @@ class DoctorQuestionManager extends BaseManager
     {
         try {
             $this->validator->validate($question);
-        } catch (ValidationError $e) {
+        } catch(ValidationError $e) {
             throw new ValidationError($e->getMessage());
         }
 
         return;
     }
 
+<<<<<<< HEAD
     private function getRepository()
     {
+=======
+    public function loadById($doctorQuestionId){
+>>>>>>> master
 
         return $this->helper->getRepository(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME);
     }
 
     /**
+<<<<<<< HEAD
      * @param \ConsultBundle\Entity\DoctorQuestion $doctorQuestionEntity
      * @param                                      $practoAccountId
      *
@@ -204,6 +249,17 @@ class DoctorQuestionManager extends BaseManager
         }
         $questionEntity = $doctorQuestionEntity->getQuestion();
 
+=======
+     * @param $doctorId
+     * @param null $queryParams
+     * @return mixed
+     */
+    public function loadAllByDoctor($doctorId, $queryParams = null){
+        return $this->getRepository()->findByFilters($doctorId, $queryParams);
+    }
+
+    private function getRepository() {
+>>>>>>> master
 
         $question = null;
 

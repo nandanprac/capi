@@ -8,9 +8,9 @@
 
 namespace ConsultBundle\Repository;
 
+
 use Doctrine\ORM\EntityRepository;
 
-class DoctorReplyRatingRepository extends EntityRepository
-{
+class DoctorReplyRatingRepository extends EntityRepository{
 
 }
