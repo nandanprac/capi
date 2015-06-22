@@ -67,9 +67,6 @@ class DoctorQuestionManager extends BaseManager
     public function patch($updateData)
     {
         if (array_key_exists('question_id', $updateData) and array_key_exists('practo_account_id', $updateData)) {
-            /**
-             * @var DoctorQuestion $question
-             */
             $question = $this->getRepository()->findOneBy(array('practoAccountId'=>$updateData['practo_account_id'], 'question'=>$updateData['question_id']));
             if (!$question) {
                 throw new ValidationError(array("error"=>"Question is not mapped to this doctor."));
