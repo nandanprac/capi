@@ -7,6 +7,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
+use ConsultBundle\Constants\ConsultConstants;
 
 
 class TrainingSetHelperCommand extends ContainerAwareCommand
@@ -26,6 +27,7 @@ class TrainingSetHelperCommand extends ContainerAwareCommand
         $this->container = $this->getContainer();
         $this->classification =$this->container->get('consult.classification');
         $this->redis = $this->container->get('consult.redis');
+        $this->wordManager = $this->container->get('consult.word_manager');
     }
 
     /*
@@ -50,11 +52,13 @@ class TrainingSetHelperCommand extends ContainerAwareCommand
             foreach ($data as $each) {
                 array_push($words,$each[0]);
             }
-            $this->redis->setKey('stop_words', json_encode($words));
+            $this->wordManager->addStopWords($words);
         } elseif ($action == 'stem') {
-            foreach ($data as $each) {
-                $this->redis->setKey($each[0], $each[1]);
-            }
+			foreach ($data as $each) {
+				$synTag = $this->wordManager->loadByWord($each[1], ConsultConstants::SYN_TAG_ENTITY_NAME);
+				if (!empty($synTag))
+					$this->wordManager->createSynTag($each[0], $synTag[0][1]);
+			}
         } elseif ($action == 'adjust') {
             foreach ($data as $map) {
                 if ($this->redis->keyExists(strtolower($map[0]))) {

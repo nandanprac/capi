@@ -25,6 +25,7 @@ class DataTrainingCommand extends ContainerAwareCommand
         $this->container = $this->getContainer();
         $this->classification =$this->container->get('consult.classification');
         $this->redis = $this->container->get('consult.redis');
+        $this->wordManager = $this->container->get('consult.word_manager');
     }
 
     /*
@@ -91,9 +92,8 @@ class DataTrainingCommand extends ContainerAwareCommand
                     $dataMap[$word][$category]['formula_score'] = floatval($dataMap[$word][$category]['weight_score'])/floatval($termFreq)* floatval(1)/floatval(1+log10($termFreq));
                 }
             }
-            $this->redis->setKey($word, json_encode($dataMap[$word]));
         }
-
+        $this->wordManager->addWordScore($dataMap);
     }
 
 }

@@ -157,6 +157,16 @@ class Helper
         }
     }
 
+	public function flush()
+	{
+		$this->entityManager->flush();
+	}
+
+	public function clear()
+	{
+		$this->entityManager->clear();
+	}
+
     protected function getFromCache($entityId)
     {
         // TODO: Implement getFromCache() method.

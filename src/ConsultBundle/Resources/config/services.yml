@@ -185,6 +185,7 @@ services:
         class: ConsultBundle\Manager\ClassificationManager
         arguments:
              - @consult.redis
+             - @consult.word_manager
 
 
     consult.notification_manager:
@@ -196,3 +197,9 @@ services:
         class: ConsultBundle\Manager\MasterManager
         calls:
             - [setHelper, ["@consult.helper"]]
+
+    consult.word_manager:
+        class: ConsultBundle\Manager\WordManager
+        calls:
+            - [setHelper, ["@consult.helper"]]
+

@@ -3,6 +3,8 @@
 namespace ConsultBundle\Manager;
 
 use ConsultBundle\Manager\RedisClient;
+use ConsultBundle\Manager\WordManager;
+use ConsultBundle\Constants\ConsultConstants;
 
 /**
  * Question Speciality Classification
@@ -15,18 +17,19 @@ class ClassificationManager
      * @param RedisClient $redis - Redis Client
      *
      */
-    public function __construct(RedisClient $redis)
+    public function __construct(RedisClient $redis, WordManager $wordManager)
     {
-        $this->redis = $redis;
+		$this->redis = $redis;
+		$this->wordManager = $wordManager;
     }
 
     /**
      * Takes in array of csv file paths and return list of rows
      *
-	 * @param array  $filePaths - path to csv files
-	 * @param string $delim     - Separation param used in csv
-	 *
-	 * @return array
+     * @param array  $filePaths - path to csv files
+     * @param string $delim     - Separation param used in csv
+     *
+     * @return array
      */
     public function readCSV(array $filePaths, $delim = '|')
     {
@@ -55,21 +58,14 @@ class ClassificationManager
         $sentence = preg_replace('/[^A-Za-z]/', ' ', $sentence);
         $words = array();
         $sentence = preg_split('/\s+/', strtolower($sentence));
-        $stopWords = $this->redis->getKey('stop_words');
-        if (!$stopWords) {
-            $stopWords = array();
-		}
         foreach ($sentence as $word) {
-            if (!in_array($word, $words) and !in_array($words, $stopWords) and strlen($word) > 2)
-            {
-                //if (array_key_exists($word, $stemWords))
-                //    array_push($words, $stemWords[$word]);
-                //else
+            if (!in_array($word, $words) and strlen($word) > 2) {
                 array_push($words, $word);
             }
         }
-
-		return $words;
+		$stopWords = $this->wordManager->lookupWord($words, ConsultConstants::STOP_WORDS_ENTITY_NAME);
+		$words = array_diff($words, $stopWords);
+        return $words;
     }
 
     /**
@@ -86,8 +82,8 @@ class ClassificationManager
         $formulaTemp = array();
 
         foreach ($listDataMap as $map) {
-            foreach ($map as $speciality => $weights){
-                if(!array_key_exists($speciality, $weightTemp)){
+            foreach ($map as $speciality => $weights) {
+                if (!array_key_exists($speciality, $weightTemp)) {
                     $weightTemp[$speciality] = $weights['weight_score'];
                 } else {
                     $weightTemp[$speciality] += $weights['weight_score'];
@@ -120,24 +116,9 @@ class ClassificationManager
      */
     public function classifi($sentence)
     {
-        $words = $this->sentenceWords($sentence);
-
-        $temp = array();
-        foreach ($words as $word){
-            if($this->redis->keyExists($word)){
-                try{
-                    $tempScoreData = $this->redis->getKey($word);
-                    $scoreData = json_decode($tempScoreData, true);
-                    if (!$scoreData) {
-                        $scoreData = json_decode($this->redis->getKey($tempScoreData));
-                    }
-                } catch(\Exception $e) {
-                    continue;
-                }
-                array_push($temp, $scoreData);
-            }
-        }
-        return $this->getAppropriateSpeciality($this->intersectMapsForWords($temp));
+		$words = $this->sentenceWords($sentence);
+		$scoreData = $this->wordManager->fetchScores($words);
+		return $this->getAppropriateSpeciality($this->intersectMapsForWords($scoreData));
     }
 
     /**
