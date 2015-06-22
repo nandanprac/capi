@@ -10,10 +10,10 @@ use ConsultBundle\Constants\ConsultFeatureData;
 class MasterManager extends BaseManager
 {
     /**
-	 * @return array
-	 */
+     * @return array
+     */
     public function loadMasterSpecialties()
     {
-		return ConsultFeatureData::$MASTER_SPECIALITIES;
-	}
+        return ConsultFeatureData::$MASTER_SPECIALITIES;
+    }
 }

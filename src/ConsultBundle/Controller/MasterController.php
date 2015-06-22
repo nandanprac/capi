@@ -20,7 +20,7 @@ class MasterController extends BaseConsultController
      */
     public function getMasterSpecialtiesAction(Request $request)
     {
-		$requestParams = $request->query->all();
+        $requestParams = $request->query->all();
 
         try {
             $masterManager = $this->get('consult.master_manager');

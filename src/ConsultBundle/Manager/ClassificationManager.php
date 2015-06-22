@@ -23,10 +23,10 @@ class ClassificationManager
     /**
      * Takes in array of csv file paths and return list of rows
      *
-	 * @param array  $filePaths - path to csv files
-	 * @param string $delim     - Separation param used in csv
-	 *
-	 * @return array
+     * @param array  $filePaths - path to csv files
+     * @param string $delim     - Separation param used in csv
+     *
+     * @return array
      */
     public function readCSV(array $filePaths, $delim = '|')
     {
@@ -58,7 +58,7 @@ class ClassificationManager
         $stopWords = $this->redis->getKey('stop_words');
         if (!$stopWords) {
             $stopWords = array();
-		}
+        }
         foreach ($sentence as $word) {
             if (!in_array($word, $words) and !in_array($words, $stopWords) and strlen($word) > 2)
             {
@@ -69,7 +69,7 @@ class ClassificationManager
             }
         }
 
-		return $words;
+        return $words;
     }
 
     /**
