@@ -21,7 +21,7 @@ use ConsultBundle\Manager\NotificationManager;
  */
 class DoctorQuestionManager extends BaseManager
 {
-    protected NotificationManager $notification;
+    protected $notification;
 
     /**
      * @param NotificationManager       $notification

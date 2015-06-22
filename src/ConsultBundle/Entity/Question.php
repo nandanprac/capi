@@ -49,7 +49,7 @@ class Question extends BaseEntity
     /**
      * @ORM\Column(length=20, name="state")
      *
-     * @Assert\Choice(choices = {"NEW", "ASSIGNED", "DOCNOTFOUND", "MISMATCH", "ANSWERED", "GENERIC", "UNCLASSIFIED"}, message = "Invalid value for state of a question")
+     * @Assert\Choice(choices = {"REJECTED","ACCEPTED","NEW", "ASSIGNED", "DOCNOTFOUND", "MISMATCH", "ANSWERED", "GENERIC", "UNCLASSIFIED"}, message = "Invalid value for state of a question")
      */
     private $state="NEW";
 
