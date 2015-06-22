@@ -24,7 +24,6 @@ server {
     fastcgi_param SCRIPT_FILENAME $document_root/app_dev.php;
   }
 }
-```
 
 Run following commands in Consult.
 
@@ -35,4 +34,4 @@ Run following commands in Fabric to push GCM notifications.
 
 app/console fabric:consult:gcm:queue
 
-
+```
