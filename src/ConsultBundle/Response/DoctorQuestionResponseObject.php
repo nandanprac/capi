@@ -31,7 +31,7 @@ class DoctorQuestionResponseObject extends DetailQuestionResponseObject
         parent::__construct($doctorQuestion->getQuestion());
         $this->setId($doctorQuestion->getId());
         $this->setState($doctorQuestion->getState());
-        $this->images = $doctorQuestion->getQuestion()->getImages();
+        //$this->images = $doctorQuestion->getQuestion()->getImages();
     }
 
     /**
@@ -61,7 +61,10 @@ class DoctorQuestionResponseObject extends DetailQuestionResponseObject
         $patientInfo->setBloodGroup($userInfo->getBloodGroup());
         $patientInfo->setAge($userInfo->getAge());
         $patientInfo->setGender($userInfo->getGender());
+        $patientInfo->setOccupation($userInfo->getOccupation());
+        $patientInfo->setLocation($userInfo->getLocation());
         $this->setPatientInfo($patientInfo);
+
     }
 
 }

@@ -30,7 +30,7 @@ abstract class AbstractQueue
      * @param mixed   $message - Message
      * @param integer $delay   - Delay
      */
-    public function sendMessage($message, $delay = null)
+    public function sendMessage($message, $delay=null)
     {
         if (!($message instanceof Message)) {
             $message = new Message($message);
@@ -40,6 +40,17 @@ abstract class AbstractQueue
     }
 
     /**
+<<<<<<< HEAD
+=======
+     * Actual Send Message
+     *
+     * @param Message $message - Message
+     * @param integer $delay   - Delay
+     */
+    abstract protected function doSendMessage(Message $message, $delay=null);
+
+    /**
+>>>>>>> master
      * Delete Message
      *
      * @param Message $message - Message
@@ -51,7 +62,7 @@ abstract class AbstractQueue
      *
      * @param string $queuePrefix - Queue Prefix
      */
-    public function __construct($queuePrefix = '')
+    public function __construct($queuePrefix='')
     {
         $this->queuePrefix = $queuePrefix;
     }
@@ -68,7 +79,7 @@ abstract class AbstractQueue
         $subdomain = explode('.', $parts['host'])[0];
         $queueName = str_replace('consult', $this->queueName, $subdomain);
 
-        return $this->queuePrefix.$queueName;
+        return $this->queuePrefix . $queueName;
     }
 
     /**

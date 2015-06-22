@@ -9,6 +9,7 @@
 namespace ConsultBundle\Response;
 
 use ConsultBundle\Entity\DoctorEntity;
+use ConsultBundle\Entity\DoctorReply;
 
 /**
  * Class ReplyResponseObject
@@ -35,7 +36,7 @@ class ReplyResponseObject extends ConsultResponseObject
     /**
      * @var integer
      */
-    private $votes;
+    private $votes=0;
 
     /**
      * @var integer
@@ -46,6 +47,20 @@ class ReplyResponseObject extends ConsultResponseObject
      * @var int
      */
     private $vote = 0;
+
+    /**
+     * @param \ConsultBundle\Entity\DoctorReply $reply
+     */
+    public function __construct(DoctorReply $reply = null)
+    {
+        if (!empty($reply)) {
+            parent::__construct($reply);
+            $this->doctorId = $reply->getDoctorQuestion()->getPractoAccountId();
+            $this->text = $reply->getText();
+            $this->rating = $reply->getRating();
+        }
+
+    }
 
     /**
      * @return int

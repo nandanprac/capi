@@ -40,8 +40,8 @@ class BeanstalkQueue extends AbstractQueue
     public function receiveMessage()
     {
         $job = $this->pheanstalk
-            ->watchOnly($this->getQueueName())
-            ->reserve();
+                    ->watchOnly($this->getQueueName())
+                    ->reserve();
         $message = new Message($job->getData(), $job->getId());
 
         return $message;
@@ -66,16 +66,32 @@ class BeanstalkQueue extends AbstractQueue
      * @param Message $message - Message
      * @param integer $delay   - Delay
      */
-    protected function doSendMessage(Message $message, $delay = null)
+    protected function doSendMessage(Message $message, $delay=null)
     {
         $messageId = $this->pheanstalk
-            ->useTube($this->getQueueName())
-            ->put(
-                strval($message),
-                Pheanstalk::DEFAULT_PRIORITY,
-                $delay,
-                $this->getVisibilityTimeout()
-            );
+                          ->useTube($this->getQueueName())
+                          ->put(
+                              strval($message),
+                              Pheanstalk::DEFAULT_PRIORITY,
+                              $delay,
+                              $this->getVisibilityTimeout()
+                          );
         $message->setId($messageId);
     }
+<<<<<<< HEAD
+=======
+
+    /**
+     * Delete Message
+     *
+     * @param Message $message - Message
+     */
+    public function deleteMessage($message)
+    {
+        $job = new Pheanstalk_Job($message->getId(), strval($message));
+        $this->pheanstalk
+             ->useTube($this->getQueueName())
+             ->delete($job);
+    }
+>>>>>>> master
 }

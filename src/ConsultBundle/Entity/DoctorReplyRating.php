@@ -74,4 +74,6 @@ class DoctorReplyRating extends BaseEntity
     {
         $this->doctorReply = $doctorReply;
     }
+
+
 }

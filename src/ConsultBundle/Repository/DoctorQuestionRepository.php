@@ -8,6 +8,7 @@
 
 namespace ConsultBundle\Repository;
 
+<<<<<<< HEAD
 use ConsultBundle\Constants\ConsultConstants;
 use ConsultBundle\Entity\Question;
 use Doctrine\ORM\EntityRepository;
@@ -18,6 +19,13 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
  */
 class DoctorQuestionRepository extends EntityRepository
 {
+=======
+
+use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
+
+class DoctorQuestionRepository extends EntityRepository{
+>>>>>>> master
 
     /**
      * @param int   $doctorId
@@ -34,6 +42,7 @@ class DoctorQuestionRepository extends EntityRepository
         $modifiedAfter = array_key_exists('modifiedAfter', $filters) ? $filters['modifiedAfter'] : null;
         $limit = array_key_exists('limit', $filters) ? $filters['limit'] : 30;
         $offset = array_key_exists('offset', $filters) ? $filters['offset'] : 0;
+<<<<<<< HEAD
         try {
              $qb->select('dq AS doctorQuestion', 'r.rating AS rating', 'count(DISTINCT b.id) AS bookmarkCount', '(count(DISTINCT rv.id) - count(DISTINCT rvn.id)) AS votes')
                 ->from(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME, 'dq')
@@ -50,11 +59,39 @@ class DoctorQuestionRepository extends EntityRepository
             }
 
             if (array_key_exists('state', $filters)) {
+=======
+        try{
+             $qb->select(array('q'))
+                ->from("ConsultBundle:Question", 'q')
+                ->innerJoin('q.doctorQuestions', 'dq')
+                ->where('dq.practoAccountId = :doctorId');
+
+             if (array_key_exists('reject', $filters)) {
+               $state = $filters['reject'];
+               if (strtolower($state) == 'false'){
+                  $qb->andWhere('dq.rejectedAt is NULL');
+               } else if (strtolower($state) == 'true'){
+                  $qb->andWhere('dq.rejectedAt is not NULL');
+               }
+             }
+
+             if (array_key_exists('view', $filters)) {
+               $state = $filters['view'];
+               if (strtolower($state) == 'false'){
+                  $qb->andWhere('dq.viewedAt is NULL');
+               } else if (strtolower($state) == 'true'){
+                  $qb->andWhere('dq.viewedAt is not NULL');
+               }
+             }
+
+             if (array_key_exists('state', $filters)) {
+>>>>>>> master
                 $state = strtoupper($filters['state']);
                 $qb->andWhere('dq.state = :state')
-                    ->setParameter('state', $state);
-            }
+                  ->setParameter('state', $state);
+             }
 
+<<<<<<< HEAD
             if (isset($modifiedAfter)) {
                 $qb->andWhere('dq.modifiedAt > :modifiedAt');
                 $qb->setParameter('modifiedAt', $modifiedAfter);
@@ -70,6 +107,18 @@ class DoctorQuestionRepository extends EntityRepository
             $count = count($paginator);
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
+=======
+             $qb->setFirstResult($offset)
+               ->setMaxResults($limit)
+               ->addOrderBy('q.modifiedAt', 'DESC')
+               ->setParameter('doctorId',$doctorId);
+             $questions = $qb->getQuery()->getResult();
+             $paginator = new Paginator($qb->getQuery(), $fetchJoinCollection = true);
+             $count = count($paginator);
+
+        } catch( \Exception $e ) {
+            return $e->getMessage();
+>>>>>>> master
         }
 
         return array("question"=>$questions, "count"=>$count);
@@ -77,18 +126,25 @@ class DoctorQuestionRepository extends EntityRepository
 
 
     /**
+<<<<<<< HEAD
      * @param integer $doctorId   - Doctor Practo Account Id
      * @param string  $state      - State of Doctor Question Mapping
      * @param integer $maxResults - No. of Max Results
      *
+=======
+     * @param $doctorId
+     * @param $state
+     * @param null $maxResults
+>>>>>>> master
      * @return array
      */
-    public function findDoctorQuestionsForAState($doctorId, $state = null, $maxResults = null)
+    public function findDoctorQuestionsForAState($doctorId, $state=null, $maxResults=null)
     {
         $queryStr = "SELECT q FROM ConsultBundle\Entity\Question q join q.doctorQuestions
                         dq WHERE dq.practoAccountId = :doctorId  AND q.softDeleted = 0 AND dq.softDeleted= 0 ";
 
-        if ($state != null) {
+        if($state != null)
+        {
             $queryStr = $queryStr + " AND dq.state = :state";
         }
 
@@ -97,13 +153,18 @@ class DoctorQuestionRepository extends EntityRepository
 
         $query->setParameter('doctorId', $doctorId);
 
-        if ($state != null) {
-            $query->setParameter('state', $state);
+        if($state != null)
+        {$query->setParameter('state', $state);
         }
 
+<<<<<<< HEAD
         if ($maxResults != null) {
             $query->setMaxResults($maxResults);
         }
+=======
+        if($maxResults!= null)
+        $query->setMaxResults($maxResults);
+>>>>>>> master
 
         $questions = $query->getResult();
 
@@ -112,6 +173,7 @@ class DoctorQuestionRepository extends EntityRepository
 
     }
 
+<<<<<<< HEAD
     /**
      * @param \ConsultBundle\Entity\Question $question
      * @param int                            $practoAccountId
@@ -122,7 +184,8 @@ class DoctorQuestionRepository extends EntityRepository
     {
         $qb = $this->_em->createQueryBuilder();
 
-        $qb->select('dq.practoAccountId AS doctorId', 'r.id AS id', 'r.text AS text', 'r.rating', 'r.createdAt AS createdAt' , 'COALESCE(SUM(rv.vote),0) AS votes', 'rv1.vote as vote')
+        $qb->select('dq.practoAccountId AS doctorId', 'r.id AS id', 'r.text AS text', 'r.rating', 'r.createdAt AS createdAt' , 'COALESCE(SUM(rv.vote),0) AS votes',
+            'rv1.vote as vote')
             ->from(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME, 'dq')
             ->innerJoin(ConsultConstants::DOCTOR_REPLY_ENTITY_NAME, 'r', 'WITH', 'r.doctorQuestion = dq AND r.softDeleted = 0 ')
             ->leftJoin(
@@ -146,7 +209,10 @@ class DoctorQuestionRepository extends EntityRepository
         $qb->setParameter('question', $question);
 
         $doctorQuestions = $qb->getQuery()->getArrayResult();
+        //var_dump($doctorQuestions);die;
 
         return $doctorQuestions;
     }
+=======
+>>>>>>> master
 }

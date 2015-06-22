@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use ConsultBundle\Manager\ValidationError;
 
+<<<<<<< HEAD
 /**
  * Controller for User's profile info updation
  */
@@ -23,6 +24,13 @@ class UserController extends FOSRestController
     /**
      * @param Request $request
      * @return View
+=======
+class UserController extends FOSRestController
+{
+    /**
+     * Additional info of user addition
+     *
+>>>>>>> master
      */
     public function postUserInfoAction(Request $request)
     {
@@ -33,19 +41,23 @@ class UserController extends FOSRestController
         try {
             $userConsultEntry = $userManager->add($requestParams, $profileToken);
         } catch (ValidationError $e) {
-            return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
+            return View::create(json_decode($e->getMessage(),true), Codes::HTTP_BAD_REQUEST);
         }
 
         return View::create(
             $userConsultEntry,
-            Codes::HTTP_CREATED
-        );
+            Codes::HTTP_CREATED);
     }
 
     /**
      * Load additional info of a User
      *
+<<<<<<< HEAD
      * @param Request $request
+=======
+     * @param interger $practoId
+     *
+>>>>>>> master
      * @return View
      */
     public function getUserInfoAction(Request $request)
@@ -63,6 +75,11 @@ class UserController extends FOSRestController
 
         if (empty($userProfiles)) {
             return View::create(null, Codes::HTTP_NOT_FOUND);
+<<<<<<< HEAD
+=======
+        } else if ($userConsultEntry->isSoftDeleted()) {
+            return View::create(null, Codes::HTTP_GONE);
+>>>>>>> master
         }
 
         return $userProfiles;

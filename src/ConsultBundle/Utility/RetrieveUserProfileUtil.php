@@ -16,23 +16,24 @@ use GuzzleHttp\Message\Response;
 use GuzzleHttp\Client;
 use GuzzleHttp\Post\PostBody;
 
-/**
- * Class RetrieveUserProfileUtil
- *
- * @package ConsultBundle\Utility
- */
-class RetrieveUserProfileUtil
-{
+
+class RetrieveUserProfileUtil {
 
     private $accountHost;
     private $accountsSigningKey;
 
 
+<<<<<<< HEAD
     /**
      * @param string $accountHost
      * @param string $accountsSigningKey
      */
     public function __construct($accountHost, $accountsSigningKey)
+=======
+
+
+    public function __construct($accountHost = 'http://accounts.practo.local', $accountsSigningKey = 'software-accounts-key')
+>>>>>>> master
     {
         $this->accountHost = $accountHost;
 
@@ -41,13 +42,9 @@ class RetrieveUserProfileUtil
     }
 
 
-
-
-    /**
-     * @param \ConsultBundle\Entity\Question $question
-     */
-    public function loadUserDetailInQuestion(Question $question)
+    public function retrieveUserProfile($accountId)
     {
+<<<<<<< HEAD
 
         $userInfo = $question->getUserInfo();
         if (!$userInfo->isIsRelative()) {
@@ -64,6 +61,28 @@ class RetrieveUserProfileUtil
      * @return \ConsultBundle\Entity\User|\ConsultBundle\Entity\UserInfo|null
      */
     public function retrieveUserProfileNew(UserInfo $userInfo)
+=======
+        $postData = array(
+            'service'           => 'software',
+            'practo_account_id' => $accountId,
+            'signed'            => 'service,practo_account_id,signed'
+        );
+        $this->signEndpointPostData($postData, $this->accountsSigningKey);
+        $practoDomain = new PractoDomain($this->request);
+        $accountsHost = $practoDomain->getHost('accounts');
+        /**
+         * @var Response $response
+         */
+        $response = $this->browser->submit($accountsHost. "/_enquire_profile", $postData);
+        if (!$response->isSuccessful()) {
+            return null;
+        }
+        //var_dump($response->getContent());
+    }
+
+
+    public function retrieveUserProfileNew($accountId)
+>>>>>>> master
     {
         if (empty($userInfo) || empty($userInfo->getPractoAccountId())) {
             return null;
@@ -82,14 +101,16 @@ class RetrieveUserProfileUtil
 
         $body = new PostBody();
         $body->replaceFields($postData);
-        $request = new Request('POST', $this->accountHost."/_enquire_profile", [], $body);
+        $request = new Request('POST', $this->accountHost."/_enquire_profile", [], $body );
 
+        //var_dump($postData);die;
 
         $client = new Client();
         $res = $client->send($request);
 
 
         $userInfo = $this->populateUserFromAccounts($res->json(), $userInfo);
+
 
         return $userInfo;
     }
@@ -103,7 +124,7 @@ class RetrieveUserProfileUtil
         $signedData = array();
         $urlKeys = explode(',', $postData['signed']);
         foreach ($urlKeys as $key) {
-            $signedData[] = $key.'='.urlencode($postData[$key]);
+            $signedData[] = $key . '=' . urlencode($postData[$key]);
         }
         $signedData = implode('&', $signedData);
 
@@ -121,7 +142,8 @@ class RetrieveUserProfileUtil
     private function populateUserFromAccounts(array $userProfile, UserInfo $user)
     {
 
-        if (is_null($userProfile)) {
+        if(is_null($userProfile))
+        {
             return null;
         }
 
@@ -135,25 +157,35 @@ class RetrieveUserProfileUtil
 
 
 
+<<<<<<< HEAD
         if (array_key_exists('dob', $userProfile)) {
             $dob = new \DateTime($userProfile['dob']);
             $age = $dob->diff(new \DateTime())->y;
             $user->setAge($age);
+=======
+        if(array_key_exists('dob', $userProfile))
+        {
+            $user->setDateOfBirth($userProfile['dob']);
+>>>>>>> master
         }
 
-        if (array_key_exists('gender', $userProfile)) {
+        if(array_key_exists('gender', $userProfile))
+        {
             $user->setGender($userProfile['gender']);
         }
 
-        if (array_key_exists('height', $userProfile)) {
+        if(array_key_exists('height', $userProfile))
+        {
             $user->setHeightInCms($userProfile['height']);
         }
 
-        if (array_key_exists('weight', $userProfile)) {
+        if(array_key_exists('weight', $userProfile)) {
+
             $user->setWeightInKgs($userProfile['weight']);
         }
 
-        if (array_key_exists('blood_group', $userProfile)) {
+        if(array_key_exists('blood_group', $userProfile))
+        {
             $user->setBloodGroup($userProfile['blood_group']);
 
         }
@@ -162,4 +194,39 @@ class RetrieveUserProfileUtil
 
         return $user;
     }
+<<<<<<< HEAD
 }
+=======
+
+
+    public function loadUserDetailInQuestion(Question $question)
+    {
+
+        //var_dump(json_encode($question->getPractoAccountId()));
+        $userInfo = $question->getUserInfo();
+        if(is_null($userInfo))
+        {
+            //var_dump("1234");die;
+            $userInfo = new UserInfo();
+        }
+
+        $userProfile = $userInfo->getUserProfileDetails();
+
+        if(is_null($userProfile))
+        {
+
+            $userProfile = $this->retrieveUserProfileNew($question->getPractoAccountId());
+            //var_dump($userProfile);die;
+            $userInfo->setUserProfileDetails($userProfile);
+            $question->setUserInfo($userInfo);
+        }
+
+
+    }
+
+
+
+
+
+}
+>>>>>>> master

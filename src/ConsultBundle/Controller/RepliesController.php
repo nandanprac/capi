@@ -8,7 +8,11 @@
 
 namespace ConsultBundle\Controller;
 
+<<<<<<< HEAD
 use ConsultBundle\Annotations\NeedAuthentication;
+=======
+
+>>>>>>> master
 use ConsultBundle\Entity\DoctorReply;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Util\Codes;
@@ -16,12 +20,16 @@ use FOS\RestBundle\View\View as Views;
 use FOS\RestBundle\Controller\Annotations\View;
 use Symfony\Component\HttpFoundation\Request;
 
+<<<<<<< HEAD
 /**
  * Class RepliesController
  *
  * @package ConsultBundle\Controller
  */
 class RepliesController extends BaseConsultController
+=======
+class RepliesController extends FOSRestController
+>>>>>>> master
 {
 
     /**
@@ -31,6 +39,7 @@ class RepliesController extends BaseConsultController
      * @View()
      *
      */
+<<<<<<< HEAD
     public function postDoctorReplyAction(Request $request)
     {
         $this->authenticate();
@@ -40,12 +49,23 @@ class RepliesController extends BaseConsultController
         try {
             $doctorReply = $doctorReplyManager->replyToAQuestion($postData);
         } catch (\HttpException $e) {
+=======
+     public function postDoctorReplyAction(Request $request)
+     {
+        $answerText = $request->request->get("text");
+        $practoAccountId  = $request->request->get("practo_account_id");
+        $doctorQuestionId = $request->request->get("doctor_question_id");
+        $doctorReplyManager = $this->get('consult.doctorReplyManager');
+
+        try {
+           $doctorReply = $doctorReplyManager->replyToAQuestion($doctorQuestionId, $practoAccountId, $answerText);
+        } catch(\HttpException $e) {
+>>>>>>> master
             return Views::create($e->getMessage(), $e->getCode());
         }
 
         return $doctorReply;
-    }
-
+     }
 
     /**
      * @param Request $request
@@ -53,7 +73,7 @@ class RepliesController extends BaseConsultController
      *
      * @View()
      */
-    public function patchDoctorReplyAction(Request $request)
+    public function patchReplyAction(Request $request)
     {
         $this->authenticate();
         $postData = $request->request->all();
@@ -65,5 +85,12 @@ class RepliesController extends BaseConsultController
         }
 
         return array("doctor_reply"=> $doctorReply);
+    }
+
+
+    public function getReplyAction()
+    {
+        $m = $this->get('consult.retrieve_doctor_profile_util');
+        $m->retrieveDoctorProfile();
     }
 }

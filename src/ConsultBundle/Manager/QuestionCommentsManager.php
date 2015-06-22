@@ -4,6 +4,8 @@ namespace ConsultBundle\Manager;
 
 use ConsultBundle\Constants\ConsultConstants;
 use ConsultBundle\Entity\QuestionCommentVote;
+use ConsultBundle\Entity\QuestionCommentFlag;
+use ConsultBundle\Response\QuestionCommentResponse;
 use FOS\RestBundle\Util\Codes;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 use Symfony\Component\Validator\ValidatorInterface;
@@ -55,15 +57,14 @@ class QuestionCommentsManager extends BaseManager
         $question->setModifiedAt(new \DateTime('now'));
         $this->helper->persist($questionComment, true);
 
-        return $questionComment;
+        return new QuestionCommentResponse($questionComment);
     }
 
     /**
-     * Patch comment for upvote/downvote
-     *
      * @param array $requestParams
      *
-     * @return QuestionComment
+     * @return array|\ConsultBundle\Entity\QuestionCommentFlag|\ConsultBundle\Entity\QuestionCommentFlag[]
+     * @throws \ConsultBundle\Manager\ValidationError
      */
     public function patch($requestParams)
     {
@@ -82,29 +83,55 @@ class QuestionCommentsManager extends BaseManager
             throw new ValidationError($error);
         }
 
-        $er = $this->helper->getRepository(ConsultConstants::QUESTION_COMMENT_VOTE_ENTITY_NAME);
-        $vote = $er->findBy(array('questionComment' => $questionComment, 'practoAccountId' => $requestParams['practo_account_id'], 'softDeleted' => 0));
-        if (!empty($vote[0])) {
-            $vote = $vote[0];
+        if (array_key_exists('vote', $requestParams)) {
+            $er = $this->helper->getRepository(ConsultConstants::QUESTION_COMMENT_VOTE_ENTITY_NAME);
+            $vote = $er->findBy(array('questionComment' => $questionComment, 'practoAccountId' => $requestParams['practo_account_id'], 'softDeleted' => 0));
+            if (!empty($vote[0])) {
+                $vote = $vote[0];
+            }
+
+            if (!empty($vote) and ($vote->getVote() == $requestParams['vote'])) {
+                @$error['error'] = 'The user has already voted on this comment';
+                throw new ValidationError($error);
+            } elseif (!empty($vote) and ($vote->getVote() != $requestParams['vote'])) {
+                $vote->setVote($requestParams['vote']);
+                $vote->setCount($vote->getCount() + 1);
+                $this->helper->persist($vote, true);
+
+               // return $vote;
+            } else {
+                $commentVote = new QuestionCommentVote();
+                $commentVote->setQuestionComment($questionComment);
+                $this->updateFields($commentVote, $requestParams);
+                $this->helper->persist($commentVote, true);
+
+               // return $commentVote;
+            }
         }
 
-        if (!empty($vote) and ($vote->getVote() == $requestParams['vote'])) {
-            @$error['error'] = 'The user has already voted on this comment';
-            throw new ValidationError($error);
-        } elseif (!empty($vote) and ($vote->getVote() != $requestParams['vote'])) {
-            $vote->setVote($requestParams['vote']);
-            $vote->setCount($vote->getCount() + 1);
-            $this->helper->persist($vote, true);
+        if (array_key_exists('flag', $requestParams)) {
+            $er = $this->helper->getRepository(ConsultConstants::QUESTION_COMMENT_FLAG_ENTITY_NAME);
+            $flag = $er->findBy(array('questionComment' => $questionComment, 'practoAccountId' => $requestParams['practo_account_id'], 'softDeleted' => 0));
+            if (!empty($flag[0])) {
+                @$error['error'] = 'The user has already flagged this comment';
+                throw new ValidationError($error);
+            }
 
-            return $vote;
-        } else {
-            $commentVote = new QuestionCommentVote();
-            $commentVote->setQuestionComment($questionComment);
-            $this->updateFields($commentVote, $requestParams);
-            $this->helper->persist($commentVote, true);
+            $flag = new QuestionCommentFlag();
+            $flag->setQuestionComment($questionComment);
+            $requestParams['flag_code'] = strtoupper($requestParams['flag']);
+            $requestParams['flag_text'] = (array_key_exists('text', $requestParams)) ? $requestParams['text'] : null ;
+            unset($requestParams['flag']);
+            if (array_key_exists('text', $requestParams)) {
+                unset($requestParams['text']);
+            }
+            $this->updateFields($flag, $requestParams);
+            $this->helper->persist($flag, true);
 
-            return $commentVote;
+            //return $flag;
         }
+
+        return new QuestionCommentResponse($questionComment);
 
     }
 

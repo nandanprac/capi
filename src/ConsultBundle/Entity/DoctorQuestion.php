@@ -9,7 +9,7 @@
 namespace ConsultBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\ArrayCollection;
+
 
 /**
  * @ORM\Entity(repositoryClass="ConsultBundle\Repository\DoctorQuestionRepository")
@@ -211,10 +211,7 @@ class DoctorQuestion extends BaseEntity
         $this->setString('rejectionReason', $rejectionReason);
     }
 
-    /**
-     *  Construct the object
-     */
-    public function __construct()
+    public function _construct()
     {
      //   $this->doctorReply = new ArrayCollection();
     }

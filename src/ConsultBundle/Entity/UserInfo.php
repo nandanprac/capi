@@ -51,7 +51,7 @@ class UserInfo extends BaseEntity
      * @var string
      *
      * @ORM\Column(name="gender", type="string", length=1, nullable=true)
-     * @Assert\Choice(choices = {"M", "F", "m", "f"}, message="Input can only be M/F")
+     * @Assert\Choice(choices = {"M", "F"}, message="Input can only be M/F")
      */
     private $gender;
 
@@ -61,6 +61,20 @@ class UserInfo extends BaseEntity
      * @ORM\Column(name="blood_group", type="string", length=5, nullable=true)
      */
     private $bloodGroup;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="occupation", type="string", length=50, nullable=true)
+     */
+    private $occupation;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="location", type="string", length=50, nullable=true)
+     */
+    private $location;
 
     /**
      * @var float
@@ -182,6 +196,38 @@ class UserInfo extends BaseEntity
     /**
      * @return string
      */
+    public function getOccupation()
+    {
+        return $this->occupation;
+    }
+
+    /**
+     * @param string $occupation
+     */
+    public function setOccupation($occupation)
+    {
+        $this->occupation = $occupation;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLocation()
+    {
+        return $this->location;
+    }
+
+    /**
+     * @param string $location
+     */
+    public function setLocation($location)
+    {
+        $this->location = $location;
+    }
+
+    /**
+     * @return string
+     */
     public function getBloodGroup()
     {
         return $this->bloodGroup;
@@ -241,7 +287,7 @@ class UserInfo extends BaseEntity
     /**
      * Set Medication
      *
-     * @param string $allergies - Allergies
+     * @param string $medications - Allergies
      */
     public function setAllergies($allergies)
     {
@@ -305,6 +351,20 @@ class UserInfo extends BaseEntity
      */
     public function setAdditionalDetails($additionalDetails)
     {
+<<<<<<< HEAD
         $this->additionalDetails = $additionalDetails;
+=======
+        $this->setString('additionalDetails', $additionalDetails);
+    }
+
+    public function setUserProfileDetails(User $user)
+    {
+        $this->userProfileDetails = $user;
+    }
+
+    public function getUserProfileDetails()
+    {
+        return $this->userProfileDetails;
+>>>>>>> master
     }
 }

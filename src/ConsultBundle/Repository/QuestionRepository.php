@@ -2,11 +2,13 @@
 
 namespace ConsultBundle\Repository;
 
+use ConsultBundle\Entity\Question;
 use ConsultBundle\Utility\Utility;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use ConsultBundle\Constants\ConsultConstants;
 use Doctrine\ORM\EntityRepository;
 
+<<<<<<< HEAD
 /**
  * Question Repository
  */
@@ -40,9 +42,20 @@ class QuestionRepository extends EntityRepository
             ->leftJoin(ConsultConstants::QUESTION_BOOKMARK_ENTITY_NAME, 'b', 'WITH', 'q = b.question AND b.softDeleted = 0 ')
             ->where('q.softDeleted = 0')
             ->orderBy('q.modifiedAt', 'DESC')
+=======
+class QuestionRepository extends EntityRepository{
+
+    public function findQuestionsByFilters($practoAccountId, $bookmark, $state, $category, $modifiedAfter, $limit, $offset)
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('q')
+           ->from(ConsultConstants::$QUESTION_ENTITY_NAME, 'q')
+           ->where('q.softDeleted = 0')
+           ->orderBy('q.modifiedAt', 'DESC')
+>>>>>>> master
             ->groupBy('q')
-            ->setMaxResults($limit)
-            ->setFirstResult($offset);
+           ->setMaxResults($limit)
+           ->setFirstResult($offset);
 
         if (isset($modifiedAfter)) {
             $qb->andWhere('q.modifiedAt > :modifiedAt');
@@ -55,12 +68,13 @@ class QuestionRepository extends EntityRepository
         }
 
         if (isset($category)) {
-            $qb->innerJoin(ConsultConstants::QUESTION_TAG_ENTITY_NAME, 't', 'WITH', 'q = t.question');
+            $qb->innerJoin(ConsultConstants::$QUESTION_TAG_ENTITY_NAME, 't', 'WITH', 'q = t.question');
             $qb->andWhere('t.tag IN(:category)');
             $qb->setParameter('category', $category);
         }
 
         if (isset($practoAccountId)) {
+<<<<<<< HEAD
             if (isset($bookmark) and Utility::toBool($bookmark)) {
                 $qb->innerJoin(ConsultConstants::USER_ENTITY_NAME, 'u', 'WITH', 'u = q.userInfo');
                 $qb->andWhere('u.practoAccountId = :practoAccountID');
@@ -75,30 +89,88 @@ class QuestionRepository extends EntityRepository
                 //$qb->leftJoin(ConsultConstants::QUESTION_BOOKMARK_ENTITY_NAME, 'b', 'WITH', 'q = b.question AND b.softDeleted = 0 ');
                 $qb->andWhere(' u.practoAccountId = :practoAccountId OR b.practoAccountId = :practoAccountId');
 
+=======
+            if (isset($bookmark) and $bookmark == "false"){
+                $qb->andWhere('q.practoAccountId = :practoAccountID');
+                $qb->setParameter('practoAccountID', $practoAccountId);
+            } else if (isset($bookmark) and $bookmark == "true") {
+                $qb->innerJoin(ConsultConstants::$QUESTION_BOOKMARK_ENTITY_NAME, 'b', 'WITH', 'q = b.question');
+                $qb->andWhere('b.practoAccountId = :practoAccountId');
+                $qb->setParameter('practoAccountId', $practoAccountId);
+            } else {
+                $qb->leftJoin(ConsultConstants::$QUESTION_BOOKMARK_ENTITY_NAME, 'b', 'WITH', 'q = b.question');
+                $qb->andWhere('q.practoAccountId = :practoAccountId OR b.practoAccountId = :practoAccountId');
+>>>>>>> master
                 $qb->setParameter('practoAccountId', $practoAccountId);
             }
         }
 
         $questionList = $qb->getQuery()->getArrayResult();
-        //var_dump($questionList);die;
+
         $paginator = new Paginator($qb->getQuery(), $fetchJoinCollection = true);
         $count = count($paginator);
 
-        if (is_null($questionList)) {
+        if (is_null($questionList))
             return null;
+<<<<<<< HEAD
         }
 
         return array("questions" => $questionList, "count" => $count);
     }
 
     /**
-     * @param int $questionid
+     * @param $question
+     *
+     * @return array
      */
-    public function getBookmarkCountForAQuestion($questionid)
+    public function getBookmarkCountForAQuestion($question)
     {
         $qb = $this->_em->createQueryBuilder();
         $qb->select('count(qb.id)')
-           ->from(ConsultConstants::QUESTION_BOOKMARK_ENTITY_NAMEENTITY_NAME, 'qb');
+            ->from(ConsultConstants::QUESTION_BOOKMARK_ENTITY_NAME, 'qb')
+            ->where('qb.question = :question')
+            ->andWhere('qb.softDeleted = 0')
+            ->setParameter('question', $question);
+
+        $result = $qb->getQuery()->getArrayResult();
+
+        if (count($result) == 0) {
+            return 0;
+        }
+
+
+        return $result[0][1];
+
+=======
+        return array($questionList, $count);
+>>>>>>> master
+    }
+
+    /**
+     * @param \ConsultBundle\Entity\Question $question
+     *
+     * @return array|null
+     */
+    public function getImagesForAQuestion(Question $question)
+    {
+        if (empty($question)) {
+            return null;
+        }
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('question_image.url')
+            ->from(ConsultConstants::QUESTION_IMAGE_ENTITY_NAME, 'question_image')
+            ->where('question_image.question = :question')
+            ->andWhere('question_image.softDeleted = 0')
+            ->setParameter('question', $question);
+
+        //$qb->getQuery()->setHint('url');
+        $images = $qb->getQuery()->getResult();
+
+        if (count($images) == 0) {
+            return null;
+        }
+
+        return $images;
     }
 
     /**

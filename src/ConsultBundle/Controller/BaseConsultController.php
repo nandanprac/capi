@@ -8,7 +8,6 @@
 
 namespace ConsultBundle\Controller;
 
-
 use FOS\RestBundle\Util\Codes;
 use ConsultBundle\Utility\Utility;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;

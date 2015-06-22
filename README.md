@@ -13,7 +13,7 @@ server {
 
 
   root /home/vagrant/www/consult-api/web;
-
+  
   location / {
     try_files $uri @app;
   }
@@ -24,4 +24,14 @@ server {
     fastcgi_param SCRIPT_FILENAME $document_root/app_dev.php;
   }
 }
+
+Run following commands in Consult.
+
+app/console consult:question:doctorassignment:queue
+app/console consult:assignmentpersist:doctorassignment:queue
+
+Run following commands in Fabric to push GCM notifications.
+
+app/console fabric:consult:gcm:queue
+
 ```

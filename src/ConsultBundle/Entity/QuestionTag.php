@@ -25,8 +25,13 @@ class QuestionTag extends BaseEntity
 
     /**
      * @ORM\Column(type="string", length=127, name="tag")
+<<<<<<< HEAD
      */
     private $tag;
+=======
+     */    
+    protected $tag;
+>>>>>>> master
 
     /**
      * @ORM\Column(type="smallint", name="user_defined")

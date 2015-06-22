@@ -51,7 +51,7 @@ class BasicQuestionResponseObject extends ConsultResponseObject
     /**
      * @var int $bookmarkCount
      */
-    private $bookmarkCount;
+    private $bookmarkCount=0;
 
     /**
      * @var \DateTime
@@ -69,7 +69,7 @@ class BasicQuestionResponseObject extends ConsultResponseObject
         if (!is_null($questionEntity)) {
             $this->setSpeciality($questionEntity->getSpeciality());
             $this->setViewCount($questionEntity->getViewCount());
-            //$this->setShareCount($questionEntity->getSpeciality());
+            $this->state = $questionEntity->getState();
             $this->setSubject($questionEntity->getSubject());
             $this->setText($questionEntity->getText());
             $this->viewedAt = $questionEntity->getViewedAt();
@@ -172,6 +172,9 @@ class BasicQuestionResponseObject extends ConsultResponseObject
      */
     public function setBookmarkCount($bookmarkCount)
     {
+        if (!empty($bookmarkCount)) {
+            $this->bookmarkCount = $bookmarkCount;
+        }
         $this->bookmarkCount = $bookmarkCount;
     }
 

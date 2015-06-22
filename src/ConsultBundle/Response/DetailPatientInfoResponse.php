@@ -36,6 +36,8 @@ class DetailPatientInfoResponse extends BasicPatientInfoResponse
 
     private $prevDiagnosedConditions = "";
 
+    private $occupation;
+
     /**
      * @return mixed
      */
@@ -130,5 +132,21 @@ class DetailPatientInfoResponse extends BasicPatientInfoResponse
     public function setPrevDiagnosedConditions($prevDiagnosedConditions)
     {
         $this->prevDiagnosedConditions = $prevDiagnosedConditions;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getOccupation()
+    {
+        return $this->occupation;
+    }
+
+    /**
+     * @param mixed $occupation
+     */
+    public function setOccupation($occupation)
+    {
+        $this->occupation = $occupation;
     }
 }
