@@ -26,8 +26,8 @@ class UserManager extends BaseManager
     /**
      * Update Fields
      *
-     * @param UserInfo      $userEntry
-     * @param array         $requestParams     - Request parameters
+     * @param UserInfo $userEntry     - UserInfo object
+     * @param array    $requestParams - Request parameters
      *
      * @return null
      */
@@ -97,17 +97,12 @@ class UserManager extends BaseManager
     /**
      * Load User's Additional Info By Id
      *
-<<<<<<< HEAD
      * @param array $requestParams
      * @throws ValidationError
      * @return array userEntry
-=======
-     * @return userEntry
->>>>>>> master
      */
     public function load($requestParams)
     {
-<<<<<<< HEAD
         if (!array_key_exists('practo_account_id', $requestParams)) {
             @$error['practo_account_id'] = 'This value cannot be blank';
             throw new ValidationError($error);
@@ -117,11 +112,6 @@ class UserManager extends BaseManager
             array('practoAccountId' => $requestParams['practo_account_id']),
             array('createdAt' => 'ASC')
         );
-=======
-        $userEntry = $this->helper->getRepository(ConsultConstants::$USER_ENTITY_NAME)->findOneBy(
-                                                                        array('practoAccountId' => $userId),
-                                                                        array('createdAt' => 'DESC'));
->>>>>>> master
 
         if (empty($userEntries)) {
             return null;

@@ -13,8 +13,13 @@ use GuzzleHttp\Message\Response;
 use GuzzleHttp\Client;
 use GuzzleHttp\Post\PostBody;
 
-
-class UpdateAccountsUtil {
+/**
+ * Class UpdateAccountsUtil
+ *
+ * @package ConsultBundle\Utility
+ */
+class UpdateAccountsUtil
+{
 
     private $accountHost;
 
@@ -24,91 +29,90 @@ class UpdateAccountsUtil {
                                      'gender' => 'gender',
                                       'blood_group' => 'blood_group');
 
+    /**
+     * @param string $accountHost
+     */
     public function __construct($accountHost)
     {
         $this->accountHost = $accountHost;
     }
 
-
+    /**
+     * @param string $profileToken
+     * @param array  $data
+     *
+     * @return null
+     */
     public function updateAccountDetails($profileToken, $data)
     {
 
-        //var_dump($profileToken);die;
-        if(empty($profileToken))
+        if (empty($profileToken)) {
             return null;
+        }
 
 
             $postData = $this->populatePostData($data);
 
 
 
-        //var_dump($postData);die;
 
-        if(empty($postData))
-        {
+        if (empty($postData)) {
             return null;
         }
 
         $body = new PostBody();
         $body->replaceFields($postData);
-        $request = new Request('POST', $this->accountHost."/update_profile_with_token",
-            array('X-Profile-Token' => $profileToken), $body );
+        $request = new Request(
+            'POST',
+            $this->accountHost."/update_profile_with_token",
+            array('X-Profile-Token' => $profileToken),
+            $body
+        );
 
         $client = new Client();
 
-        try{
+        try {
             $client->send($request);
 
-<<<<<<< HEAD
         } catch (\Exception $e) {
-=======
-        }catch(\Exception $e)
-        {
->>>>>>> master
             //do nothing.
         }
 
-        
+
 
 
 
     }
 
+    /**
+     * @param $params
+     *
+     * @return array|null
+     */
     private function populatePostData($params)
     {
 
-<<<<<<< HEAD
         if (array_key_exists('user_info', $params)) {
             if (!(array_key_exists('is_relative', $params['user_info'])
                 and Utility::toBool($params['user_info']['is_relative']) )
             ) {
                 $data = $params['user_info'];
-=======
-        if (array_key_exists('user_profile_details', $params)) {
-            if (!(array_key_exists('is_someone_else', $params['user_profile_details']) and
-                $params['user_profile_details']['is_someone_else'] === true)) {
-
-                $data = $params['user_profile_details'];
->>>>>>> master
             }
         }
 
-        //var_dump($data);die;
 
-        if(empty($data))
+        if (empty($data)) {
             return null;
+        }
 
 
-        //var_dump($data);die;
 
          $postData = array();
-        foreach(self::$fieldsToUpdate as $key => $value)
-        {
-            if(array_key_exists($key, $data) )
-            {
-                try{
+
+        foreach (self::$fieldsToUpdate as $key => $value) {
+            if (array_key_exists($key, $data)) {
+                try {
                     $val = trim($data[$key]);
-<<<<<<< HEAD
                     if (!empty($val)) {
                         if ($value === 'dob') {
                             $dob = $this->getCorrectedDOB($val);
@@ -118,24 +122,10 @@ class UpdateAccountsUtil {
                         }
                         if (!empty($val)) {
                             $postData[$value] = $val;
-=======
-                    if(!empty($val))
-                    {
-                        if($value === 'dob')
-                        {
-
-                            $dob = new \DateTime($val);
-
-                            $val = $dob->format("Y-m-d");
-
-
->>>>>>> master
                         }
 
                     }
-                }catch (\Exception $e)
-                {
-                    //var_dump($e->getTraceAsString());
+                } catch (\Exception $e) {
                 }
 
             }
@@ -146,7 +136,6 @@ class UpdateAccountsUtil {
         return $postData;
     }
 
-<<<<<<< HEAD
     /**
      * @param \ConsultBundle\Utility\int $age
      *
@@ -176,6 +165,3 @@ class UpdateAccountsUtil {
 
     }
 }
-=======
-}
->>>>>>> master
