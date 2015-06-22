@@ -110,7 +110,7 @@ class DoctorQuestionManager extends BaseManager
 
 
 
-        return new DoctorQuestionResponseObject($question);
+        return  $this->fetchDetailQuestionObject($question, $practoAccountId);
     }
 
     /**
