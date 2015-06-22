@@ -8,8 +8,14 @@
 
 namespace ConsultBundle\Constants;
 
+/**
+ * Class ConsultConstants
+ *
+ * @package ConsultBundle\Constants
+ */
+class ConsultConstants
+{
 
-<<<<<<< HEAD
     const QUESTION_ENTITY_NAME = "ConsultBundle:Question";
     const DOCTOR_QUESTION_ENTITY_NAME = "ConsultBundle:DoctorQuestion";
     const DOCTOR_REPLY_ENTITY_NAME = "ConsultBundle:DoctorReply";
@@ -25,17 +31,4 @@ namespace ConsultBundle\Constants;
     const DOCTOR_NOTIFICATION_ENTITY_NAME = "ConsultBundle:DoctorNotification";
     const USER_NOTIFICATION_ENTITY_NAME = "ConsultBundle:UserNotification";
     const QUESTION_IMAGE_ENTITY_NAME = "ConsultBundle:QuestionImage";
-=======
-class ConsultConstants {
-
-    public static $QUESTION_ENTITY_NAME = "ConsultBundle:Question";
-    public static $DOCTOR_QUESTION_ENTITY_NAME = "ConsultBundle:DoctorQuestion";
-    public static $DOCTOR_REPLY_ENTITY_NAME = "ConsultBundle:DoctorReply";
-    public static $USER_ENTITY_NAME = "ConsultBundle:UserInfo";
-    public static $QUESTION_BOOKMARK_ENTITY_NAME = "ConsultBundle:QuestionBookmark";
-    public static $QUESTION_TAG_ENTITY_NAME = "ConsultBundle:QuestionTag";
-    public static $DOCTOR_REPLY_RATING_ENTITY_NAME = "ConsultBundle:DoctorReplyRating";
-
-
->>>>>>> master
 }

@@ -10,9 +10,15 @@ namespace ConsultBundle\Manager;
 
 use ConsultBundle\Helper\Helper;
 use ConsultBundle\Validator\Validator;
+use ConsultBundle\Entity\BaseEntity;
 
-
-abstract class BaseManager {
+/**
+ * Class BaseManager
+ *
+ * @package ConsultBundle\Manager
+ */
+class BaseManager
+{
 
     /**
      * @var Helper $helper
@@ -26,7 +32,7 @@ abstract class BaseManager {
     protected $validator;
 
     /**
-     * @param  $validator
+     * @param  Validator $validator
      */
     public function setValidator(Validator $validator)
     {
@@ -34,7 +40,7 @@ abstract class BaseManager {
     }
 
     /**
-     * @param  $helper
+     * @param  Helper $helper
      */
     public function setHelper(Helper $helper)
     {
@@ -42,11 +48,10 @@ abstract class BaseManager {
     }
 
     /**
-     * @param $entity
+     * @param BaseEntity $entity
      */
     public function validate($entity)
     {
         $this->validator->validate($entity);
     }
 }
-
