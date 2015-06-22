@@ -53,7 +53,7 @@ class RepliesController extends BaseConsultController
      *
      * @View()
      */
-    public function patchDoctorReplyAction(Request $request)
+    public function patchReplyAction(Request $request)
     {
         $this->authenticate();
         $postData = $request->request->all();
