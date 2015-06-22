@@ -25,3 +25,14 @@ server {
   }
 }
 ```
+
+Run following commands in Consult.
+
+app/console consult:question:doctorassignment:queue
+app/console consult:assignmentpersist:doctorassignment:queue
+
+Run following commands in Fabric to push GCM notifications.
+
+app/console fabric:consult:gcm:queue
+
+
