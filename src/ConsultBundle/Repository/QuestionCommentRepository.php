@@ -30,7 +30,7 @@ class QuestionCommentRepository extends EntityRepository
             'c.practoAccountId as practo_account_id',
             'c.identifier as identifier',
             'c.text as text',
-            'c.createdAt as time',
+            'c.createdAt as created_at',
             'COALESCE(SUM(cv.vote), 0) as total_votes'
         );
 
