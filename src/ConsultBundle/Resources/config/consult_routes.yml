@@ -23,3 +23,7 @@ users:
 notification:
     resource: ConsultBundle\Controller\NotificationController
     type:      rest
+
+master:
+    resource: ConsultBundle\Controller\MasterController
+    type:      rest

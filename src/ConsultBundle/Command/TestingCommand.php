@@ -37,7 +37,7 @@ class TestingCommand extends ContainerAwareCommand
             ->setName('consult:queue:indexing:test')
             ->setDescription('queue for indexing for search results.')
             ->addArgument('question', InputArgument::OPTIONAL)
-            ->addArgument('tags', InputArgument::OPTIONAL)
+            ->addArgument('speciality', InputArgument::OPTIONAL)
             ->addArgument('domain', InputArgument::OPTIONAL, 'Consult Domain', 'https://consult.practo.com');
     }
 
@@ -53,13 +53,13 @@ class TestingCommand extends ContainerAwareCommand
     {
         $request = Request::create($input->getArgument('domain'));
         $question = $input->getArgument('question');
-        $tags = $input->getArgument('tags');
+        $speciality = $input->getArgument('speciality');
         $consultDomain = new ConsultDomain($request);
         $this->container->set('consult.consult_domain', $consultDomain);
         $this->queue->setConsultDomain($consultDomain);
         var_dump($this->queue->getQueueName());
         $this->queue
-              ->setQueueName(Queue::DAA)
-              ->sendMessage(json_encode(array('question'=>$question ? $question : '', 'tags'=>$tags?$tags:'')));
+              ->setQueueName(Queue::CLASSIFY)
+              ->sendMessage(json_encode(array('question'=>$question ? $question : '', 'question_id'=>1, 'speciality'=>$speciality ? $speciality : '')));
     }
 }

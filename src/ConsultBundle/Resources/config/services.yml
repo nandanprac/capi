@@ -176,7 +176,23 @@ services:
         - [ setConsultDomain, ['@?consult.consult_domain=']]
 
 
+    consult.redis:
+        class: ConsultBundle\Manager\RedisClient
+        arguments:
+            - @snc_redis.default
+
+    consult.classification:
+        class: ConsultBundle\Manager\ClassificationManager
+        arguments:
+             - @consult.redis
+
+
     consult.notification_manager:
         class: ConsultBundle\Manager\NotificationManager
+        calls:
+            - [setHelper, ["@consult.helper"]]
+
+    consult.master_manager:
+        class: ConsultBundle\Manager\MasterManager
         calls:
             - [setHelper, ["@consult.helper"]]

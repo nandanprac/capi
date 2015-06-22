@@ -30,15 +30,6 @@ class DoctorAssigmentCommand extends ContainerAwareCommand
         $this->daa_debug = $this->container->getParameter('daa_debug');
         $this->client = new Elasticsearch\Client();
         $this->fabric_search = $this->container->getParameter('elastic_index_name');
-        $this->general_words = array('have', 'that', 'with');
-        $this->c_words = array('pace'=>array('Somnologist'=> 0, 'Cardiologist'=> 1),
-                               'neuro'=>array('Somnologist'=> 1, 'Cardiologist'=> 0));
-        $this->c_words_categories = array('Somnologist'=> 39, 'Cardiologist'=> 48);
-        $this->c_categories = array('Somnologist'=>5, 'Cardiologist'=>5);
-        $this->p1_words = ConsultFeatureData::$P1_WORDS;
-        $this->categories_grouping = ConsultFeatureData::$CATEGORY_GROUPING;
-        $this->c_texts = 10;
-        $this->c_tot_words = 81;
     }
 
     /**
@@ -71,54 +62,16 @@ class DoctorAssigmentCommand extends ContainerAwareCommand
             if ($newJob) {
                 $jobData = json_decode($newJob, true);
                 try {
-                    $subject = array_key_exists('subject', $jobData) ? $jobData['subject'] : null;
-                    $question = array_key_exists('question', $jobData) ? $jobData['question'] : null;
-                    $user_speciality = array_key_exists('speciality', $jobData) ? $jobData['speciality'] : null;
-                    $questionAction = array();
-                    $speciality = '';
-                //    $questionAction['tags'] = array_map('strtolower', preg_split("/[\W]+/", $subject.' '.$question));
-                    $questionAction['tags'] = $this->list_words($subject.' '.$question);
-                    if (!$user_speciality) {
-                        $specialities = array();
-                        foreach ($questionAction['tags'] as $keyword) {
-                            $onemap = array_change_key_case($this->p1_words);
-                            if (array_key_exists(strtolower(trim($keyword)), $onemap)) {
-                                $specialities = array_merge($specialities, $onemap[strtolower(trim($keyword))]);
-                            }
-                        }
-                        if ($specialities) {
-                            $c = array_count_values($specialities);
-                            $speciality = array_search(max($c), $c);
-                        } else {
-                            $speciality = '';
-                        }
-                        $questionAction['user_classified'] = 0;
-                    } else {
-                        $speciality = $user_speciality;
-                        $questionAction['user_classified'] = 1;
-                    }
-
                     // Question State Creation
-                    if ($speciality and $speciality != 'GENERIC') {
+                    if ($jobData['speciality'] and $jobData['speciality'] != 'GENERIC') {
                         $state = 'ASSIGNED';
-                    /*
-                    } elseif ($specialities && !in_array($speciality, $specialities)) {
-                        $state = 'MISMATCH';
-                    */
-                    } elseif ($speciality == '') {
-                        $state = 'UNCLASSIFIED';
-                    } elseif ($speciality == 'GENERIC') {
+                    } elseif ($jobData['speciality'] == 'GENERIC') {
                         $state = 'GENERIC';
                     }
 
                     // Job preparation
-                    $questionAction['question_id'] = array_key_exists('question_id', $jobData) ? $jobData['question_id'] : null;
-                    if ($state == 'UNCLASSIFIED' or $state == 'MISMATCH') {
-                        $questionAction['classified'] = ($state == 'UNCLASSIFIED') ? 0 : 1;
-                        $questionAction['state'] = $state;
-                        $questionAction['speciality'] = $speciality;
-                        $questionAction['doctors'] = null;
-                    } elseif ($state == 'ASSIGNED') {
+                    $jobData['question_id'] = array_key_exists('question_id', $jobData) ? $jobData['question_id'] : null;
+                    if ($state == 'ASSIGNED') {
                         $city = array_key_exists('city', $jobData) ? $jobData['city'] : null;
                         if (!$city) {
                             $city = "bangalore";
@@ -127,11 +80,10 @@ class DoctorAssigmentCommand extends ContainerAwareCommand
                         $params['index'] = $this->fabric_search;
                         $params['type']  = 'search';
                         $params['_source']  = array('practo_account_id', 'doctor_name');
-                        $params['body']['query']['bool']['must']['query_string']['default_field']  = 'search.specialties.specialty';
-                        $params['body']['query']['bool']['must']['query_string']['query']  = $speciality;
-
-                        $params['body']['query']['bool']['must']['query_string']['default_field']  = 'search.city';
-                        $params['body']['query']['bool']['must']['query_string']['query']  = $city;
+                        $params['body']['query']['bool']['must'] = array(
+                            array("query_string"=>array("default_field"=>"search.city", "query"=> $city)),
+                            array("query_string"=>array("default_field"=>"search.specialties.specialty", "query"=> $jobData['speciality']))
+                        );
                         $params['body']['from']  = 0;
                         $params['body']['size']  = 100;
                         $results = $this->client->search($params);
@@ -141,75 +93,29 @@ class DoctorAssigmentCommand extends ContainerAwareCommand
                                 array_push($doctorIds, $result["_source"]["practo_account_id"]);
                             }
                         }
-                        $questionAction['classified'] = 1;
-                        $questionAction['speciality'] = $speciality;
                         if ($doctorIds) {
-                            $questionAction['state'] = $state;
+                            $jobData['state'] = $state;
                             shuffle($doctorIds);
-                            $questionAction['doctors'] = array_unique(array_merge(array_slice($doctorIds, 0, 3), array('4','9')));
+                            $jobData['doctors'] = array_unique(array_merge(array_slice($doctorIds, 0, 3), array()));
                         } else {
-                            $questionAction['state'] = 'DOCNOTFOUND';
-                            $questionAction['doctors'] = null;
+                            $jobData['state'] = 'DOCNOTFOUND';
+                            $jobData['doctors'] = null;
                         }
                     } elseif ($state = 'GENERIC') {
-                        $questionAction['classified'] = 1;
-                        $questionAction['speciality'] = $speciality;
-                        $questionAction['state'] = $state;
-                        $questionAction['doctors'] = null;
+                        $jobData['state'] = $state;
+                        $jobData['doctors'] = null;
                     }
-                    $questionAction['send_to'] = 'synapse';
-                    echo json_encode($questionAction);
+                    $jobData['send_to'] = 'synapse';
+                    $output->writeln(json_encode($jobData));
                     $this->queue
                         ->setQueueName(Queue::ASSIGNMENT_UPDATE)
-                        ->sendMessage(json_encode($questionAction));
+                        ->sendMessage(json_encode($jobData));
                 } catch (\Exception $e) {
                     $output->writeln($e->getMessage());
                     $output->writeln($newJob);
                 }
                 $this->queue->setQueueName(Queue::DAA)->deleteMessage($newJob);
             }
-        }
-    }
-
-    protected function list_words($question)
-    {
-        $text = preg_replace('/[^A-Za-z0-9\-\']/', ' ', $question);
-        $words = array();
-        $words_tmp = preg_split('/\s+/', strtolower($text));
-        foreach ($words_tmp as $word) {
-            if (!in_array($word, $words) and strlen($word) > 3 and !in_array($word, $this->general_words)) {
-                array_push($words, $word);
-            }
-        }
-        return $words;
-    }
-
-    protected function classifier($question)
-    {
-        $category = '';
-        $category_prob = 0;
-        $tot_prob = 0;
-        if ($this->daa_debug) {
-            return array(false, false);
-        } else {
-            $words = $this->list_words($question);
-            foreach ($this->c_categories as $c => $c_count) {
-                $prob_c = floatval($this->c_categories[$c])/floatval($this->c_texts);
-                $prob_total_c = $prob_c;
-                foreach ($words as $p) {
-                    if (in_array($p, array_keys($this->c_words))) {
-                        $prob_p= floatval($this->c_words[$p][$c])/floatval(array_sum(array_values($this->c_words[$p])));
-                        $prob_cond = $prob_p/$prob_c;
-                        $prob = $prob_cond * floatval(array_sum(array_values($this->c_words[$p])))/floatval($this->c_tot_words);
-                        $prob_total_c = $prob_total_c * $prob;
-                    }
-                    if ($category_prob < $prob_total_c) {
-                        $category = $c;
-                        $category_prob = $prob_total_c;
-                    }
-                }
-            }
-            return array($category, $category_prob);
         }
     }
 }
