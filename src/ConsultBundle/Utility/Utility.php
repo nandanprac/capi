@@ -21,16 +21,45 @@ class Utility
         foreach ($params as $key => $value) {
             if ($value === true) {
                 $value = 'true';
-                $queryArray[] = $key . '=' . $value;
+                $queryArray[] = $key.'='.$value;
             } elseif ($value === false) {
                 $value = 'false';
-                $queryArray[] = $key . '=' . $value;
+                $queryArray[] = $key.'='.$value;
             } else {
-                $queryArray[] = $key . '=' . urlencode($value);
+                $queryArray[] = $key.'='.urlencode($value);
             }
         }
         $query = implode('&', $queryArray);
 
         return $query;
+    }
+
+
+    /**
+     * @param mixed $var
+     *
+     * @return bool
+     */
+    public static function toBool($var)
+    {
+        if (empty($var)) {
+            return false;
+        }
+
+        if (!is_string($var)) {
+            return (bool) $var;
+        }
+
+        switch (strtolower($var)) {
+            case '1':
+            case 'true':
+            case 'on':
+            case 'yes':
+            case 'y':
+                return true;
+            default:
+                return false;
+        }
+
     }
 }

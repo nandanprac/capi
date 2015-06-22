@@ -7,18 +7,17 @@
 
 namespace ConsultBundle\Entity;
 
-
 use Doctrine\ORM\Mapping as ORM;
 use FOS\RestBundle\Util\Codes;
 use Symfony\Component\Validator\Constraints as Assert;
-
+use ConsultBundle\Manager\ValidationError;
 
 /**
  * ConsultBundle\Entity\BaseEntity
  *
- * @ORM\MappedSuperclass
+ * @ORM\MappedSuperclass()
  */
-abstract class BaseEntity
+class BaseEntity
 {
     /**
      * @ORM\Id
@@ -105,9 +104,8 @@ abstract class BaseEntity
     }
 
     /**
-     * @param $attributes
+     * @param array $attributes
      * @return bool
-     * @throws BadAttributeException
      * @throws ValidationError
      * @throws \Exception
      */
@@ -115,7 +113,6 @@ abstract class BaseEntity
     {
         foreach ($attributes as $attrSnake => $value) {
             //if ($this->isEditableAttribute($attrSnake)) {
-<<<<<<< HEAD
             $attrCamel = str_replace(' ', '', ucwords(str_replace('_', ' ', $attrSnake)));
             $setter = 'set'.$attrCamel;
             try {
@@ -125,24 +122,11 @@ abstract class BaseEntity
                 if (method_exists($this, $setter)) {
                     $this->$setter($value);
 
-=======
-                $attrCamel = str_replace(' ', '', ucwords(str_replace('_', ' ', $attrSnake)));
-                $setter = 'set' . $attrCamel;
-                try {
-                    if ('' === $value) {
-                        $value = null;
-                    }
-                   if(method_exists($this, $setter))
-                   {
-                       $this->$setter($value);
-
-                   }
-
-                } catch (\Exception $e) {
-                    var_dump($attrCamel);die;
-                    throw new \HttpException($attrCamel. "is not a valid field in ".__CLASS__ ,Codes::HTTP_BAD_REQUEST);
->>>>>>> master
                 }
+
+            } catch (\Exception $e) {
+                throw new \HttpException($attrCamel."is not a valid field in ".__CLASS__, Codes::HTTP_BAD_REQUEST);
+            }
             //} else {
             //    throw new BadAttributeException($attrSnake);
             //}
@@ -162,10 +146,9 @@ abstract class BaseEntity
 
         if (is_bool($value)) {
             $this->$field = $value;
-        } else if (is_numeric($value)) {
-
+        } elseif (is_numeric($value)) {
             $this->$field = (bool) $value;
-        } else if (null === $value || '' === $value) {
+        } elseif (null === $value || '' === $value) {
             $this->$field = null;
         } else {
             $this->$field = ('true' === $value);
@@ -230,14 +213,13 @@ abstract class BaseEntity
     {
         if ($value instanceof \DateTime) {
             $this->$field = $value;
-        } else if (!empty($value)) {
+        } elseif (!empty($value)) {
             $this->$field = new \DateTime($value);
         } else {
             $this->$field = null;
         }
     }
 
-<<<<<<< HEAD
     /**
      * @param \DateTime $dateTime
      *
@@ -269,6 +251,4 @@ abstract class BaseEntity
     }
 
 
-=======
->>>>>>> master
 }

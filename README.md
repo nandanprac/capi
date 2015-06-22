@@ -13,7 +13,7 @@ server {
 
 
   root /home/vagrant/www/consult-api/web;
-  
+
   location / {
     try_files $uri @app;
   }

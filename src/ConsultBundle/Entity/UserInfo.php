@@ -287,7 +287,7 @@ class UserInfo extends BaseEntity
     /**
      * Set Medication
      *
-     * @param string $medications - Allergies
+     * @param string $allergies - Allergies
      */
     public function setAllergies($allergies)
     {
@@ -351,20 +351,6 @@ class UserInfo extends BaseEntity
      */
     public function setAdditionalDetails($additionalDetails)
     {
-<<<<<<< HEAD
         $this->additionalDetails = $additionalDetails;
-=======
-        $this->setString('additionalDetails', $additionalDetails);
-    }
-
-    public function setUserProfileDetails(User $user)
-    {
-        $this->userProfileDetails = $user;
-    }
-
-    public function getUserProfileDetails()
-    {
-        return $this->userProfileDetails;
->>>>>>> master
     }
 }

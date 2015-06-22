@@ -16,7 +16,7 @@ class ValidationError extends \ErrorException
      *
      * @param ConstraintViolationList|array|string $errors
      */
-    public function __construct ($errors)
+    public function __construct($errors)
     {
         if ($errors instanceof ConstraintViolationList) {
             $errorFields = array();
@@ -25,7 +25,7 @@ class ValidationError extends \ErrorException
                 $errorFields[$attrSnake][] = $error->getMessage();
             }
             $errorMessage = json_encode($errorFields);
-        } else if (is_array($errors)) {
+        } elseif (is_array($errors)) {
             $errorFields = $errors;
             $errorMessage = json_encode($errorFields);
         } else {
@@ -67,7 +67,7 @@ class ValidationError extends \ErrorException
     {
         $pattern = '/([a-z])([A-Z])/';
         $replace = function ($m) {
-            return $m[1] . '_' . strtolower($m[2]);
+            return $m[1].'_'.strtolower($m[2]);
         };
 
         return preg_replace_callback($pattern, $replace, $attrCamel);

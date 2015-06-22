@@ -9,6 +9,7 @@
 namespace ConsultBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @ORM\Entity
@@ -17,14 +18,9 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class DoctorReply extends BaseEntity
 {
-<<<<<<< HEAD
     /**
      * @ORM\OneToOne(targetEntity="DoctorQuestion", inversedBy = "doctorReply")
      * @ORM\JoinColumn(name="doctor_question_id", referencedColumnName="id")
-=======
-   /**
-    * @ORM\OneToOne(targetEntity="DoctorQuestion", inversedBy = "doctorReply")
->>>>>>> master
     */
     protected $doctorQuestion;
 
@@ -50,7 +46,10 @@ class DoctorReply extends BaseEntity
      */
     protected $votes;
 
-    public function _construct()
+    /**
+     * Construct the object
+     */
+    public function __construct()
     {
         $this->likes = new ArrayCollection();
     }
@@ -159,15 +158,7 @@ class DoctorReply extends BaseEntity
      */
     public function getRating()
     {
-<<<<<<< HEAD
         return $this->rating;
-=======
-        if(!$like->isSoftDeleted())
-        {
-            $this->likes[] = $like;
-        }
-
->>>>>>> master
     }
 
     /**
