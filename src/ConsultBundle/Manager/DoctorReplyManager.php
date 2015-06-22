@@ -159,12 +159,8 @@ class DoctorReplyManager extends BaseManager
                 throw new \HttpException("Only the one who has asked the question can rate it", Codes::HTTP_BAD_REQUEST);
             }
 
-            if (empty($doctorReplyEntity->getRating())) {
                 $doctorReplyEntity->setRating($doctorReply['rating']);
                 $changed = true;
-            } else {
-                throw new \HttpException("Answer is already rated", Codes::HTTP_BAD_REQUEST);
-            }
         }
 
         //Mark the answer as viewed
