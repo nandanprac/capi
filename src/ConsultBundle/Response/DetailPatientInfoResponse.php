@@ -38,6 +38,8 @@ class DetailPatientInfoResponse extends BasicPatientInfoResponse
 
     private $occupation;
 
+    private $location;
+
     /**
      * @return mixed
      */
@@ -149,4 +151,22 @@ class DetailPatientInfoResponse extends BasicPatientInfoResponse
     {
         $this->occupation = $occupation;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getLocation()
+    {
+        return $this->location;
+    }
+
+    /**
+     * @param mixed $location
+     */
+    public function setLocation($location)
+    {
+        $this->location = $location;
+    }
+
 }
+
