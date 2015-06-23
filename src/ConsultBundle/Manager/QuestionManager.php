@@ -40,19 +40,22 @@ class QuestionManager extends BaseManager
      * @param RetrieveUserProfileUtil   $retrieveUserProfileUtil
      * @param RetrieveDoctorProfileUtil $retrieveDoctorProfileUtil
      * @param QuestionBookmarkManager   $questionBookmarkManager
+     * @param ClassificationManager     $classificationManager
      */
     public function __construct(
         UserManager $userManager,
         Queue $queue,
         RetrieveUserProfileUtil $retrieveUserProfileUtil,
         RetrieveDoctorProfileUtil $retrieveDoctorProfileUtil,
-        QuestionBookmarkManager $questionBookmarkManager
+        QuestionBookmarkManager $questionBookmarkManager,
+        ClassificationManager $classificationManager
     ) {
         $this->userManager = $userManager;
         $this->queue = $queue;
         $this->retrieveUserProfileUtil = $retrieveUserProfileUtil;
         $this->retrieveDoctorProfileUtil = $retrieveDoctorProfileUtil;
         $this->questionBookmarkManager = $questionBookmarkManager;
+        $this->classification = $classificationManager;
     }
 
     /**
@@ -218,9 +221,25 @@ class QuestionManager extends BaseManager
      */
     public function loadByFilters($request)
     {
+        /**
+         * @var QuestionRepository $er
+         */
+        $er =  $this->helper->getRepository(ConsultConstants::QUESTION_ENTITY_NAME);
 
         $limit = (array_key_exists('limit', $request)) ? $request['limit'] : 30;
         $offset = (array_key_exists('offset', $request)) ? $request['offset'] : 0;
+
+        if (array_key_exists('search', $request)) {
+            $search = $this->classification->sentenceWords($request['search']);
+            $questionList = $er->findSearchQuestions($search, $limit, $offset);
+            $questionResponseList = QuestionMapper::mapQuestionList($questionList['questions']);
+            if (empty($questionList)) {
+                return null;
+            }
+
+            return array("questions" => $questionResponseList, "count" => $questionList['count']);
+        }
+
         $state = (array_key_exists('state', $request)) ? explode(",", $request['state']) : null;
         $category = (array_key_exists('category', $request)) ? explode(",", $request['category']) : null;
         $practoAccountId = (array_key_exists('practo_account_id', $request)) ? $request['practo_account_id'] : null;
@@ -231,10 +250,6 @@ class QuestionManager extends BaseManager
             $modifiedAfter = new \DateTime($request['modified_after']);
             $modifiedAfter->format('Y-m-d H:i:s');
         }
-        /**
-         * @var QuestionRepository $er
-         */
-        $er =  $this->helper->getRepository(ConsultConstants::QUESTION_ENTITY_NAME);
 
         $questionList = $er->findQuestionsByFilters($practoAccountId, $bookmark, $state, $category, $modifiedAfter, $limit, $offset);
         if (empty($questionList)) {
