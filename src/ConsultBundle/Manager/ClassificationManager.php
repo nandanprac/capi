@@ -110,6 +110,25 @@ class ClassificationManager
         }
     }
 
+    /**
+     * Takes in map and recalculates the formula score
+     *
+     * @param array $map
+     *
+     * @return array
+     */
+    public function formulaScoreUpdate($map)
+    {
+        $termFreq = 0;
+        foreach (array_values($map) as $speciality) {
+            $termFreq += $speciality['weight_score'];
+        }
+        foreach (array_keys($map) as $category) {
+            $map[$category]['formula_score'] = floatval($map[$category]['weight_score'])/floatval($termFreq)* floatval(1)/floatval(1+log10($termFreq));
+        }
+
+        return $map;
+    }
 
     /**
      * Takes in list of hash maps containing score hash map of each word
@@ -151,25 +170,5 @@ class ClassificationManager
         arsort($formulaTemp, SORT_NUMERIC);
 
         return array(array_slice($weightTemp, 0, 2), array_slice($formulaTemp, 0, 2));
-    }
-
-    /**
-     * Takes in map and recalculates the formula score
-     *
-     * @param array $map
-     *
-     * $return array
-     */
-    protected function formulaScoreUpdate($map)
-    {
-        $termFreq = 0;
-        foreach (array_values($map) as $speciality) {
-            $termFreq += $speciality['weight_score'];
-        }
-        foreach (array_keys($map) as $category) {
-            $map[$category]['formula_score'] = floatval($map[$category]['weight_score'])/floatval($termFreq)* floatval(1)/floatval(1+log10($termFreq));
-        }
-
-        return $map;
     }
 }

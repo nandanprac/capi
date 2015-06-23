@@ -145,6 +145,19 @@ class WordManager extends BaseManager
         return $words;
     }
 
+    /**
+     * Takes in score id and new Score Data
+     *
+     * @param integer $scoreId   - ScoreId
+     * @param array   $scoreData - Score Data
+     */
+    public function updateScore($scoreId, $scoreData)
+    {
+
+        $score = $this->helper->loadById($scoreId, ConsultConstants::WORD_SCORE_ENTITY_NAME);
+        $score->setScore($scoreData);
+        $this->helper->persist($score, 'true');
+    }
 
     /**
      * Takes in list of words and gives a array of scores

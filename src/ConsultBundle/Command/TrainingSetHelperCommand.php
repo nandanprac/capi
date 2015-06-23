@@ -69,22 +69,9 @@ class TrainingSetHelperCommand extends ContainerAwareCommand
             }
         } elseif ($action == 'adjust') {
             foreach ($data as $map) {
-                if ($this->redis->keyExists(strtolower($map[0]))) {
-                    $scoreData = $this->redis->getKey(strtolower($map[0]));
-                    try {
-                        $tempScoreData = json_decode($scoreData, true);
-                        if (!$tempScoreData) {
-                            $map[0] = $scoreData;
-                            $scoreData = $this->redis->getKey($map[0]);
-                            $scoreData = json_decode($scoreData, true);
-                        } else {
-                            $scoreData = $tempScoreData;
-                        }
-                    } catch (\Exception $e) {
-                        $output->writeln($map[0]);
-                        $output->writeln($e->getMessage());
-                        continue;
-                    }
+                $synTag = $this->wordManager->loadByWord($map[0], ConsultConstants::SYN_TAG_ENTITY_NAME);
+                if (count($synTag) == 1) {
+                    $scoreData = $synTag[0][2];
                     if (in_array($map[1], array_keys($scoreData))) {
                         $scoreData[$map[1]]['weight_score'] += $this->ADJUSTMENTWEIGHT;
                         $scoreData = $this->classification->formulaScoreUpdate($scoreData);
@@ -92,7 +79,7 @@ class TrainingSetHelperCommand extends ContainerAwareCommand
                         $scoreData[$map[1]]['weight_score'] = $this->COMPROMISINGWEIGHT;
                         $scoreData = $this->classification->formulaScoreUpdate($scoreData);
                     }
-                    $this->redis->setKey($map[0], json_encode($scoreData));
+                    $this->wordManager->updateScore($synTag[0][1], $scoreData);
                 }
             }
         } else {
