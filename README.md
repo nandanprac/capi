@@ -49,13 +49,13 @@ app/console fabric:consult:gcm:queue
 
 To Setup Classification, use data in trainingdata folder
 
-run following commands
-
-Command to insert trained data.
-app/console consult:data:trainer /tmp/trainset.csv
+run following commands in order
 
 Command to insert stop words
 app/console consult:data:trainer:helper /tmp/stop_words.csv --action=stop
+
+Command to insert trained data.
+app/console consult:data:trainer /tmp/trainset.csv
 
 Command to insert synonyms and stems
 app/console consult:data:trainer:helper /tmp/stem_list\(u\).csv --action=stem
