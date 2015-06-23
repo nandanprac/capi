@@ -8,59 +8,86 @@
 
 namespace ConsultBundle\Controller;
 
-use ConsultBundle\Entity\DoctorQuestion;
+use FOS\RestBundle\Controller\Annotations\Get;
+use FOS\RestBundle\Controller\Annotations\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Doctrine\Common\Collections\ArrayCollection;
 use FOS\RestBundle\View\View;
 use FOS\RestBundle\Util\Codes;
-use Doctrine\Common\Persistence\ObjectRepository;
 use ConsultBundle\Manager\ValidationError;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Doctor Question Controller
  */
-class DoctorQuestionsController extends Controller
+class DoctorQuestionsController extends BaseConsultController
 {
 
     /**
      * @return ArrayCollection
+     *
      */
     public function getDoctorQuestionsAction()
     {
         $request = $this->get('request');
         $queryParams = $request->query->all();
-        //TODO Move this in manager
-        // practo_account_id is not mandatory
-        //if (array_key_exists('practo_account_id', $queryParams)) {
-        //    $doctorId = $queryParams['practo_account_id'];
-        //} else {
-        //    return View::create("Atleast <practo_account_id> is needed.", Codes::HTTP_BAD_REQUEST);
-        //}
+        try {
+            $doctorQuestionManager = $this->get('consult.doctorQuestionManager');
+            $questionsList = $doctorQuestionManager->loadAllByDoctor($queryParams);
+        } catch (\Exception $e) {
+            return View::create(json_encode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
+        }
 
-        $doctorQuestionManager = $this->get('consult.doctorQuestionManager');
-        list($questions, $count) = $doctorQuestionManager->loadAllByDoctor($queryParams);
+        if (null === $questionsList) {
+            return View::create(null, Codes::HTTP_NOT_FOUND);
+        }
 
-
-        return array("questions"=>$questions, "count"=>$count);
+        return $questionsList;
     }
 
     /**
-    *
-    * @return mixed
-    */
-    public function patchDoctorQuestionAction()
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *
+     * @return \FOS\RestBundle\View\View
+     */
+    public function patchDoctorQuestionAction(Request $request)
     {
-        $updateData = $this->getRequest()->request->all();
+         $this->authenticate();
+        $updateData = $request->request->all();
         $doctorQuestionManager = $this->get('consult.doctorQuestionManager');
 
         try {
-            $doctorQuestionMapping = $doctorQuestionManager->patch($updateData);
+            $doctorQuestionRes = $doctorQuestionManager->patch($updateData);
         } catch (ValidationError $e) {
             return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
         }
 
-        return View::create(array("question" => $doctorQuestionMapping), Codes::HTTP_CREATED);
+        return View::create(array("question" => $doctorQuestionRes), Codes::HTTP_CREATED);
+    }
+
+
+    /**
+     * @param int $id
+     * @Get("/doctor/question/{id}")
+     *
+     * @return \ConsultBundle\Entity\DoctorQuestion|\FOS\RestBundle\View\View
+     */
+    public function getDoctorQuestionAction($id)
+    {
+        $this->authenticate();
+        $doctorQuestionManager = $this->get('consult.doctorQuestionManager');
+        try {
+            //$doctorQuestionManager = $this->get('consult.doctorQuestionManager');
+            $question = $doctorQuestionManager->loadById($id);
+        } catch (\Exception $e) {
+            return View::create(json_encode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
+        }
+
+        if (null === $question) {
+            return View::create(null, Codes::HTTP_NOT_FOUND);
+        }
+
+        return $question;
     }
 
     /**
@@ -69,6 +96,7 @@ class DoctorQuestionsController extends Controller
      */
     public function getAnsweredDoctorQuestionsAction($doctorId)
     {
+        $this->authenticate();
         $doctorQuestionManager = $this->get('consult.doctorQuestionManager');
         $questions =  $doctorQuestionManager->getAnsweredDoctorQuestionsForDoctor($doctorId);
 

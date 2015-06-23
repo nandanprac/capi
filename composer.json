@@ -33,7 +33,9 @@
         "pda/pheanstalk": "~2.1",
         "aws/aws-sdk-php": "2.7.*",
         "guzzlehttp/guzzle": "~5.0",
-        "sensio/buzz-bundle": "dev-master"
+        "sensio/buzz-bundle": "dev-master",
+        "snc/redis-bundle": "1.1.*",
+        "predis/predis": "0.8.x-dev"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",

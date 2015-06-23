@@ -63,6 +63,20 @@ class UserInfo extends BaseEntity
     private $bloodGroup;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="occupation", type="string", length=50, nullable=true)
+     */
+    private $occupation;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="location", type="string", length=50, nullable=true)
+     */
+    private $location;
+
+    /**
      * @var float
      *
      * @ORM\Column(name="height_in_cms", type="float", nullable=true)
@@ -143,7 +157,7 @@ class UserInfo extends BaseEntity
      */
     public function setIsRelative($isRelative)
     {
-        $this->isRelative = $isRelative;
+        $this->isRelative = self::toBool($isRelative);
     }
 
     /**
@@ -177,6 +191,38 @@ class UserInfo extends BaseEntity
     public function setGender($gender)
     {
         $this->gender = $gender;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOccupation()
+    {
+        return $this->occupation;
+    }
+
+    /**
+     * @param string $occupation
+     */
+    public function setOccupation($occupation)
+    {
+        $this->occupation = $occupation;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLocation()
+    {
+        return $this->location;
+    }
+
+    /**
+     * @param string $location
+     */
+    public function setLocation($location)
+    {
+        $this->location = $location;
     }
 
     /**

@@ -2,25 +2,28 @@
 
 namespace ConsultBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\View\View;
 use FOS\RestBundle\Util\Codes;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use ConsultBundle\Manager\ValidationError;
 
 /**
  * Questions Controller
  */
-class QuestionsController extends Controller
+class QuestionsController extends BaseConsultController
 {
     /**
-     * @param Request $request - Request Object
-     * @return View
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *
+     * @return \FOS\RestBundle\View\View
+     * @throws \HttpException
      */
     public function postQuestionAction(Request $request)
     {
+        $logger = $this->get('logger');
+        $logger->info("Post Question".$request);
+        $this->authenticate();
         $postData = $request->request->get('question');
         $practoAccountId = $request->request->get('practo_account_id');
         $profileToken = $request->headers->get('X-Profile-Token');
@@ -32,15 +35,15 @@ class QuestionsController extends Controller
 
         } catch (ValidationError $e) {
             return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
-        } /*catch (\Exception $e) {
+        } catch (\Exception $e) {
             return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
-        }*/
+        }
 
         $files = $request->files;
         $questionImageManager = $this->get('consult.question_image_manager');
 
         try {
-            $questionImageManager->add($question, $files);
+            $questionImageManager->add($question->getId(), $files);
         } catch (\Exception $e) {
             return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
         }
@@ -59,7 +62,9 @@ class QuestionsController extends Controller
      */
     public function getQuestionAction($questionId, Request $request)
     {
-        $practoAccountId = $request->query->get('practo_account_id');
+        $logger = $this->get('logger');
+        $logger->info("Get Question".$questionId);
+        $practoAccountId = $this->authenticate(false);
 
         $questionManager = $this->get('consult.question_manager');
 
@@ -99,17 +104,22 @@ class QuestionsController extends Controller
     }
 
     /**
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *
      * @return \FOS\RestBundle\View\View
      */
-    public function patchQuestionAction()
+    public function patchQuestionAction(Request $request)
     {
+        $practoAccountId = $this->authenticate(false);
         $questionManager = $this->get('consult.question_manager');
-        $request = $this->getRequest()->request->all();
+        $request = $request->request->all();
 
         try {
-            $questionFinal = $questionManager->patch($request);
+            $questionFinal = $questionManager->patch($request, $practoAccountId);
         } catch (ValidationError $e) {
             return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
+        } catch(\HttpException $e) {
+            return View::create(json_decode($e->getMessage(), true), $e->getCode());
         }
 
         return View::create(

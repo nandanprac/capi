@@ -10,10 +10,16 @@ namespace ConsultBundle\Manager;
 
 use ConsultBundle\Constants\ConsultConstants;
 use ConsultBundle\Entity\DoctorQuestion;
+use ConsultBundle\Repository\DoctorQuestionRepository;
+use ConsultBundle\Repository\QuestionCommentRepository;
+use ConsultBundle\Response\DoctorQuestionResponseObject;
+use ConsultBundle\Response\ReplyResponseObject;
+use ConsultBundle\Utility\Utility;
 use Doctrine\Common\Collections\ArrayCollection;
 use ConsultBundle\Manager\ValidationError;
 use ConsultBundle\Utility\RetrieveDoctorProfileUtil;
 use ConsultBundle\Utility\RetrieveUserProfileUtil;
+use ConsultBundle\Mapper\QuestionMapper;
 use ConsultBundle\Manager\NotificationManager;
 
 /**
@@ -60,12 +66,13 @@ class DoctorQuestionManager extends BaseManager
      */
     public function patch($updateData)
     {
-        if (array_key_exists('question_id', $updateData) and array_key_exists('practo_account_id', $updateData)) {
+        if (array_key_exists('id', $updateData) and array_key_exists('practo_account_id', $updateData)) {
+            $practoAccountId = $updateData['practo_account_id'];
             /**
              * @var DoctorQuestion $question
              */
-            $question = $this->getRepository()->findOneBy(array('practoAccountId'=>$updateData['practo_account_id'], 'question'=>$updateData['question_id']));
-            if (!$question) {
+            $question = $this->helper->loadById($updateData['id'], ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME);
+            if (empty($question) || $question->getPractoAccountId() != $practoAccountId) {
                 throw new ValidationError(array("error"=>"Question is not mapped to this doctor."));
             }
         } else {
@@ -73,7 +80,11 @@ class DoctorQuestionManager extends BaseManager
         }
 
 
-        if (array_key_exists('reject', $updateData) && $updateData['reject'] === true) {
+        if (array_key_exists('reject', $updateData) && Utility::toBool($updateData['reject'])) {
+            if ($question->getState() != 'UNANSWERED') {
+                throw new ValidationError(array("error" => "The question is not unanswered"));
+            }
+
             if (array_key_exists('rejection_reason', $updateData)) {
                 $question->setRejectionReason($updateData['rejection_reason']);
             }
@@ -88,23 +99,18 @@ class DoctorQuestionManager extends BaseManager
             throw new ValidationError(array("error"=> "Please dont pass rejection_reason if reject is false"));
         }
 
-        if (array_key_exists('view', $updateData) && $updateData['view'] == 'true') {
-            if (!$question->getViewedAt()) {
+        if (array_key_exists('view', $updateData) && Utility::toBool($updateData['view'])) {
+            if (empty($question->getViewedAt())) {
                 $question->setViewedAt(new \DateTime());
             }
         }
 
-        $params = $this->validator->validatePatchArguments($updateData);
-        $this->updateFields($question, $params);
         $this->helper->persist($question, true);
 
 
-        $ques = $question->getQuestion();
 
-        $this->retrieveUserProfileUtil->loadUserDetailInQuestion($ques);
-        $this->retrieveDoctorProfileUtil->retrieveDoctorProfileForQuestion($ques);
 
-        return $ques;
+        return  $this->fetchDetailQuestionObject($question, $practoAccountId);
     }
 
     /**
@@ -115,19 +121,36 @@ class DoctorQuestionManager extends BaseManager
     public function loadById($doctorQuestionId)
     {
 
-        return $this->getRepository()->findById($doctorQuestionId);
+        $doctorQuestion =  $this->helper->loadById($doctorQuestionId, ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME);
+
+        if (empty($doctorQuestion)) {
+            return null;
+        }
+
+        return $this->fetchDetailQuestionObject($doctorQuestion, $_SESSION['authenticated_user']);
     }
 
     /**
-     * @param Array $queryParams - filter parameters
+     * @param array $queryParams
      *
-     * @return DoctorQuestion
+     * @return array|null
+     * @throws \Exception
      */
     public function loadAllByDoctor($queryParams)
     {
         $doctorId = array_key_exists('practo_account_id', $queryParams) ? $queryParams['practo_account_id'] : -1;
 
-        return $this->getRepository()->findByFilters($doctorId, $queryParams);
+        try {
+            $doctorQuestionList = $this->getRepository()->findByFilters($doctorId, $queryParams);
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+        if (null == $doctorQuestionList) {
+            return null;
+        }
+        $doctorQuestionResponseList = QuestionMapper::mapDoctorQuestionList($doctorQuestionList['question'], true);
+
+        return array("questions"=>$doctorQuestionResponseList, "count"=>$doctorQuestionList['count']);
     }
 
     /**
@@ -165,5 +188,60 @@ class DoctorQuestionManager extends BaseManager
     {
 
         return $this->helper->getRepository(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME);
+    }
+
+    /**
+     * @param \ConsultBundle\Entity\DoctorQuestion $doctorQuestionEntity
+     * @param                                      $practoAccountId
+     *
+     * @return \ConsultBundle\Response\DoctorQuestionResponseObject|null
+     * @throws \HttpException
+     */
+    private function fetchDetailQuestionObject(DoctorQuestion $doctorQuestionEntity, $practoAccountId)
+    {
+        if (empty($doctorQuestionEntity)) {
+            return null;
+        }
+        $questionEntity = $doctorQuestionEntity->getQuestion();
+        $question = null;
+        if (!empty($questionEntity)) {
+            if (!$questionEntity->getUserInfo()->isIsRelative()) {
+                $this->retrieveUserProfileUtil->retrieveUserProfileNew($questionEntity->getUserInfo());
+            }
+
+            $question = new DoctorQuestionResponseObject($doctorQuestionEntity);
+
+            /**
+             * @var DoctorQuestionRepository $er
+             */
+            $er = $this->helper->getRepository(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME);
+            $doctorQuestions = $er->findRepliesByQuestion($questionEntity);
+            $replies = array();
+            foreach ($doctorQuestions as $doctorQuestion) {
+                $reply = new ReplyResponseObject();
+                $reply->setAttributes($doctorQuestion);
+                $doc = $this->retrieveDoctorProfileUtil->retrieveDoctorProfile($reply->getDoctorId());
+                $reply->setDoctor($doc);
+                $replies[] = $reply;
+            }
+
+            $question->setReplies($replies);
+
+            $bookmarkCount = $this->helper->getRepository(ConsultConstants::QUESTION_ENTITY_NAME)->getBookmarkCountForAQuestion($questionEntity);
+            $question->setBookmarkCount($bookmarkCount);
+            $images = $this->helper->getRepository(ConsultConstants::QUESTION_ENTITY_NAME)->getImagesForAQuestion($questionEntity);
+            $question->setImages($images);
+
+            //Set comments
+            /**
+             * @var QuestionCommentRepository $ecr
+             */
+            $ecr = $this->helper->getRepository(ConsultConstants::QUESTION_COMMENT_ENTITY_NAME);
+            $questionCommentList = $ecr->getComments($questionEntity, 10, 0, null);
+
+            $question->setComments($questionCommentList);
+        }
+
+        return $question;
     }
 }

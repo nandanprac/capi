@@ -2,6 +2,7 @@
 
 namespace ConsultBundle\Repository;
 
+use ConsultBundle\Entity\Question;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\ORM\Tools\Pagination\CountWalker;
 use ConsultBundle\Constants\ConsultConstants;
@@ -14,7 +15,7 @@ use Doctrine\ORM\EntityRepository;
 class QuestionCommentRepository extends EntityRepository
 {
     /**
-     * @param integer $question        - Question object
+     * @param Question $question        - Question object
      * @param integer $limit           - limit
      * @param integer $offset          - offset
      * @param integer $practoAccountId - practo account id
@@ -29,6 +30,7 @@ class QuestionCommentRepository extends EntityRepository
             'c.practoAccountId as practo_account_id',
             'c.identifier as identifier',
             'c.text as text',
+            'c.createdAt as created_at',
             'COALESCE(SUM(cv.vote), 0) as total_votes'
         );
 
@@ -38,61 +40,35 @@ class QuestionCommentRepository extends EntityRepository
             ->andWhere('c.question = :question')
             ->setParameter('question', $question)
             ->groupBy('c.id')
-            ->orderBy('c.createdAt', 'DESC')
-            ->setMaxResults($limit)
-            ->setFirstResult($offset);
+            ->orderBy('c.createdAt', 'DESC');
+
+        if (!empty($limit)) {
+            $qb->setMaxResults($limit);
+        }
+        if (!empty($offset)) {
+            $qb->setFirstResult($offset);
+        }
+
+        if(!empty($practoAccountId)) {
+            $qb->addSelect('COALESCE(cv1.vote, 0) as has_voted')
+               ->leftJoin(ConsultConstants::QUESTION_COMMENT_VOTE_ENTITY_NAME, 'cv1', 'WITH', 'c = cv1.questionComment and cv1.practoAccountId = :practoAccountId and cv1.softDeleted = 0');
+
+            $qb->addSelect('cf.flagCode as flag', 'cf.flagText as flag_text')
+                ->leftJoin(ConsultConstants::QUESTION_COMMENT_FLAG_ENTITY_NAME, 'cf', 'WITH', 'c = cf.questionComment and cf.practoAccountId = :practoAccountId and cf.softDeleted = 0');
+
+            $qb->setParameter('practoAccountId', $practoAccountId);
+        }
 
         $commentList = $qb->getQuery()->getArrayResult();
 
-        // query for getting vote details for a particulat practo_account_id
-        if (!empty($practoAccountId)) {
-            $qb1 = $this->_em->createQueryBuilder();
-            $qb1->select('c.id', 'CASE
-                            WHEN cv.practoAccountId = :practoAccountId then cv.vote
-                            ELSE 0
-                                END as has_voted')
-                ->from(ConsultConstants::QUESTION_COMMENT_VOTE_ENTITY_NAME, 'cv')
-                ->where('cv.practoAccountId = :practoAccountId')
-                ->leftJoin(ConsultConstants::QUESTION_COMMENT_ENTITY_NAME, 'c', 'WITH', 'c = cv.questionComment')
-            ->setParameter('practoAccountId', $practoAccountId);
-
-            $voteList = $qb1->getQuery()->getArrayResult();
-
-            $refinedComments = array();
-            foreach ($commentList as $comment) {
-                $comment = $this->mergeVote($voteList, $comment);
-                array_push($refinedComments, $comment);
-            }
-        }
-
-
-        //paginator cannot be used to retrieve count of queries where more than one table is involved
         $countQuery = $qb->getQuery();
         $countQuery->setFirstResult(null)->setMaxResults(null);
         $count =  count($countQuery->getArrayResult());
 
-        if (!empty($refinedComments)) {
-            $comments = $refinedComments;
-        } else if (!empty($commentList)) {
-            $comments = $commentList;
-        } else {
+        if (empty($commentList)) {
             return null;
         }
 
-        return array('comments' => $comments, 'count' => $count);
-    }
-
-    private function mergeVote($voteList, $comment)
-    {
-        foreach ($voteList as $vote) {
-            if ($vote['id'] == $comment['id']) {
-                $comment['has_voted'] = $vote['has_voted'];
-
-                return $comment;
-            }
-        }
-        $comment['has_voted'] = 0;
-
-        return $comment;
+        return array('comments' => $commentList, 'count' => $count);
     }
 }

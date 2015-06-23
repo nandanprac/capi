@@ -9,6 +9,7 @@
 namespace ConsultBundle\EventListener;
 
 use ConsultBundle\Utility\AuthenticationUtils;
+use Symfony\Bridge\Monolog\Logger;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 
@@ -19,51 +20,57 @@ use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 class SecurityListener
 {
     private $authenticationUtils;
+    private $logger;
 
 
     /**
-     * @param AuthenticationUtils $authenticationUtils
+     * @param \ConsultBundle\Utility\AuthenticationUtils $authenticationUtils
+     * @param \Symfony\Bridge\Monolog\Logger             $logger
      */
-    public function __construct(AuthenticationUtils $authenticationUtils)
+    public function __construct(AuthenticationUtils $authenticationUtils, Logger $logger)
     {
         $this->authenticationUtils = $authenticationUtils;
+        $this->logger = $logger;
     }
 
     /**
-     * @param GetResponseEvent $event
+     * @param \Symfony\Component\HttpKernel\Event\GetResponseEvent $event
+     *
+     * @return bool
      */
     public function onKernelRequest(GetResponseEvent $event)
     {
         $request = $event->getRequest();
-
-        if ($request->getMethod() === 'GET') {
-            return;
-        }
-
-        $session = $request->getSession();
-
-        if ($session->get("isValidated") === true) {
-            return;
-        }
-
+        $request->getSession()->all();
+        $_SESSION['validated'] = false;
+        $this->logger->info($event->getRequestType()." ".$request->getHost()." ".$request);
 
         $profileToken = $request->headers->get('X-PROFILE-TOKEN');
-        $practoAccountID = $request->get("practo_account_id");
+        $practoAccountId = $request->get("practo_account_id");
 
-        if (is_null($profileToken) || is_null($practoAccountID)) {
-            $responseRet = new Response();
-            $responseRet->setStatusCode(Response::HTTP_FORBIDDEN);
-            $event->setResponse($responseRet);
+        if (empty($practoAccountId)) {
+            $practoAccountId = $request->query->get('practo_account_id');
+        }
+
+
+
+        if (is_null($profileToken) || is_null($practoAccountId)) {
+            $_SESSION['validated'] = false;
+
+            return false;
 
         }
 
         try {
             $this->authenticationUtils
-                ->authenticateWithAccounts($practoAccountID, $profileToken);
+                ->authenticateWithAccounts($practoAccountId, $profileToken);
         } catch (\Exception $e) {
             $responseRet = new Response();
             $responseRet->setStatusCode(Response::HTTP_FORBIDDEN);
+            $responseRet->setContent("Unauthorised Access");
             $event->setResponse($responseRet);
         }
+
+
     }
 }

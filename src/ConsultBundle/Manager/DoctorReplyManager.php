@@ -14,6 +14,7 @@ use ConsultBundle\Entity\DoctorQuestion;
 use ConsultBundle\Entity\DoctorReply;
 use ConsultBundle\Entity\DoctorReplyRating;
 use ConsultBundle\Entity\DoctorReplyVote;
+use ConsultBundle\Response\ReplyResponseObject;
 use Doctrine\Common\Collections\ArrayCollection;
 use FOS\RestBundle\Util\Codes;
 use ConsultBundle\Queue\AbstractQueue as Queue;
@@ -26,6 +27,12 @@ use ConsultBundle\Queue\AbstractQueue as Queue;
 class DoctorReplyManager extends BaseManager
 {
     public static $mandatoryFields;
+
+    public static $mandatoryFieldsForPostReply = array(
+        "practo_account_id",
+        "doctor_question_id",
+        "text"
+    );
 
     /**
      * @param \ConsultBundle\Queue\AbstractQueue         $queue
@@ -41,14 +48,18 @@ class DoctorReplyManager extends BaseManager
     }
 
     /**
-     * @param int    $doctorQuestionId
-     * @param int    $practoAccountId
-     * @param string $answerText
-     * @return DoctorReply
+     * @param array $postData
+     *
+     * @return \ConsultBundle\Entity\DoctorReply
      * @throws \HttpException
      */
-    public function replyToAQuestion($doctorQuestionId, $practoAccountId, $answerText)
+    public function replyToAQuestion($postData)
     {
+        $this->helper->checkForMandatoryFields(self::$mandatoryFieldsForPostReply, $postData);
+        $practoAccountId = $postData['practo_account_id'];
+        $doctorQuestionId = $postData['doctor_question_id'];
+        $answerText = $postData['text'];
+
         $doctorReply = new DoctorReply();
         /**
          * @var DoctorQuestion $doctorQuestion
@@ -105,7 +116,7 @@ class DoctorReplyManager extends BaseManager
 
         $this->helper->persist($doctorReply, true);
 
-        return $doctorReply;
+        return new ReplyResponseObject($doctorReply);
     }
 
     /**
@@ -148,12 +159,8 @@ class DoctorReplyManager extends BaseManager
                 throw new \HttpException("Only the one who has asked the question can rate it", Codes::HTTP_BAD_REQUEST);
             }
 
-            if (empty($doctorReplyEntity->getRating())) {
                 $doctorReplyEntity->setRating($doctorReply['rating']);
                 $changed = true;
-            } else {
-                throw new \HttpException("Answer is already rated", Codes::HTTP_BAD_REQUEST);
-            }
         }
 
         //Mark the answer as viewed
@@ -201,6 +208,6 @@ class DoctorReplyManager extends BaseManager
             $this->helper->persist($doctorReplyEntity, true);
         }
 
-        return $doctorReplyEntity;
+        return new ReplyResponseObject($doctorReplyEntity);
     }
 }

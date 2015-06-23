@@ -26,6 +26,11 @@ class BasicPatientInfoResponse
     private $gender;
 
     /**
+     * @var string
+     */
+    private $location;
+
+    /**
      * @return int
      */
     public function getAge()
@@ -55,5 +60,21 @@ class BasicPatientInfoResponse
     public function setGender($gender)
     {
         $this->gender = $gender;
+    }
+
+    /**
+     * @return location
+     */
+    public function getLocation()
+    {
+        return $this->location;
+    }
+
+    /**
+     * @param string $location
+     */
+    public function setLocation($location)
+    {
+        $this->location = $location;
     }
 }

@@ -53,6 +53,17 @@ class BaseEntity
     }
 
     /**
+     * Set id
+     *
+     * @return null
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+
+    /**
      * @ORM\PrePersist
      */
     public function setCreatedAt()
@@ -102,8 +113,8 @@ class BaseEntity
     {
         foreach ($attributes as $attrSnake => $value) {
             //if ($this->isEditableAttribute($attrSnake)) {
-                $attrCamel = str_replace(' ', '', ucwords(str_replace('_', ' ', $attrSnake)));
-                $setter = 'set'.$attrCamel;
+            $attrCamel = str_replace(' ', '', ucwords(str_replace('_', ' ', $attrSnake)));
+            $setter = 'set'.$attrCamel;
             try {
                 if ('' === $value) {
                     $value = null;
@@ -141,6 +152,24 @@ class BaseEntity
             $this->$field = null;
         } else {
             $this->$field = ('true' === $value);
+        }
+    }
+
+    /**
+     * @param mixed $value
+     *
+     * @return bool|null
+     */
+    public static function toBool($value)
+    {
+        if (is_bool($value)) {
+            return $value;
+        } elseif (is_numeric($value)) {
+            return (bool) $value;
+        } elseif (null === $value || '' === $value) {
+            return null;
+        } else {
+            return ('true' === $value);
         }
     }
 

@@ -87,6 +87,7 @@ class UserManager extends BaseManager
             }
         }
 
+        $requestParams['gender'] = (array_key_exists('gender', $requestParams)) ? strtoupper($requestParams['gender']) : null;
         $this->updateFields($userEntry, $requestParams);
         $this->helper->persist($userEntry, true);
 
@@ -96,13 +97,19 @@ class UserManager extends BaseManager
     /**
      * Load User's Additional Info By Id
      *
-     * @param integer $userId - User's id
+     * @param array $requestParams
+     * @throws ValidationError
      * @return array userEntry
      */
-    public function load($userId)
+    public function load($requestParams)
     {
+        if (!array_key_exists('practo_account_id', $requestParams)) {
+            @$error['practo_account_id'] = 'This value cannot be blank';
+            throw new ValidationError($error);
+        }
+
         $userEntries = $this->helper->getRepository(ConsultConstants::USER_ENTITY_NAME)->findBy(
-            array('practoAccountId' => $userId),
+            array('practoAccountId' => $requestParams['practo_account_id']),
             array('createdAt' => 'ASC')
         );
 

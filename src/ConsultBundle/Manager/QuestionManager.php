@@ -2,10 +2,12 @@
 
 namespace ConsultBundle\Manager;
 
+use FOS\RestBundle\Util\Codes;
 use ConsultBundle\Constants\ConsultConstants;
 use ConsultBundle\Entity\UserInfo;
 use ConsultBundle\Mapper\QuestionMapper;
 use ConsultBundle\Repository\DoctorQuestionRepository;
+use ConsultBundle\Repository\QuestionCommentRepository;
 use ConsultBundle\Repository\QuestionRepository;
 use ConsultBundle\Response\DetailQuestionResponseObject;
 use ConsultBundle\Response\ReplyResponseObject;
@@ -17,6 +19,7 @@ use ConsultBundle\Entity\Question;
 use ConsultBundle\Entity\QuestionComment;
 use ConsultBundle\Entity\QuestionImage;
 use ConsultBundle\Entity\QuestionTag;
+use ConsultBundle\Entity\QuestionView;
 use ConsultBundle\Manager\ValidationError;
 use ConsultBundle\Queue\AbstractQueue as Queue;
 
@@ -107,17 +110,18 @@ class QuestionManager extends BaseManager
         $job['question'] = $question->getText();
         $job['subject'] = $question->getSubject();
 
-        $this->queue->setQueueName(Queue::DAA)->sendMessage(json_encode($job));
+        $this->queue->setQueueName(Queue::CLASSIFY)->sendMessage(json_encode($job));
 
-        return $question;
+        return $this->fetchDetailQuestionObject($question, $practoAccountId);
     }
 
     /**
      * @param array $requestParams - data for the updation
      * @throws ValidationError
+     * @throws HttpException
      * @return Question
      */
-    public function patch($requestParams)
+    public function patch($requestParams, $practoAccountId = null)
     {
         $error = array();
         if (array_key_exists('question_id', $requestParams)) {
@@ -133,14 +137,31 @@ class QuestionManager extends BaseManager
 
         if (array_key_exists('view', $requestParams)) {
             $question->setViewCount($question->getViewCount() + 1);
+            if (!empty($practoAccountId)) {
+                $viewEntry = $this->helper->getRepository(ConsultConstants::QUESTION_VIEW_ENTITY_NAME)
+                                  ->findBy(array('question' => $question, 'practoAccountId' => $practoAccountId, 'softDeleted' => 0));
+                if (empty($viewEntry)) {
+                    $view = new QuestionView();
+                    $view->setQuestion($question);
+                    $view->setPractoAccountId($practoAccountId);
+                    $question->addViews($view);
+                }
+                if ($practoAccountId == $question->getUserInfo()->getPractoAccountId()) {
+                    $question->setViewedAt(new \DateTime('now'));
+                }
+            }
             $this->helper->persist($question, 'true');
         }
+
         if (array_key_exists('share', $requestParams)) {
             $question->setShareCount($question->getShareCount() + 1);
             $this->helper->persist($question, 'true');
         }
 
         if (array_key_exists('bookmark', $requestParams)) {
+            if (empty($practoAccountId)) {
+                throw new \HttpException('',Codes::HTTP_FORBIDDEN);
+            }
             if (Utility::toBool($requestParams['bookmark'])) {
                 try {
                     $questionBookmark = $this->questionBookmarkManager->add($requestParams);
@@ -148,7 +169,7 @@ class QuestionManager extends BaseManager
                     throw new ValidationError($e->getMessage());
                 }
 
-                return $questionBookmark;
+                //return $questionBookmark;
             } else {
                 try {
                     $this->questionBookmarkManager->remove($requestParams);
@@ -160,7 +181,7 @@ class QuestionManager extends BaseManager
             }
         }
 
-        return $question;
+        return $this->fetchDetailQuestionObject($question, $practoAccountId);
     }
 
     /**
@@ -178,6 +199,11 @@ class QuestionManager extends BaseManager
          * @var Question $question
          */
         $question = $this->helper->loadById($questionId, ConsultConstants::QUESTION_ENTITY_NAME);
+
+        if (empty($question)) {
+            return null;
+        }
+
 
         return $this->fetchDetailQuestionObject($question, $practoAccountId);
     }
@@ -238,6 +264,24 @@ class QuestionManager extends BaseManager
     }
 
     /**
+     * @param int    $questionId
+     * @param string $speciality
+     *
+     * @throws \Exception
+     */
+    public function setSpeciality($questionId, $speciality)
+    {
+        $question = $this->helper->loadById($questionId, ConsultConstants::QUESTION_ENTITY_NAME);
+        if ($question) {
+            $question->setSpeciality($speciality);
+            $this->helper->persist($question, 'true');
+        } else {
+            throw new \Exception("Question with id ".$questionId." doesn't exist.");
+        }
+    }
+
+
+    /**
      * @param integer $questionId - Question Id
      * @param string  $tags       - text for the tag
      *
@@ -261,7 +305,7 @@ class QuestionManager extends BaseManager
             $tagObj->setTag($tag);
             $tagObj->setUserDefined(true);
             $tagObj->setQuestion($question);
-            //$question->addTag($tagObj);
+            $question->addTag($tagObj);
         }
     }
 
@@ -272,7 +316,7 @@ class QuestionManager extends BaseManager
      *
      * @return \ConsultBundle\Response\DetailQuestionResponseObject
      * @throws \HttpException
-     * @internal param int $practoAccountid
+     * @internal param int $practoAccountId
      *
      */
     private function fetchDetailQuestionObject(Question $questionEntity, $practoAccountId)
@@ -300,8 +344,19 @@ class QuestionManager extends BaseManager
             }
 
             $question->setReplies($replies);
+            $bookmarkCount = $this->helper->getRepository(ConsultConstants::QUESTION_ENTITY_NAME)->getBookmarkCountForAQuestion($questionEntity);
+            $question->setBookmarkCount($bookmarkCount);
 
             $er = $this->helper->getRepository(ConsultConstants::QUESTION_BOOKMARK_ENTITY_NAME);
+
+            //Set comments
+            /**
+             * @var QuestionCommentRepository $ecr
+             */
+            $ecr = $this->helper->getRepository(ConsultConstants::QUESTION_COMMENT_ENTITY_NAME);
+            $questionCommentList = $ecr->getComments($questionEntity, 10, 0, $practoAccountId);
+
+            $question->setComments($questionCommentList);
 
             if (!empty($practoAccountId)) {
                 $bookmark = $er->findOneBy(array("practoAccountId" => $practoAccountId,

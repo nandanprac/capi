@@ -91,6 +91,7 @@ class RetrieveUserProfileUtil
 
         $userInfo = $this->populateUserFromAccounts($res->json(), $userInfo);
 
+
         return $userInfo;
     }
 

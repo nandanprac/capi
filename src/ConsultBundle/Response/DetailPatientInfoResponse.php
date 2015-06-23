@@ -18,7 +18,7 @@ class DetailPatientInfoResponse extends BasicPatientInfoResponse
     /**
      * @var string
      */
-    private $bloodGroup;
+    private $bloodGroup="";
 
     /**
      * @var float
@@ -30,11 +30,15 @@ class DetailPatientInfoResponse extends BasicPatientInfoResponse
      */
     private $weightInKgs;
 
-    private $allergies = null;
+    private $allergies = "";
 
-    private $medications = null;
+    private $medications = "";
 
-    private $prevDiagnosedConditions = null;
+    private $prevDiagnosedConditions = "";
+
+    private $occupation;
+
+    private $location;
 
     /**
      * @return mixed
@@ -131,4 +135,38 @@ class DetailPatientInfoResponse extends BasicPatientInfoResponse
     {
         $this->prevDiagnosedConditions = $prevDiagnosedConditions;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getOccupation()
+    {
+        return $this->occupation;
+    }
+
+    /**
+     * @param mixed $occupation
+     */
+    public function setOccupation($occupation)
+    {
+        $this->occupation = $occupation;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLocation()
+    {
+        return $this->location;
+    }
+
+    /**
+     * @param mixed $location
+     */
+    public function setLocation($location)
+    {
+        $this->location = $location;
+    }
+
 }
+

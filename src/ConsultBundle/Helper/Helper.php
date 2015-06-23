@@ -15,6 +15,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityRepository;
 use FOS\RestBundle\Util\Codes;
 use ConsultBundle\Entity\BaseEntity;
+use Symfony\Bridge\Monolog\Logger;
 
 /**
  * Class Helper
@@ -32,10 +33,24 @@ class Helper
 
     /**
      * @param \Doctrine\Bundle\DoctrineBundle\Registry $doctrine
+     * @param \Symfony\Bridge\Monolog\Logger           $logger
      */
-    public function __construct(Doctrine $doctrine)
+    public function __construct(Doctrine $doctrine, Logger $logger)
     {
         $this->entityManager = $doctrine->getManager();
+
+        //$loggerSymfony = $this->get('logger');
+
+        $dLogger = new \Doctrine\DBAL\Logging\DebugStack();
+
+        $doctrine ->getConnection()
+            ->getConfiguration()
+            ->setSQLLogger($dLogger);
+
+        $logger->info(json_encode($dLogger->queries));
+
+        //$loggerSymfony->debug($logger->queries);
+
         //$this->cacheUtils = $cacheUtils;
 
     }

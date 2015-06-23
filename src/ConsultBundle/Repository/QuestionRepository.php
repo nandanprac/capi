@@ -2,6 +2,7 @@
 
 namespace ConsultBundle\Repository;
 
+use ConsultBundle\Entity\Question;
 use ConsultBundle\Utility\Utility;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use ConsultBundle\Constants\ConsultConstants;
@@ -80,7 +81,7 @@ class QuestionRepository extends EntityRepository
         }
 
         $questionList = $qb->getQuery()->getArrayResult();
-        //var_dump($questionList);die;
+
         $paginator = new Paginator($qb->getQuery(), $fetchJoinCollection = true);
         $count = count($paginator);
 
@@ -92,13 +93,55 @@ class QuestionRepository extends EntityRepository
     }
 
     /**
-     * @param int $questionid
+     * @param $question
+     *
+     * @return array
      */
-    public function getBookmarkCountForAQuestion($questionid)
+    public function getBookmarkCountForAQuestion($question)
     {
         $qb = $this->_em->createQueryBuilder();
         $qb->select('count(qb.id)')
-           ->from(ConsultConstants::QUESTION_BOOKMARK_ENTITY_NAMEENTITY_NAME, 'qb');
+            ->from(ConsultConstants::QUESTION_BOOKMARK_ENTITY_NAME, 'qb')
+            ->where('qb.question = :question')
+            ->andWhere('qb.softDeleted = 0')
+            ->setParameter('question', $question);
+
+        $result = $qb->getQuery()->getArrayResult();
+
+        if (count($result) == 0) {
+            return 0;
+        }
+
+
+        return $result[0][1];
+
+    }
+
+    /**
+     * @param \ConsultBundle\Entity\Question $question
+     *
+     * @return array|null
+     */
+    public function getImagesForAQuestion(Question $question)
+    {
+        if (empty($question)) {
+            return null;
+        }
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('question_image.url')
+            ->from(ConsultConstants::QUESTION_IMAGE_ENTITY_NAME, 'question_image')
+            ->where('question_image.question = :question')
+            ->andWhere('question_image.softDeleted = 0')
+            ->setParameter('question', $question);
+
+        //$qb->getQuery()->setHint('url');
+        $images = $qb->getQuery()->getResult();
+
+        if (count($images) == 0) {
+            return null;
+        }
+
+        return $images;
     }
 
     /**
