@@ -232,10 +232,10 @@ class QuestionManager extends BaseManager
         if (array_key_exists('search', $request)) {
             $search = $this->classification->sentenceWords($request['search']);
             $questionList = $er->findSearchQuestions($search, $limit, $offset);
-            $questionResponseList = QuestionMapper::mapQuestionList($questionList['questions']);
             if (empty($questionList)) {
                 return null;
             }
+            $questionResponseList = QuestionMapper::mapQuestionList($questionList['questions']);
 
             return array("questions" => $questionResponseList, "count" => $questionList['count']);
         }
