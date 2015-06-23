@@ -5,6 +5,7 @@ namespace ConsultBundle\Repository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use ConsultBundle\Constants\ConsultConstants;
 use Doctrine\ORM\EntityRepository;
+use ConsultBundle\Utility\Utility;
 
 /**
  * Notification Repository
@@ -32,6 +33,11 @@ class NotificationRepository extends EntityRepository
 
         if (isset($viewed)) {
             $qb->andWhere('dn.viewed = :viewed');
+            if (Utility::toBool($viewed)) {
+                $viewed = 1;
+            } else {
+                $viewed = 0;
+            }
             $qb->setParameter('viewed', $viewed);
         }
 
@@ -79,6 +85,11 @@ class NotificationRepository extends EntityRepository
 
         if (isset($viewed)) {
             $qb->andWhere('un.viewed = :viewed');
+               if (Utility::toBool($viewed)) {
+                $viewed = 1;
+            } else {
+                $viewed = 0;
+            }
             $qb->setParameter('viewed', $viewed);
         }
 
