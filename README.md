@@ -27,6 +27,18 @@ server {
 
 Run following commands in Consult.
 
+composer install
+
+Set up following parameters in parameters.yml
+- Provide DB details
+- Provide Elastic search host
+- Provide accounts_host (URL to accounts)
+- Provide S3 details
+- Provide accounts signing key (same as used in ray)
+
+app/console doctrine:migrations:migrate
+
+
 app/console consult:question:doctorassignment:queue
 app/console consult:assignmentpersist:doctorassignment:queue
 

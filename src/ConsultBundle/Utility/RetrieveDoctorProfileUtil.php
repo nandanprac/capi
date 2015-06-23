@@ -21,11 +21,36 @@ use Elasticsearch\Client;
  */
 class RetrieveDoctorProfileUtil
 {
+    private $host = "http://localhost:9200";
+
+    private $index = 'fabric_search';
 
     /**
      * @var Client $client
      */
     private $client;
+
+    /**
+     * @param null $index
+     * @param null $host
+     */
+    public function __construct($index = null, $host = null)
+    {
+        if (!empty($host)) {
+            $this->host = $host;
+        }
+
+        if (!empty($index)) {
+            $this->index = $index;
+        }
+
+        $params['hosts'] = array($host);
+        $this->client = new Client($params);
+    }
+
+
+
+
 
     /**
      * @param int $practoAccntId
@@ -34,9 +59,9 @@ class RetrieveDoctorProfileUtil
      */
     public function retrieveDoctorProfile($practoAccntId = 5)
     {
-        $this->client = new Client();
+        //$this->client = new Client();
 
-        $params['index'] = 'fabric_search';
+        $params['index'] = $this->index;
         $params['type']  = 'search';
         $params['_source']  = array('doctor_id', 'doctor_name', 'practo_account_id', 'specialties.specialty', 'profile_picture');
 

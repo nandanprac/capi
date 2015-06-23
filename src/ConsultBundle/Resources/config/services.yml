@@ -136,6 +136,9 @@ services:
 
     consult.retrieve_doctor_profile_util:
         class: ConsultBundle\Utility\RetrieveDoctorProfileUtil
+        arguments:
+             - %elastic_index_name%
+             - %elasticsearch_hosts%
 
 
 
