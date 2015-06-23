@@ -35,4 +35,27 @@ class MasterController extends BaseConsultController
 
         return array('specialities' => $masterSpecialityList);
     }
+
+    /**
+     * @param Request $request - request Object
+     *
+     * @return View
+     */
+    public function getOccupationOptionsAction(Request $request)
+    {
+	$requestParams = $request->query->all();
+
+        try {
+            $masterManager = $this->get('consult.master_manager');
+            $occupationsList = $masterManager->loadOccupationOptions($requestParams);
+        } catch (AccessDeniedException $e) {
+            return View::create($e->getMessage(), Codes::HTTP_FORBIDDEN);
+        }
+
+        if (null === $occupationsList) {
+            return View::create(null, Codes::HTTP_NOT_FOUND);
+        }
+
+        return array('occupations' => $occupationsList);
+    }
 }

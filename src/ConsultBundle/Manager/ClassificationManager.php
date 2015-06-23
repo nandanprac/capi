@@ -65,7 +65,8 @@ class ClassificationManager
         }
 		$stopWords = $this->wordManager->lookupWord($words, ConsultConstants::STOP_WORDS_ENTITY_NAME);
 		$words = array_diff($words, $stopWords);
-        return $words;
+
+		return $words;
     }
 
     /**

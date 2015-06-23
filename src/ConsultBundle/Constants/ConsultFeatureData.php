@@ -16,4 +16,6 @@ class ConsultFeatureData
 
 
     public static $MASTER_SPECIALITIES = array("Dentist", "General Physician", "Orthopedist");
+
+    public static $OCCUPATION_OPTIONS = array("Management Professional", "Software Engineers / IT professional", "Chartered Accountants", "Entertainment Industry", "Aviation Professional", "Investment Banker", "LAW Professional", "Merchant Navy", "Medical Professional", "Home Maker", "Government Sector", "Others");
 }
