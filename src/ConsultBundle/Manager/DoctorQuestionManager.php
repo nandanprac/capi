@@ -203,10 +203,7 @@ class DoctorQuestionManager extends BaseManager
             return null;
         }
         $questionEntity = $doctorQuestionEntity->getQuestion();
-
-
         $question = null;
-
         if (!empty($questionEntity)) {
             if (!$questionEntity->getUserInfo()->isIsRelative()) {
                 $this->retrieveUserProfileUtil->retrieveUserProfileNew($questionEntity->getUserInfo());
@@ -227,7 +224,6 @@ class DoctorQuestionManager extends BaseManager
                 $reply->setDoctor($doc);
                 $replies[] = $reply;
             }
-            //var_dump(json_encode($questionEntity));die;
 
             $question->setReplies($replies);
 
@@ -244,8 +240,6 @@ class DoctorQuestionManager extends BaseManager
             $questionCommentList = $ecr->getComments($questionEntity, 10, 0, null);
 
             $question->setComments($questionCommentList);
-
-
         }
 
         return $question;

@@ -16,6 +16,12 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class DoctorAssignmentPersistenceCommand extends ContainerAwareCommand
 {
+    protected $questionManager;
+    protected $doctorQuestionManager;
+    protected $container;
+    protected $queue;
+    protected $helper;
+
     /**
      * Initialize Services
      *
@@ -27,9 +33,9 @@ class DoctorAssignmentPersistenceCommand extends ContainerAwareCommand
         parent::initialize($input, $output);
         $this->container = $this->getContainer();
         $this->queue = $this->container->get('consult.consult_queue');
+        $this->helper = $this->container->get('consult.helper');
         $this->doctorQuestionManager = $this->container->get('consult.doctorQuestionManager');
         $this->questionManager = $this->container->get('consult.question_manager');
-        $this->helper = $this->container->get('consult.helper');
     }
      /**
      * Configure the task.
@@ -37,7 +43,7 @@ class DoctorAssignmentPersistenceCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('consult:assignmentpersist:doctorassignment:queue')
+            ->setName('consult:question:assignmentpersistence:queue')
             ->setDescription('queue for indexing for search results.')
             ->addArgument('domain', InputArgument::OPTIONAL, 'Fabric Domain', 'http://consult.practo.com');
     }
@@ -62,6 +68,12 @@ class DoctorAssignmentPersistenceCommand extends ContainerAwareCommand
                 ->receiveMessage();
             if ($newJob) {
                 $jobData = json_decode($newJob, true);
+                if (!isset($this->doctorQuestionManager)) {
+                    $this->doctorQuestionManager = $this->container->get('consult.doctorQuestionManager');
+                }
+                if (!isset($this->questionManager)) {
+                    $this->questionManager = $this->container->get('consult.question_manager');
+                }
                 try {
                     if ($jobData['state'] == 'UNCLASSIFIED' or $jobData['state'] == 'MISMATCH') {
                         $this->questionManager->setState($jobData['question_id'], $jobData['state']);
@@ -69,24 +81,26 @@ class DoctorAssignmentPersistenceCommand extends ContainerAwareCommand
                         $this->doctorQuestionManager->setDoctorsForAQuestions($jobData['question_id'], $jobData['doctors']);
                         $this->questionManager->setState($jobData['question_id'], $jobData['state']);
                         $this->questionManager->setTagsByQuestionId($jobData['question_id'], array_merge(array($jobData['speciality']), $jobData['tags']));
-                        if ($jobData['user_classified'] == 0){
+                        if ($jobData['user_classified'] == 0) {
                             $this->questionManager->setSpeciality($jobData['question_id'], $jobData['speciality']);
                         }
                         $jobData['type'] = 'new_question';
                         $jobData['user_ids'] = $jobData['doctors'];
                         $jobData['message'] = $jobData['question_id'];
                         unset($jobData['doctors']);
+                        unset($jobData['state']);
+                        unset($jobData['speciality']);
                         $this->queue
                             ->setQueueName(Queue::CONSULT_GCM)
                             ->sendMessage(json_encode($jobData));
                     } elseif ($jobData['state'] == 'GENERIC'  or $jobData['state'] == 'DOCNOTFOUND') {
-                        if ($jobData['user_classified'] == 0){
+                        if ($jobData['user_classified'] == 0) {
                             $this->questionManager->setSpeciality($jobData['question_id'], $jobData['speciality']);
                         }
                            $this->questionManager->setState($jobData['question_id'], $jobData['state']);
                         $this->questionManager->setTagsByQuestionId($jobData['question_id'], array_merge(array($jobData['speciality']), $jobData['tags']));
                     }
-                    echo "Queue Message Persisted: ".json_encode($jobData);
+                    $output->writeln("Queue Message Persisted: ".json_encode($jobData));
                 } catch (\Exception $e) {
                     $output->writeln("Dropping the queue message: ".json_encode($jobData));
                     $this->queue->setQueueName(Queue::ASSIGNMENT_UPDATE)->deleteMessage($newJob);

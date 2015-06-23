@@ -44,6 +44,11 @@ class BasicDoctorQuestionResponseObject extends BasicQuestionResponseObject
             $this->setState($doctorQuestion->getState());
             $this->setHasImages(($question->getImages()->count()));
 
+            $reply = $doctorQuestion->getDoctorReplies();
+            if (!empty($reply) && !$reply->isSoftDeleted()) {
+                $this->rating = $doctorQuestion->getDoctorReplies()->getRating();
+            }
+
         }
 
 
@@ -112,9 +117,4 @@ class BasicDoctorQuestionResponseObject extends BasicQuestionResponseObject
     {
         $this->hasAdditionalInfo = $hasAdditionalInfo;
     }
-
-
-
-
-
 }
