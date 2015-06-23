@@ -17,6 +17,10 @@ use Elasticsearch;
  */
 class ClassificationCommand extends ContainerAwareCommand
 {
+    private $container;
+    private $queue;
+    private $classification;
+
     /**
      * Initialize Connections
      * @param InputInterface  $input  input

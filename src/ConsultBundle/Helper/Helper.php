@@ -157,15 +157,21 @@ class Helper
         }
     }
 
-	public function flush()
-	{
-		$this->entityManager->flush();
-	}
+    /**
+     * Flush for EM
+     */
+    public function flush()
+    {
+        $this->entityManager->flush();
+    }
 
-	public function clear()
-	{
-		$this->entityManager->clear();
-	}
+    /**
+     * Flush for EM
+     */
+    public function clear()
+    {
+        $this->entityManager->clear();
+    }
 
     protected function getFromCache($entityId)
     {

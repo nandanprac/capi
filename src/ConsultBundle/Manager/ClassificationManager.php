@@ -11,16 +11,20 @@ use ConsultBundle\Constants\ConsultConstants;
  */
 class ClassificationManager
 {
+    private $redis;
+    private $wordManager;
+
     /**
      * Constructor
      *
-     * @param RedisClient $redis - Redis Client
+     * @param RedisClient $redis       - Redis Client
+     * @param WordManager $wordManager - Word Manager
      *
      */
     public function __construct(RedisClient $redis, WordManager $wordManager)
     {
-		$this->redis = $redis;
-		$this->wordManager = $wordManager;
+        $this->redis = $redis;
+        $this->wordManager = $wordManager;
     }
 
     /**
@@ -63,11 +67,49 @@ class ClassificationManager
                 array_push($words, $word);
             }
         }
-		$stopWords = $this->wordManager->lookupWord($words, ConsultConstants::STOP_WORDS_ENTITY_NAME);
-		$words = array_diff($words, $stopWords);
+        $stopWords = $this->wordManager->lookupWord($words, ConsultConstants::STOP_WORDS_ENTITY_NAME);
+        $words = array_diff($words, $stopWords);
 
-		return $words;
+        return $words;
     }
+
+    /**
+     * Classification function.
+     *
+     * @param string $sentence - Sentence to be classified
+     *
+     * @return array
+     */
+    public function classifi($sentence)
+    {
+        $words = $this->sentenceWords($sentence);
+        $scoreData = $this->wordManager->fetchScores($words);
+
+        return $this->getAppropriateSpeciality($this->intersectMapsForWords($scoreData));
+    }
+
+    /**
+     * Takes intersection of specialities and returns the best suitable speciality
+     *
+     * @param array $intersectMap
+     *
+     * @return null/string
+     */
+    public function getAppropriateSpeciality(Array $intersectMap)
+    {
+        if (count($intersectMap) == 2) {
+            $a = array_keys($intersectMap[0]);
+            $b = array_keys($intersectMap[1]);
+            if ($a[0] == $b[0] or $a[1] == $b[0]) {
+                return $b[0];
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
 
     /**
      * Takes in list of hash maps containing score hash map of each word
@@ -90,57 +132,25 @@ class ClassificationManager
                     $weightTemp[$speciality] += $weights['weight_score'];
                 }
 
-                if(!array_key_exists($speciality, $formulaTemp)){
+                if (!array_key_exists($speciality, $formulaTemp)) {
                     $formulaTemp[$speciality] = $weights['formula_score'];
                 } else {
                     $formulaTemp[$speciality] += $weights['formula_score'];
                 }
 
-                if ($weights['weight_score'] == 0)
+                if ($weights['weight_score'] == 0) {
                     unset($weightTemp[$speciality]);
+                }
 
-                if ($weights['formula_score'] == 0)
+                if ($weights['formula_score'] == 0) {
                     unset($formulaTemp[$speciality]);
+                }
             }
         }
         arsort($weightTemp, SORT_NUMERIC);
         arsort($formulaTemp, SORT_NUMERIC);
+
         return array(array_slice($weightTemp, 0, 2), array_slice($formulaTemp, 0, 2));
-    }
-
-    /**
-     * Classification function.
-     *
-     * @param string sentence
-     *
-     * @return array classifcation
-     */
-    public function classifi($sentence)
-    {
-		$words = $this->sentenceWords($sentence);
-		$scoreData = $this->wordManager->fetchScores($words);
-		return $this->getAppropriateSpeciality($this->intersectMapsForWords($scoreData));
-    }
-
-    /**
-     * Takes intersection of specialities and returns the best suitable speciality
-     *
-     * @param array $intersectMap
-     *
-     * @return null/string
-     */
-    public function getAppropriateSpeciality(Array $intersectMap){
-        if (count($intersectMap) == 2) {
-            $a = array_keys($intersectMap[0]);
-            $b = array_keys($intersectMap[1]);
-            if ($a[0] == $b[0] or $a[1] == $b[0]) {
-                return $b[0];
-            } else {
-                return null;
-            }
-        } else {
-            return null;
-        }
     }
 
     /**
@@ -150,14 +160,16 @@ class ClassificationManager
      *
      * $return array
      */
-    public function formulaScoreUpdate($map){
+    protected function formulaScoreUpdate($map)
+    {
         $termFreq = 0;
-        foreach(array_values($map) as $speciality){
+        foreach (array_values($map) as $speciality) {
             $termFreq += $speciality['weight_score'];
         }
-        foreach(array_keys($map) as $category){
+        foreach (array_keys($map) as $category) {
             $map[$category]['formula_score'] = floatval($map[$category]['weight_score'])/floatval($termFreq)* floatval(1)/floatval(1+log10($termFreq));
         }
+
         return $map;
     }
 }

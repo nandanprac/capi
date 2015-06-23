@@ -36,7 +36,7 @@ class WordScore extends BaseEntity
     /**
      * Get score
      *
-     * @return array 
+     * @return array
      */
     public function getScore()
     {

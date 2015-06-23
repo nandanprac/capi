@@ -9,12 +9,19 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use ConsultBundle\Constants\ConsultConstants;
 
-
+/**
+ * This command consits of actions to create stop words, add stem words to tags and adjust stem words
+ */
 class TrainingSetHelperCommand extends ContainerAwareCommand
 {
 
-    private $ADJUSTMENT_WEIGHT = 100;
-    private $COMPROMISING_WEIGHT = 200;
+    private $ADJUSTMENTWEIGHT = 100;
+    private $COMPROMISINGWEIGHT = 200;
+
+    private $container;
+    private $classification;
+    private $redis;
+    private $wordManager;
 
     /**
      * Initialize Connections
@@ -50,15 +57,16 @@ class TrainingSetHelperCommand extends ContainerAwareCommand
         if ($action == 'stop') {
             $words = array();
             foreach ($data as $each) {
-                array_push($words,$each[0]);
+                array_push($words, $each[0]);
             }
             $this->wordManager->addStopWords($words);
         } elseif ($action == 'stem') {
-			foreach ($data as $each) {
-				$synTag = $this->wordManager->loadByWord($each[1], ConsultConstants::SYN_TAG_ENTITY_NAME);
-				if (!empty($synTag))
-					$this->wordManager->createSynTag($each[0], $synTag[0][1]);
-			}
+            foreach ($data as $each) {
+                $synTag = $this->wordManager->loadByWord($each[1], ConsultConstants::SYN_TAG_ENTITY_NAME);
+                if (!empty($synTag)) {
+                    $this->wordManager->createSynTag($each[0], $synTag[0][1]);
+                }
+            }
         } elseif ($action == 'adjust') {
             foreach ($data as $map) {
                 if ($this->redis->keyExists(strtolower($map[0]))) {
@@ -78,10 +86,10 @@ class TrainingSetHelperCommand extends ContainerAwareCommand
                         continue;
                     }
                     if (in_array($map[1], array_keys($scoreData))) {
-                        $scoreData[$map[1]]['weight_score'] += $this->ADJUSTMENT_WEIGHT;
+                        $scoreData[$map[1]]['weight_score'] += $this->ADJUSTMENTWEIGHT;
                         $scoreData = $this->classification->formulaScoreUpdate($scoreData);
                     } else {
-                        $scoreData[$map[1]]['weight_score'] = $this->COMPROMISING_WEIGHT;
+                        $scoreData[$map[1]]['weight_score'] = $this->COMPROMISINGWEIGHT;
                         $scoreData = $this->classification->formulaScoreUpdate($scoreData);
                     }
                     $this->redis->setKey($map[0], json_encode($scoreData));
@@ -92,5 +100,4 @@ class TrainingSetHelperCommand extends ContainerAwareCommand
         }
 
     }
-
 }

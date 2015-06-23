@@ -36,7 +36,7 @@ class StopWord extends BaseEntity
     /**
      * Get word
      *
-     * @return string 
+     * @return string
      */
     public function getWord()
     {

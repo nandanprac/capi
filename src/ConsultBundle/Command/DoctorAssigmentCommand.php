@@ -27,9 +27,9 @@ class DoctorAssigmentCommand extends ContainerAwareCommand
         parent::initialize($input, $output);
         $this->container = $this->getContainer();
         $this->queue = $this->container->get('consult.consult_queue');
-        $this->daa_debug = $this->container->getParameter('daa_debug');
+        $this->daaDebug = $this->container->getParameter('daa_debug');
         $this->client = new Elasticsearch\Client();
-        $this->fabric_search = $this->container->getParameter('elastic_index_name');
+        $this->fabricSearch = $this->container->getParameter('elastic_index_name');
     }
 
     /**
@@ -77,12 +77,12 @@ class DoctorAssigmentCommand extends ContainerAwareCommand
                             $city = "bangalore";
                         }
 
-                        $params['index'] = $this->fabric_search;
+                        $params['index'] = $this->fabricSearch;
                         $params['type']  = 'search';
                         $params['_source']  = array('practo_account_id', 'doctor_name');
                         $params['body']['query']['bool']['must'] = array(
                             array("query_string"=>array("default_field"=>"search.city", "query"=> $city)),
-                            array("query_string"=>array("default_field"=>"search.specialties.specialty", "query"=> $jobData['speciality']))
+                            array("query_string"=>array("default_field"=>"search.specialties.specialty", "query"=> $jobData['speciality'])),
                         );
                         $params['body']['from']  = 0;
                         $params['body']['size']  = 100;

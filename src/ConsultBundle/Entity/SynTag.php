@@ -20,11 +20,11 @@ class SynTag extends BaseEntity
      */
     private $word;
 
-	/**
-	 * @ORM\ManyToOne(targetEntity = "WordScore")
-	 * @ORM\JoinColumn(name = "score_id", referencedColumnName = "id")
-	 */
-	private $score;
+    /**
+     * @ORM\ManyToOne(targetEntity = "WordScore")
+     * @ORM\JoinColumn(name = "score_id", referencedColumnName = "id")
+     */
+    private $score;
 
     /**
      * Set word
@@ -42,7 +42,7 @@ class SynTag extends BaseEntity
     /**
      * Get word
      *
-     * @return string 
+     * @return string
      */
     public function getWord()
     {
@@ -65,7 +65,7 @@ class SynTag extends BaseEntity
     /**
      * Get score
      *
-     * @return string 
+     * @return string
      */
     public function getScore()
     {

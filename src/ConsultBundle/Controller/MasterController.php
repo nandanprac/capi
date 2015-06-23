@@ -43,7 +43,7 @@ class MasterController extends BaseConsultController
      */
     public function getOccupationOptionsAction(Request $request)
     {
-	$requestParams = $request->query->all();
+        $requestParams = $request->query->all();
 
         try {
             $masterManager = $this->get('consult.master_manager');
