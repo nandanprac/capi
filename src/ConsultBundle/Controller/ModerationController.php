@@ -14,10 +14,12 @@ class ModerationController extends Controller
 {
 
 
-        /**
+    /**
      * @param Request $requestRec - request Object
-     * @return array Question - list of question objects
+     * @return array Question - list of question object
+
      */
+
     public function getModerationsAction(Request $requestRec)
     {
         $moderationManager = $this->get('consult.moderation_manager');
@@ -33,11 +35,10 @@ class ModerationController extends Controller
             return View::create(null, Codes::HTTP_NOT_FOUND);
         }
 
-        $abc=array('a'=>'1','b'=>'2');
 
         return $this->render(
             'ConsultBundle:Moderation:index.html.twig'
-            ,$abc);
+            ,$questionList);
 
 
     }

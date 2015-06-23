@@ -225,7 +225,7 @@ class ModerationManager extends BaseManager
                     $job['question_id'] = $question->getId();
                     $job['question'] = $question->getText();
                     $job['subject'] = $question->getSubject();
-                    $this->queue->setQueueName(Queue::DAA)->sendMessage(json_encode($job));
+                    $this->queue->setQueueName(Queue::CLASSIFY)->sendMessage(json_encode($job));
 
                     ///////////////////////////////
                 }

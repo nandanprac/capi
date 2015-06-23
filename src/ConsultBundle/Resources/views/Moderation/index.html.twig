@@ -1,15 +1,13 @@
-{% extends 'base.html.twig' %}
+
 
 
 {% block title %}Subjects{% endblock %}
 
 {% block body%}
-{#{% for i in 0..count-1 %}#}
-  {#{{ attribute(questions, i).subject }}#}
-    {#<a href="{{ path('change_state_accept', {'questionId': attribute(questions,i).id}) }}">ACCEPT</a>#}
-    {#<a href="{{ path('change_state_reject', {'questionId': attribute(questions,i).id}) }}">REJECT</a>#}
-{#{% endfor %}#}
-    {% for i in 0..1 %}
- a
+{% for i in 0..count-1 %}
+  {{ attribute(questions, i).subject }}
+    <a href="{{ path('change_state_accept', {'questionId': attribute(questions,i).id}) }}">ACCEPT</a>
+    <a href="{{ path('change_state_reject', {'questionId': attribute(questions,i).id}) }}">REJECT</a>
 {% endfor %}
+
 {% endblock %}
