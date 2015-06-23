@@ -68,7 +68,7 @@ class DoctorAssigmentCommand extends ContainerAwareCommand
     {
         $request = Request::create($input->getArgument('domain'));
         $consultDomain = new ConsultDomain($request);
-        $this->container->set('consult.consult_domain', $consultDomain);
+        $this->getContainer()->set('consult.consult_domain', $consultDomain);
         $this->queue->setConsultDomain($consultDomain);
         while (1) {
             $newJob = $this->queue
