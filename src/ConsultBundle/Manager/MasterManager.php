@@ -14,6 +14,16 @@ class MasterManager extends BaseManager
      */
     public function loadMasterSpecialties()
     {
+
         return ConsultFeatureData::$MASTER_SPECIALITIES;
     }
+
+    /**
+     * @return array
+     */
+    public function loadOccupationOptions()
+    {
+        return ConsultFeatureData::$OCCUPATION_OPTIONS;
+    }
+
 }
