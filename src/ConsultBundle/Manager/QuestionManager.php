@@ -230,7 +230,8 @@ class QuestionManager extends BaseManager
         $offset = (array_key_exists('offset', $request)) ? $request['offset'] : 0;
 
         if (array_key_exists('search', $request)) {
-            $search = $this->classification->sentenceWords($request['search']);
+            //$search = $this->classification->sentenceWords($request['search']);
+            $search = preg_split('/\s+/', strtolower($request['search']));
             $questionList = $er->findSearchQuestions($search, $limit, $offset);
             if (empty($questionList)) {
                 return null;

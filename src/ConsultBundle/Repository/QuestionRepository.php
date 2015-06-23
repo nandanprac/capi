@@ -117,8 +117,8 @@ class QuestionRepository extends EntityRepository
 
         $qb->innerJoin(ConsultConstants::QUESTION_TAG_ENTITY_NAME, 't', 'WITH', 'q = t.question AND t.softDeleted = 0');
         foreach ($search as $i => $word) {
-            $qb->orWhere("t.tag = :word$i");
-            $qb->setParameter("word$i", $word);
+            $qb->orWhere("LOWER(t.tag) LIKE :word$i");
+            $qb->setParameter("word$i", '%'.$word.'%');
         }
 
         $qb->andWhere('q.state = :state AND q.softDeleted = 0');
