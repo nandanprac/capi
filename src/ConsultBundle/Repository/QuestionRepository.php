@@ -93,6 +93,49 @@ class QuestionRepository extends EntityRepository
     }
 
     /**
+     * @param array $search
+     * @param integer $limit
+     * @param integer $offset
+     *
+     * @return array (QuestionList, count)
+     */
+    public function findSearchQuestions($search, $limit, $offset)
+    {
+        if (empty($search)) {
+            return null;
+        }
+
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('q as question', 'count(b.id) AS bookmarkCount', 'count(q.id) AS matchScore')
+            ->from(ConsultConstants::QUESTION_ENTITY_NAME, 'q')
+            ->leftJoin(ConsultConstants::QUESTION_BOOKMARK_ENTITY_NAME, 'b', 'WITH', 'q = b.question AND b.softDeleted = 0 ')
+            ->addOrderBy('matchScore', 'DESC')
+            ->addOrderBy('q.modifiedAt', 'DESC')
+            ->groupBy('q.id')
+            ->setMaxResults($limit)
+            ->setFirstResult($offset);
+
+        $qb->innerJoin(ConsultConstants::QUESTION_TAG_ENTITY_NAME, 't', 'WITH', 'q = t.question AND t.softDeleted = 0');
+        foreach ($search as $i => $word) {
+            $qb->orWhere("t.tag = :word$i");
+            $qb->setParameter("word$i", $word);
+        }
+
+        $qb->andWhere('q.state = :state AND q.softDeleted = 0');
+        $qb->setParameter('state', 'ANSWERED');
+        $questionList = $qb->getQuery()->getArrayResult();
+
+        $paginator = new Paginator($qb->getQuery(), $fetchJoinCollection = true);
+        $count = count($paginator);
+
+        if (is_null($questionList)) {
+            return null;
+        }
+
+        return array("questions" => $questionList, "count" => $count);
+    }
+
+    /**
      * @param $question
      *
      * @return array
