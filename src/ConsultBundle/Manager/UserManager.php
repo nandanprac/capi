@@ -117,6 +117,6 @@ class UserManager extends BaseManager
             return null;
         }
 
-        return $userEntries;
+        return array('user_profiles' => $userEntries);
     }
 }
