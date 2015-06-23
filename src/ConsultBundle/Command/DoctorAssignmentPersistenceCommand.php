@@ -1,16 +1,12 @@
 <?php
-
 namespace ConsultBundle\Command;
-
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use ConsultBundle\Queue\AbstractQueue as Queue;
 use ConsultBundle\ConsultDomain;
-
 use Symfony\Component\HttpFoundation\Request;
-
 /**
  * Command to queue index
  */
@@ -40,7 +36,6 @@ class DoctorAssignmentPersistenceCommand extends ContainerAwareCommand
             ->setDescription('queue for indexing for search results.')
             ->addArgument('domain', InputArgument::OPTIONAL, 'Fabric Domain', 'http://consult.practo.com');
     }
-
     /**
      * Command executes logic
      *
@@ -69,16 +64,10 @@ class DoctorAssignmentPersistenceCommand extends ContainerAwareCommand
                     } elseif ($jobData['state'] == 'ASSIGNED') {
                         $this->doctorQuestionManager->setDoctorsForAQuestions($jobData['question_id'], $jobData['doctors']);
                         $this->questionManager->setState($jobData['question_id'], $jobData['state']);
-<<<<<<< HEAD
-                        $this->questionManager->symfonysetTagsByQuestionId($jobData['question_id'], array_merge(array($jobData['speciality']), $jobData['tags']));
-||||||| merged common ancestors
-                        $this->questionManager->setTagsByQuestionId($jobData['question_id'], array_merge(array($jobData['speciality']), $jobData['tags']));
-=======
                         $this->questionManager->setTagsByQuestionId($jobData['question_id'], array_merge(array($jobData['speciality']), $jobData['tags']));
                         if ($jobData['user_classified'] == 0){
                             $this->questionManager->setSpeciality($jobData['question_id'], $jobData['speciality']);
                         }
->>>>>>> 4b9180e668ed20fb404b121303138560c12a3286
                         $jobData['type'] = 'new_question';
                         $jobData['user_ids'] = $jobData['doctors'];
                         $jobData['message'] = $jobData['question_id'];
@@ -89,19 +78,11 @@ class DoctorAssignmentPersistenceCommand extends ContainerAwareCommand
                             ->setQueueName(Queue::CONSULT_GCM)
                             ->sendMessage(json_encode($jobData));
                     } elseif ($jobData['state'] == 'GENERIC'  or $jobData['state'] == 'DOCNOTFOUND') {
-<<<<<<< HEAD
-                        $this->questionManager->setState($jobData['question_id'], $jobData['state']);
-                        $this->questionManager->setTagsByQuestionId($jobData['question_id'], array_merge(array($jobData['speciality']), $jobData['tags']));
-||||||| merged common ancestors
-                        $this->questionManager->setState($jobData['question_id'], $jobData['state']);
-                        $this->questionManager->setTagByQuestionId($jobData['question_id'], array_merge(array($jobData['speciality']), $jobData['tags']));
-=======
                         if ($jobData['user_classified'] == 0){
                             $this->questionManager->setSpeciality($jobData['question_id'], $jobData['speciality']);
                         }
                            $this->questionManager->setState($jobData['question_id'], $jobData['state']);
                         $this->questionManager->setTagsByQuestionId($jobData['question_id'], array_merge(array($jobData['speciality']), $jobData['tags']));
->>>>>>> 4b9180e668ed20fb404b121303138560c12a3286
                     }
                     $output->writeln("Queue Message Persisted: ".json_encode($jobData));
                 } catch (\Exception $e) {

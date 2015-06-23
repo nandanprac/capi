@@ -23,15 +23,11 @@ users:
 notification:
     resource: ConsultBundle\Controller\NotificationController
     type:      rest
-<<<<<<< HEAD
 
 moderation:
     resource: ConsultBundle\Controller\ModerationController
     type:      rest
-||||||| merged common ancestors
-=======
 
 master:
     resource: ConsultBundle\Controller\MasterController
     type:      rest
->>>>>>> 4b9180e668ed20fb404b121303138560c12a3286
