@@ -66,9 +66,13 @@ class DoctorQuestionManager extends BaseManager
      */
     public function patch($updateData)
     {
-        if (array_key_exists('question_id', $updateData) and array_key_exists('practo_account_id', $updateData)) {
-            $question = $this->getRepository()->findOneBy(array('practoAccountId'=>$updateData['practo_account_id'], 'question'=>$updateData['question_id']));
-            if (!$question) {
+        if (array_key_exists('id', $updateData) and array_key_exists('practo_account_id', $updateData)) {
+            $practoAccountId = $updateData['practo_account_id'];
+            /**
+             * @var DoctorQuestion $question
+             */
+            $question = $this->helper->loadById($updateData['id'], ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME);
+            if (empty($question) || $question->getPractoAccountId() != $practoAccountId) {
                 throw new ValidationError(array("error"=>"Question is not mapped to this doctor."));
             }
         } else {
@@ -104,10 +108,9 @@ class DoctorQuestionManager extends BaseManager
         $this->helper->persist($question, true);
 
 
-        $ques = $question->getQuestion();
 
 
-        return $ques;
+        return  $this->fetchDetailQuestionObject($question, $practoAccountId);
     }
 
     /**
@@ -119,6 +122,10 @@ class DoctorQuestionManager extends BaseManager
     {
 
         $doctorQuestion =  $this->helper->loadById($doctorQuestionId, ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME);
+
+        if (empty($doctorQuestion)) {
+            return null;
+        }
 
         return $this->fetchDetailQuestionObject($doctorQuestion, $_SESSION['authenticated_user']);
     }
@@ -192,6 +199,9 @@ class DoctorQuestionManager extends BaseManager
      */
     private function fetchDetailQuestionObject(DoctorQuestion $doctorQuestionEntity, $practoAccountId)
     {
+        if (empty($doctorQuestionEntity)) {
+            return null;
+        }
         $questionEntity = $doctorQuestionEntity->getQuestion();
         $question = null;
         if (!empty($questionEntity)) {
@@ -216,6 +226,11 @@ class DoctorQuestionManager extends BaseManager
             }
 
             $question->setReplies($replies);
+
+            $bookmarkCount = $this->helper->getRepository(ConsultConstants::QUESTION_ENTITY_NAME)->getBookmarkCountForAQuestion($questionEntity);
+            $question->setBookmarkCount($bookmarkCount);
+            $images = $this->helper->getRepository(ConsultConstants::QUESTION_ENTITY_NAME)->getImagesForAQuestion($questionEntity);
+            $question->setImages($images);
 
             //Set comments
             /**
