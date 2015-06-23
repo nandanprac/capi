@@ -38,12 +38,26 @@ Set up following parameters in parameters.yml
 
 app/console doctrine:migrations:migrate
 
-
+app/console consult:question:classification:queue
 app/console consult:question:doctorassignment:queue
-app/console consult:assignmentpersist:doctorassignment:queue
+app/console consult:question:doctorassignment:queue
 
 Run following commands in Fabric to push GCM notifications.
 
 app/console fabric:consult:gcm:queue
+
+
+To Setup Classification, use data in trainingdata folder
+
+run following commands
+
+Command to insert trained data.
+app/console consult:data:trainer /tmp/trainset.csv
+
+Command to insert stop words
+app/console consult:data:trainer:helper /tmp/stop_words.csv --action=stop
+
+Command to insert synonyms and stems
+app/console consult:data:trainer:helper /tmp/stem_list\(u\).csv --action=stem
 
 ```
