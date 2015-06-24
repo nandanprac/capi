@@ -57,14 +57,18 @@ class ClassificationManager
      *
      * @return array words
      */
-    public function sentenceWords($sentence)
+    public function sentenceWords($sentence, $stems = null)
     {
         $sentence = preg_replace('/[^A-Za-z]/', ' ', $sentence);
         $words = array();
         $sentence = preg_split('/\s+/', strtolower($sentence));
         foreach ($sentence as $word) {
             if (!in_array($word, $words) and strlen($word) > 2) {
-                array_push($words, $word);
+                if ($stems && in_array($word, $stems)) {
+                    array_push($words, $stems[$word]);
+                } else {
+                    array_push($words, $word);
+                }
             }
         }
         $stopWords = $this->wordManager->lookupWord($words, ConsultConstants::STOP_WORDS_ENTITY_NAME);

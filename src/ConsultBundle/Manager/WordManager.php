@@ -24,19 +24,22 @@ class WordManager extends BaseManager
     /**
      * Takes in Array of words and score map and add it to db
      *
-     * @param array $word    - Word
-     * @param array $scoreId - Id of the score record
+     * @param array $data    - data array containing word and scoreid
      *
      * @return null
      */
-    public function createSynTag($word, $scoreId)
+    public function createSynTag($data)
     {
-        $synTag = new SynTag();
-        $synTag->setWord($word);
-        $score = $this->helper->loadById($scoreId, ConsultConstants::WORD_SCORE_ENTITY_NAME);
-        $synTag->setScore($score);
-        $synTag->setCreatedAt();
-        $this->helper->persist($synTag, 'true');
+        foreach ($data as $each) {
+            $synTag = new SynTag();
+            $synTag->setWord($each[0]);
+            $score = $this->helper->loadById($each[1], ConsultConstants::WORD_SCORE_ENTITY_NAME);
+            $synTag->setScore($score);
+            $synTag->setCreatedAt();
+            $this->helper->persist($synTag);
+        }
+        $this->helper->flush();
+        $this->helper->clear();
     }
 
 
