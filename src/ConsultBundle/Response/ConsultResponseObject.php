@@ -124,4 +124,33 @@ class ConsultResponseObject
     {
         //Do Nothing
     }
+
+
+    /**
+     * @param mixed $value
+     *
+     * @return int
+     */
+    public function getInt($value)
+    {
+        if (is_numeric($value)) {
+            return intval($value);
+        } else {
+            return $value;
+        }
+    }
+
+    /**
+     * @param mixed $value
+     *
+     * @return int
+     */
+    public function getFloat($value)
+    {
+        if (is_float($value)) {
+            return floatval($value);
+        } else {
+            return $value;
+        }
+    }
 }

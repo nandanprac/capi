@@ -60,7 +60,7 @@ class DoctorNotificationResponseObject extends ConsultResponseObject
      */
     public function setquestionId($questionId)
     {
-        $this->questionId = $questionId;
+        $this->questionId = $this->getInt($questionId);
     }
 
     /**
@@ -92,7 +92,7 @@ class DoctorNotificationResponseObject extends ConsultResponseObject
      */
     public function setpractoAccountId($practoAccountId)
     {
-        $this->practoAccountId = $practoAccountId;
+        $this->practoAccountId = $this->getInt($practoAccountId);
     }
 
     /**

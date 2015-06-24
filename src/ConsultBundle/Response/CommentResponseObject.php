@@ -58,7 +58,7 @@ class CommentResponseObject extends ConsultResponseObject
      */
     public function setVotes($votes)
     {
-        $this->votes = $votes;
+        $this->votes = $this->getInt($votes);
     }
 
     /**
@@ -74,7 +74,7 @@ class CommentResponseObject extends ConsultResponseObject
      */
     public function setPractoAccountId($practoAccountId)
     {
-        $this->practoAccountId = $practoAccountId;
+        $this->practoAccountId = $this->getInt($practoAccountId);
     }
 
     /**
@@ -90,6 +90,6 @@ class CommentResponseObject extends ConsultResponseObject
      */
     public function setNumToIdentify($numToIdentify)
     {
-        $this->numToIdentify = $numToIdentify;
+        $this->numToIdentify = $this->getInt($numToIdentify);
     }
 }

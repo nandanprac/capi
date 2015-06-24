@@ -50,7 +50,7 @@ class DoctorQuestionResponseObject extends DetailQuestionResponseObject
         $this->images = $images;
     }
 
-    protected function populatePatientInfo(UserInfo $userInfo)
+    protected function populatePatientInfo(UserInfo $userInfo, $practoAccountId = null)
     {
         $patientInfo = new DetailPatientInfoResponse();
         $patientInfo->setAllergies($userInfo->getAllergies());

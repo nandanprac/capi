@@ -75,7 +75,7 @@ class ReplyResponseObject extends ConsultResponseObject
      */
     public function setRating($rating)
     {
-        $this->rating = $rating;
+        $this->rating = $this->getInt($rating);
     }
 
     /**
@@ -123,7 +123,7 @@ class ReplyResponseObject extends ConsultResponseObject
      */
     public function setVotes($votes)
     {
-        $this->votes = $votes;
+        $this->votes = $this->getInt($votes);
     }
 
     /**
@@ -139,7 +139,7 @@ class ReplyResponseObject extends ConsultResponseObject
      */
     public function setDoctorId($doctorId)
     {
-        $this->doctorId = $doctorId;
+        $this->doctorId = $this->getInt($doctorId);
     }
 
     /**
@@ -156,7 +156,7 @@ class ReplyResponseObject extends ConsultResponseObject
     public function setVote($vote)
     {
         if (!empty($vote)) {
-            $this->vote = $vote;
+            $this->vote = $this->getInt($vote);
         }
 
     }

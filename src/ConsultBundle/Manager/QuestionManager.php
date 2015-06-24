@@ -343,7 +343,7 @@ class QuestionManager extends BaseManager
                 $this->retrieveUserProfileUtil->retrieveUserProfileNew($questionEntity->getUserInfo());
             }
 
-            $question = new DetailQuestionResponseObject($questionEntity);
+            $question = new DetailQuestionResponseObject($questionEntity, $practoAccountId);
 
             /**
              * @var DoctorQuestionRepository $er
