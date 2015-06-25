@@ -18,6 +18,8 @@ class DoctorEntity
 
     private $name;
 
+    private $fabricId;
+
     /**
      * @var string
      */
@@ -89,4 +91,22 @@ class DoctorEntity
     {
         $this->profilePicture = $profilePicture;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getFabricId()
+    {
+        return $this->fabricId;
+    }
+
+    /**
+     * @param mixed $fabricId
+     */
+    public function setFabricId($fabricId)
+    {
+        $this->fabricId = $fabricId;
+    }
+
+
 }

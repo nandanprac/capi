@@ -14,7 +14,7 @@ class MasterManager extends BaseManager
      */
     public function loadMasterSpecialties()
     {
-        return ConsultFeatureData::MASTERSPECIALITIES;
+        return ConsultFeatureData::$MASTERSPECIALITIES;
     }
 
     /**
@@ -22,6 +22,6 @@ class MasterManager extends BaseManager
      */
     public function loadOccupationOptions()
     {
-        return ConsultFeatureData::OCCUPATIONOPTIONS;
+        return ConsultFeatureData::$OCCUPATIONOPTIONS;
     }
 }

@@ -162,6 +162,34 @@ class DoctorManager extends BaseManager
     }
 
     /**
+     * @param int $id
+     *
+     * @return null
+     */
+    public function getConsultSettingsByPractoAccountId($id)
+    {
+        if (empty($id)) {
+            return null;
+        }
+
+        /**
+         * @var DoctorRepository $er
+         */
+        $er = $this->getRepository();
+
+        $result =  $result = $er->findOneBy(array(
+                "practoAccountId" => $id,
+                "softDeleted" => 0)
+        );
+
+        if (empty($result)) {
+            $result = $this->helper->loadById(1, ConsultConstants::DOCTOR_SETTING_ENTITY_NAME);
+        }
+
+        return $result;
+    }
+
+    /**
      * @return \Doctrine\ORM\EntityRepository|null
      */
     private function getRepository()

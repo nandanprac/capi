@@ -69,7 +69,7 @@ class DetailPatientInfoResponse extends BasicPatientInfoResponse
      */
     public function setHeightInCms($heightInCms)
     {
-        $this->heightInCms = $this->getFloat($this->$heightInCms);
+        $this->heightInCms = $this->getFloat($heightInCms);
     }
 
     /**

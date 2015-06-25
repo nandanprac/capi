@@ -119,10 +119,12 @@ class QuestionManager extends BaseManager
     }
 
     /**
-     * @param array $requestParams - data for the updation
-     * @throws ValidationError
-     * @throws HttpException
-     * @return Question
+     * @param array $requestParams
+     * @param null  $practoAccountId
+     *
+     * @return \ConsultBundle\Response\DetailQuestionResponseObject|string
+     * @throws \ConsultBundle\Manager\ValidationError
+     * @throws \HttpException
      */
     public function patch($requestParams, $practoAccountId = null)
     {
