@@ -53,6 +53,7 @@ class UserManager extends BaseManager
      */
     public function add($requestParams, $profileToken)
     {
+        $error = array();
         if (!array_key_exists('practo_account_id', $requestParams)) {
             @$error['practo_account_id'] = 'This value cannot be blank';
             throw new ValidationError($error);
@@ -79,14 +80,14 @@ class UserManager extends BaseManager
             if (array_key_exists('is_relative', $requestParams) and Utility::toBool($requestParams['is_relative'])) {
                 if (!array_key_exists('name', $requestParams)) {
                     @$error['name'] = 'This value cannot be blank when a new profile is being created';
-                    throw new ValidationError($error);
                 }
                 if (!array_key_exists('gender', $requestParams)) {
                     @$error['gender'] = 'This value cannot be blank when a new profile is being created';
-                    throw new ValidationError($error);
                 }
                 if (!array_key_exists('age', $requestParams)) {
                     @$error['age'] = 'This value cannot be blank when a new profile is being created';
+                }
+                if (count($error) > 0) {
                     throw new ValidationError($error);
                 }
 
