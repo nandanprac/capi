@@ -24,7 +24,7 @@ class WordManager extends BaseManager
     /**
      * Takes in Array of words and score map and add it to db
      *
-     * @param array $data    - data array containing word and scoreid
+     * @param array $data - data array containing word and scoreid
      *
      * @return null
      */

@@ -34,7 +34,8 @@ class DoctorEntity
         $name = null,
         $speciality = null,
         $profilePicture = ''
-    ) {
+    )
+    {
         $this->name = $name;
         $this->speciality = $speciality;
         $this->profilePicture = $profilePicture;

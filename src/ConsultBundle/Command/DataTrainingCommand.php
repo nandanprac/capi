@@ -50,7 +50,7 @@ class DataTrainingCommand extends ContainerAwareCommand
     {
         $filePaths = $input->getArgument('files');
 
-        if ($input->getOption('stem')){
+        if ($input->getOption('stem')) {
             $stemFile = end($filePaths);
             $filePaths = array_slice($filePaths, 0, -1);
             $stemData = $this->classification->readCSV(array($stemFile));

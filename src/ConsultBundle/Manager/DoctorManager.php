@@ -189,5 +189,4 @@ class DoctorManager extends BaseManager
 
         return;
     }
-
 }
