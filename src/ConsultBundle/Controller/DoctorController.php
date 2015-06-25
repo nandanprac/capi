@@ -81,4 +81,19 @@ class DoctorController extends BaseConsultController
 
         return $settings;
     }
+
+    public function postDoctorSettingsAction(Request $request)
+    {
+        $postData = $request->request->all();
+        $doctorManager = $this->get('consult.doctor_manager');
+        try {
+            $settings = $doctorManager->postConsultSettings($postData);
+        } catch (ValidationError $e) {
+            return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
+        } catch (\Exception $e) {
+            return View::create(json_encode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
+        }
+
+        return $settings;
+    }
 }

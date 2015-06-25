@@ -190,6 +190,21 @@ class DoctorManager extends BaseManager
     }
 
     /**
+     * @param $postData
+     *
+     * @return \ConsultBundle\Entity\DoctorConsultSettings
+     * @throws \ConsultBundle\Manager\ValidationError
+     */
+    public function postConsultSettings($postData)
+    {
+        $doc = new DoctorConsultSettings();
+        $this->updateFields($doc, $postData);
+        $this->helper->persist($doc, true);
+
+        return $doc;
+    }
+
+    /**
      * @return \Doctrine\ORM\EntityRepository|null
      */
     private function getRepository()
