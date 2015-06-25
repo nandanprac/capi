@@ -147,6 +147,10 @@ class DoctorManager extends BaseManager
                 "softDeleted" => 0)
         );
 
+        if (empty($result)) {
+            return null;
+        }
+
         $authenticatedPractoAccountId = $_SESSION['authenticated_user']['id'];
          $practoAccountId = $result->getPractoAccountId();
 
