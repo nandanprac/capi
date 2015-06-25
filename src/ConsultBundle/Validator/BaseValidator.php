@@ -1,15 +1,24 @@
 <?php
+/**
+ * Created by PhpStorm.
+ * User: anshuman
+ * Date: 25/06/15
+ * Time: 12:31
+ */
 
 namespace ConsultBundle\Validator;
 
-use Symfony\Component\Validator\ValidatorInterface;
+
 use ConsultBundle\Entity\BaseEntity;
 use ConsultBundle\Manager\ValidationError;
+use Symfony\Component\Validator\ValidatorInterface;
 
 /**
- * Validator for user profile object
+ * Class BaseValidator
+ *
+ * @package ConsultBundle\Validator
  */
-class UserValidator implements Validator
+class BaseValidator implements Validator
 {
     private $validator;
 
@@ -22,15 +31,15 @@ class UserValidator implements Validator
     {
         $this->validator = $validator;
     }
-
     /**
-     * @param User $user - User object to be validated
+     * @param BaseEntity $entity - entity to be validated
+     * @throws ValidationError
      * @return null
      */
-    public function validate(BaseEntity $user)
+    public function validate(BaseEntity $entity)
     {
         $errors = array();
-        $validationErrors = $this->validator->validate($user);
+        $validationErrors = $this->validator->validate($entity);
         if (0 < count($validationErrors)) {
             foreach ($validationErrors as $validationError) {
                 $pattern = '/([a-z])([A-Z])/';

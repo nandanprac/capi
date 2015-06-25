@@ -8,8 +8,8 @@ services:
         arguments:
           - @validator
 
-    consult.userValidator:
-        class: ConsultBundle\Validator\UserValidator
+    consult.baseValidator:
+        class: ConsultBundle\Validator\BaseValidator
         arguments:
           - @validator
 
@@ -18,16 +18,10 @@ services:
         arguments:
           - @validator
 
-    consult.questionImageValidator:
-         class: ConsultBundle\Validator\QuestionImageValidator
-
     consult.questionBookmarkValidator:
         class: ConsultBundle\Validator\QuestionBookmarkValidator
         arguments:
           - @validator
-
-    consult.doctorReplyValidator:
-         class: ConsultBundle\Validator\DoctorReplyValidator
 
     consult.doctorQuestionValidator:
          class: ConsultBundle\Validator\DoctorQuestionValidator
@@ -73,7 +67,7 @@ services:
         arguments:
                   - @consult.fileUploadUtil
         calls:
-                  - [setValidator, ["@consult.questionImageValidator"]]
+                  - [setValidator, ["@consult.baseValidator"]]
                   - [setHelper, ["@consult.helper"]]
 
     consult.question_bookmark_manager:
@@ -85,7 +79,7 @@ services:
     consult.doctorReplyManager:
         class: ConsultBundle\Manager\DoctorReplyManager
         calls:
-                          - [setValidator, ["@consult.doctorReplyValidator"]]
+                          - [setValidator, ["@consult.baseValidator"]]
                           - [setHelper, ["@consult.helper"]]
         arguments:
           - @consult.consult_queue
@@ -105,7 +99,7 @@ services:
         class: ConsultBundle\Manager\UserManager
         calls:
             - [setHelper, ["@consult.helper"]]
-            - [setValidator, ["@consult.UserValidator"]]
+            - [setValidator, ["@consult.baseValidator"]]
         arguments:
           - @consult.update_accounts_util
 
@@ -211,4 +205,5 @@ services:
         class: ConsultBundle\Manager\DoctorManager
         calls:
             - [setHelper, ["@consult.helper"]]
+            - [setValidator, ["@consult.baseValidator"]]
 

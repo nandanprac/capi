@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "e40091c7e7b7eb253787e29376244df8",
+    "hash": "3b236b50f2b0c0e66bf61c58527ea928",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -577,17 +577,17 @@
         },
         {
             "name": "doctrine/doctrine-migrations-bundle",
-            "version": "dev-master",
+            "version": "1.0.1",
             "target-dir": "Doctrine/Bundle/MigrationsBundle",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/DoctrineMigrationsBundle.git",
-                "reference": "861d3564c03b3867845ffd87d9b19f49dc673c69"
+                "reference": "1e8cd4415bd2f893eb828216b529a75e8b61d579"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/DoctrineMigrationsBundle/zipball/861d3564c03b3867845ffd87d9b19f49dc673c69",
-                "reference": "861d3564c03b3867845ffd87d9b19f49dc673c69",
+                "url": "https://api.github.com/repos/doctrine/DoctrineMigrationsBundle/zipball/1e8cd4415bd2f893eb828216b529a75e8b61d579",
+                "reference": "1e8cd4415bd2f893eb828216b529a75e8b61d579",
                 "shasum": ""
             },
             "require": {
@@ -632,7 +632,7 @@
                 "migrations",
                 "schema"
             ],
-            "time": "2015-06-16 12:48:54"
+            "time": "2015-05-06 08:32:15"
         },
         {
             "name": "doctrine/inflector",
@@ -3334,7 +3334,6 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "doctrine/migrations": 20,
-        "doctrine/doctrine-migrations-bundle": 20,
         "practo/sentry-bundle": 20,
         "sensio/buzz-bundle": 20,
         "predis/predis": 20

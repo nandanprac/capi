@@ -3,11 +3,11 @@
 namespace ConsultBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- *
- * @ORM\Entity(repositoryClass="ConsultBundle\Repository\DoctorRepository")
  * @ORM\Table(name="doctor_consult_settings")
+ * @ORM\Entity
  * @ORM\HasLifecycleCallbacks()
  */
 class DoctorConsultSettings extends BaseEntity
@@ -17,13 +17,14 @@ class DoctorConsultSettings extends BaseEntity
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $name;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="profile_picture", type="string", length=255)
+     * @ORM\Column(name="profile_picture", type="string", length=255, nullable=true)
      */
     private $profilePicture;
 
@@ -31,16 +32,19 @@ class DoctorConsultSettings extends BaseEntity
      * @var string
      *
      * @ORM\Column(name="location", type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $location;
 
     /**
      * @ORM\Column(name="practo_account_id", type="integer")
+     * @Assert\NotBlank()
      */
     private $practoAccountId;
 
     /**
      * @ORM\Column(name="fabric_doctor_id", type="integer")
+     * @Assert\NotBlank()
      */
     private $fabricDoctorId;
 
@@ -48,13 +52,15 @@ class DoctorConsultSettings extends BaseEntity
      * @var string
      *
      * @ORM\Column(name="timezone", type="string", length=16)
+     * @Assert\NotBlank()
      */
-    private $timezone;
+    private $timezone = "Asia/Calcutta";
 
     /**
      * @var integer
      *
      * @ORM\Column(name="num_ques_day", type="integer", nullable=true)
+     * @Assert\NotBlank()
      */
     private $numQuesDay;
 
@@ -76,22 +82,23 @@ class DoctorConsultSettings extends BaseEntity
      * @var string
      *
      * @ORM\Column(name="speciality", type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $speciality;
 
     /**
      * @var boolean
      *
-     * @ORM\Column(name="is_deactivated", type="boolean")
+     * @ORM\Column(name="is_activated", type="boolean")
      */
-    private $isDeactivated = false;
+    private $activated = true;
 
     /**
      * @var boolean
      *
-     * @ORM\Column(name="is_whitelisted", type="boolean")
+     * @ORM\Column(name="consent_given", type="boolean")
      */
-    private $isWhiteListed = false;
+    private $consentGiven = false;
 
     /**
      * @var string
@@ -138,13 +145,11 @@ class DoctorConsultSettings extends BaseEntity
      * Set profilePicture
      *
      * @param string $profilePicture
-     * @return DoctorConsultSettings
+     *
      */
     public function setProfilePicture($profilePicture)
     {
         $this->profilePicture = $profilePicture;
-
-        return $this;
     }
 
     /**
@@ -296,50 +301,40 @@ class DoctorConsultSettings extends BaseEntity
     }
 
     /**
-     * Set isDeactivated
-     *
-     * @param boolean $isDeactivated
-     * @return DoctorConsultSettings
-     */
-    public function setIsDeactivated($isDeactivated)
-    {
-        $this->isDeactivated = $isDeactivated;
-
-        return $this;
-    }
-
-    /**
-     * Get isDeactivated
-     *
      * @return boolean
      */
-    public function getIsDeactivated()
+    public function isActivated()
     {
-        return $this->isDeactivated;
+        return $this->activated;
     }
 
     /**
-     * Set isWhitelisted
-     *
-     * @param boolean $isWhiteListed
-     * @return DoctorConsultSettings
+     * @param boolean $activated
      */
-    public function setIsWhiteListed($isWhiteListed)
+    public function setActivated($activated)
     {
-        $this->isWhiteListed = $isWhiteListed;
-
-        return $this;
+        $this->activated = $activated;
     }
 
     /**
-     * Get isWhiteListed
-     *
      * @return boolean
      */
-    public function getIsWhiteListed()
+    public function isConsentGiven()
     {
-        return $this->isWhiteListed;
+        return $this->consentGiven;
     }
+
+    /**
+     * @param boolean $consentGiven
+     */
+    public function setConsentGiven($consentGiven)
+    {
+        $this->consentGiven = $consentGiven;
+    }
+
+
+
+
 
     /**
      * Set status
@@ -396,4 +391,5 @@ class DoctorConsultSettings extends BaseEntity
         $this->fabricDoctorId = $fabricDoctorId;
     }
 }
+
 

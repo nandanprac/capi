@@ -9,15 +9,12 @@
 namespace ConsultBundle\Validator;
 
 use Symfony\Component\Validator\ValidatorInterface;
-use ConsultBundle\Entity\BaseEntity;
-use ConsultBundle\Manager\ValidationError;
 
 /**
  * Question Validator
  */
-class QuestionValidator implements Validator
+class QuestionValidator extends BaseValidator
 {
-    private $validator;
 
     /**
      * Constructor
@@ -26,34 +23,8 @@ class QuestionValidator implements Validator
      */
     public function __construct(ValidatorInterface $validator)
     {
-        $this->validator = $validator;
+        parent::__construct($validator);
     }
-
-    /**
-     * @param BaseEntity $entity - entity to be vaidated
-     * @throws ValidationError
-     * @return null
-     */
-    public function validate(BaseEntity $entity)
-    {
-        $errors = array();
-        $validationErrors = $this->validator->validate($entity);
-        if (0 < count($validationErrors)) {
-            foreach ($validationErrors as $validationError) {
-                $pattern = '/([a-z])([A-Z])/';
-                $replace = function ($m) {
-                    return $m[1].'_'.strtolower($m[2]);
-                };
-                $attribute = preg_replace_callback($pattern, $replace, $validationError->getPropertyPath());
-                @$errors[$attribute][] = $validationError->getMessage();
-            }
-        }
-
-        if (0 < count($errors)) {
-            throw new ValidationError($errors);
-        }
-    }
-
     /**
      * @param array $requestParams - parameters that cannot be changed
      * @return array

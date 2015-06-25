@@ -9,9 +9,7 @@
 namespace ConsultBundle\Repository;
 
 use ConsultBundle\Constants\ConsultConstants;
-use ConsultBundle\Entity\Question;
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Tools\Pagination\Paginator;
 
 /**
  * Doctor Repository
@@ -29,6 +27,7 @@ class DoctorRepository extends EntityRepository
     public function findByFilters($doctorId, $filters)
     {
         $result = array();
+        $qb = $this->_em->createQueryBuilder();
         try {
              $qb = $this->_em->createQueryBuilder();
              $qb->select('sum(rv.vote) as total_votes')
