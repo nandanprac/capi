@@ -49,9 +49,6 @@ class Helper
 
         $logger->info(json_encode($dLogger->queries));
 
-        //$loggerSymfony->debug($logger->queries);
-
-        //$this->cacheUtils = $cacheUtils;
 
     }
 
