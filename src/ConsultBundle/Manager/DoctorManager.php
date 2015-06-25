@@ -9,16 +9,28 @@
 namespace ConsultBundle\Manager;
 
 use ConsultBundle\Constants\ConsultConstants;
+use ConsultBundle\Entity\DoctorConsultSettings;
 use ConsultBundle\Entity\DoctorQuestion;
+use ConsultBundle\Repository\DoctorRepository;
 use ConsultBundle\Utility\Utility;
 use Doctrine\Common\Collections\ArrayCollection;
 use ConsultBundle\Manager\ValidationError;
+use FOS\RestBundle\Util\Codes;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Doctor manager
  */
 class DoctorManager extends BaseManager
 {
+
+    private static $mandataorFieldsForPostDoctorConsult = array(
+        "practo_account_id",
+        "doctor_fabric_id",
+        "name",
+        "speciality",
+        "location",
+        "timezone");
     /**
      * @param array $queryParams
      *
@@ -27,11 +39,11 @@ class DoctorManager extends BaseManager
      */
     public function loadAllForDoctor($queryParams)
     {
-		$doctorId = array_key_exists('practo_account_id', $queryParams) ? $queryParams['practo_account_id'] : null;
+        $doctorId = array_key_exists('practo_account_id', $queryParams) ? $queryParams['practo_account_id'] : null;
 
-		if (null == $doctorId) {
-			throw new \Exception(array("error"=>"Please pass practo_account_id"));
-		}
+        if (null == $doctorId) {
+            throw new \Exception(array("error"=>"Please pass practo_account_id"));
+        }
 
         try {
             $detailList = $this->getRepository()->findByFilters($doctorId, $queryParams);
@@ -43,12 +55,100 @@ class DoctorManager extends BaseManager
         }
 
         return array("details"=>$detailList);
-	}
+    }
 
-	private function getRepository()
+    /**
+     * sample request:
+     *
+     * {
+     * "practo_account_id": 1,
+     * "doctor_fabric_id": 1,
+     * "name": "Rachit Mishra",
+     * "profile_picture": "http://google.com",
+     * "speciality": "Dentist",
+     * "location": "Bangalore",
+     * "timezone": "Asia/Mumbai",
+     * "num_ques_day": "3",
+     * "preferred_consultation_timings": 0,
+     * "consultation_days": "1111100"
+     * }
+     *
+     * @param array $postData
+     *
+     * @return \ConsultBundle\Entity\DoctorConsultSettings
+     */
+    public function postConsultSettings(array $postData)
+    {
+        if (empty($postData)) {
+            throw new HttpException("Data is empty", Codes::HTTP_BAD_REQUEST);
+        }
+
+        //check for mandatory fields
+        $this->helper->checkForMandatoryFields(self::$mandataorFieldsForPostDoctorConsult, $postData);
+
+        /**
+         * @var DoctorRepository $er
+         */
+        $er = $this->getRepository();
+        $result = $er->findBy(array(
+            "practoAccountId" => $postData['practo_account_id'],
+                                    "softDeleted" => 0)
+        );
+
+        if (count($result) > 0) {
+            throw new HttpException("Instance already exist", Codes::HTTP_BAD_REQUEST);
+        }
+
+        $result =  $result = $er->findBy(array(
+                "fabricDoctorId" => $postData['doctor_fabric_id'],
+                "softDeleted" => 0)
+        );
+
+        if (count($result) > 0) {
+            throw new HttpException("Instance already exist", Codes::HTTP_BAD_REQUEST);
+        }
+
+        if (array_key_exists('consultation_days', $postData) && !empty($postData['consultation_days'])) {
+            $consultationDays = bindec($postData['consultation_days']);
+            $postData['consultation_days'] = $consultationDays;
+        }
+
+        $doctor = new DoctorConsultSettings();
+
+        $this->updateFields($doctor, $postData);
+
+        $this->helper->persist($doctor, true);
+
+        return $doctor;
+    }
+
+    /**
+     * @return \Doctrine\ORM\EntityRepository|null
+     */
+    private function getRepository()
     {
 
         return $this->helper->getRepository(ConsultConstants::DOCTOR_SETTING_ENTITY_NAME);
+    }
+
+    /**
+     * @param \ConsultBundle\Entity\DoctorConsultSettings $doctor
+     * @param                                             $requestParams
+     *
+     * @throws \ConsultBundle\Manager\ValidationError
+     */
+    private function updateFields(DoctorConsultSettings $doctor, $requestParams)
+    {
+        $doctor->setAttributes($requestParams);
+
+
+        try {
+            $this->validator->validate($doctor);
+        } catch (ValidationError $e) {
+            throw new ValidationError($e->getMessage());
+        }
+
+        return;
     }
 
 }

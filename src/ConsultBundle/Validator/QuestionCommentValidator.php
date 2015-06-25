@@ -9,7 +9,7 @@ use ConsultBundle\Manager\ValidationError;
 /**
  * Question Comment Validator
  */
-class QuestionCommentValidator implements Validator
+class QuestionCommentValidator extends BaseValidator
 {
     private $validator;
 
@@ -20,7 +20,7 @@ class QuestionCommentValidator implements Validator
      */
     public function __construct(ValidatorInterface $validator)
     {
-        $this->validator = $validator;
+        parent::__construct($validator);
     }
 
     /**

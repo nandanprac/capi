@@ -3,6 +3,7 @@
 namespace ConsultBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  *
@@ -17,13 +18,14 @@ class DoctorConsultSettings extends BaseEntity
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $name;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="profile_picture", type="string", length=255)
+     * @ORM\Column(name="profile_picture", type="string", length=255, nullable=true)
      */
     private $profilePicture;
 
@@ -31,16 +33,19 @@ class DoctorConsultSettings extends BaseEntity
      * @var string
      *
      * @ORM\Column(name="location", type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $location;
 
     /**
      * @ORM\Column(name="practo_account_id", type="integer")
+     * @Assert\NotBlank()
      */
     private $practoAccountId;
 
     /**
      * @ORM\Column((name="fabric_doctor_id", type="integer")
+     * @Assert\NotBlank()
      */
     private $fabricDoctorId;
 
@@ -48,6 +53,7 @@ class DoctorConsultSettings extends BaseEntity
      * @var string
      *
      * @ORM\Column(name="timezone", type="string", length=16)
+     * @Assert\NotBlank()
      */
     private $timezone;
 
@@ -55,6 +61,7 @@ class DoctorConsultSettings extends BaseEntity
      * @var integer
      *
      * @ORM\Column(name="num_ques_day", type="integer", nullable=true)
+     * @Assert\NotBlank()
      */
     private $numQuesDay;
 
@@ -76,6 +83,7 @@ class DoctorConsultSettings extends BaseEntity
      * @var string
      *
      * @ORM\Column(name="speciality", type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $speciality;
 
