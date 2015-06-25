@@ -54,10 +54,8 @@ run following commands in order
 Command to insert stop words
 app/console consult:data:trainer:helper /tmp/stop_words.csv --action=stop
 
-Command to insert trained data.
-app/console consult:data:trainer /tmp/trainset.csv
+Command to insert trained data. and use last file in array and stem option to include stem words
+app/console consult:data:trainer /tmp/trainset.csv /tmp/src/stem_list\(u\).csv --stem
 
-Command to insert synonyms and stems
-app/console consult:data:trainer:helper /tmp/stem_list\(u\).csv --action=stem
 
 ```
