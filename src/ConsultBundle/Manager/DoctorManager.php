@@ -24,7 +24,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 class DoctorManager extends BaseManager
 {
 
-    private static $mandataorFieldsForPostDoctorConsult = array(
+    private static $mandataoryFieldsForPostDoctorConsult = array(
         "practo_account_id",
         "doctor_fabric_id",
         "name",
@@ -77,49 +77,84 @@ class DoctorManager extends BaseManager
      *
      * @return \ConsultBundle\Entity\DoctorConsultSettings
      */
-    public function postConsultSettings(array $postData)
+    public function putConsultSettings(array $postData)
     {
         if (empty($postData)) {
             throw new HttpException("Data is empty", Codes::HTTP_BAD_REQUEST);
         }
 
         //check for mandatory fields
-        $this->helper->checkForMandatoryFields(self::$mandataorFieldsForPostDoctorConsult, $postData);
+        $this->helper->checkForMandatoryFields(self::$mandataoryFieldsForPostDoctorConsult, $postData);
 
         /**
          * @var DoctorRepository $er
          */
         $er = $this->getRepository();
-        $result = $er->findBy(array(
-            "practoAccountId" => $postData['practo_account_id'],
-                                    "softDeleted" => 0)
-        );
 
-        if (count($result) > 0) {
-            throw new HttpException("Instance already exist", Codes::HTTP_BAD_REQUEST);
-        }
 
-        $result =  $result = $er->findBy(array(
+        /**
+         * @var DoctorConsultSettings $doctor
+         */
+        $doctor =  $result = $er->findOneBy(array(
                 "fabricDoctorId" => $postData['doctor_fabric_id'],
                 "softDeleted" => 0)
         );
 
-        if (count($result) > 0) {
-            throw new HttpException("Instance already exist", Codes::HTTP_BAD_REQUEST);
+        if (empty($doctor)) {
+            throw new HttpException("Instance doesn't exist", Codes::HTTP_BAD_REQUEST);
         }
+
+        $practoAccountId = $postData['practo_account_id'];
+
+        if ($doctor->getPractoAccountId() != $practoAccountId) {
+            throw new HttpException("Account Id is not same", Codes::HTTP_BAD_REQUEST);
+        }
+
 
         if (array_key_exists('consultation_days', $postData) && !empty($postData['consultation_days'])) {
             $consultationDays = bindec($postData['consultation_days']);
             $postData['consultation_days'] = $consultationDays;
         }
 
-        $doctor = new DoctorConsultSettings();
+
 
         $this->updateFields($doctor, $postData);
+
 
         $this->helper->persist($doctor, true);
 
         return $doctor;
+    }
+
+    /**
+     * @param int $id
+     *
+     * @return null
+     */
+    public function getConsultSettings($id)
+    {
+        if (empty($id)) {
+            return null;
+        }
+
+        /**
+         * @var DoctorRepository $er
+         */
+        $er = $this->getRepository();
+
+        $result =  $result = $er->findOneBy(array(
+                "fabricDoctorId" => $id,
+                "softDeleted" => 0)
+        );
+
+        $authenticatedPractoAccountId = $_SESSION['authenticated_user']['id'];
+         $practoAccountId = $result->getPractoAccountId();
+
+        if ($result->getPractoAccountId() != $authenticatedPractoAccountId) {
+            throw new HttpException(Codes::HTTP_FORBIDDEN, "Unauthorised access" );
+        }
+
+        return $result;
     }
 
     /**

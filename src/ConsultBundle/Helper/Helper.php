@@ -151,7 +151,7 @@ class Helper
         }
 
         if ($errors->count() > 0) {
-            throw new HttpException(json_encode($errors->getValues()), Codes::HTTP_BAD_REQUEST);
+            throw new HttpException(Codes::HTTP_BAD_REQUEST, json_encode($errors->getValues()));
         }
     }
 
