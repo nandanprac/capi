@@ -27,3 +27,7 @@ notification:
 master:
     resource: ConsultBundle\Controller\MasterController
     type:      rest
+
+doctor:
+    resource: ConsultBundle\Controller\DoctorController
+    type:      rest

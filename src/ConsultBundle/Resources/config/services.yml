@@ -207,3 +207,8 @@ services:
         calls:
             - [setHelper, ["@consult.helper"]]
 
+    consult.doctor_manager:
+        class: ConsultBundle\Manager\DoctorManager
+        calls:
+            - [setHelper, ["@consult.helper"]]
+
