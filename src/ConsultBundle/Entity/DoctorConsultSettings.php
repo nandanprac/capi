@@ -40,7 +40,7 @@ class DoctorConsultSettings extends BaseEntity
     private $practoAccountId;
 
     /**
-     * @ORM\Column((name="fabric_doctor_id", type="integer")
+     * @ORM\Column(name="fabric_doctor_id", type="integer")
      */
     private $fabricDoctorId;
 

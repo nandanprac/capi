@@ -27,11 +27,11 @@ class DoctorManager extends BaseManager
      */
     public function loadAllForDoctor($queryParams)
     {
-		$doctorId = array_key_exists('practo_account_id', $queryParams) ? $queryParams['practo_account_id'] : null;
+        $doctorId = array_key_exists('practo_account_id', $queryParams) ? $queryParams['practo_account_id'] : null;
 
-		if (null == $doctorId) {
-			throw new \Exception(array("error"=>"Please pass practo_account_id"));
-		}
+        if (null == $doctorId) {
+            throw new \Exception(array("error"=>"Please pass practo_account_id"));
+        }
 
         try {
             $detailList = $this->getRepository()->findByFilters($doctorId, $queryParams);
@@ -43,12 +43,11 @@ class DoctorManager extends BaseManager
         }
 
         return array("details"=>$detailList);
-	}
+    }
 
-	private function getRepository()
+    private function getRepository()
     {
 
         return $this->helper->getRepository(ConsultConstants::DOCTOR_SETTING_ENTITY_NAME);
     }
-
 }

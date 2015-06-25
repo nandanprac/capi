@@ -54,6 +54,7 @@ class ClassificationManager
      * Takes in sentence and return a list of words
      *
      * @param string $sentence - sentence containing user question and tags
+     * @param array  $stems    - sentence containing user question and tags
      *
      * @return array words
      */

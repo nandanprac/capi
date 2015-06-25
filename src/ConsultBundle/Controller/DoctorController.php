@@ -21,8 +21,8 @@ class DoctorController extends BaseConsultController
      *
      */
     public function getDoctorDashboardAction()
-	{
-		//$this->authenticate();
+    {
+        //$this->authenticate();
         $request = $this->get('request');
         $queryParams = $request->query->all();
         try {
