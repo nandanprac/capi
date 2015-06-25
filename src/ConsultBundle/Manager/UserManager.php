@@ -76,8 +76,21 @@ class UserManager extends BaseManager
 
         } else {
             $userEntry = new UserInfo();
-            if (!array_key_exists('is_relative', $requestParams) or
-                (array_key_exists('is_relative', $requestParams) and !(Utility::toBool($requestParams['is_relative'])))) {
+            if (array_key_exists('is_relative', $requestParams) and Utility::toBool($requestParams['is_relative'])) {
+                if (!array_key_exists('name', $requestParams)) {
+                    @$error['name'] = 'This value cannot be blank when a new profile is being created';
+                    throw new ValidationError($error);
+                }
+                if (!array_key_exists('gender', $requestParams)) {
+                    @$error['gender'] = 'This value cannot be blank when a new profile is being created';
+                    throw new ValidationError($error);
+                }
+                if (!array_key_exists('age', $requestParams)) {
+                    @$error['age'] = 'This value cannot be blank when a new profile is being created';
+                    throw new ValidationError($error);
+                }
+
+            } else {
                 $er = $this->helper->getRepository(ConsultConstants::USER_ENTITY_NAME);
                 $entry = $er->findOneBy(array('practoAccountId' => $requestParams['practo_account_id'], 'isRelative' => 0));
                 if (!empty($entry)) {
