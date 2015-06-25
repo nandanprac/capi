@@ -100,12 +100,13 @@ class UserManager extends BaseManager
                 if (!empty($entry)) {
                     $userEntry = $entry;
                 } else {
-                    if (!array_key_exists('gender', $requestParams) or
-                        (array_key_exists('gender', $requestParams) and empty($requestParams['gender']))) {
+                    $userJson = $_SESSION['authenticated_user'];
+                    if (empty($userJson['gender']) && (!array_key_exists('gender', $requestParams) or
+                        (array_key_exists('gender', $requestParams) and empty($requestParams['gender'])))) {
                         @$error['gender'] = 'This value cannot be blank when a new profile is being created';
                     }
-                    if (!array_key_exists('age', $requestParams) or
-                        (array_key_exists('age', $requestParams) and empty($requestParams['age']))) {
+                    if (empty($userJson['dob']) && (!array_key_exists('age', $requestParams) or
+                        (array_key_exists('age', $requestParams) and empty($requestParams['age'])))) {
                         @$error['age'] = 'This value cannot be blank when a new profile is being created';
                     }
                     if (count($error) > 0) {
@@ -116,7 +117,9 @@ class UserManager extends BaseManager
             }
         }
 
+        //As Sahana.
         $requestParams['gender'] = (array_key_exists('gender', $requestParams)) ? strtoupper($requestParams['gender']) : null;
+
         $this->updateFields($userEntry, $requestParams);
         $this->helper->persist($userEntry, true);
 

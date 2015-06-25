@@ -8,8 +8,10 @@
 
 namespace ConsultBundle\Utility;
 
+use ConsultBundle\Entity\DoctorConsultSettings;
 use ConsultBundle\Entity\DoctorEntity;
 use ConsultBundle\Entity\Question;
+use ConsultBundle\Manager\DoctorManager;
 use ConsultBundle\Response\DetailQuestionResponseObject;
 use ConsultBundle\Response\ReplyResponseObject;
 use Elasticsearch\Client;
@@ -31,10 +33,16 @@ class RetrieveDoctorProfileUtil
     private $client;
 
     /**
-     * @param null $index
-     * @param null $host
+     * @var DoctorManager $doctorManager
      */
-    public function __construct($index = null, $host = null)
+    private $doctorManager;
+
+    /**
+     * @param \ConsultBundle\Manager\DoctorManager $doctorManager
+     * @param null                                 $index
+     * @param null                                 $host
+     */
+    public function __construct(DoctorManager $doctorManager, $index = null, $host = null)
     {
         if (!empty($host)) {
             $this->host = $host;
@@ -45,7 +53,31 @@ class RetrieveDoctorProfileUtil
         }
 
         $params['hosts'] = array($host);
-        $this->client = new Client($params);
+        $this->doctorManager = $doctorManager;
+        //$this->client = new Client($params);
+    }
+
+    /**
+     * @param int $practoAccntId
+     *
+     * @return \ConsultBundle\Entity\DoctorEntity|null
+     */
+    public function retrieveDoctorProfile($practoAccntId = 5)
+    {
+        /**
+         * @var DoctorConsultSettings $docEntity
+         */
+        $docEntity = $this->doctorManager->getConsultSettingsByPractoAccountId($practoAccntId);
+
+        $doc = new DoctorEntity();
+        $doc->setFabricId($docEntity->getFabricDoctorId());
+        $doc->setName($docEntity->getName());
+        $doc->setProfilePicture($docEntity->getProfilePicture());
+        $doc->setSpeciality($docEntity->getSpeciality());
+
+        return $doc;
+
+
     }
 
 
@@ -57,7 +89,7 @@ class RetrieveDoctorProfileUtil
      *
      * @return \ConsultBundle\Entity\DoctorEntity|null
      */
-    public function retrieveDoctorProfile($practoAccntId = 5)
+    public function retrieveDoctorProfileOld($practoAccntId = 5)
     {
         //$this->client = new Client();
 

@@ -26,7 +26,7 @@ class ReplyResponseObject extends ConsultResponseObject
     /**
      * @var int
      */
-    private $doctorId;
+    private $practoAccountId;
 
     /**
      * @var string $text
@@ -55,7 +55,7 @@ class ReplyResponseObject extends ConsultResponseObject
     {
         if (!empty($reply)) {
             parent::__construct($reply);
-            $this->doctorId = $reply->getDoctorQuestion()->getPractoAccountId();
+            $this->practoAccountId = $reply->getDoctorQuestion()->getPractoAccountId();
             $this->text = $reply->getText();
             $this->rating = $reply->getRating();
         }
@@ -131,7 +131,7 @@ class ReplyResponseObject extends ConsultResponseObject
      */
     public function getDoctorId()
     {
-        return $this->doctorId;
+        return $this->practoAccountId;
     }
 
     /**
@@ -139,7 +139,7 @@ class ReplyResponseObject extends ConsultResponseObject
      */
     public function setDoctorId($doctorId)
     {
-        $this->doctorId = $this->getInt($doctorId);
+        $this->practoAccountId = $this->getInt($doctorId);
     }
 
     /**
@@ -160,4 +160,22 @@ class ReplyResponseObject extends ConsultResponseObject
         }
 
     }
+
+    /**
+     * @return int
+     */
+    public function getPractoAccountId()
+    {
+        return $this->practoAccountId;
+    }
+
+    /**
+     * @param int $practoAccountId
+     */
+    public function setPractoAccountId($practoAccountId)
+    {
+        $this->practoAccountId = $practoAccountId;
+    }
+
+
 }
