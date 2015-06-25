@@ -85,7 +85,7 @@ class DoctorAssignmentPersistenceCommand extends ContainerAwareCommand
                             $this->questionManager->setSpeciality($jobData['question_id'], $jobData['speciality']);
                         }
                         $jobData['type'] = 'new_question';
-                        $jobData['user_ids'] = $jobData['doctors'];
+                        $jobData['account_ids'] = $jobData['doctors'];
                         $jobData['message'] = $jobData['question_id'];
                         unset($jobData['doctors']);
                         unset($jobData['state']);

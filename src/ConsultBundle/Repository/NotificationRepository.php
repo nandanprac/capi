@@ -85,7 +85,7 @@ class NotificationRepository extends EntityRepository
 
         if (isset($viewed)) {
             $qb->andWhere('un.viewed = :viewed');
-               if (Utility::toBool($viewed)) {
+            if (Utility::toBool($viewed)) {
                 $viewed = 1;
             } else {
                 $viewed = 0;

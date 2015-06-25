@@ -112,7 +112,7 @@ class DoctorReplyManager extends BaseManager
                 "message"=>"Your Query has been answered",
                 "id"=>$doctorQuestion->getQuestion()->getId(),
                 "send_to"=>"fabric",
-                "user_ids"=>array($doctorQuestion->getQuestion()->getUserInfo()->getPractoAccountId()))));
+                "account_ids"=>array($doctorQuestion->getQuestion()->getUserInfo()->getPractoAccountId()))));
 
         $this->helper->persist($doctorReply, true);
 
