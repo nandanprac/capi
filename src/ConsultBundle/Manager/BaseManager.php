@@ -100,8 +100,6 @@ class BaseManager
 
         $er = $this->helper->getRepository(ConsultConstants::QUESTION_BOOKMARK_ENTITY_NAME);
 
-
-        //var_dump(json_encode($questionEntity));die;
         //Set comments
         /**
          * @var QuestionCommentRepository $ecr

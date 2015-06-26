@@ -101,7 +101,6 @@ class DoctorReplyManager extends BaseManager
         }*/
 
         //$bookmarkUserObject = $this->helper->loadById($doctorQuestion->getQuestion()->getId(), ConsultConstants::QUESTION_BOOKMARK_ENTITY_NAME);
-        //var_dump(count($bookmarkUserObject));die;
 
         $this->notification
             ->createPatientNotification($doctorQuestion->getQuestion()->getId(), $doctorQuestion->getQuestion()->getUserInfo()->getPractoAccountId(), "Your Query has been answered");
