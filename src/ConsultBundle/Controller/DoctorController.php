@@ -96,4 +96,10 @@ class DoctorController extends BaseConsultController
 
         return $settings;
     }
+
+    public function getDoctorSettingsTestAction()
+    {
+        $doctorManager = $this->get('consult.doctor_manager');
+        $doctorManager->getAppropriateDoctors('Bangalore', 'Dentist');
+    }
 }

@@ -204,6 +204,16 @@ class DoctorManager extends BaseManager
         return $doc;
     }
 
+    public function testRepo()
+    {
+        /**
+         * @var DoctorRepository $er
+         */
+        $er = $this->getRepository();
+        $result = $er->findBySpeciality('Bangalore', 'Dentist');
+        var_dump($result);die;
+    }
+
     /**
      * @return \Doctrine\ORM\EntityRepository|null
      */
