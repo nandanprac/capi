@@ -177,5 +177,21 @@ class ReplyResponseObject extends ConsultResponseObject
         $this->practoAccountId = $practoAccountId;
     }
 
+    /**
+     * @param array $doctorQuestion
+     */
+    public function setDoctorFromAttributes(array $doctorQuestion)
+    {
+        if (!empty($doctorQuestion)) {
+            $doc = new DoctorEntity();
+            $doc->setName($doctorQuestion['name']);
+            $doc->setSpeciality($doctorQuestion['speciality']);
+            $doc->setProfilePicture($doctorQuestion['profilePicture']);
+            $doc->setFabricId($doctorQuestion['doctorId']);
+
+            $this->setDoctor($doc);
+        }
+    }
+
 
 }

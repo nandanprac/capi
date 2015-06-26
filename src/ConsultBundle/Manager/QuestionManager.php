@@ -56,6 +56,7 @@ class QuestionManager extends BaseManager
         $this->retrieveDoctorProfileUtil = $retrieveDoctorProfileUtil;
         $this->questionBookmarkManager = $questionBookmarkManager;
         $this->classification = $classificationManager;
+        parent::__construct($retrieveUserProfileUtil);
     }
 
     /**
@@ -140,7 +141,7 @@ class QuestionManager extends BaseManager
             throw new ValidationError($error);
         }
 
-        if (array_key_exists('view', $requestParams)) {
+        if (array_key_exists('view', $requestParams) && Utility::toBool($requestParams['view'])) {
             $question->setViewCount($question->getViewCount() + 1);
             if (!empty($practoAccountId)) {
                 $viewEntry = $this->helper->getRepository(ConsultConstants::QUESTION_VIEW_ENTITY_NAME)
@@ -327,67 +328,5 @@ class QuestionManager extends BaseManager
         }
     }
 
-    /**
-     * @param \ConsultBundle\Entity\Question $questionEntity
-     *
-     * @param                                $practoAccountId
-     *
-     * @return \ConsultBundle\Response\DetailQuestionResponseObject
-     * @throws \HttpException
-     * @internal param int $practoAccountId
-     *
-     */
-    private function fetchDetailQuestionObject(Question $questionEntity, $practoAccountId)
-    {
-        $question = null;
-        if (!empty($questionEntity)) {
-            if (!$questionEntity->getUserInfo()->isIsRelative()) {
-                $this->retrieveUserProfileUtil->retrieveUserProfileNew($questionEntity->getUserInfo());
-            }
 
-            $question = new DetailQuestionResponseObject($questionEntity, $practoAccountId);
-
-            /**
-             * @var DoctorQuestionRepository $er
-             */
-            $er = $this->helper->getRepository(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME);
-            $doctorQuestions = $er->findRepliesByQuestion($questionEntity, $practoAccountId);
-            $replies = array();
-            foreach ($doctorQuestions as $doctorQuestion) {
-                $reply = new ReplyResponseObject();
-                $reply->setAttributes($doctorQuestion);
-                $doc = $this->retrieveDoctorProfileUtil->retrieveDoctorProfile($reply->getDoctorId());
-                $reply->setDoctor($doc);
-                $replies[] = $reply;
-            }
-
-            $question->setReplies($replies);
-            $bookmarkCount = $this->helper->getRepository(ConsultConstants::QUESTION_ENTITY_NAME)->getBookmarkCountForAQuestion($questionEntity);
-            $question->setBookmarkCount($bookmarkCount);
-
-            $er = $this->helper->getRepository(ConsultConstants::QUESTION_BOOKMARK_ENTITY_NAME);
-
-            //Set comments
-            /**
-             * @var QuestionCommentRepository $ecr
-             */
-            $ecr = $this->helper->getRepository(ConsultConstants::QUESTION_COMMENT_ENTITY_NAME);
-            $questionCommentList = $ecr->getComments($questionEntity, 10, 0, $practoAccountId);
-
-            $question->setComments($questionCommentList);
-
-            if (!empty($practoAccountId)) {
-                $bookmark = $er->findOneBy(array("practoAccountId" => $practoAccountId,
-                    "question" => $questionEntity,
-                    "softDeleted" => 0));
-
-                if (!empty($bookmark)) {
-                    $question->setIsBookmarked(true);
-
-                }
-            }
-        }
-
-        return $question;
-    }
 }
