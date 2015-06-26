@@ -145,8 +145,6 @@ services:
         class: ConsultBundle\Utility\RetrieveDoctorProfileUtil
         arguments:
              - @consult.doctor_manager
-             - %elastic_index_name%
-             - %elasticsearch_hosts%
 
 
 
