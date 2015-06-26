@@ -90,6 +90,11 @@ class QuestionCommentsManager extends BaseManager
             throw new ValidationError($error);
         }
 
+        if ($requestParams['practo_account_id'] == $questionComment->getPractoAccountId()) {
+            @$error['error'] = 'You cannot vote or flag your own comment!';
+            throw new ValidationError($error);
+        }
+
         if (array_key_exists('vote', $requestParams)) {
             $er = $this->helper->getRepository(ConsultConstants::QUESTION_COMMENT_VOTE_ENTITY_NAME);
             $vote = $er->findBy(array('questionComment' => $questionComment, 'practoAccountId' => $requestParams['practo_account_id'], 'softDeleted' => 0));
