@@ -283,6 +283,26 @@ class DoctorManager extends BaseManager
     }
 
     /**
+     * @param string $city       - city of posted question/doctor to look from
+     * @param string $speciality - required speciality
+     *
+     * @return array
+     */
+    public function getAppropriateDoctors($city, $speciality)
+    {
+        try {
+            $doctors = $this->getRepository()->findBySpecialityandCity($city, $speciality);
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+        if (empty($doctors)) {
+            return null;
+        }
+
+        return $doctors;
+    }
+
+    /**
      * @return \Doctrine\ORM\EntityRepository|null
      */
     private function getRepository()

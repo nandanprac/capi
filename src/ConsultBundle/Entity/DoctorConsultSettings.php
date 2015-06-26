@@ -413,6 +413,4 @@ class DoctorConsultSettings extends BaseEntity
         $this->consultationDaysStr = $consultationDaysStr;
     }
 
-
-
 }
