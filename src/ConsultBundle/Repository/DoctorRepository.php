@@ -26,6 +26,7 @@ class DoctorRepository extends EntityRepository
      */
     public function findByFilters($doctorId, $filters)
     {
+
         $result = array();
         $qb = $this->_em->createQueryBuilder();
         try {
@@ -106,12 +107,11 @@ class DoctorRepository extends EntityRepository
     }
 
     /**
-     * Takes in city and speciality, based on consult settings of doctors returns three available
-     * doctors
-     * @param string $city       - city of doctor
-     * @param strign $speciality - doctor speciality
+     * @param $city
+     * @param $speciality
      *
-     * @return array
+     * @return mixed
+     * @throws \Exception
      */
     public function findBySpeciality($city, $speciality)
     {
