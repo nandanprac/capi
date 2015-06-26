@@ -26,7 +26,6 @@ class DoctorRepository extends EntityRepository
      */
     public function findByFilters($doctorId, $filters)
     {
-
         $result = array();
         $qb = $this->_em->createQueryBuilder();
         try {
@@ -107,34 +106,42 @@ class DoctorRepository extends EntityRepository
     }
 
     /**
-     * @param $city
-     * @param $speciality
+     * Takes in city and speciality, based on consult settings of doctors returns three available
+     * doctors
+     * @param string $city       - city of doctor
+     * @param strign $speciality - doctor speciality
      *
-     * @return mixed
-     * @throws \Exception
+     * @return array
      */
-    public function findBySpeciality($city, $speciality)
+    public function findBySpecialityandCity($city, $speciality)
     {
-        var_dump($city, $speciality);die;
+        $doctorIds = array();
+        $curdate = new \DateTime();
+        $curdate->setTime(0,0);
         $city = strtoupper($city);
         $speciality = strtoupper($speciality);
         $qb = $this->_em->createQueryBuilder();
 
         try {
-            $qb->select('dcs.name as doctorName', 'dcs.practo_account_id as doctorId', 'count(dq.id) as givenQuestions', 'dcs.num_ques_day as questionPerDay')
+            $qb->select('dcs.name as doctorName', 'dcs.practoAccountId as doctorId', 'count(dq.id) as givenQuestions', 'dcs.numQuesDay as questionPerDay')
                 ->from(ConsultConstants::DOCTOR_SETTING_ENTITY_NAME, 'dcs')
-                ->leftJoin(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME, 'dq', 'WITH', 'dq.practoAccountId = dcs.practoAccountId')
+                ->leftJoin(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME, 'dq', 'WITH', 'dq.practoAccountId = dcs.practoAccountId AND dq.createdAt > :curdate')
                 ->where('upper(dcs.speciality) = :speciality')
                 ->andWhere('upper(dcs.location) = :city')
-                ->andWhere('date(dq.createdAt) = curdate()')
                 ->groupBy('dq.practoAccountId')
-                ->having('givenQuestions < dcs.numQuesDay OR dcs.numQuesDay is null');
+                ->having('givenQuestions < dcs.numQuesDay OR dcs.numQuesDay is null')
+                ->setParameter('curdate', $curdate)
+                ->setParameter('speciality', $speciality)
+                ->setParameter('city', $city);
 
-            $doctors = $qb->getQuery->getQuery()->getArrayResult();
+            $doctors = $qb->getQuery()->getArrayResult();
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
         }
+        foreach ($doctors as $doctor) {
+            array_push($doctorIds, $doctor['doctorId']);
+        }
 
-        return $doctors;
+        return $doctorIds;
     }
 }

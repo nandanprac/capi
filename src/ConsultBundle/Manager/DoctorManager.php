@@ -252,7 +252,7 @@ class DoctorManager extends BaseManager
     public function getAppropriateDoctors($city, $speciality)
     {
         try {
-            $doctors = $this->getRepository()->findBySpeciality($city, $speciality);
+            $doctors = $this->getRepository()->findBySpecialityandCity($city, $speciality);
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
         }
