@@ -64,6 +64,6 @@ class RepliesController extends BaseConsultController
             return Views::create($e->getMessage(), $e->getCode());
         }
 
-        return array("doctor_reply"=> $doctorReply);
+        return  $doctorReply;
     }
 }
