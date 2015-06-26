@@ -18,7 +18,6 @@ class DataTrainingCommand extends ContainerAwareCommand
     private $PRIORITYWEIGHT = 100;
     private $NORMALWEIGHT = 1;
     private $classification;
-    private $redis;
     private $wordManager;
 
     /**
@@ -31,7 +30,6 @@ class DataTrainingCommand extends ContainerAwareCommand
         parent::initialize($input, $output);
         $this->container = $this->getContainer();
         $this->classification =$this->container->get('consult.classification');
-        $this->redis = $this->container->get('consult.redis');
         $this->wordManager = $this->container->get('consult.word_manager');
     }
 
