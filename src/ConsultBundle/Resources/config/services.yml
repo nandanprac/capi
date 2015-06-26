@@ -124,7 +124,7 @@ services:
     consult.question_comment_manager:
         class: ConsultBundle\Manager\QuestionCommentsManager
         calls:
-            - [setValidator, ["@consult.questionCommentValidator"]]
+            - [setValidator, ["@consult.baseValidator"]]
             - [setHelper, ["@consult.helper"]]
 
     consult.account_authenticator_util:
