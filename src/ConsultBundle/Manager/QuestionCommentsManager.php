@@ -38,6 +38,13 @@ class QuestionCommentsManager extends BaseManager
             throw new ValidationError($error);
         }
 
+        if (!array_key_exists('identifier', $requestParams) or 
+            (array_key_exists('identifier', $requestParams) and empty($requestParams['identifier']))) {
+            @$error['identifier'] = 'This cannot be blank';
+            throw new ValidationError($error);
+
+        }
+
         $questionId = $requestParams['question_id'];
         $question = $this->helper->loadById($questionId, ConsultConstants::QUESTION_ENTITY_NAME);
 
