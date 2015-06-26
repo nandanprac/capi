@@ -10,7 +10,6 @@ use Symfony\Component\HttpFoundation\Request;
 use ConsultBundle\Queue\AbstractQueue as Queue;
 use ConsultBundle\Constants\ConsultFeatureData;
 use ConsultBundle\ConsultDomain;
-use Elasticsearch;
 
 /**
  * Command to merge the accounts and Make the necessary updates.
@@ -21,10 +20,6 @@ class DoctorAssigmentCommand extends ContainerAwareCommand
     private $queue;
 
     private $daaDebug;
-
-    private $fabricSearch;
-
-    private $client;
 
     /**
      * Initialize Connections
@@ -37,14 +32,7 @@ class DoctorAssigmentCommand extends ContainerAwareCommand
         //$this->container = $this->getContainer();
         $this->queue = $this->getContainer()->get('consult.consult_queue');
         $this->daaDebug = $this->getContainer()->getParameter('daa_debug');
-        $this->fabricSearch = $this->getContainer()->getParameter('elastic_index_name');
-        $hosts = $this->getContainer()->getParameter('elasticsearch_hosts');
-        if (empty($hosts)) {
-            $hosts = 'localhost:9200';
-        }
-
-        $params['hosts'] = array($hosts);
-        $this->client = new Elasticsearch\Client($params);
+        $this->doctorManager = $this->getContainer()->get('consult.doctor_manager');
     }
 
     /**
@@ -92,26 +80,18 @@ class DoctorAssigmentCommand extends ContainerAwareCommand
                             $city = "bangalore";
                         }
 
-                        $params['index'] = $this->fabricSearch;
-                        $params['type']  = 'search';
-                        $params['_source']  = array('practo_account_id', 'doctor_name');
-                        $params['body']['query']['bool']['must'] = array(
-                            array("query_string"=>array("default_field"=>"search.city", "query"=> $city)),
-                            array("query_string"=>array("default_field"=>"search.specialties.specialty", "query"=> $jobData['speciality'])),
-                        );
-                        $params['body']['from']  = 0;
-                        $params['body']['size']  = 100;
-                        $results = $this->client->search($params);
-                        $doctorIds = array();
-                        foreach ($results['hits']['hits'] as $result) {
-                            if (array_key_exists("practo_account_id", $result["_source"]) and $result["_source"]["practo_account_id"] != null) {
-                                array_push($doctorIds, $result["_source"]["practo_account_id"]);
-                            }
+                        if (in_array($jobData['speciality'], ConsultFeatureData::$MASTERSPECIALITIES)) {
+                            $assignmentSpeciality = $jobData['speciality'];
+                        } else {
+                            $assignmentSpeciality = 'General Physician';
                         }
+                        if (!isset($this->doctorManager)) {
+                            $this->doctorManager = $this->getContainer()->get('consult.doctor_manager');
+                        }
+                        $doctorIds = $this->doctorManager->getAppropriateDoctors($city, $assignmentSpeciality);
                         if ($doctorIds) {
                             $jobData['state'] = $state;
-                            shuffle($doctorIds);
-                            $jobData['doctors'] = array_unique(array_merge(array_slice($doctorIds, 0, 3), array()));
+                            $jobData['doctors'] = array_unique(array_merge($doctorIds, array()));
                         } else {
                             $jobData['state'] = 'DOCNOTFOUND';
                             $jobData['doctors'] = null;

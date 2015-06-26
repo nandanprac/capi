@@ -20,7 +20,6 @@ class TrainingSetHelperCommand extends ContainerAwareCommand
 
     private $container;
     private $classification;
-    private $redis;
     private $wordManager;
 
     /**
@@ -33,7 +32,6 @@ class TrainingSetHelperCommand extends ContainerAwareCommand
         parent::initialize($input, $output);
         $this->container = $this->getContainer();
         $this->classification =$this->container->get('consult.classification');
-        $this->redis = $this->container->get('consult.redis');
         $this->wordManager = $this->container->get('consult.word_manager');
     }
 

@@ -190,6 +190,4 @@ class DoctorQuestionManager extends BaseManager
 
         return $this->helper->getRepository(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME);
     }
-
-
 }

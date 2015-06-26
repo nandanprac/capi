@@ -10,7 +10,6 @@ use Symfony\Component\HttpFoundation\Request;
 use ConsultBundle\Queue\AbstractQueue as Queue;
 use ConsultBundle\Constants\ConsultFeatureData;
 use ConsultBundle\ConsultDomain;
-use Elasticsearch;
 
 /**
  * Command to merge the accounts and Make the necessary updates.
@@ -63,6 +62,9 @@ class ClassificationCommand extends ContainerAwareCommand
                 ->receiveMessage();
             if ($newJob) {
                 $jobData = json_decode($newJob, true);
+                if (!isset($this->classification)) {
+                    $this->classification = $this->container->get('consult.classification');
+                }
                 try {
                     $subject = array_key_exists('subject', $jobData) ? $jobData['subject'] : null;
                     $question = array_key_exists('question', $jobData) ? $jobData['question'] : null;
