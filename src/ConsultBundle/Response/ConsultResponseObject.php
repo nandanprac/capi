@@ -102,8 +102,6 @@ class ConsultResponseObject
                 if (method_exists($this, $setter)) {
                     $this->$setter($value);
 
-                } else {
-                    throw new \HttpException($attrCamel."is not a valid field in".__CLASS__, Codes::HTTP_INTERNAL_SERVER_ERROR);
                 }
 
             } catch (\Exception $e) {
