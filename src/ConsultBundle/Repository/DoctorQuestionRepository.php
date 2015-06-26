@@ -122,8 +122,9 @@ class DoctorQuestionRepository extends EntityRepository
     {
         $qb = $this->_em->createQueryBuilder();
 
-        $qb->select('dq.practoAccountId AS doctorId', 'r.id AS id', 'r.text AS text', 'r.rating', 'r.createdAt AS createdAt', 'COALESCE(SUM(rv.vote),0) AS votes', 'rv1.vote as vote')
+        $qb->select('dq.practoAccountId AS practoAccountId', 'r.id AS id', 'r.text AS text', 'r.rating', 'r.createdAt AS createdAt', 'COALESCE(SUM(rv.vote),0) AS votes', 'rv1.vote as vote', 'ds.name as name', 'ds.profilePicture as profilePicture', 'ds.location as location', 'ds.fabricDoctorId as doctorId', 'ds.speciality as speciality')
             ->from(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME, 'dq')
+            ->innerJoin(ConsultConstants::DOCTOR_SETTING_ENTITY_NAME, 'ds', 'WITH', 'dq.practoAccountId = ds.practoAccountId AND ds.softDeleted = 0 ')
             ->innerJoin(ConsultConstants::DOCTOR_REPLY_ENTITY_NAME, 'r', 'WITH', 'r.doctorQuestion = dq AND r.softDeleted = 0 ')
             ->leftJoin(
                 ConsultConstants::DOCTOR_REPLY_VOTE_ENTITY,

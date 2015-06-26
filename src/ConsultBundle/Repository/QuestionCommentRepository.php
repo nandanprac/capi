@@ -23,6 +23,7 @@ class QuestionCommentRepository extends EntityRepository
      */
     public function getComments($question, $limit, $offset, $practoAccountId)
     {
+
         // query for getting comment details with total votes
         $qb = $this->_em->createQueryBuilder();
         $qb->select(
@@ -60,6 +61,7 @@ class QuestionCommentRepository extends EntityRepository
         }
 
         $commentList = $qb->getQuery()->getArrayResult();
+
 
         $countQuery = $qb->getQuery();
         $countQuery->setFirstResult(null)->setMaxResults(null);

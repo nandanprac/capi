@@ -190,7 +190,10 @@ class UserInfo extends BaseEntity
      */
     public function setGender($gender)
     {
-        $this->gender = $gender;
+        if (!empty($gender)) {
+            $this->gender = strtoupper($gender);
+        }
+
     }
 
     /**
