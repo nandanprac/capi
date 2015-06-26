@@ -2,7 +2,6 @@
 
 namespace ConsultBundle\Manager;
 
-use ConsultBundle\Manager\RedisClient;
 use ConsultBundle\Manager\WordManager;
 use ConsultBundle\Constants\ConsultConstants;
 
@@ -11,19 +10,16 @@ use ConsultBundle\Constants\ConsultConstants;
  */
 class ClassificationManager
 {
-    private $redis;
     private $wordManager;
 
     /**
      * Constructor
      *
-     * @param RedisClient $redis       - Redis Client
      * @param WordManager $wordManager - Word Manager
      *
      */
-    public function __construct(RedisClient $redis, WordManager $wordManager)
+    public function __construct(WordManager $wordManager)
     {
-        $this->redis = $redis;
         $this->wordManager = $wordManager;
     }
 
