@@ -44,7 +44,7 @@ class DoctorAssigmentCommand extends ContainerAwareCommand
         }
 
         $params['hosts'] = array($hosts);
-        $this->client = new Elasticsearch\Client($params);
+        $this->doctorManager = $this->getContainer()->get('consult.doctor_manager');
     }
 
     /**
@@ -92,26 +92,13 @@ class DoctorAssigmentCommand extends ContainerAwareCommand
                             $city = "bangalore";
                         }
 
-                        $params['index'] = $this->fabricSearch;
-                        $params['type']  = 'search';
-                        $params['_source']  = array('practo_account_id', 'doctor_name');
-                        $params['body']['query']['bool']['must'] = array(
-                            array("query_string"=>array("default_field"=>"search.city", "query"=> $city)),
-                            array("query_string"=>array("default_field"=>"search.specialties.specialty", "query"=> $jobData['speciality'])),
-                        );
-                        $params['body']['from']  = 0;
-                        $params['body']['size']  = 100;
-                        $results = $this->client->search($params);
-                        $doctorIds = array();
-                        foreach ($results['hits']['hits'] as $result) {
-                            if (array_key_exists("practo_account_id", $result["_source"]) and $result["_source"]["practo_account_id"] != null) {
-                                array_push($doctorIds, $result["_source"]["practo_account_id"]);
-                            }
+                        if (!isset($this->doctorManager)) {
+                            $this->doctorManager = $this->getContainer()->get('consult.doctor_manager');
                         }
+                        $doctorIds = $this->doctorManager->getAppropriateDoctors($city, $jobData['speciality']);
                         if ($doctorIds) {
                             $jobData['state'] = $state;
-                            shuffle($doctorIds);
-                            $jobData['doctors'] = array_unique(array_merge(array_slice($doctorIds, 0, 3), array()));
+                            $jobData['doctors'] = array_unique(array_merge($doctorIds, array()));
                         } else {
                             $jobData['state'] = 'DOCNOTFOUND';
                             $jobData['doctors'] = null;

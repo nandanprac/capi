@@ -78,7 +78,7 @@ class UserManager extends BaseManager
         } else {
             $userEntry = new UserInfo();
             if (array_key_exists('is_relative', $requestParams) and Utility::toBool($requestParams['is_relative'])) {
-                if (!array_key_exists('name', $requestParams) or 
+                if (!array_key_exists('name', $requestParams) or
                     (array_key_exists('name', $requestParams) and empty($requestParams['name']))) {
                     @$error['name'] = 'This value cannot be blank when a new profile is being created';
                 }
