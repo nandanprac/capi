@@ -63,6 +63,9 @@ class ClassificationCommand extends ContainerAwareCommand
                 ->receiveMessage();
             if ($newJob) {
                 $jobData = json_decode($newJob, true);
+                if (!isset($this->classification)) {
+                    $this->classification = $this->container->get('consult.classification');
+                }
                 try {
                     $subject = array_key_exists('subject', $jobData) ? $jobData['subject'] : null;
                     $question = array_key_exists('question', $jobData) ? $jobData['question'] : null;

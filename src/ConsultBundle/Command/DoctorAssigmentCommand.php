@@ -22,10 +22,6 @@ class DoctorAssigmentCommand extends ContainerAwareCommand
 
     private $daaDebug;
 
-    private $fabricSearch;
-
-    private $client;
-
     /**
      * Initialize Connections
      * @param InputInterface  $input  input
@@ -37,13 +33,6 @@ class DoctorAssigmentCommand extends ContainerAwareCommand
         //$this->container = $this->getContainer();
         $this->queue = $this->getContainer()->get('consult.consult_queue');
         $this->daaDebug = $this->getContainer()->getParameter('daa_debug');
-        $this->fabricSearch = $this->getContainer()->getParameter('elastic_index_name');
-        $hosts = $this->getContainer()->getParameter('elasticsearch_hosts');
-        if (empty($hosts)) {
-            $hosts = 'localhost:9200';
-        }
-
-        $params['hosts'] = array($hosts);
         $this->doctorManager = $this->getContainer()->get('consult.doctor_manager');
     }
 
