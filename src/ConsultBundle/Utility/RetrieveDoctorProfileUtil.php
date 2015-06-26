@@ -14,7 +14,6 @@ use ConsultBundle\Entity\Question;
 use ConsultBundle\Manager\DoctorManager;
 use ConsultBundle\Response\DetailQuestionResponseObject;
 use ConsultBundle\Response\ReplyResponseObject;
-use Elasticsearch\Client;
 
 /**
  * Class RetrieveDoctorProfileUtil

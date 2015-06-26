@@ -117,7 +117,7 @@ class DoctorRepository extends EntityRepository
     {
         $doctorIds = array();
         $curdate = new \DateTime();
-        $curdate->setTime(0,0);
+        $curdate->setTime(0, 0);
         $city = strtoupper($city);
         $speciality = strtoupper($speciality);
         $qb = $this->_em->createQueryBuilder();

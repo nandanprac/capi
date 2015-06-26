@@ -10,7 +10,6 @@ use Symfony\Component\HttpFoundation\Request;
 use ConsultBundle\Queue\AbstractQueue as Queue;
 use ConsultBundle\Constants\ConsultFeatureData;
 use ConsultBundle\ConsultDomain;
-use Elasticsearch;
 
 /**
  * Command to merge the accounts and Make the necessary updates.

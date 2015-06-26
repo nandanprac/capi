@@ -10,7 +10,6 @@ use Symfony\Component\HttpFoundation\Request;
 use ConsultBundle\Queue\AbstractQueue as Queue;
 use ConsultBundle\Constants\ConsultFeatureData;
 use ConsultBundle\ConsultDomain;
-use Elasticsearch;
 
 /**
  * Command to merge the accounts and Make the necessary updates.
@@ -81,10 +80,15 @@ class DoctorAssigmentCommand extends ContainerAwareCommand
                             $city = "bangalore";
                         }
 
+                        if (in_array($jobData['speciality'], ConsultFeatureData::$MASTERSPECIALITIES)) {
+                            $assignmentSpeciality = $jobData['speciality'];
+                        } else {
+                            $assignmentSpeciality = 'General Physician';
+                        }
                         if (!isset($this->doctorManager)) {
                             $this->doctorManager = $this->getContainer()->get('consult.doctor_manager');
                         }
-                        $doctorIds = $this->doctorManager->getAppropriateDoctors($city, $jobData['speciality']);
+                        $doctorIds = $this->doctorManager->getAppropriateDoctors($city, $assignmentSpeciality);
                         if ($doctorIds) {
                             $jobData['state'] = $state;
                             $jobData['doctors'] = array_unique(array_merge($doctorIds, array()));
