@@ -41,7 +41,6 @@ class RetrieveDoctorProfileUtil
      */
     public function __construct(DoctorManager $doctorManager)
     {
-
         $this->doctorManager = $doctorManager;
     }
 
