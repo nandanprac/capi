@@ -180,16 +180,15 @@ services:
         - [ setConsultDomain, ['@?consult.consult_domain=']]
 
 
-    consult.redis:
-        class: ConsultBundle\Manager\RedisClient
-        arguments:
-            - @snc_redis.default
+  #    consult.redis:
+  #        class: ConsultBundle\Manager\RedisClient
+  #        arguments:
+  #            - @snc_redis.default
 
     consult.classification:
         class: ConsultBundle\Manager\ClassificationManager
         arguments:
-             - @consult.redis
-             - @consult.word_manager
+            - @consult.word_manager
 
 
     consult.notification_manager:
