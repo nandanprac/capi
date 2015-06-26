@@ -232,4 +232,24 @@ class DoctorManager extends BaseManager
 
         return;
     }
+
+    /**
+     * @param string $city       - city of posted question/doctor to look from
+     * @param string $speciality - required speciality
+     *
+     * @return array
+     */
+    public function getAppropriateDoctors($city, $speciality)
+    {
+        try {
+            $doctors = $this->getRepository()->findBySpeciality($city, $speciality);
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+        if (empty($doctors)) {
+            return null;
+        }
+
+        return $doctors;
+    }
 }

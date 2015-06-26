@@ -104,4 +104,37 @@ class DoctorRepository extends EntityRepository
 
         return $result;
     }
+
+    /**
+     * Takes in city and speciality, based on consult settings of doctors returns three available
+     * doctors
+     * @param string $city       - city of doctor
+     * @param strign $speciality - doctor speciality
+     *
+     * @return array
+     */
+    public function findBySpeciality($city, $speciality)
+    {
+        var_dump($city, $speciality);die;
+        $city = strtoupper($city);
+        $speciality = strtoupper($speciality);
+        $qb = $this->_em->createQueryBuilder();
+
+        try {
+            $qb->select('dcs.name as doctorName', 'dcs.practo_account_id as doctorId', 'count(dq.id) as givenQuestions', 'dcs.num_ques_day as questionPerDay')
+                ->from(ConsultConstants::DOCTOR_SETTING_ENTITY_NAME, 'dcs')
+                ->leftJoin(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME, 'dq', 'WITH', 'dq.practoAccountId = dcs.practoAccountId')
+                ->where('upper(dcs.speciality) = :speciality')
+                ->andWhere('upper(dcs.location) = :city')
+                ->andWhere('date(dq.createdAt) = curdate()')
+                ->groupBy('dq.practoAccountId')
+                ->having('givenQuestions < dcs.numQuesDay OR dcs.numQuesDay is null');
+
+            $doctors = $qb->getQuery->getQuery()->getArrayResult();
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+
+        return $doctors;
+    }
 }

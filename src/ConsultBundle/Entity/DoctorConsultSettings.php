@@ -7,7 +7,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Table(name="doctor_consult_settings")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="ConsultBundle\Repository\DoctorRepository")
  * @ORM\HasLifecycleCallbacks()
  */
 class DoctorConsultSettings extends BaseEntity
