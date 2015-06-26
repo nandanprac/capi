@@ -211,7 +211,7 @@ class DoctorManager extends BaseManager
          */
         $er = $this->getRepository();
         $result = $er->findBySpeciality('Bangalore', 'Dentist');
-        var_dump($result);die;
+
     }
 
     /**
