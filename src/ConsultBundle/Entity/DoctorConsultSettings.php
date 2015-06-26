@@ -416,4 +416,3 @@ class DoctorConsultSettings extends BaseEntity
 
 
 }
-
