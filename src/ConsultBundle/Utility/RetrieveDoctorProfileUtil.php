@@ -39,22 +39,11 @@ class RetrieveDoctorProfileUtil
 
     /**
      * @param \ConsultBundle\Manager\DoctorManager $doctorManager
-     * @param null                                 $index
-     * @param null                                 $host
      */
-    public function __construct(DoctorManager $doctorManager, $index = null, $host = null)
+    public function __construct(DoctorManager $doctorManager)
     {
-        if (!empty($host)) {
-            $this->host = $host;
-        }
 
-        if (!empty($index)) {
-            $this->index = $index;
-        }
-
-        $params['hosts'] = array($host);
         $this->doctorManager = $doctorManager;
-        //$this->client = new Client($params);
     }
 
     /**
