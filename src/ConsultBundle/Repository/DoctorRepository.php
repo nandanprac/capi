@@ -26,7 +26,7 @@ class DoctorRepository extends EntityRepository
      */
     public function findByFilters($doctorId, $filters)
     {
-        $result = array();
+        $results = array();
         $qb = $this->_em->createQueryBuilder();
         try {
              $qb = $this->_em->createQueryBuilder();
@@ -39,7 +39,11 @@ class DoctorRepository extends EntityRepository
                 ->setParameter('doctorId', $doctorId);
 
              $result = $qb->getQuery()->getArrayResult();
-             $result['total_votes'] = intval($result[0]['total_votes']);
+             if ($result != null) {
+                 $results['total_votes'] = intval($result[0]['total_votes']);
+             } else {
+                 $results['total_votes'] = 0;
+             }
 
              $qb = $this->_em->createQueryBuilder();
              $qb->select('avg(r.rating) as avg_rating')
@@ -50,7 +54,11 @@ class DoctorRepository extends EntityRepository
                 ->setParameter('doctorId', $doctorId);
 
              $result = $qb->getQuery()->getArrayResult();
-             $result['avg_rating'] = floatval($result[0]['avg_rating']);
+             if ($result != null) {
+                 $results['avg_rating'] = floatval($result[0]['avg_rating']);
+             } else {
+                 $results['avg_rating'] = 0.0;
+             }
 
              $qb = $this->_em->createQueryBuilder();
              $qb->select('sum(q.viewCount) as view_count')
@@ -61,7 +69,11 @@ class DoctorRepository extends EntityRepository
                 ->setParameter('doctorId', $doctorId);
 
              $result = $qb->getQuery()->getArrayResult();
-             $result['view_count'] = intval($result[0]['view_count']);
+             if ($result != null) {
+                 $results['view_count'] = intval($result[0]['view_count']);
+             } else {
+                 $results['view_count'] = 0;
+             }
 
              $qb = $this->_em->createQueryBuilder();
              $qb->select('count(dn.id) as notification_count')
@@ -71,7 +83,11 @@ class DoctorRepository extends EntityRepository
                 ->setParameter('doctorId', $doctorId);
 
              $result = $qb->getQuery()->getArrayResult();
-             $result['notification_count'] = intval($result[0]['notification_count']);
+             if ($result != null) {
+                 $results['notification_count'] = intval($result[0]['notification_count']);
+             } else {
+                 $results['notification_count'] = 0;
+             }
 
              $qb = $this->_em->createQueryBuilder();
              $qb->select('count(dq.id) as answered_count')
@@ -83,7 +99,11 @@ class DoctorRepository extends EntityRepository
                 ->setParameter('state', "ANSWERED");
 
              $result = $qb->getQuery()->getArrayResult();
-             $result['answered_count'] = intval($result[0]['answered_count']);
+             if ($result != null) {
+                 $results['answered_count'] = intval($result[0]['answered_count']);
+             } else {
+                 $results['answered_count'] = 0;
+             }
 
              $qb = $this->_em->createQueryBuilder();
              $qb->select('count(dq.id) as assigned_count')
@@ -96,13 +116,17 @@ class DoctorRepository extends EntityRepository
                 ->setParameter('state', "ASSIGNED");
 
              $result = $qb->getQuery()->getArrayResult();
-             $result['assigned_count'] = intval($result[0]['assigned_count']);
+              if ($result != null) {
+                 $results['assigned_count'] = intval($result[0]['assigned_count']);
+             } else {
+                 $results['assigned_count'] = 0;
+             }
 
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
         }
 
-        return $result;
+        return $results;
     }
 
     /**
