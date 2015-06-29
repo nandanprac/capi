@@ -66,4 +66,23 @@ class RepliesController extends BaseConsultController
 
         return  $doctorReply;
     }
+
+    /**
+     * @param int $id
+     *
+     * @return \ConsultBundle\Response\ReplyResponseObject|\FOS\RestBundle\View\View
+     */
+    public function getReplyAction($id)
+    {
+        $this->authenticate();
+
+        $doctorReplyManager = $this->get('consult.doctorReplyManager');
+        try {
+            $doctorReply = $doctorReplyManager->getReplyById($id);
+        } catch (\HttpException $e) {
+            return Views::create($e->getMessage(), $e->getCode());
+        }
+
+        return  $doctorReply;
+    }
 }

@@ -150,4 +150,43 @@ class DoctorQuestionRepository extends EntityRepository
 
         return $doctorQuestions;
     }
+
+    /**
+     * @param int $replyId
+     * @param int $practoAccountId
+     *
+     * @return array
+     */
+    public function findReplyById($replyId, $practoAccountId = 0)
+    {
+        $qb = $this->_em->createQueryBuilder();
+
+        $qb->select('dq.practoAccountId AS practoAccountId', 'r.id AS id', 'r.text AS text', 'r.rating', 'r.createdAt AS createdAt', 'COALESCE(SUM(rv.vote),0) AS votes', 'rv1.vote as vote', 'ds.name as name', 'ds.profilePicture as profilePicture', 'ds.location as location', 'ds.fabricDoctorId as doctorId', 'ds.speciality as speciality')
+            ->from(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME, 'dq')
+            ->innerJoin(ConsultConstants::DOCTOR_SETTING_ENTITY_NAME, 'ds', 'WITH', 'dq.practoAccountId = ds.practoAccountId AND ds.softDeleted = 0 ')
+            ->innerJoin(ConsultConstants::DOCTOR_REPLY_ENTITY_NAME, 'r', 'WITH', 'r.doctorQuestion = dq AND r.softDeleted = 0 ')
+            ->leftJoin(
+                ConsultConstants::DOCTOR_REPLY_VOTE_ENTITY,
+                'rv',
+                'WITH',
+                'rv.reply = r AND rv.softDeleted = 0 '
+            )
+            ->leftJoin(
+                ConsultConstants::DOCTOR_REPLY_VOTE_ENTITY,
+                'rv1',
+                'WITH',
+                'r = rv1.reply AND rv1.practoAccountId= :practoAccountId AND rv1.softDeleted = 0 '
+            )
+            ->where('r.id = :id')
+            ->andWhere('dq.softDeleted = 0 ')
+            ->addGroupBy('r')
+            ->addOrderBy('votes', 'DESC');
+
+        $qb->setParameter('practoAccountId', $practoAccountId);
+        $qb->setParameter('id', $replyId);
+
+        $doctorQuestion = $qb->getQuery()->getArrayResult();
+
+        return $doctorQuestion;
+    }
 }
