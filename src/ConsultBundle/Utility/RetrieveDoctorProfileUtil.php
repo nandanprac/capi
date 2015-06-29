@@ -41,6 +41,20 @@ class RetrieveDoctorProfileUtil
      */
     public function __construct(DoctorManager $doctorManager)
     {
+<<<<<<< HEAD
+||||||| merged common ancestors
+        if (!empty($host)) {
+            $this->host = $host;
+        }
+
+        if (!empty($index)) {
+            $this->index = $index;
+        }
+
+        $params['hosts'] = array($host);
+=======
+
+>>>>>>> Removing instance of elastic
         $this->doctorManager = $doctorManager;
     }
 
