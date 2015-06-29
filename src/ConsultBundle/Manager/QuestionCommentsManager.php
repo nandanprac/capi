@@ -143,7 +143,8 @@ class QuestionCommentsManager extends BaseManager
             //return $flag;
         }
 
-        return new QuestionCommentResponse($questionComment);
+        $er = $this->helper->getRepository(ConsultConstants::QUESTION_COMMENT_ENTITY_NAME);
+        return $er->loadComment($requestParams['question_comment_id'], $requestParams['practo_account_id']);
 
     }
 
