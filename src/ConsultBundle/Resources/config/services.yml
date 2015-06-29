@@ -161,11 +161,6 @@ services:
 
 
 
-   # elasticsearch:
-        class: Elasticsearch\Client
-        arguments:
-            - hosts: %elasticsearch_hosts%
-              logPath: %kernel.logs_dir%/elasticsearch.log
 
     consult.consult_domain:
       class: ConsultBundle\ConsultDomain
