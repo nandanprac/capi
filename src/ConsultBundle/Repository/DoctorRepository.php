@@ -66,7 +66,9 @@ class DoctorRepository extends EntityRepository
                 ->innerJoin(ConsultConstants::QUESTION_ENTITY_NAME, 'q', 'WITH', 'q = dq.question AND q.softDeleted = 0')
                 ->where('dq.softDeleted = 0')
                 ->andWhere('dq.practoAccountId = :doctorId')
-                ->setParameter('doctorId', $doctorId);
+                ->andWhere('dq.state = :state')
+                ->setParameter('doctorId', $doctorId)
+                ->setParameter('state', 'ANSWERED');
 
              $result = $qb->getQuery()->getArrayResult();
              if ($result != null) {
