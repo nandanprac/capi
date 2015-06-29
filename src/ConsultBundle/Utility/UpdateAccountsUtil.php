@@ -72,7 +72,8 @@ class UpdateAccountsUtil
         $client = new Client();
 
         try {
-            $client->send($request);
+            $userJson = $client->send($request);
+            $_SESSION['authenticated_user'] = $userJson;
 
         } catch (\Exception $e) {
             //do nothing.
@@ -85,20 +86,14 @@ class UpdateAccountsUtil
     }
 
     /**
-     * @param $params
+     * @param $data
      *
      * @return array|null
+     * @throws \Exception
      */
-    private function populatePostData($params)
+    private function populatePostData($data)
     {
 
-        if (array_key_exists('user_info', $params)) {
-            if (!(array_key_exists('is_relative', $params['user_info'])
-                and Utility::toBool($params['user_info']['is_relative']) )
-            ) {
-                $data = $params['user_info'];
-            }
-        }
 
 
         if (empty($data)) {
@@ -115,9 +110,11 @@ class UpdateAccountsUtil
                     $val = trim($data[$key]);
                     if (!empty($val)) {
                         if ($value === 'dob') {
-                            $dob = $this->getCorrectedDOB($val);
+                            $dob = $this->getCorrectedDOB(intval($val));
                             if (!empty($dob)) {
                                 $val = $dob->format("Y-m-d");
+                            } else {
+                                $val = null;
                             }
                         }
                         if (!empty($val)) {
@@ -138,11 +135,11 @@ class UpdateAccountsUtil
     }
 
     /**
-     * @param \ConsultBundle\Utility\int $age
+     * @param int $age
      *
      * @return \DateTime|null
      */
-    private function getCorrectedDOB(int $age)
+    private function getCorrectedDOB($age)
     {
         $dobStr = $_SESSION['authenticated_user']['dob'];
 
@@ -152,17 +149,24 @@ class UpdateAccountsUtil
             $dob = new \DateTime($dobStr);
         }
 
+
         $currAge = $dob->diff(new \DateTime())->y;
 
         if ($currAge == $age) {
             return null;
-        } else {
+        } elseif ($age > $currAge) {
             $yearDiff = $age - $currAge;
+            $dateInterval = new \DateInterval("P".$yearDiff."Y");
+            $dob->sub($dateInterval);
+        } else {
+            $yearDiff = $currAge - $age;
+            $dateInterval = new \DateInterval("P".$yearDiff."Y");
+            $dob->add($dateInterval);
         }
 
-        $dateInterval = new \DateInterval("P".$yearDiff."Y");
 
-        return $dob->sub($dateInterval);
+
+        return $dob;
 
     }
 }
