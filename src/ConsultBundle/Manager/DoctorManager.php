@@ -157,11 +157,17 @@ class DoctorManager extends BaseManager
         $consultationDays = $result->getConsultationDays();
         if (!empty($consultationDays)) {
             $consultationDaysBin = decbin($consultationDays);
+            $len = strlen($consultationDaysBin);
+            $addedZeroes = "";
+            for (; $len < 7; $len++) {
+                $addedZeroes = "0".$addedZeroes;
+            }
+            $consultationDaysBin = $addedZeroes.$consultationDaysBin;
             $result->setConsultationDays($consultationDaysBin);
         }
 
         $authenticatedPractoAccountId = $_SESSION['authenticated_user']['id'];
-         $practoAccountId = $result->getPractoAccountId();
+        $practoAccountId = $result->getPractoAccountId();
 
         if ($practoAccountId != $authenticatedPractoAccountId) {
             throw new HttpException(Codes::HTTP_FORBIDDEN, "Unauthorised access");
