@@ -155,7 +155,7 @@ class DoctorManager extends BaseManager
         }
 
         $consultationDays = $result->getConsultationDays();
-        if(!empty($consultationDays)) {
+        if (!empty($consultationDays)) {
             $consultationDaysBin = decbin($consultationDays);
             $result->setConsultationDays($consultationDaysBin);
         }
@@ -163,8 +163,8 @@ class DoctorManager extends BaseManager
         $authenticatedPractoAccountId = $_SESSION['authenticated_user']['id'];
          $practoAccountId = $result->getPractoAccountId();
 
-        if ($practoAccountId!= $authenticatedPractoAccountId) {
-            throw new HttpException(Codes::HTTP_FORBIDDEN, "Unauthorised access" );
+        if ($practoAccountId != $authenticatedPractoAccountId) {
+            throw new HttpException(Codes::HTTP_FORBIDDEN, "Unauthorised access");
         }
 
         return $result;
