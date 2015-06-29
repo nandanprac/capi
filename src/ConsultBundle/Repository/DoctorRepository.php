@@ -30,10 +30,10 @@ class DoctorRepository extends EntityRepository
         $qb = $this->_em->createQueryBuilder();
         try {
              $qb = $this->_em->createQueryBuilder();
-             $qb->select('sum(rv.vote) as total_votes')
+             $qb->select('count(distinct rv.id) as total_votes')
                 ->from(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME, 'dq')
                 ->leftJoin(ConsultConstants::DOCTOR_REPLY_ENTITY_NAME, 'r', 'WITH', 'r.doctorQuestion = dq AND r.softDeleted = 0')
-                ->leftJoin(ConsultConstants::DOCTOR_REPLY_VOTE_ENTITY, 'rv', 'WITH', 'rv.reply = r AND r.softDeleted = 0')
+                ->leftJoin(ConsultConstants::DOCTOR_REPLY_VOTE_ENTITY, 'rv', 'WITH', 'rv.reply = r AND rv.softDeleted = 0')
                 ->where('dq.softDeleted = 0')
                 ->andWhere('dq.practoAccountId = :doctorId')
                 ->setParameter('doctorId', $doctorId);
@@ -48,7 +48,7 @@ class DoctorRepository extends EntityRepository
              $qb = $this->_em->createQueryBuilder();
              $qb->select('avg(r.rating) as avg_rating')
                 ->from(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME, 'dq')
-                ->leftJoin(ConsultConstants::DOCTOR_REPLY_ENTITY_NAME, 'r', 'WITH', 'r.doctorQuestion = dq AND r.softDeleted = 0')
+                ->innerJoin(ConsultConstants::DOCTOR_REPLY_ENTITY_NAME, 'r', 'WITH', 'r.doctorQuestion = dq AND r.softDeleted = 0')
                 ->where('dq.softDeleted = 0')
                 ->andWhere('dq.practoAccountId = :doctorId')
                 ->setParameter('doctorId', $doctorId);
@@ -63,7 +63,7 @@ class DoctorRepository extends EntityRepository
              $qb = $this->_em->createQueryBuilder();
              $qb->select('sum(q.viewCount) as view_count')
                 ->from(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME, 'dq')
-                ->leftJoin(ConsultConstants::QUESTION_ENTITY_NAME, 'q', 'WITH', 'q = dq.question AND q.softDeleted = 0')
+                ->innerJoin(ConsultConstants::QUESTION_ENTITY_NAME, 'q', 'WITH', 'q = dq.question AND q.softDeleted = 0')
                 ->where('dq.softDeleted = 0')
                 ->andWhere('dq.practoAccountId = :doctorId')
                 ->setParameter('doctorId', $doctorId);
@@ -76,9 +76,10 @@ class DoctorRepository extends EntityRepository
              }
 
              $qb = $this->_em->createQueryBuilder();
-             $qb->select('count(dn.id) as notification_count')
+             $qb->select('count(distinct dn.id) as notification_count')
                 ->from(ConsultConstants::DOCTOR_NOTIFICATION_ENTITY_NAME, 'dn')
                 ->where('dn.softDeleted = 0')
+                ->andWhere('dn.viewed = 0')
                 ->andWhere('dn.practoAccountId = :doctorId')
                 ->setParameter('doctorId', $doctorId);
 
@@ -108,12 +109,11 @@ class DoctorRepository extends EntityRepository
              $qb = $this->_em->createQueryBuilder();
              $qb->select('count(dq.id) as assigned_count')
                 ->from(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME, 'dq')
-                ->leftJoin(ConsultConstants::QUESTION_ENTITY_NAME, 'q', 'WITH', 'dq.question = q AND q.softDeleted = 0')
                 ->where('dq.softDeleted = 0')
                 ->andWhere('dq.practoAccountId = :doctorId')
-                ->andWhere('q.state = :state')
+                ->andWhere('dq.state = :state')
                 ->setParameter('doctorId', $doctorId)
-                ->setParameter('state', "ASSIGNED");
+                ->setParameter('state', "UNANSWERED");
 
              $result = $qb->getQuery()->getArrayResult();
               if ($result != null) {
