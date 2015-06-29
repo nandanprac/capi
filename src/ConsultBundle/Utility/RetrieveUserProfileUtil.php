@@ -159,6 +159,9 @@ class RetrieveUserProfileUtil
 
         }
 
+        if (array_key_exists('name', $userProfile)) {
+            $user->setMaskedName($userProfile['name']);
+        }
 
 
         return $user;

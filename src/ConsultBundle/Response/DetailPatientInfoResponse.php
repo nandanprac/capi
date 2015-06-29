@@ -41,6 +41,28 @@ class DetailPatientInfoResponse extends BasicPatientInfoResponse
     private $location;
 
     /**
+     * @var string
+     */
+    private $maskedName;
+
+    /**
+     * @return string
+     */
+    public function getMaskedName()
+    {
+        return $this->maskedName;
+    }
+
+    /**
+     * @param string $maskedName
+     */
+    public function setMaskedName($name)
+    {
+        $this->maskedName = $name;
+    }
+
+
+    /**
      * @return mixed
      */
     public function getBloodGroup()

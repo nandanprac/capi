@@ -16,7 +16,6 @@ class PrivateThreadController extends BaseConsultController
 {
     /**
      * @param \Symfony\Component\HttpFoundation\Request $request
-     * @Get("/private/thread") 
      *
      * @return \FOS\RestBundle\View\View
      * @throws \HttpException
@@ -38,10 +37,8 @@ class PrivateThreadController extends BaseConsultController
 
         } catch (ValidationError $e) {
             return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
-        } catch (\HttpException $e) {
+        } catch (HttpException $e) {
             return View::create(json_decode($e->getMessage(), true), $e->getCode());
-        } catch (\Exception $e) {
-            return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
         }
 
         return View::create(
@@ -68,7 +65,7 @@ class PrivateThreadController extends BaseConsultController
 
         try {
             $privateThread = $privateThreadManager->load($id, $practoAccountId);
-        } catch (AccessDeniedException $e) {
+        } catch (HttpException $e) {
             return View::create($e->getMessage(), Codes::HTTP_FORBIDDEN);
         }
 
@@ -92,8 +89,33 @@ class PrivateThreadController extends BaseConsultController
         $privateThreadManager = $this->get('consult.private_thread_manager');
 
         try {
-            $privateThreadList = $privateThreadManager->loadAll($practoAccountId);
-        } catch (AccessDeniedException $e) {
+            $privateThreadList = $privateThreadManager->loadAll($practoAccountId, false);
+        } catch (HttpException $e) {
+            return View::create($e->getMessage(), Codes::HTTP_FORBIDDEN);
+        }
+
+        if (null === $privateThreadList) {
+            return View::create(null, Codes::HTTP_NOT_FOUND);
+        }
+
+        return $privateThreadList;
+    }
+
+    /**
+     * @param Request $requestRec - request Object
+     *
+     * @Get("/doctor/private/threads") 
+     *
+     * @return array PrivateThreads - list of private question objects
+     */
+    public function getDoctorPrivateThreadsAction(Request $requestRec)
+    {
+        $practoAccountId = $this->authenticate();
+        $privateThreadManager = $this->get('consult.private_thread_manager');
+
+        try {
+            $privateThreadList = $privateThreadManager->loadAll($practoAccountId, true);
+        } catch (HttpException $e) {
             return View::create($e->getMessage(), Codes::HTTP_FORBIDDEN);
         }
 

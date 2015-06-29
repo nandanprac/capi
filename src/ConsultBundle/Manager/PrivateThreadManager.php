@@ -5,6 +5,7 @@ namespace ConsultBundle\Manager;
 use FOS\RestBundle\Util\Codes;
 use ConsultBundle\Constants\ConsultConstants;
 use ConsultBundle\Entity\UserInfo;
+use ConsultBundle\Response\DetailPatientInfoResponse;
 use ConsultBundle\Utility\RetrieveDoctorProfileUtil;
 use ConsultBundle\Utility\RetrieveUserProfileUtil;
 use ConsultBundle\Utility\Utility;
@@ -93,9 +94,17 @@ class PrivateThreadManager extends BaseManager
                 if ($privateThread->getUserInfo()->getPractoAccountId() != $practoAccountId) {
                     throw new HttpException(Codes::HTTP_FORBIDDEN, 'You are not allowed to ask any question here');
                 }
-                if ($er->checkFollowUpCount($practoAccountId, $privateThread) >= 5) {
+                if ($er->checkFollowUpCount($practoAccountId, $privateThread) <= 0) {
                     @$error['error'] = 'You have exhausted your follow up questions limit';
                     throw new ValidationError($error);
+                }
+                $lastConversation = $this->helper->getRepository(ConsultConstants::CONVERSATION_ENTITY_NAME)
+                                    ->findBy(array(), array('createdAt' => 'DESC'), 1, 0);
+                if (!empty($lastConversation)) {
+                    if (!Utility::toBool($lastConversation[0]->getIsDocReply())) {
+                        @$error['error'] = 'Wait for doctor\'s reply before following up again';
+                        throw new ValidationError($error);
+                    }
                 }
             }
 
@@ -108,7 +117,7 @@ class PrivateThreadManager extends BaseManager
                 @$error['error'] = 'Either id of previous reply or id of the private thread is required';
                 throw new ValidationError($error);
             }
-            if ($er->getPrivateThreads($practoAccountId)) {
+            if ($er->getPatientPrivateThreads($practoAccountId)) {
                 @$error['error'] = 'You have already started a private thread. Cannot start another';
                 throw new ValidationError($error);
             }
@@ -145,7 +154,12 @@ class PrivateThreadManager extends BaseManager
         $this->helper->persist($privateThread, 'true');
         $this->helper->persist($conversation, 'true');
 
-        return $this->createThreadResponse($privateThread);
+        $isDocReply = false;
+        if (Utility::toBool($conversation->getIsDocReply())) {
+            $isDocReply = true;
+        }
+
+        return $this->createThreadResponse($privateThread, $isDocReply);
     }
 
     /**
@@ -165,7 +179,7 @@ class PrivateThreadManager extends BaseManager
             @$error['error'] = 'No such thread exists';
             throw new ValidationError($error);
         }
-        $practoAccountId = ($practoAccountId == $privateThread->getUserInfo()->getPractoAccountId()) ? $practoAccountId : null;
+        $practoAccountId = ($practoAccountId == $privateThread->getUserInfo()->getPractoAccountId()) ? false : true;
         return $this->createThreadResponse($privateThread, $practoAccountId);
     }
 
@@ -174,10 +188,14 @@ class PrivateThreadManager extends BaseManager
      *
      * @return array PrivateThread
      */
-    public function loadAll($practoAccountId)
+    public function loadAll($practoAccountId, $is_doctor)
     {
         $er = $this->helper->getRepository(ConsultConstants::PRIVATE_THREAD_ENTITY_NAME);
-        $privateThreads = $er->getPrivateThreads($practoAccountId);
+        if ($is_doctor) {
+            $privateThreads = $er->getDoctorPrivateThreads($practoAccountId);
+        } else {
+            $privateThreads = $er->getPatientPrivateThreads($practoAccountId);
+        }
         if (empty($privateThreads)) {
             return null;
         }
@@ -188,20 +206,40 @@ class PrivateThreadManager extends BaseManager
      * @param PrivateThread $privateThread
      * @return Object DetailedPrivateThread
      */
-    private function createThreadResponse($privateThread, $practoAccountId)
+    private function createThreadResponse($privateThread, $is_doctor)
     {
         $er = $this->helper->getRepository(ConsultConstants::PRIVATE_THREAD_ENTITY_NAME);
         $privateThreadResponse = array();
         $privateThreadResponse['subject'] = $privateThread->getSubject();
-        $privateThreadResponse['user_info'] = $privateThread->getUserInfo();
-        $privateThreadResponse['doctor_name'] = $this->doctorManager->getConsultSettingsByPractoAccountId($privateThread->getDoctorId())->getName();
-        $privateThreadresponse['base_question_id'] = $privateThread->getQuestion()->getId();
+        $privateThreadResponse['base_question_id'] = $privateThread->getQuestion()->getId();
         $privateThreadResponse['conversation'] = $er->getAllConversationsForThread($privateThread);
-        if (!empty($practoAccountId)) {
+        $userInfo = $this->retrieveUserProfileUtil->retrieveUserProfileNew($privateThread->getUserInfo());
+        $privateThreadResponse['patient'] = $this->populatePatientInfo($userInfo);
+        if (!$is_doctor) {
+            $practoAccountId = $privateThread->getUserInfo()->getPractoAccountId();
             $privateThreadResponse['followups_remaining'] = $er->checkFollowUpCount($practoAccountId, $privateThread);
+            $privateThreadResponse['doctor_name'] = $this->doctorManager->getConsultSettingsByPractoAccountId($privateThread->getDoctorId())->getName();
         }
 
         return $privateThreadResponse;
+    }
+
+    private function populatePatientInfo(UserInfo $userInfo)
+    {
+        $patientInfo = new DetailPatientInfoResponse();
+        $patientInfo->setAllergies($userInfo->getAllergies());
+        $patientInfo->setMedications($userInfo->getMedications());
+        $patientInfo->setPrevDiagnosedConditions($userInfo->getPrevDiagnosedConditions());
+        $patientInfo->setHeightInCms($userInfo->getHeightInCms());
+        $patientInfo->setWeightInKgs($userInfo->getWeightInKgs());
+        $patientInfo->setBloodGroup($userInfo->getBloodGroup());
+        $patientInfo->setAge($userInfo->getAge());
+        $patientInfo->setGender($userInfo->getGender());
+        $patientInfo->setOccupation($userInfo->getOccupation());
+        $patientInfo->setLocation($userInfo->getLocation());
+        $patientInfo->setMaskedName($userInfo->getMaskedName());
+
+        return $patientInfo;
     }
 
 }

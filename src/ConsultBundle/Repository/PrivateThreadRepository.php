@@ -14,10 +14,10 @@ class PrivateThreadRepository extends EntityRepository
 {
     private $FOLLOW_UP_THRESHOLD = 5;
 
-    public function getPrivateThreads($practoAccountId)
+    public function getPatientPrivateThreads($practoAccountId)
     {
         $qb = $this->_em->createQueryBuilder();
-        $qb->select('d.name', 'p.subject', 'p.modifiedAt', '(:FOLLOW_UP_THRESHOLD - COUNT(c)) as follow_up_count')
+        $qb->select('d.name as doctor_name', 'p.subject', 'p.modifiedAt as last_modified_time', '(:FOLLOW_UP_THRESHOLD - COUNT(c)) as follow_up_count')
             ->from(ConsultConstants::PRIVATE_THREAD_ENTITY_NAME, 'p')
             ->innerJoin(ConsultConstants::USER_ENTITY_NAME, 'u', 'WITH', 'u = p.userInfo AND u.softDeleted = 0')
             ->leftJoin(ConsultConstants::CONVERSATION_ENTITY_NAME,'c', 'WITH', 'c.privateThread = p and c.isDocReply = false and c.softDeleted = 0')
@@ -25,6 +25,32 @@ class PrivateThreadRepository extends EntityRepository
             ->where('u.practoAccountId = :practoAccountId and p.softDeleted = 0')
             ->setParameter('practoAccountId', $practoAccountId)
             ->setParameter('FOLLOW_UP_THRESHOLD', $this->FOLLOW_UP_THRESHOLD);
+
+        $privateThreadEntry = $qb->getQuery()->getArrayResult();
+
+        if (empty($privateThreadEntry)) {
+            return null;
+        }
+
+        return $privateThreadEntry;
+    }
+
+    public function getDoctorPrivateThreads($practoAccountId)
+    {
+        $subqb = $this->_em->createQueryBuilder();
+        $subqb->select('c.text as question')
+              ->from(ConsultConstants::CONVERSATION_ENTITY_NAME, 'c')
+              ->where('c.isDocReply = 0')
+              ->orderBy('c.createdAt', 'DESC')
+              ->setMaxResults(1);
+        $lastQuestion = $subqb->getQuery()->getArrayResult();
+
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('p.subject', 'p.modifiedAt as last_modified_time', '(:lastQuestion) as question')
+            ->from(ConsultConstants::PRIVATE_THREAD_ENTITY_NAME, 'p')
+            ->where('p.doctorId = :practoAccountId and p.softDeleted = 0')
+            ->setParameter('practoAccountId', $practoAccountId)
+            ->setParameter('lastQuestion', $lastQuestion);
 
         $privateThreadEntry = $qb->getQuery()->getArrayResult();
 

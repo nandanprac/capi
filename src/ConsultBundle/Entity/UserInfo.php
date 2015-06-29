@@ -34,6 +34,11 @@ class UserInfo extends BaseEntity
     private $name;
 
     /**
+     * @var string
+     */
+    private $maskedName;
+
+    /**
      * @var bool
      *
      * @ORM\Column(name="is_relative", type="boolean")
@@ -142,6 +147,22 @@ class UserInfo extends BaseEntity
     public function setName($name)
     {
         $this->name = $name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMaskedName()
+    {
+        return $this->maskedName;
+    }
+
+    /**
+     * @param string $maskedName
+     */
+    public function setMaskedName($name)
+    {
+        $this->maskedName = $name;
     }
 
     /**
