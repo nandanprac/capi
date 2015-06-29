@@ -42,33 +42,6 @@ class RetrieveDoctorProfileUtil
      */
     public function __construct(DoctorManager $doctorManager)
     {
-<<<<<<< HEAD
-<<<<<<< HEAD
-||||||| merged common ancestors
-        if (!empty($host)) {
-            $this->host = $host;
-        }
-
-        if (!empty($index)) {
-            $this->index = $index;
-        }
-
-        $params['hosts'] = array($host);
-=======
-
->>>>>>> Removing instance of elastic
-||||||| merged common ancestors
-        if (!empty($host)) {
-            $this->host = $host;
-        }
-
-        if (!empty($index)) {
-            $this->index = $index;
-        }
-
-        $params['hosts'] = array($host);
-=======
->>>>>>> Removed reference for elastic search
         $this->doctorManager = $doctorManager;
     }
 
