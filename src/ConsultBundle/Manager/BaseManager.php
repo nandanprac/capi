@@ -93,7 +93,7 @@ class BaseManager
         }
 
 
-        $this->fetchRepliesByQuestion($questionEntity, $question);
+        $this->fetchRepliesByQuestion($questionEntity, $question, $practoAccountId);
 
         $bookmarkCount = $this->helper->getRepository(ConsultConstants::QUESTION_ENTITY_NAME)->getBookmarkCountForAQuestion($questionEntity);
         $question->setBookmarkCount($bookmarkCount);
@@ -164,13 +164,13 @@ class BaseManager
      *
      * @throws \HttpException
      */
-    protected function fetchRepliesByQuestion(Question $questionEntity, DetailQuestionResponseObject $question)
+    protected function fetchRepliesByQuestion(Question $questionEntity, DetailQuestionResponseObject $question, $practoAccountId = 0)
     {
         /**
          * @var DoctorQuestionRepository $er
          */
         $er = $this->helper->getRepository(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME);
-        $doctorQuestions = $er->findRepliesByQuestion($questionEntity);
+        $doctorQuestions = $er->findRepliesByQuestion($questionEntity, $practoAccountId);
         $replies = array();
         foreach ($doctorQuestions as $doctorQuestion) {
             $reply = new ReplyResponseObject();
