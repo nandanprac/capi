@@ -154,6 +154,15 @@ class DoctorManager extends BaseManager
             return null;
         }
 
+
+
+        $authenticatedPractoAccountId = $_SESSION['authenticated_user']['id'];
+        $practoAccountId = $result->getPractoAccountId();
+
+        if ($practoAccountId != $authenticatedPractoAccountId) {
+            throw new HttpException(Codes::HTTP_FORBIDDEN, "Unauthorised access");
+        }
+
         $consultationDays = $result->getConsultationDays();
         if (!empty($consultationDays)) {
             $consultationDaysBin = decbin($consultationDays);
@@ -163,14 +172,8 @@ class DoctorManager extends BaseManager
                 $addedZeroes = "0".$addedZeroes;
             }
             $consultationDaysBin = $addedZeroes.$consultationDaysBin;
-            $result->setConsultationDays($consultationDaysBin);
-        }
-
-        $authenticatedPractoAccountId = $_SESSION['authenticated_user']['id'];
-        $practoAccountId = $result->getPractoAccountId();
-
-        if ($practoAccountId != $authenticatedPractoAccountId) {
-            throw new HttpException(Codes::HTTP_FORBIDDEN, "Unauthorised access");
+            $result->setConsultationDaysStr($consultationDaysBin);
+            $result->setConsultationDays(null);
         }
 
         return $result;
