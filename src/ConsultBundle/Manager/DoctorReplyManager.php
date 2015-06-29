@@ -14,10 +14,12 @@ use ConsultBundle\Entity\DoctorQuestion;
 use ConsultBundle\Entity\DoctorReply;
 use ConsultBundle\Entity\DoctorReplyRating;
 use ConsultBundle\Entity\DoctorReplyVote;
+use ConsultBundle\Repository\DoctorQuestionRepository;
 use ConsultBundle\Response\ReplyResponseObject;
 use Doctrine\Common\Collections\ArrayCollection;
 use FOS\RestBundle\Util\Codes;
 use ConsultBundle\Queue\AbstractQueue as Queue;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Class DoctorReplyManager
@@ -78,7 +80,7 @@ class DoctorReplyManager extends BaseManager
         }
 
         if ($doctorQuestion->getRejectedAt()) {
-              throw new \HttpException("The question has been rejected", Codes::HTTP_BAD_REQUEST);
+            throw new \HttpException("The question has been rejected", Codes::HTTP_BAD_REQUEST);
         }
 
         if ($doctorQuestion->getState() != "UNANSWERED") {
@@ -90,15 +92,15 @@ class DoctorReplyManager extends BaseManager
         $doctorReply->setDoctorQuestion($doctorQuestion);
         $doctorReply->setText($answerText);
 
-/*
-        try {
-            $this->validate($doctorReply);
+        /*
+                try {
+                    $this->validate($doctorReply);
 
-        }catch(\Exception $e)
-        {
-            //To be implemented
-            throw new Exception($e, $e->getMessage());
-        }*/
+                }catch(\Exception $e)
+                {
+                    //To be implemented
+                    throw new Exception($e, $e->getMessage());
+                }*/
 
         //$bookmarkUserObject = $this->helper->loadById($doctorQuestion->getQuestion()->getId(), ConsultConstants::QUESTION_BOOKMARK_ENTITY_NAME);
 
@@ -158,8 +160,8 @@ class DoctorReplyManager extends BaseManager
                 throw new \HttpException("Only the one who has asked the question can rate it", Codes::HTTP_BAD_REQUEST);
             }
 
-                $doctorReplyEntity->setRating($doctorReply['rating']);
-                $changed = true;
+            $doctorReplyEntity->setRating($doctorReply['rating']);
+            $changed = true;
         }
 
         //Mark the answer as viewed
@@ -207,6 +209,41 @@ class DoctorReplyManager extends BaseManager
             $this->helper->persist($doctorReplyEntity, true);
         }
 
-        return new ReplyResponseObject($doctorReplyEntity);
+        return $this->getReplyById($id, $practoAccountId);
+
+
+
+    }
+
+    /**
+     * @param int $id
+     * @param int $practoAccountId
+     *
+     * @return \ConsultBundle\Response\ReplyResponseObject
+     * @throws \HttpException
+     */
+    public function getReplyById($id, $practoAccountId = 0)
+    {
+        if (empty($id)) {
+            return null;
+        }
+
+        if (empty($practoAccountId)) {
+            $practoAccountId = $_SESSION['authenticated_user']['id'];
+        }
+        $reply =  new ReplyResponseObject();
+        /**
+         * @var DoctorQuestionRepository $er
+         */
+        $er = $this->helper->getRepository(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME);
+        $replyArray = $er->findReplyById($id, $practoAccountId);
+        if (count($replyArray) == 0 || count($replyArray) > 1) {
+            throw new HttpException("Invalid Reply Id", Codes::HTTP_BAD_REQUEST);
+        }
+
+        $reply->setAttributes($replyArray[0]);
+        $reply->setDoctorFromAttributes($replyArray[0]);
+
+        return $reply;
     }
 }
