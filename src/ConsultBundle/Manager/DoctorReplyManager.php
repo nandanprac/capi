@@ -9,6 +9,7 @@
 namespace ConsultBundle\Manager;
 
 use ConsultBundle\Constants\ConsultConstants;
+use ConsultBundle\Entity\DoctorReplyFlag;
 use ConsultBundle\Manager\NotificationManager;
 use ConsultBundle\Entity\DoctorQuestion;
 use ConsultBundle\Entity\DoctorReply;
@@ -16,6 +17,7 @@ use ConsultBundle\Entity\DoctorReplyRating;
 use ConsultBundle\Entity\DoctorReplyVote;
 use ConsultBundle\Repository\DoctorQuestionRepository;
 use ConsultBundle\Response\ReplyResponseObject;
+use ConsultBundle\Utility\Utility;
 use Doctrine\Common\Collections\ArrayCollection;
 use FOS\RestBundle\Util\Codes;
 use ConsultBundle\Queue\AbstractQueue as Queue;
@@ -121,8 +123,10 @@ class DoctorReplyManager extends BaseManager
     }
 
     /**
-     * @param array $postData
-     * @return mixed
+     * @param $postData
+     *
+     * @return \ConsultBundle\Response\ReplyResponseObject
+     * @throws \ConsultBundle\Manager\ValidationError
      * @throws \HttpException
      */
     public function patchDoctorReply($postData)
@@ -202,6 +206,58 @@ class DoctorReplyManager extends BaseManager
                 $this->helper->persist($doctorReplyVoteEntity);
                 $changed = true;
             }
+        }
+
+        if (array_key_exists('flag', $doctorReply) && Utility::toBool($doctorReply['flag'])) {
+            $er = $this->helper->getRepository(ConsultConstants::DOCTOR_REPLY_FLAG_ENTITY_NAME);
+            $flag = $er->findOneBy(array('doctorReply' => $doctorReplyEntity, 'practoAccountId' => $_SESSION['authenticated_user']['id'], 'softDeleted' => 0));
+            if (!empty($flag)) {
+                @$error['error'] = 'The user has already flagged this comment';
+                throw new ValidationError($error);
+            }
+
+            $flag = new DoctorReplyFlag();
+            $flag->setDoctorReply($doctorReplyEntity);
+            if (array_key_exists('flag_code', $doctorReply) && !empty($doctorReply['flag_code'])) {
+                $flag->setFlagCode(trim($doctorReply['flag_code']));
+            } else {
+                @$error['error'] = 'flag_code is mandatory';
+                throw new ValidationError($error);
+            }
+
+            if (array_key_exists('flag_text', $doctorReply) && !empty($doctorReply['flag_text'])) {
+                if ($doctorReply['flag_code'] != 'OTH') {
+                    @$error['error'] = 'Flag Text is required only for code Other';
+                    throw new ValidationError($error);
+                }
+
+                $flag->setFlagText($doctorReply['flag_text']);
+            } else {
+                if ($doctorReply['flag_code'] === 'OTH') {
+                    @$error['error'] = 'flag_text is mandatory for code OTH';
+                    throw new ValidationError($error);
+                }
+            }
+
+            $this->helper->persist($flag);
+            $changed = true;
+
+            //return $flag;
+        } elseif (array_key_exists('flag', $doctorReply) && !Utility::toBool($doctorReply['flag'])) {
+            $er = $this->helper->getRepository(ConsultConstants::DOCTOR_REPLY_FLAG_ENTITY_NAME);
+            $flag = $er->findOneBy(array('doctorReply' => $doctorReplyEntity, 'practoAccountId' => $_SESSION['authenticated_user']['id'], 'softDeleted' => 0));
+            if (empty($flag)) {
+                @$error['error'] = 'The user has not flagged the reply';
+                throw new ValidationError($error);
+            }
+
+            $flag->setBoolean('softDeleted', true);
+            $this->helper->persist($flag);
+            $changed = true;
+
+        } elseif (array_key_exists('flag', $doctorReply)) {
+            @$error['error'] = 'Not a correct value for flag';
+            throw new ValidationError($error);
         }
 
 

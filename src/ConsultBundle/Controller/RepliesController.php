@@ -10,6 +10,7 @@ namespace ConsultBundle\Controller;
 
 use ConsultBundle\Annotations\NeedAuthentication;
 use ConsultBundle\Entity\DoctorReply;
+use ConsultBundle\Manager\ValidationError;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Util\Codes;
 use FOS\RestBundle\View\View as Views;
@@ -60,6 +61,8 @@ class RepliesController extends BaseConsultController
         $doctorReplyManager = $this->get('consult.doctorReplyManager');
         try {
             $doctorReply = $doctorReplyManager->patchDoctorReply($postData);
+        } catch (ValidationError $error) {
+            return Views::create($error->getMessage(), Codes::HTTP_BAD_REQUEST);
         } catch (\HttpException $e) {
             return Views::create($e->getMessage(), $e->getCode());
         }
