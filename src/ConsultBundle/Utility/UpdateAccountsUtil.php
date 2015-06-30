@@ -118,7 +118,7 @@ class UpdateAccountsUtil
                             }
                         }
                         if (!empty($val)) {
-                            $postData[$value] = $val;
+                            $postData[$value] = strtoupper($val);
                         }
 
                     }
