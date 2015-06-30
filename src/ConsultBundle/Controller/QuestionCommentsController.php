@@ -31,7 +31,7 @@ class QuestionCommentsController extends BaseConsultController
         }
 
         return View::create(
-            array("question_comment" => $questionComment),
+            $questionComment,
             Codes::HTTP_CREATED
         );
     }

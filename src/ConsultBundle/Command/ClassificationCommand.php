@@ -91,11 +91,11 @@ class ClassificationCommand extends ContainerAwareCommand
                     $this->queue
                         ->setQueueName(Queue::DAA)
                         ->sendMessage(json_encode($jobData));
+                    $this->queue->setQueueName(Queue::CLASSIFY)->deleteMessage($newJob);
                 } catch (\Exception $e) {
                     $output->writeln($e->getMessage());
                     $output->writeln($newJob);
                 }
-                $this->queue->setQueueName(Queue::CLASSIFY)->deleteMessage($newJob);
             }
         }
     }
