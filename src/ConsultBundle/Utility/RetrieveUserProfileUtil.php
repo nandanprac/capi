@@ -163,6 +163,10 @@ class RetrieveUserProfileUtil
             $user->setName($userProfile['name']);
         }
 
+        if (array_key_exists('profile_picture', $userProfile)) {
+            $user->setName($userProfile['profilePicture']);
+        }
+
 
         return $user;
     }

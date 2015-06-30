@@ -46,6 +46,11 @@ class DetailPatientInfoResponse extends BasicPatientInfoResponse
     private $name;
 
     /**
+     * @var string
+     */
+    private $profilePicture;
+
+    /**
      * @return string
      */
     public function getName()
@@ -59,6 +64,22 @@ class DetailPatientInfoResponse extends BasicPatientInfoResponse
     public function setName($name)
     {
         $this->name = $name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getProfilePicture()
+    {
+        return $this->profilePicture;
+    }
+
+    /**
+     * @param string $profilePicture
+     */
+    public function setProfilePicture($profilePicture)
+    {
+        $this->profilePicture = $profilePicture;
     }
 
 

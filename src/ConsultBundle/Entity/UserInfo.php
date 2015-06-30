@@ -36,7 +36,7 @@ class UserInfo extends BaseEntity
     /**
      * @var string
      */
-    private $maskedName;
+    private $profilePicture;
 
     /**
      * @var bool
@@ -152,17 +152,17 @@ class UserInfo extends BaseEntity
     /**
      * @return string
      */
-    public function getMaskedName()
+    public function getProfilePicture()
     {
-        return $this->maskedName;
+        return $this->profilePicture;
     }
 
     /**
-     * @param string $maskedName
+     * @param string $profilePicture
      */
-    public function setMaskedName($name)
+    public function setProfilePicture($profilePicture)
     {
-        $this->maskedName = $name;
+        $this->profilePicture = $profilePicture;
     }
 
     /**

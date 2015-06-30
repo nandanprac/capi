@@ -179,8 +179,8 @@ class PrivateThreadManager extends BaseManager
             @$error['error'] = 'No such thread exists';
             throw new ValidationError($error);
         }
-        $practoAccountId = ($practoAccountId == $privateThread->getUserInfo()->getPractoAccountId()) ? false : true;
-        return $this->createThreadResponse($privateThread, $practoAccountId);
+        $isDoctor = ($practoAccountId == $privateThread->getUserInfo()->getPractoAccountId()) ? false : true;
+        return $this->createThreadResponse($privateThread, $isDoctor);
     }
 
     /**
@@ -191,14 +191,48 @@ class PrivateThreadManager extends BaseManager
     public function loadAll($practoAccountId, $is_doctor)
     {
         $er = $this->helper->getRepository(ConsultConstants::PRIVATE_THREAD_ENTITY_NAME);
+
         if ($is_doctor) {
+
             $privateThreads = $er->getDoctorPrivateThreads($practoAccountId);
+            if (!empty($privateThreads)) {
+                $privateThreadsTmp = array();
+                foreach ($privateThreads as $privateThread) {
+                    $privateThreadTmp = array();
+
+                    $privateThreadTmp['subject'] = $privateThread['subject'];
+                    $privateThreadTmp['last_modified_time'] = $privateThread['last_modified_time'];
+                    $privateThreadTmp['question'] = $privateThread['question'];
+                    $userInfo = $this->retrieveUserProfileUtil->retrieveUserProfileNew($privateThread['user_info']);
+                    $privateThreadTmp['patient_name'] = $userInfo->getName();
+                    $privateThreadTmp['patient_image'] = $userInfo->getProfilePicture();
+
+                    $userInfoList = array('bloodGroup', 'occupation', 'location', 'heightInCms', 'weightInKgs', 'allergies', 'medications', 'prevDiagnosedConditions');
+                    $has_additional_details = false;
+                    foreach ($userInfoList as $option) {
+                        $getter = 'get'.$option;
+                        if (method_exists($userInfo, $getter)) {
+                            if (!empty($userInfo->$getter())) {
+                                $has_additional_details = true;
+                                break;
+                            }
+                        }
+                    }
+                    $privateThreadTmp['has_additional_details'] = $has_additional_details;
+
+                    $privateThreadsTmp[] = $privateThreadTmp;
+                }
+                $privateThreads = $privateThreadsTmp;
+            }
+
         } else {
             $privateThreads = $er->getPatientPrivateThreads($practoAccountId);
         }
+
         if (empty($privateThreads)) {
             return null;
         }
+
         return array("private_threads" => $privateThreads);
     }
 
@@ -206,7 +240,7 @@ class PrivateThreadManager extends BaseManager
      * @param PrivateThread $privateThread
      * @return Object DetailedPrivateThread
      */
-    private function createThreadResponse($privateThread, $is_doctor)
+    private function createThreadResponse($privateThread, $isDoctor)
     {
         $er = $this->helper->getRepository(ConsultConstants::PRIVATE_THREAD_ENTITY_NAME);
         $privateThreadResponse = array();
@@ -215,10 +249,11 @@ class PrivateThreadManager extends BaseManager
         $privateThreadResponse['conversation'] = $er->getAllConversationsForThread($privateThread);
         $userInfo = $this->retrieveUserProfileUtil->retrieveUserProfileNew($privateThread->getUserInfo());
         $privateThreadResponse['patient'] = $this->populatePatientInfo($userInfo);
-        if (!$is_doctor) {
+        if (!$isDoctor) {
             $practoAccountId = $privateThread->getUserInfo()->getPractoAccountId();
             $privateThreadResponse['followups_remaining'] = $er->checkFollowUpCount($practoAccountId, $privateThread);
             $privateThreadResponse['doctor_name'] = $this->doctorManager->getConsultSettingsByPractoAccountId($privateThread->getDoctorId())->getName();
+            $privateThreadResponse['doctor_image'] = $this->doctorManager->getConsultSettingsByPractoAccountId($privateThread->getDoctorId())->getProfilePicture();
         }
 
         return $privateThreadResponse;
@@ -238,6 +273,7 @@ class PrivateThreadManager extends BaseManager
         $patientInfo->setOccupation($userInfo->getOccupation());
         $patientInfo->setLocation($userInfo->getLocation());
         $patientInfo->setName($userInfo->getName());
+        $patientInfo->setProfilePicture($userInfo->getProfilePicture());
 
         return $patientInfo;
     }
