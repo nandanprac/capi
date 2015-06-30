@@ -93,7 +93,7 @@ class PrivateThreadRepository extends EntityRepository
             ->setParameter('privateThread', $privateThread)
             ->setParameter('practoAccountId', $practoAccountId);
 
-        return intval($this->FOLLOW_UP_THRESHOLD - $qb->getQuery()->getSingleScalarResult()); 
+        return intval($this->FOLLOW_UP_THRESHOLD - $qb->getQuery()->getSingleScalarResult());
     }
 
     public function getAllConversationsForThread($privateThread)
@@ -104,13 +104,13 @@ class PrivateThreadRepository extends EntityRepository
             ->leftJoin(ConsultConstants::CONVERSATION_ENTITY_NAME, 'c', 'WITH', 'c.privateThread = p')
             ->where('p = :privateThread')
             ->setParameter('privateThread', $privateThread);
-        
+
         $conversationList = $qb->getQuery()->getArrayResult();
 
         if (empty($conversationList)) {
             return null;
         }
 
-        return $conversationList;    
+        return $conversationList;
     }
 }

@@ -144,10 +144,13 @@ class PrivateThreadManager extends BaseManager
             $privateThread->setDoctorId($reply->getDoctorQuestion()->getPractoAccountId());
             $subject = array_key_exists('subject', $requestParams) ? $requestParams['subject'] : $reply->getDoctorQuestion()->getQuestion()->getSubject();
             $privateThread->setSubject($subject);
-            
+
             $conversation = new Conversation();
             $conversation->setPrivateThread($privateThread);
             $privateThread->setModifiedAt(new \DateTime('now'));
+            if (array_key_exists('is_doc_reply', $requestParams)) {
+                unset($requestParams['is_doc_reply']);
+            }
         }
 
         $this->updateFields($conversation, $requestParams);
@@ -166,7 +169,7 @@ class PrivateThreadManager extends BaseManager
      * @param integer $privateThreadId
      * @param integer $practoAccountId
      *
-     * @throws Httpexception
+     * @throws ValidationError
      * @return PrivateThread
      */
     public function load($privateThreadId, $practoAccountId)
@@ -259,6 +262,10 @@ class PrivateThreadManager extends BaseManager
         return $privateThreadResponse;
     }
 
+    /**
+     * @param UserInfo $userInfo
+     * @return DetailPatientInfoResponse $patientInfo
+     */
     private function populatePatientInfo(UserInfo $userInfo)
     {
         $patientInfo = new DetailPatientInfoResponse();
