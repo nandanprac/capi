@@ -6,6 +6,7 @@ use ConsultBundle\Entity\SynTag;
 use ConsultBundle\Entity\WordScore;
 use ConsultBundle\Entity\StopWord;
 use ConsultBundle\Constants\ConsultConstants;
+use Doctrine\ORM\EntityRepository;
 
 /**
  * Word Fetch
@@ -129,14 +130,18 @@ class WordManager extends BaseManager
     /**
      * Takes in word and return array of attributes for word
      *
-     * @param array  $word   - Word to be looked up
-     * @param string $entity - Entity to loop in
+     * @param array  $word       - Word to be looked up
+     * @param string $entityName - Entity to loop in
      *
      * @return array
      */
-    public function loadByWord($word, $entity)
+    public function loadByWord($word, $entityName)
     {
-        $result = $this->helper->getRepository($entity)->findBy(array("word" => $word));
+        /**
+         * @var EntityRepository $er
+         */
+        $er = $this->helper->getRepository($entityName);
+        $result = $er->findBy(array("word" => $word));
         $words = array();
         if ($result == null) {
             return array();

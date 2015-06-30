@@ -96,6 +96,9 @@ class Helper
      */
     public function getRepository($entityName)
     {
+        if (!$this->entityManager->getConnection()->isConnected()) {
+            $this->entityManager->getConnection()->connect();
+        }
 
         $entityRepository = $this->entityManager->getRepository($entityName);
 
