@@ -101,12 +101,11 @@ class DoctorAssignmentPersistenceCommand extends ContainerAwareCommand
                         $this->questionManager->setTagsByQuestionId($jobData['question_id'], array_merge(array($jobData['speciality']), $jobData['tags']));
                     }
                     $output->writeln("Queue Message Persisted: ".json_encode($jobData));
+                    $this->queue->setQueueName(Queue::ASSIGNMENT_UPDATE)->deleteMessage($newJob);
                 } catch (\Exception $e) {
                     $output->writeln("Dropping the queue message: ".json_encode($jobData));
-                    $this->queue->setQueueName(Queue::ASSIGNMENT_UPDATE)->deleteMessage($newJob);
                     $output->writeln($e->getMessage());
                 }
-                $this->queue->setQueueName(Queue::ASSIGNMENT_UPDATE)->deleteMessage($newJob);
             }
         }
     }
