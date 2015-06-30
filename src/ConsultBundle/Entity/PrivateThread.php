@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="ConsultBundle\Repository\PrivateThreadRepository")
  * @ORM\Table(name="private_thread")
  * @ORM\HasLifecycleCallbacks()
  */

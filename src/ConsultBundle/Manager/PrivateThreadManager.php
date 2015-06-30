@@ -237,7 +237,7 @@ class PrivateThreadManager extends BaseManager
         $patientInfo->setGender($userInfo->getGender());
         $patientInfo->setOccupation($userInfo->getOccupation());
         $patientInfo->setLocation($userInfo->getLocation());
-        $patientInfo->setMaskedName($userInfo->getMaskedName());
+        $patientInfo->setName($userInfo->getName());
 
         return $patientInfo;
     }

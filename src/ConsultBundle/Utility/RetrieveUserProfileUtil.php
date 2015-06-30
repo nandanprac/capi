@@ -160,7 +160,7 @@ class RetrieveUserProfileUtil
         }
 
         if (array_key_exists('name', $userProfile)) {
-            $user->setMaskedName($userProfile['name']);
+            $user->setName($userProfile['name']);
         }
 
 

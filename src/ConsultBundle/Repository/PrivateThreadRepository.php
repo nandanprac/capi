@@ -14,6 +14,24 @@ class PrivateThreadRepository extends EntityRepository
 {
     private $FOLLOW_UP_THRESHOLD = 5;
 
+    public function privateThreadExists($practoAccountId)
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('p')
+            ->from(ConsultConstants::PRIVATE_THREAD_ENTITY_NAME, 'p')
+            ->innerJoin(ConsultConstants::USER_ENTITY_NAME, 'u', 'WITH', 'u = p.userInfo AND u.softDeleted = 0')
+            ->where('u.practoAccountId = :practoAccountId and p.softDeleted = 0')
+            ->setParameter('practoAccountId', $practoAccountId);
+
+        $privateThreadEntry = $qb->getQuery()->getArrayResult();
+
+        if (empty($privateThreadEntry)) {
+            return false;
+        }
+
+        return true;
+    }
+
     public function getPatientPrivateThreads($practoAccountId)
     {
         $qb = $this->_em->createQueryBuilder();

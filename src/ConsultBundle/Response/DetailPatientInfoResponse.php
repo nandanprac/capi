@@ -43,22 +43,22 @@ class DetailPatientInfoResponse extends BasicPatientInfoResponse
     /**
      * @var string
      */
-    private $maskedName;
+    private $name;
 
     /**
      * @return string
      */
-    public function getMaskedName()
+    public function getName()
     {
-        return $this->maskedName;
+        return $this->name;
     }
 
     /**
-     * @param string $maskedName
+     * @param string $name
      */
-    public function setMaskedName($name)
+    public function setName($name)
     {
-        $this->maskedName = $name;
+        $this->name = $name;
     }
 
 
