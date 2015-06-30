@@ -16,6 +16,16 @@ namespace ConsultBundle\Response;
 class BasicPatientInfoResponse
 {
     /**
+     * @var string
+     */
+    private $name;
+
+    /**
+     * @var int
+     */
+    private $id;
+
+    /**
      * @var int
      */
     private $age;
@@ -29,6 +39,22 @@ class BasicPatientInfoResponse
      * @var string
      */
     private $location;
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+//    /**
+//     * @params string $name
+//     */
+    public function setName($name)
+    {
+        $this->name=$name;
+    }
 
     /**
      * @return int
@@ -47,6 +73,21 @@ class BasicPatientInfoResponse
     }
 
     /**
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param int $id
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+    /**
      * @return string
      */
     public function getGender()
@@ -63,7 +104,7 @@ class BasicPatientInfoResponse
     }
 
     /**
-     * @return location
+     * @return string
      */
     public function getLocation()
     {

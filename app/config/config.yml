@@ -1,6 +1,5 @@
 imports:
     - { resource: parameters.yml }
-  #  - { resource: queueServices.yml }
     - { resource: security.yml }
     - { resource: @ConsultBundle/Resources/config/services.yml }
     - { resource: @ConsultBundle/Resources/config/securityServices.yml}
@@ -66,7 +65,15 @@ doctrine:
 
     orm:
         auto_generate_proxy_classes: "%kernel.debug%"
-        auto_mapping: true
+        entity_managers:
+                default:
+                    auto_mapping: true
+                    dql:
+                        datetime_functions:
+                            month: ConsultBundle\DQL\Month
+                            year: ConsultBundle\DQL\Year
+                            day: ConsultBundle\DQL\Day
+                            week: ConsultBundle\DQL\Week
 
 # Swiftmailer Configuration
 swiftmailer:

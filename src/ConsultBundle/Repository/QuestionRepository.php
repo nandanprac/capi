@@ -92,6 +92,170 @@ class QuestionRepository extends EntityRepository
         return array("questions" => $questionList, "count" => $count);
     }
 
+
+    ////////////// Queries  ///////////
+
+    public function findModerationQuestionsByFilters($thisMonth, $lastMonth, $state, $startDate, $endDate, $thisYear,$limit,$patientId,$patientName,$questionID)
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('q as question','count(b.id) AS bookmarkCount')
+            ->from(ConsultConstants::QUESTION_ENTITY_NAME, 'q')
+            ->leftJoin(ConsultConstants::QUESTION_BOOKMARK_ENTITY_NAME, 'b', 'WITH', 'q = b.question AND b.softDeleted = 0 ')
+            ->where('q.softDeleted = 0')
+            ->orderBy('q.modifiedAt', 'DESC')
+            ->groupBy('q');
+
+        if(isset($questionID))
+        {
+            $qb->andWhere('q.id = :questionID');
+            $qb->setParameter('questionID',$questionID);
+        }
+
+        if(isset($limit))
+        {
+           $qb->setMaxResults($limit);
+        }
+
+        if ($thisMonth) {
+            $qb->andWhere('month(q.createdAt)= :month');
+            $datetime = new \DateTime("now");
+            $month = $datetime->format('m');
+            $qb->setParameter('month', $month);
+        }
+
+        if ($lastMonth) {
+            $qb->andWhere('month(q.createdAt)= :month');
+            $datetime = new \DateTime("last month");
+            $month = $datetime->format('m');
+            $qb->setParameter('month', $month);
+        }
+
+        if ($thisYear) {
+            $qb->andWhere('year(q.createdAt)= :year');
+            $datetime = new \DateTime("now");
+            $year = $datetime->format('Y');
+            $qb->setParameter('year', $year);
+        }
+
+        if(isset($startDate) && isset($endDate))
+        {
+            $qb->andWhere(':startDate =< q.createdAt =< :endDate');
+            $qb->setParameter('startDate', $startDate);
+            $qb->setParameter('endDate', $endDate);
+        }
+
+        if (isset($state)) {
+            $qb->andWhere('q.state IN(:state)');
+            $qb->setParameter('state', $state);
+        }
+
+        if (isset($category)) {
+            $qb->innerJoin(ConsultConstants::QUESTION_TAG_ENTITY_NAME, 't', 'WITH', 'q = t.question');
+            $qb->andWhere('t.tag IN(:category)');
+            $qb->setParameter('category', $category);
+        }
+
+        if (isset($patientId)) {
+
+                $qb->leftJoin(ConsultConstants::USER_ENTITY_NAME, 'u', 'WITH', ' u=q.userInfo AND u.softDeleted = 0 ');
+                //$qb->leftJoin(ConsultConstants::QUESTION_BOOKMARK_ENTITY_NAME, 'b', 'WITH', 'q = b.question AND b.softDeleted = 0 ');
+                $qb->andWhere(' u.practoAccountId = :practoAccountId');
+
+                $qb->setParameter('practoAccountId', $patientId);
+
+       }
+
+        if (isset($patientName))
+        {
+            $qb->leftJoin(ConsultConstants::USER_ENTITY_NAME, 'u', 'WITH', ' u=q.userInfo AND u.softDeleted = 0 ');
+            $qb->andWhere(' u.patientName = :patientName');
+            $qb->setParameter('patientName', $patientName);
+        }
+
+
+        $questionList = $qb->getQuery()->getArrayResult();
+
+        $paginator = new Paginator($qb->getQuery(), $fetchJoinCollection = true);
+        $count = count($paginator);
+
+        if (is_null($questionList)) {
+            return null;
+        }
+
+        return array("questions" => $questionList, "count" => $count);
+    }
+
+
+
+    /**
+     * @return int
+     */
+
+    public function totalCount()
+    {
+        $qb =$this->_em->createQueryBuilder();
+        $qb->select('count(q.id)');
+        $qb->from (ConsultConstants::QUESTION_ENTITY_NAME, 'q');
+        $count = $qb->getQuery()->getSingleScalarResult();
+        return $count;
+    }
+
+    /**
+     * @return int
+     */
+    public function thisMonthCount()
+    {
+        $qb =$this->_em->createQueryBuilder();
+        $qb->select('count(q.id)');
+        $qb->from (ConsultConstants::QUESTION_ENTITY_NAME, 'q');
+        $qb->where('month(q.createdAt)= :month');
+        $datetime = new \DateTime("now");
+        $month = $datetime->format('m');
+        $qb->setParameter('month', $month);
+        $count = $qb->getQuery()->getSingleScalarResult();
+        return $count;
+    }
+
+    /**
+     * @return int
+     */
+
+    public function lastMonthCount()
+    {
+        $qb =$this->_em->createQueryBuilder();
+        $qb->select('count(q.id)');
+        $qb->from (ConsultConstants::QUESTION_ENTITY_NAME, 'q');
+        $qb->where('month(q.createdAt)= :month');
+        $datetime = new \DateTime("last month");
+        $month = $datetime->format('m');
+        $qb->setParameter('month', $month);
+        $count = $qb->getQuery()->getSingleScalarResult();
+        return $count;
+    }
+
+
+    /**
+     * @param \DateTime $startDate   - time for the filter
+     * @param \DateTime $endDate   - time for the filter
+     * @return int
+     */
+
+    public function customCount($startDate,$endDate)
+    {
+        $qb =$this->_em->createQueryBuilder();
+        $qb->select('count(q.id)');
+        $qb->from (ConsultConstants::QUESTION_ENTITY_NAME, 'q');
+        $qb->where(':startDate =< q.createdAt =< :endDate');
+        $qb->setParameter('startDate', $startDate);
+        $qb->setParameter('endDate', $endDate);
+        $count = $qb->getQuery()->getSingleScalarResult();
+        return $count;
+    }
+
+
+
+    //////////////////////////////////////////
+
     /**
      * @param $question
      *

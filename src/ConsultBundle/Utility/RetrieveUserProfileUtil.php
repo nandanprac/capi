@@ -133,7 +133,15 @@ class RetrieveUserProfileUtil
 
 
 
+        if(array_key_exists('id',$userProfile))
+        {
+            $user->setPractoAccountId($userProfile['id']);
+        }
 
+
+        if (array_key_exists('name', $userProfile)) {
+            $user->setName($userProfile['name']);
+        }
 
 
         if (array_key_exists('dob', $userProfile)) {
@@ -158,7 +166,6 @@ class RetrieveUserProfileUtil
             $user->setBloodGroup($userProfile['blood_group']);
 
         }
-
 
 
         return $user;

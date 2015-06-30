@@ -11,6 +11,7 @@ namespace ConsultBundle\Mapper;
 use ConsultBundle\Entity\DoctorQuestion;
 use ConsultBundle\Entity\Question;
 use ConsultBundle\Response\BasicDoctorQuestionResponseObject;
+use ConsultBundle\Response\BasicPatientInfoResponse;
 use ConsultBundle\Response\BasicQuestionResponseObject;
 use ConsultBundle\Response\DetailQuestionResponseObject;
 use ConsultBundle\Response\ReplyResponseObject;
@@ -138,6 +139,45 @@ class QuestionMapper
     private static function mapDoctorQuestion(DoctorQuestion $doctorQuestionEntity, ReplyResponseObject $reply)
     {
 
+    }
+
+    /**
+     * @param DetailQuestionResponseObject $question
+     * @return array Response;
+     */
+
+    public static function mapToModerationArray(DetailQuestionResponseObject $question)
+    {
+        $response=array();
+        $response['replies']=$question->getReplies();
+        $patientInfo = new BasicPatientInfoResponse();
+        $patientInfo = $question->getPatientInfo();
+
+        $patientArr=array();
+        $patientArr['name']=$patientInfo->getName();
+        $patientArr['age']=$patientInfo->getAge();
+        $patientArr['id']=$patientInfo->getId();
+//        $patientArr['email']=$patientInfo->getEmail();
+
+        //encode info object if needed
+
+        $response['patientInfo']=$patientArr;
+        $response['isBookmarked']=$question->isIsBookmarked();
+        $response['comments']=$question->getComments();
+        $response['commentsCount']=$question->getCommentsCount();
+        $response['subject']=$question->getSubject();
+        $response['text']=$question->getText();
+        $response['speciality']=$question->getSpeciality();
+        $response['state']=$question->getState();
+        $response['viewCount']=$question->getViewCount();
+        $response['shareCount']=$question->getShareCount();
+        $response['bookmarkCount']=$question->getBookmarkCount();
+        $response['viewedAt']=$question->getViewedAt();
+        $response['id']=$question->getId();
+        $response['createdAt']=$question->getCreatedAt();
+        $response['modifiedAt']=$question->getModifiedAt();
+
+        return $response;
     }
 
 

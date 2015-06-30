@@ -147,7 +147,39 @@ class DoctorQuestionRepository extends EntityRepository
         $qb->setParameter('question', $question);
 
         $doctorQuestions = $qb->getQuery()->getArrayResult();
-        //var_dump($doctorQuestions);die;
+
+        return $doctorQuestions;
+    }
+
+
+
+    /**
+     * @param \ConsultBundle\Entity\Question $question
+     *
+     * @return array
+     */
+    public function findModerationReplies(Question $question)
+    {
+        $qb = $this->_em->createQueryBuilder();
+
+        $qb->select('dq.practoAccountId AS doctorId', 'r.id AS id', 'r.text AS text', 'r.rating', 'r.createdAt AS createdAt' , 'COALESCE(SUM(rv.vote),0) AS votes')
+            ->from(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME, 'dq')
+            ->innerJoin(ConsultConstants::DOCTOR_REPLY_ENTITY_NAME, 'r', 'WITH', 'r.doctorQuestion = dq AND r.softDeleted = 0 ')
+            ->leftJoin(
+                ConsultConstants::DOCTOR_REPLY_VOTE_ENTITY,
+                'rv',
+                'WITH',
+                'rv.reply = r AND rv.softDeleted = 0 '
+            )
+
+            ->where('dq.question = :question')
+            ->andWhere('dq.softDeleted = 0 ')
+            ->addGroupBy('r')
+            ->addOrderBy('votes', 'DESC');
+
+        $qb->setParameter('question', $question);
+
+        $doctorQuestions = $qb->getQuery()->getArrayResult();
 
         return $doctorQuestions;
     }

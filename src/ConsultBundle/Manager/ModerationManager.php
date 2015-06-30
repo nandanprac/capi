@@ -4,7 +4,6 @@ namespace ConsultBundle\Manager;
 
 use ConsultBundle\Constants\ConsultConstants;
 use ConsultBundle\Entity\UserInfo;
-use ConsultBundle\Mapper\QuestionMapper1;
 use ConsultBundle\Mapper\QuestionMapper;
 use ConsultBundle\Repository\DoctorQuestionRepository;
 use ConsultBundle\Repository\QuestionRepository;
@@ -20,6 +19,10 @@ use ConsultBundle\Entity\QuestionImage;
 use ConsultBundle\Entity\QuestionTag;
 use ConsultBundle\Manager\ValidationError;
 use ConsultBundle\Queue\AbstractQueue as Queue;
+use ConsultBundle\DQL\Day;
+use ConsultBundle\DQL\Month;
+use ConsultBundle\DQL\Year;
+use ConsultBundle\DQL\Week;
 
 
 
@@ -61,25 +64,24 @@ class ModerationManager extends BaseManager
      */
     public function loadByFilters($request)
     {
+        $state = (array_key_exists('state', $request)) ? $request['state'] : null;//"NEW";
+        $thisMonth=(array_key_exists('thisMonth',$request)) ? $request['thisMonth'] : false;
+        $lastMonth=(array_key_exists('lastMonth',$request)) ? $request['lastMonth'] : false;
+        $startDate=(array_key_exists('startDate',$request)) ? $request['startMonth'] : null;
+        $endDate=(array_key_exists('endDate',$request)) ? $request['endMonth'] : null;
+        $thisYear=(array_key_exists('thisYear',$request)) ? $request['thisYear'] : false;
+        $limit=(array_key_exists('limit',$request)) ? $request['limit'] : null;
+        $patientId=(array_key_exists('patientID',$request)) ? $request['patientID'] : null;
+        $questionID=(array_key_exists('questionID',$request)) ? $request['questionID'] : null;
+       // $patientEmail=(array_key_exists('patientID',$request)) ? $request['patientID'] : null;
+        $patientName=(array_key_exists('patientName',$request)) ? $request['patientName'] : null;
 
-        $limit = (array_key_exists('limit', $request)) ? $request['limit'] : 30;
-        $offset = (array_key_exists('offset', $request)) ? $request['offset'] : 0;
-        $state = "NEW";
-        $category = (array_key_exists('category', $request)) ? explode(",", $request['category']) : null;
-        $practoAccountId = (array_key_exists('practo_account_id', $request)) ? $request['practo_account_id'] : null;
-        $bookmark = (array_key_exists('bookmark', $request)) ? $request['bookmark'] : null;
-
-        $modifiedAfter = null;
-        if (array_key_exists('modified_after', $request)) {
-            $modifiedAfter = new \DateTime($request['modified_after']);
-            $modifiedAfter->format('Y-m-d H:i:s');
-        }
         /**
          * @var QuestionRepository $er
          */
         $er = $this->helper->getRepository(ConsultConstants::QUESTION_ENTITY_NAME);
 
-        $questionList = $er->findQuestionsByFilters($practoAccountId, $bookmark, $state, $category, $modifiedAfter, $limit, $offset);
+        $questionList = $er->findModerationQuestionsByFilters($thisMonth, $lastMonth, $state, $startDate, $endDate, $thisYear,$limit,$patientId,$patientName,$questionID);
         if (empty($questionList)) {
             return null;
         }
@@ -88,12 +90,17 @@ class ModerationManager extends BaseManager
 
         $detailQuestions = array();
 
-        $question = new Question();
 
         foreach ($questionResponseList as $baseQuestion) {
 
-            $question = $this->load($baseQuestion->getId(), $practoAccountId);
-            array_push($detailQuestions, $question);
+            $question = $this->load($baseQuestion->getId());
+
+            $quesArr=QuestionMapper::mapToModerationArray($question);
+            //$question = QuestionMapper::mapToModerationArray($this->load($baseQuestion->getId()));
+
+            ///////////// Verification Controls /////////////
+
+            array_push($detailQuestions,$quesArr);
 
 
         }
@@ -102,36 +109,68 @@ class ModerationManager extends BaseManager
     }
 
 
+
+    //////////////////////////// Requirements ///////
+
+    /**
+     * @return array SummaryCounts
+     */
+
+    public function loadSummary()
+    {
+        $er = $this->helper->getRepository(ConsultConstants::QUESTION_ENTITY_NAME);
+        $totalCount=$er->totalCount();
+        $thisMonthCount=$er->thisMonthCount();
+        $prevMonthCount=$er->lastMonthCount();
+
+        return array('totalQuestions'=>$totalCount,'thisMonthQuestions'=>$thisMonthCount,'lastMonthQuestions'=>$prevMonthCount);
+
+    }
+
+
+    /**
+     * @param array $request - dates
+     *
+     * @return int count between dates
+     */
+
+
+    public function loadCustomCount($request)
+    {
+        $startDate = $request['start'];
+        $endDate = $request['end'];
+        $er = $this->helper->getRepository(ConsultConstants::QUESTION_ENTITY_NAME);
+        return $er->customCount($startDate,$endDate);
+
+    }
+
+    ////////////////////////////////////////////////////////
+
     /**
      * Load Question By Id
      *
      * @param integer $questionId - Question Id
-     *
-     * @param null $practoAccountId
-     *
-     * @return \ConsultBundle\Entity\Question
+     * @return \ConsultBundle\Response\DetailQuestionResponseObject
      */
-    public function load($questionId, $practoAccountId = null)
+    public function load($questionId)
     {
         /**
          * @var Question $question
          */
         $question = $this->helper->loadById($questionId, ConsultConstants::QUESTION_ENTITY_NAME);
 
-        return $this->fetchDetailQuestionObject($question, $practoAccountId);
+        return $this->fetchDetailQuestionObject($question);
     }
 
     /**
      * @param \ConsultBundle\Entity\Question $questionEntity
-     *
-     * @param                                $practoAccountId
      *
      * @return \ConsultBundle\Response\DetailQuestionResponseObject
      * @throws \HttpException
      * @internal param int $practoAccountid
      *
      */
-    private function fetchDetailQuestionObject(Question $questionEntity, $practoAccountId)
+    private function fetchDetailQuestionObject(Question $questionEntity)
     {
 
         $question = null;
@@ -140,13 +179,14 @@ class ModerationManager extends BaseManager
                 $this->retrieveUserProfileUtil->retrieveUserProfileNew($questionEntity->getUserInfo());
             }
 
+
             $question = new DetailQuestionResponseObject($questionEntity);
 
             /**
              * @var DoctorQuestionRepository $er
              */
             $er = $this->helper->getRepository(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME);
-            $doctorQuestions = $er->findRepliesByQuestion($questionEntity, $practoAccountId);
+            $doctorQuestions = $er->findModerationReplies($questionEntity);
             $replies = array();
             foreach ($doctorQuestions as $doctorQuestion) {
                 $reply = new ReplyResponseObject();
@@ -157,19 +197,6 @@ class ModerationManager extends BaseManager
             }
 
             $question->setReplies($replies);
-
-            $er = $this->helper->getRepository(ConsultConstants::QUESTION_BOOKMARK_ENTITY_NAME);
-
-            if (!empty($practoAccountId)) {
-                $bookmark = $er->findOneBy(array("practoAccountId" => $practoAccountId,
-                    "question" => $questionEntity,
-                    "softDeleted" => 0));
-
-                if (!empty($bookmark)) {
-                    $question->setIsBookmarked(true);
-
-                }
-            }
         }
 
         return $question;
@@ -181,7 +208,7 @@ class ModerationManager extends BaseManager
      * @throws ValidationError
      * @return Question
      */
-        public function patchThis($requestParams)
+        public function changeState($requestParams)
     {
         $error = array();
         if (array_key_exists('question_id', $requestParams))
@@ -242,23 +269,6 @@ class ModerationManager extends BaseManager
             }
         }
 
-        return $question;
-    }
-
-    /**
-     * @param array   $requestParams   - parameters passed for updating question object
-
-    * @return \ConsultBundle\Entity\Question
-    * @throws \ConsultBundle\Manager\ValidationError
-    */
-
-//* @param string  $profileToken    - profile token of the user
-
-    public function changeState($requestParams)
-    {
-
-        $question = new Question();
-        $question= $this->patchThis($requestParams);
         return $question;
     }
 

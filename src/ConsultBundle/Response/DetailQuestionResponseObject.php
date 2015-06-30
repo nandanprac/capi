@@ -164,6 +164,8 @@ class DetailQuestionResponseObject extends BasicQuestionResponseObject
     protected function populatePatientInfo(UserInfo $userInfo)
     {
         $patientInfo = new BasicPatientInfoResponse();
+        $patientInfo->setId($userInfo->getPractoAccountId());
+        $patientInfo->setName($userInfo->getName());
         $patientInfo->setAge($userInfo->getAge());
         $patientInfo->setGender($userInfo->getGender());
         $patientInfo->setLocation($userInfo->getLocation());
