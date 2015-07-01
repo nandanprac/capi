@@ -126,21 +126,7 @@ class ReplyResponseObject extends ConsultResponseObject
         $this->votes = $this->getInt($votes);
     }
 
-    /**
-     * @return int
-     */
-    public function getDoctorId()
-    {
-        return $this->practoAccountId;
-    }
 
-    /**
-     * @param int $doctorId
-     */
-    public function setDoctorId($doctorId)
-    {
-        $this->practoAccountId = $this->getInt($doctorId);
-    }
 
     /**
      * @return mixed
