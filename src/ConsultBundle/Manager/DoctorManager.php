@@ -95,7 +95,7 @@ class DoctorManager extends BaseManager
         /**
          * @var DoctorConsultSettings $doctor
          */
-        $doctor =  $result = $er->findOneBy(array(
+        $doctor  = $er->findOneBy(array(
                 "fabricDoctorId" => $postData['doctor_fabric_id'],
                 "softDeleted" => 0)
         );
@@ -122,6 +122,19 @@ class DoctorManager extends BaseManager
 
 
         $this->helper->persist($doctor, true);
+
+        $consultationDays = $doctor->getConsultationDays();
+        if (!empty($consultationDays)) {
+            $consultationDaysBin = decbin($consultationDays);
+            $len = strlen($consultationDaysBin);
+            $addedZeroes = "";
+            for (; $len < 7; $len++) {
+                $addedZeroes = "0".$addedZeroes;
+            }
+            $consultationDaysBin = $addedZeroes.$consultationDaysBin;
+            $doctor->setConsultationDaysStr($consultationDaysBin);
+            $doctor->setConsultationDays(null);
+        }
 
         return $doctor;
     }
