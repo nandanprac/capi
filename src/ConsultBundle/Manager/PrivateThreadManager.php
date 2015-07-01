@@ -86,7 +86,7 @@ class PrivateThreadManager extends BaseManager
                 throw new ValidationError($error);
             }
 
-            if (array_key_exists('is_doc_reply', $requestParams) and Utility::toBool($requestParams['is_doc_reply'])) {
+            if (array_key_exists('is_doc_reply', $requestParams) && Utility::toBool($requestParams['is_doc_reply'])) {
                 if ($privateThread->getDoctorId() != $practoAccountId) {
                     throw new HttpException(Codes::HTTP_FORBIDDEN, 'You are not allowed to answer this question');
                 }
@@ -175,7 +175,7 @@ class PrivateThreadManager extends BaseManager
     public function load($privateThreadId, $practoAccountId)
     {
         $privateThread = $this->helper->loadById($privateThreadId, ConsultConstants::PRIVATE_THREAD_ENTITY_NAME);
-        if ($practoAccountId != $privateThread->getUserInfo()->getPractoAccountId() and $practoAccountId != $privateThread->getDoctorId()) {
+        if ($practoAccountId != $privateThread->getUserInfo()->getPractoAccountId() && $practoAccountId != $privateThread->getDoctorId()) {
             throw new HttpException(Codes::HTTP_FORBIDDEN, 'You do not have access to view this question');
         }
         if (empty($privateThread)) {
