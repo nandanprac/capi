@@ -170,6 +170,7 @@ class DoctorManager extends BaseManager
 
 
         $authenticatedPractoAccountId = $_SESSION['authenticated_user']['id'];
+
         $practoAccountId = $result->getPractoAccountId();
 
         if ($practoAccountId != $authenticatedPractoAccountId) {
@@ -187,6 +188,7 @@ class DoctorManager extends BaseManager
             $consultationDaysBin = $addedZeroes.$consultationDaysBin;
             $result->setConsultationDaysStr($consultationDaysBin);
             $result->setConsultationDays(null);
+
         }
 
         return $result;
@@ -235,6 +237,10 @@ class DoctorManager extends BaseManager
         return $doc;
     }
 
+
+
+
+
     public function testRepo()
     {
         /**
@@ -245,28 +251,11 @@ class DoctorManager extends BaseManager
     }
 
     /**
-     * @param string $city       - city of posted question/doctor to look from
-     * @param string $speciality - required speciality
+     * @param string $city
+     * @param string $speciality
      *
-     * @return array
-     */
-    public function getAppropriateDoctors($city, $speciality)
-    {
-        try {
-            $doctors = $this->getRepository()->findBySpecialityandCity($city, $speciality);
-        } catch (\Exception $e) {
-            throw new \Exception($e->getMessage());
-        }
-        if (empty($doctors)) {
-            return null;
-        }
-    }
-
-    /**
-     * @param string $city       - city of posted question/doctor to look from
-     * @param string $speciality - required speciality
-     *
-     * @return array
+     * @return null
+     * @throws \Exception
      */
     public function getAppropriateDoctors($city, $speciality)
     {
@@ -282,42 +271,6 @@ class DoctorManager extends BaseManager
         return $doctors;
     }
 
-    /**
-     * @param string $city       - city of posted question/doctor to look from
-     * @param string $speciality - required speciality
-     *
-     * @return array
-     */
-    public function getAppropriateDoctors($city, $speciality)
-    {
-        try {
-            $doctors = $this->getRepository()->findBySpecialityandCity($city, $speciality);
-        } catch (\Exception $e) {
-            throw new \Exception($e->getMessage());
-        }
-        if (empty($doctors)) {
-            return null;
-        }
-
-    /**
-     * @param string $city       - city of posted question/doctor to look from
-     * @param string $speciality - required speciality
-     *
-     * @return array
-     */
-    public function getAppropriateDoctors($city, $speciality)
-    {
-        try {
-            $doctors = $this->getRepository()->findBySpecialityandCity($city, $speciality);
-        } catch (\Exception $e) {
-            throw new \Exception($e->getMessage());
-        }
-        if (empty($doctors)) {
-            return null;
-        }
-
-        return $doctors;
-    }
 
     /**
      * @return \Doctrine\ORM\EntityRepository|null

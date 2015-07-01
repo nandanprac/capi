@@ -16,7 +16,7 @@ class DoctorReplyVote extends BaseEntity
 {
     /**
      * @var DoctorReply
-     * @ORM\ManyToOne(targetEntity="ConsultBundle\Entity\DoctorReply")
+     * @ORM\ManyToOne(targetEntity="ConsultBundle\Entity\DoctorReply", inversedBy="votes")
      * @ORM\JoinColumn(name="reply_id", referencedColumnName="id")
      */
     private $reply;

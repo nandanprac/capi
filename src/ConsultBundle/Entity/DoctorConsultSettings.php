@@ -397,6 +397,7 @@ class DoctorConsultSettings extends BaseEntity
         $this->fabricDoctorId = $fabricDoctorId;
     }
 
+
     /**
      * @return string
      */
@@ -412,5 +413,4 @@ class DoctorConsultSettings extends BaseEntity
     {
         $this->consultationDaysStr = $consultationDaysStr;
     }
-
 }
