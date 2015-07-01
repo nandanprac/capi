@@ -51,7 +51,7 @@ class PrivateThreadController extends BaseConsultController
      * @param int $id
      * @param \Symfony\Component\HttpFoundation\Request $request
      *
-     * @Get("/private/thread/{id}") 
+     * @Get("/private/thread/{id}")
      *
      * @return \ConsultBundle\Entity\Question|\FOS\RestBundle\View\View
      */
@@ -79,7 +79,7 @@ class PrivateThreadController extends BaseConsultController
     /**
      * @param Request $requestRec - request Object
      *
-     * @Get("/private/threads") 
+     * @Get("/private/threads")
      *
      * @return array PrivateThreads - list of private question objects
      */
@@ -104,7 +104,7 @@ class PrivateThreadController extends BaseConsultController
     /**
      * @param Request $requestRec - request Object
      *
-     * @Get("/doctor/private/threads") 
+     * @Get("/doctor/private/threads")
      *
      * @return array PrivateThreads - list of private question objects
      */
