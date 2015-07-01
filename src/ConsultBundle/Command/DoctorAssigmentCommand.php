@@ -66,7 +66,7 @@ class DoctorAssigmentCommand extends ContainerAwareCommand
                 $jobData = json_decode($newJob, true);
                 try {
                     // Question State Creation
-                    if ($jobData['speciality'] and $jobData['speciality'] != 'GENERIC') {
+                    if ($jobData['speciality'] && $jobData['speciality'] != 'GENERIC') {
                         $state = 'ASSIGNED';
                     } elseif ($jobData['speciality'] == 'GENERIC') {
                         $state = 'GENERIC';
