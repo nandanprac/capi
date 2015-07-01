@@ -61,7 +61,7 @@ class DoctorConsultSettings extends BaseEntity
      * @var integer
      *
      * @ORM\Column(name="num_ques_day", type="integer", nullable=true)
-     * @Assert\NotBlank()
+     *
      */
     private $numQuesDay;
 
