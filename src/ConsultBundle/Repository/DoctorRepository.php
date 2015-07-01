@@ -161,6 +161,18 @@ class DoctorRepository extends EntityRepository
                 ->setParameter('city', $city);
 
             $doctors = $qb->getQuery()->getArrayResult();
+
+            if (empty($doctors)) {
+                $qb->select('dcs.name as doctorName', 'dcs.practoAccountId as doctorId', 'count(dq.id) as givenQuestions', 'dcs.numQuesDay as questionPerDay')
+                    ->from(ConsultConstants::DOCTOR_SETTING_ENTITY_NAME, 'dcs')
+                    ->leftJoin(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME, 'dq', 'WITH', 'dq.practoAccountId = dcs.practoAccountId AND dq.createdAt > :curdate')
+                    ->where('upper(dcs.speciality) = :speciality')
+                    ->groupBy('dq.practoAccountId')
+                    ->having('givenQuestions < dcs.numQuesDay OR dcs.numQuesDay is null')
+                    ->setParameter('curdate', $curdate)
+                    ->setParameter('speciality', $speciality)
+            }
+            $doctors = $qb->getQuery()->getArrayResult();
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
         }
