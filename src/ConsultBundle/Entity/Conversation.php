@@ -8,8 +8,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="conversation")
+ * @ORM\Table(name="conversations")
  * @ORM\HasLifecycleCallbacks()
+ * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  */
 class Conversation extends BaseEntity
 {
@@ -23,7 +24,7 @@ class Conversation extends BaseEntity
     private $text;
 
     /**
-     * @ORM\ManyToOne(targetEntity = "PrivateThread", cascade={"persist", "remove"})
+     * @ORM\ManyToOne(targetEntity = "PrivateThread", fetch="EXTRA_LAZY", cascade={"persist", "remove"})
      * @ORM\JoinColumn(name = "private_thread_id", referencedColumnName = "id")
      */
     private $privateThread;

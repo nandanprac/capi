@@ -66,7 +66,7 @@ class PrivateThreadController extends BaseConsultController
         try {
             $privateThread = $privateThreadManager->load($id, $practoAccountId);
         } catch (HttpException $e) {
-            return View::create($e->getMessage(), Codes::HTTP_FORBIDDEN);
+            return View::create($e->getMessage(), $e->getCode());
         }
 
         if (null === $privateThread) {
@@ -91,7 +91,7 @@ class PrivateThreadController extends BaseConsultController
         try {
             $privateThreadList = $privateThreadManager->loadAll($practoAccountId, false);
         } catch (HttpException $e) {
-            return View::create($e->getMessage(), Codes::HTTP_FORBIDDEN);
+            return View::create($e->getMessage(), $e->getCode());
         }
 
         if (null === $privateThreadList) {
@@ -116,7 +116,7 @@ class PrivateThreadController extends BaseConsultController
         try {
             $privateThreadList = $privateThreadManager->loadAll($practoAccountId, true);
         } catch (HttpException $e) {
-            return View::create($e->getMessage(), Codes::HTTP_FORBIDDEN);
+            return View::create($e->getMessage(), $e->getCode());
         }
 
         if (null === $privateThreadList) {

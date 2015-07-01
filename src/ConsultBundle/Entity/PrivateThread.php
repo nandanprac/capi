@@ -10,6 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass="ConsultBundle\Repository\PrivateThreadRepository")
  * @ORM\Table(name="private_thread")
  * @ORM\HasLifecycleCallbacks()
+ * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  */
 class PrivateThread extends BaseEntity
 {
