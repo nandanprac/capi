@@ -118,7 +118,7 @@ class DoctorRepository extends EntityRepository
                 ->setParameter('state', "UNANSWERED");
 
              $result = $qb->getQuery()->getArrayResult();
-              if ($result != null) {
+             if ($result != null) {
                  $results['assigned_count'] = intval($result[0]['assigned_count']);
              } else {
                  $results['assigned_count'] = 0;
@@ -163,6 +163,7 @@ class DoctorRepository extends EntityRepository
             $doctors = $qb->getQuery()->getArrayResult();
 
             if (empty($doctors)) {
+                $qb = $this->_em->createQueryBuilder();
                 $qb->select('dcs.name as doctorName', 'dcs.practoAccountId as doctorId', 'count(dq.id) as givenQuestions', 'dcs.numQuesDay as questionPerDay')
                     ->from(ConsultConstants::DOCTOR_SETTING_ENTITY_NAME, 'dcs')
                     ->leftJoin(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME, 'dq', 'WITH', 'dq.practoAccountId = dcs.practoAccountId AND dq.createdAt > :curdate')
@@ -170,7 +171,7 @@ class DoctorRepository extends EntityRepository
                     ->groupBy('dq.practoAccountId')
                     ->having('givenQuestions < dcs.numQuesDay OR dcs.numQuesDay is null')
                     ->setParameter('curdate', $curdate)
-                    ->setParameter('speciality', $speciality)
+                    ->setParameter('speciality', $speciality);
             }
             $doctors = $qb->getQuery()->getArrayResult();
         } catch (\Exception $e) {
