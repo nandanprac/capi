@@ -35,4 +35,6 @@ class ConsultConstants
     const STOP_WORDS_ENTITY_NAME = "ConsultBundle:StopWord";
     const WORD_SCORE_ENTITY_NAME = "ConsultBundle:WordScore";
     const DOCTOR_SETTING_ENTITY_NAME = "ConsultBundle:DoctorConsultSettings";
+    const PRIVATE_THREAD_ENTITY_NAME = "ConsultBundle:PrivateThread";
+    const CONVERSATION_ENTITY_NAME = "ConsultBundle:Conversation";
 }
