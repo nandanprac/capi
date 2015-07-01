@@ -172,8 +172,8 @@ class DoctorRepository extends EntityRepository
                     ->having('givenQuestions < dcs.numQuesDay OR dcs.numQuesDay is null')
                     ->setParameter('curdate', $curdate)
                     ->setParameter('speciality', $speciality);
+                $doctors = $qb->getQuery()->getArrayResult();
             }
-            $doctors = $qb->getQuery()->getArrayResult();
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
         }
