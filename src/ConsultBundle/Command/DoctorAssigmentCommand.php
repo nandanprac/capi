@@ -66,7 +66,7 @@ class DoctorAssigmentCommand extends ContainerAwareCommand
                 $jobData = json_decode($newJob, true);
                 try {
                     // Question State Creation
-                    if ($jobData['speciality'] and $jobData['speciality'] != 'GENERIC') {
+                    if ($jobData['speciality'] && $jobData['speciality'] != 'GENERIC') {
                         $state = 'ASSIGNED';
                     } elseif ($jobData['speciality'] == 'GENERIC') {
                         $state = 'GENERIC';
@@ -105,11 +105,11 @@ class DoctorAssigmentCommand extends ContainerAwareCommand
                     $this->queue
                         ->setQueueName(Queue::ASSIGNMENT_UPDATE)
                         ->sendMessage(json_encode($jobData));
+                    $this->queue->setQueueName(Queue::DAA)->deleteMessage($newJob);
                 } catch (\Exception $e) {
                     $output->writeln($e->getMessage());
                     $output->writeln($newJob);
                 }
-                $this->queue->setQueueName(Queue::DAA)->deleteMessage($newJob);
             }
         }
     }

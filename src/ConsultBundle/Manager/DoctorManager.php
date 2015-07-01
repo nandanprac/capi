@@ -142,6 +142,9 @@ class DoctorManager extends BaseManager
          */
         $er = $this->getRepository();
 
+        /**
+         * @var DoctorConsultSettings $result
+         */
         $result =  $result = $er->findOneBy(array(
                 "fabricDoctorId" => $id,
                 "softDeleted" => 0)
@@ -151,11 +154,26 @@ class DoctorManager extends BaseManager
             return null;
         }
 
-        $authenticatedPractoAccountId = $_SESSION['authenticated_user']['id'];
-         $practoAccountId = $result->getPractoAccountId();
 
-        if ($result->getPractoAccountId() != $authenticatedPractoAccountId) {
-            throw new HttpException(Codes::HTTP_FORBIDDEN, "Unauthorised access" );
+
+        $authenticatedPractoAccountId = $_SESSION['authenticated_user']['id'];
+        $practoAccountId = $result->getPractoAccountId();
+
+        if ($practoAccountId != $authenticatedPractoAccountId) {
+            throw new HttpException(Codes::HTTP_FORBIDDEN, "Unauthorised access");
+        }
+
+        $consultationDays = $result->getConsultationDays();
+        if (!empty($consultationDays)) {
+            $consultationDaysBin = decbin($consultationDays);
+            $len = strlen($consultationDaysBin);
+            $addedZeroes = "";
+            for (; $len < 7; $len++) {
+                $addedZeroes = "0".$addedZeroes;
+            }
+            $consultationDaysBin = $addedZeroes.$consultationDaysBin;
+            $result->setConsultationDaysStr($consultationDaysBin);
+            $result->setConsultationDays(null);
         }
 
         return $result;

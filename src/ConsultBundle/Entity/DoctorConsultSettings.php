@@ -9,6 +9,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="doctor_consult_settings")
  * @ORM\Entity(repositoryClass="ConsultBundle\Repository\DoctorRepository")
  * @ORM\HasLifecycleCallbacks()
+ * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  */
 class DoctorConsultSettings extends BaseEntity
 {
@@ -60,7 +61,7 @@ class DoctorConsultSettings extends BaseEntity
      * @var integer
      *
      * @ORM\Column(name="num_ques_day", type="integer", nullable=true)
-     * @Assert\NotBlank()
+     *
      */
     private $numQuesDay;
 
@@ -106,6 +107,11 @@ class DoctorConsultSettings extends BaseEntity
      * @ORM\Column(name="status", type="string", length=16, nullable=true)
      */
     private $status;
+
+    /**
+     * @var string
+     */
+    private $consultationDaysStr;
 
 
     /**
@@ -390,5 +396,24 @@ class DoctorConsultSettings extends BaseEntity
     {
         $this->fabricDoctorId = $fabricDoctorId;
     }
+
+    /**
+     * @return string
+     */
+    public function getConsultationDaysStr()
+    {
+        return $this->consultationDaysStr;
+    }
+
+    /**
+     * @param string $consultationDaysStr
+     */
+    public function setConsultationDaysStr($consultationDaysStr)
+    {
+        $this->consultationDaysStr = $consultationDaysStr;
+    }
+
+
+
 }
 

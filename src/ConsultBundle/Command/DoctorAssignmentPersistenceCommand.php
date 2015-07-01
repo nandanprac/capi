@@ -75,7 +75,7 @@ class DoctorAssignmentPersistenceCommand extends ContainerAwareCommand
                     $this->questionManager = $this->container->get('consult.question_manager');
                 }
                 try {
-                    if ($jobData['state'] == 'UNCLASSIFIED' or $jobData['state'] == 'MISMATCH') {
+                    if ($jobData['state'] == 'UNCLASSIFIED' || $jobData['state'] == 'MISMATCH') {
                         $this->questionManager->setState($jobData['question_id'], $jobData['state']);
                     } elseif ($jobData['state'] == 'ASSIGNED') {
                         $this->doctorQuestionManager->setDoctorsForAQuestions($jobData['question_id'], $jobData['doctors']);
@@ -93,7 +93,7 @@ class DoctorAssignmentPersistenceCommand extends ContainerAwareCommand
                         $this->queue
                             ->setQueueName(Queue::CONSULT_GCM)
                             ->sendMessage(json_encode($jobData));
-                    } elseif ($jobData['state'] == 'GENERIC'  or $jobData['state'] == 'DOCNOTFOUND') {
+                    } elseif ($jobData['state'] == 'GENERIC'  || $jobData['state'] == 'DOCNOTFOUND') {
                         if ($jobData['user_classified'] == 0) {
                             $this->questionManager->setSpeciality($jobData['question_id'], $jobData['speciality']);
                         }
@@ -101,12 +101,11 @@ class DoctorAssignmentPersistenceCommand extends ContainerAwareCommand
                         $this->questionManager->setTagsByQuestionId($jobData['question_id'], array_merge(array($jobData['speciality']), $jobData['tags']));
                     }
                     $output->writeln("Queue Message Persisted: ".json_encode($jobData));
+                    $this->queue->setQueueName(Queue::ASSIGNMENT_UPDATE)->deleteMessage($newJob);
                 } catch (\Exception $e) {
                     $output->writeln("Dropping the queue message: ".json_encode($jobData));
-                    $this->queue->setQueueName(Queue::ASSIGNMENT_UPDATE)->deleteMessage($newJob);
                     $output->writeln($e->getMessage());
                 }
-                $this->queue->setQueueName(Queue::ASSIGNMENT_UPDATE)->deleteMessage($newJob);
             }
         }
     }

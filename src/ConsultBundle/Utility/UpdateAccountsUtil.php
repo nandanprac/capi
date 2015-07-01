@@ -23,8 +23,8 @@ class UpdateAccountsUtil
 
     private $accountHost;
 
-    private static $fieldsToUpdate = array('weight_in_kgs' => 'weight',
-                                     'height_in_cms' => 'height',
+    private static $fieldsToUpdate = array('weight_in_kgs' => 'weight_in_kgs',
+                                     'height_in_cms' => 'height_in_cms',
                                       'age' => 'dob',
                                      'gender' => 'gender',
                                       'blood_group' => 'blood_group');
@@ -118,7 +118,7 @@ class UpdateAccountsUtil
                             }
                         }
                         if (!empty($val)) {
-                            $postData[$value] = $val;
+                            $postData[$value] = strtoupper($val);
                         }
 
                     }
