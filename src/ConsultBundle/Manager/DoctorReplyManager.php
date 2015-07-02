@@ -35,7 +35,7 @@ class DoctorReplyManager extends BaseManager
     public static $mandatoryFieldsForPostReply = array(
         "practo_account_id",
         "doctor_question_id",
-        "text"
+        "text",
     );
 
     /**
@@ -94,18 +94,6 @@ class DoctorReplyManager extends BaseManager
         $doctorReply->setDoctorQuestion($doctorQuestion);
         $doctorReply->setText($answerText);
 
-        /*
-                try {
-                    $this->validate($doctorReply);
-
-                }catch(\Exception $e)
-                {
-                    //To be implemented
-                    throw new Exception($e, $e->getMessage());
-                }*/
-
-        //$bookmarkUserObject = $this->helper->loadById($doctorQuestion->getQuestion()->getId(), ConsultConstants::QUESTION_BOOKMARK_ENTITY_NAME);
-
         $this->notification
             ->createPatientNotification($doctorQuestion->getQuestion()->getId(), $doctorQuestion->getQuestion()->getUserInfo()->getPractoAccountId(), "Your Query has been answered");
 
@@ -115,7 +103,8 @@ class DoctorReplyManager extends BaseManager
                 "message"=>"Your Query has been answered",
                 "id"=>$doctorQuestion->getQuestion()->getId(),
                 "send_to"=>"fabric",
-                "account_ids"=>array($doctorQuestion->getQuestion()->getUserInfo()->getPractoAccountId()))));
+                "account_ids"=>array($doctorQuestion->getQuestion()->getUserInfo()->getPractoAccountId()),
+            )));
 
         $this->helper->persist($doctorReply, true);
 
@@ -262,6 +251,7 @@ class DoctorReplyManager extends BaseManager
 
 
         if ($changed) {
+            $this->validate($doctorReplyEntity);
             $this->helper->persist($doctorReplyEntity, true);
         }
 
