@@ -21,7 +21,7 @@ class DoctorQuestion extends BaseEntity
     /**
      * @var Question $question
      *
-     * @ORM\ManyToOne(targetEntity = "Question")
+     * @ORM\ManyToOne(targetEntity = "Question", inversedBy="doctorQuestions")
      * @ORM\JoinColumn(name = "question_id", referencedColumnName = "id")
      */
     protected $question;

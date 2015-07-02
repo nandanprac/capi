@@ -34,6 +34,11 @@ class UserInfo extends BaseEntity
     private $name;
 
     /**
+     * @var string
+     */
+    private $profilePicture;
+
+    /**
      * @var bool
      *
      * @ORM\Column(name="is_relative", type="boolean")
@@ -142,6 +147,22 @@ class UserInfo extends BaseEntity
     public function setName($name)
     {
         $this->name = $name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getProfilePicture()
+    {
+        return $this->profilePicture;
+    }
+
+    /**
+     * @param string $profilePicture
+     */
+    public function setProfilePicture($profilePicture)
+    {
+        $this->profilePicture = $profilePicture;
     }
 
     /**

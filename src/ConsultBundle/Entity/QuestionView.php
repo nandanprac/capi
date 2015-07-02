@@ -17,7 +17,7 @@ use Doctrine\ORM\Mapping as ORM;
 class QuestionView extends BaseEntity
 {
     /**
-     * @ORM\ManyToOne(targetEntity = "Question")
+     * @ORM\ManyToOne(targetEntity = "Question", inversedBy="views")
      * @ORM\JoinColumn(name = "question_id", referencedColumnName = "id")
      */
     protected $question;
