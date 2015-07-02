@@ -36,6 +36,8 @@ parameters:
     scheme: https
     fileName: TREATMENTPHOTO
     tempUrl: /tmp/practo-consult-resources/
+    max_no_qs_image: 2
+    max_no_cnv_image: 2
     daa_debug: false
     accounts_host: http://accounts.practo.local
     accounts_signing_key: software-accounts-key

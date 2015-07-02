@@ -38,5 +38,6 @@ class ConsultConstants
     const DOCTOR_REPLY_FLAG_ENTITY_NAME = "ConsultBundle:DoctorReplyFlag";
     const PRIVATE_THREAD_ENTITY_NAME = "ConsultBundle:PrivateThread";
     const CONVERSATION_ENTITY_NAME = "ConsultBundle:Conversation";
+    const CONVERSATION_IMAGE_ENTITY_NAME = "ConsultBundle:ConversationImage";
 
 }
