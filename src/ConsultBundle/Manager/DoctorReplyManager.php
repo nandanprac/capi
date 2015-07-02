@@ -123,7 +123,7 @@ class DoctorReplyManager extends BaseManager
     }
 
     /**
-     * @param $postData
+     * @param array $postData
      *
      * @return \ConsultBundle\Response\ReplyResponseObject
      * @throws \ConsultBundle\Manager\ValidationError

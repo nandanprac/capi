@@ -106,8 +106,9 @@ def polish():
 
             info('Validating doctrine orm schema...')
             result = local(
-                './app/console doctrine:schema:validate | '
-                'grep \'\\[Mapping\\]\\s*OK\'')
+                'app/console doctrine:schema:validate'
+                #' | grep \'\\[Mapping\\]\\s*OK\''
+                )
             found_errors = found_errors or result.return_code != 0
 
             info('Checking use of symfony 2.0 validation...')

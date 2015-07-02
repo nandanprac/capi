@@ -109,6 +109,7 @@ class DoctorAssigmentCommand extends ContainerAwareCommand
                 } catch (\Exception $e) {
                     $output->writeln($e->getMessage());
                     $output->writeln($newJob);
+                    throw $e;
                 }
             }
         }
