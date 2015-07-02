@@ -2,6 +2,8 @@
 
 namespace ConsultBundle\Manager;
 
+use ConsultBundle\Entity\BaseEntity;
+use ConsultBundle\Repository\PrivateThreadRepository;
 use FOS\RestBundle\Util\Codes;
 use ConsultBundle\Constants\ConsultConstants;
 use ConsultBundle\Entity\UserInfo;
@@ -14,6 +16,7 @@ use ConsultBundle\Entity\PrivateThread;
 use ConsultBundle\Entity\Conversation;
 use ConsultBundle\Manager\ValidationError;
 use ConsultBundle\Queue\AbstractQueue as Queue;
+use Symfony\Component\HttpFoundation\FileBag;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
@@ -27,55 +30,48 @@ class PrivateThreadManager extends BaseManager
     protected $retrieveUserProfileUtil;
     protected $retrieveDoctorProfileUtil;
     protected $doctorManager;
+    private $questionImageManager;
+
 
     /**
-     * @param UserManager               $userManager
-     * @param Queue                     $queue
-     * @param RetrieveUserProfileUtil   $retrieveUserProfileUtil
-     * @param RetrieveDoctorProfileUtil $retrieveDoctorProfileUtil
-     * @param DoctorManager             $doctorManager
+     * @param \ConsultBundle\Manager\UserManager               $userManager
+     * @param \ConsultBundle\Queue\AbstractQueue               $queue
+     * @param \ConsultBundle\Utility\RetrieveUserProfileUtil   $retrieveUserProfileUtil
+     * @param \ConsultBundle\Utility\RetrieveDoctorProfileUtil $retrieveDoctorProfileUtil
+     * @param \ConsultBundle\Manager\DoctorManager             $doctorManager
+     * @param \ConsultBundle\Manager\QuestionImageManager      $questionImageManager
      */
     public function __construct(
         UserManager $userManager,
         Queue $queue,
         RetrieveUserProfileUtil $retrieveUserProfileUtil,
         RetrieveDoctorProfileUtil $retrieveDoctorProfileUtil,
-        DoctorManager $doctorManager
+        DoctorManager $doctorManager,
+        QuestionImageManager $questionImageManager
     ) {
         $this->userManager = $userManager;
         $this->queue = $queue;
         $this->retrieveUserProfileUtil = $retrieveUserProfileUtil;
         $this->retrieveDoctorProfileUtil = $retrieveDoctorProfileUtil;
         $this->doctorManager = $doctorManager;
+        $this->questionImageManager = $questionImageManager;
     }
 
-    /**
-     * @param Entity   $entity
-     * @param array    $requestParams - data for the updation
-     * @throws ValidationError
-     */
-    public function updateFields($entity, $requestParams)
-    {
-        $entity->setAttributes($requestParams);
-
-        try {
-            $this->validator->validate($entity);
-        } catch (ValidationError $e) {
-            throw new ValidationError($e->getMessage());
-        }
-
-        return;
-    }
 
     /**
-     * @param array   $requestParams   - parameters passed for creating new question object
-     * @param integer $practoAccountId - practo account id
-     * @param string  $profileToken    - profile token of the user
-     * @return \ConsultBundle\Entity\PrivateThread
+     * @param array                                     $requestParams
+     * @param int                                       $practoAccountId
+     * @param \Symfony\Component\HttpFoundation\FileBag $files
+     * @param null                                      $profileToken
+     *
+     * @return Object
      * @throws \ConsultBundle\Manager\ValidationError
      */
-    public function add($requestParams, $practoAccountId, $profileToken = null)
+    public function add($requestParams, $practoAccountId, FileBag $files, $profileToken = null)
     {
+        /**
+         * @var PrivateThreadRepository $er
+         */
         $er = $this->helper->getRepository(ConsultConstants::PRIVATE_THREAD_ENTITY_NAME);
         $privateThreadId = array_key_exists('private_thread_id', $requestParams) ? $requestParams['private_thread_id'] : null;
 
@@ -98,14 +94,14 @@ class PrivateThreadManager extends BaseManager
                     @$error['error'] = 'You have exhausted your follow up questions limit';
                     throw new ValidationError($error);
                 }
-                $lastConversation = $this->helper->getRepository(ConsultConstants::CONVERSATION_ENTITY_NAME)
-                                    ->findBy(array(), array('createdAt' => 'DESC'), 1, 0);
-                if (!empty($lastConversation)) {
-                    if (!Utility::toBool($lastConversation[0]->getIsDocReply())) {
-                        @$error['error'] = 'Wait for doctor\'s reply before following up again';
-                        throw new ValidationError($error);
-                    }
-                }
+                /*   $lastConversation = $this->helper->getRepository(ConsultConstants::CONVERSATION_ENTITY_NAME)
+                                      ->findBy(array(), array('createdAt' => 'DESC'), 1, 0);
+                 if (!empty($lastConversation)) {
+                      if (!Utility::toBool($lastConversation[0]->getIsDocReply())) {
+                          @$error['error'] = 'Wait for doctor\'s reply before following up again';
+                          throw new ValidationError($error);
+                      }
+                  }*/
             }
 
             $conversation = new Conversation();
@@ -117,13 +113,13 @@ class PrivateThreadManager extends BaseManager
                 @$error['error'] = 'Either id of previous reply or id of the private thread is required';
                 throw new ValidationError($error);
             }
-            if ($er->getPatientPrivateThreads($practoAccountId)) {
+            if ($er->privateThreadExists($practoAccountId)) {
                 @$error['error'] = 'You have already started a private thread. Cannot start another';
                 throw new ValidationError($error);
             }
 
-            $reply_id = $requestParams['reply_id'];
-            $reply = $this->helper->loadById($reply_id, ConsultConstants::DOCTOR_REPLY_ENTITY_NAME);
+            $replyId = $requestParams['reply_id'];
+            $reply = $this->helper->loadById($replyId, ConsultConstants::DOCTOR_REPLY_ENTITY_NAME);
             if (empty($reply)) {
                 @$error['error'] = 'Reply with the provided id could not be found';
                 throw new ValidationError($error);
@@ -154,8 +150,10 @@ class PrivateThreadManager extends BaseManager
         }
 
         $this->updateFields($conversation, $requestParams);
+        $this->helper->persist($conversation);
         $this->helper->persist($privateThread, 'true');
-        $this->helper->persist($conversation, 'true');
+
+        $this->questionImageManager->addConversationImage($conversation->getId(), $files);
 
         $isDocReply = false;
         if (Utility::toBool($conversation->getIsDocReply())) {
@@ -283,6 +281,24 @@ class PrivateThreadManager extends BaseManager
         $patientInfo->setProfilePicture($userInfo->getProfilePicture());
 
         return $patientInfo;
+    }
+
+    /**
+     * @param BaseEntity $entity
+     * @param array      $requestParams - data for the updation
+     * @throws ValidationError
+     */
+    private function updateFields($entity, $requestParams)
+    {
+        $entity->setAttributes($requestParams);
+
+        try {
+            $this->validator->validate($entity);
+        } catch (ValidationError $e) {
+            throw new ValidationError($e->getMessage());
+        }
+
+        return;
     }
 
 }

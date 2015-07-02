@@ -36,6 +36,12 @@ class Conversation extends BaseEntity
     private $isDocReply = false;
 
     /**
+     * @ORM\OneToMany(targetEntity="ConsultBundle\Entity\ConversationImage", mappedBy="conversation", fetch="EXTRA_LAZY", cascade={"persist", "remove"})
+     * @var ArrayCollection $images
+     */
+    private $images;
+
+    /**
      * @return mixed
      */
     public function getText()
@@ -86,5 +92,23 @@ class Conversation extends BaseEntity
     {
         return $this->privateThread;
     }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getImages()
+    {
+        return $this->images;
+    }
+
+    /**
+     * @param ArrayCollection $images
+     */
+    public function setImages($images)
+    {
+        $this->images = $images;
+    }
+
+
 
 }

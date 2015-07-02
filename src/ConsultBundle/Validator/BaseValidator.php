@@ -39,7 +39,7 @@ class BaseValidator implements ConsultValidatorInterface
     {
         $errors = array();
 
-        $validationErrors = $this->validator->validate($entity);
+      /*  $validationErrors = $this->validator->validate($entity);
         if (0 < count($validationErrors)) {
             foreach ($validationErrors as $validationError) {
                 $pattern = '/([a-z])([A-Z])/';
@@ -49,7 +49,7 @@ class BaseValidator implements ConsultValidatorInterface
                 $attribute = preg_replace_callback($pattern, $replace, $validationError->getPropertyPath());
                 @$errors[$attribute][] = $validationError->getMessage();
             }
-        }
+        }*/
 
         if (0 < count($errors)) {
             throw new ValidationError($errors);

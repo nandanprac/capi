@@ -6,7 +6,6 @@ use FOS\RestBundle\Controller\Annotations\Get;
 use FOS\RestBundle\View\View;
 use FOS\RestBundle\Util\Codes;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use ConsultBundle\Manager\ValidationError;
 
 /**
@@ -14,6 +13,7 @@ use ConsultBundle\Manager\ValidationError;
  */
 class PrivateThreadController extends BaseConsultController
 {
+
     /**
      * @param \Symfony\Component\HttpFoundation\Request $request
      *
@@ -27,18 +27,17 @@ class PrivateThreadController extends BaseConsultController
         $this->authenticate();
 
         $postData = $request->request->get('question');
+        $files = $request->files;
         $practoAccountId = $request->request->get('practo_account_id');
         $profileToken = $request->headers->get('X-Profile-Token');
 
         $privateThreadManager = $this->get('consult.private_thread_manager');
 
         try {
-            $thread= $privateThreadManager->add((array) json_decode($postData, true), $practoAccountId, $profileToken);
+            $thread= $privateThreadManager->add((array) json_decode($postData, true), $practoAccountId, $files, $profileToken);
 
         } catch (ValidationError $e) {
             return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
-        } catch (HttpException $e) {
-            return View::create(json_decode($e->getMessage(), true), $e->getCode());
         }
 
         return View::create(
