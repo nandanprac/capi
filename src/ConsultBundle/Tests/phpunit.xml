@@ -6,4 +6,9 @@
         <var name="DB_PASSWD" value="" />
         <var name="DB_DBNAME" value="consult_test" />
     </php>
+    <testsuites>
+        <testsuite name="Consult Api Test Suite">
+            <directory>../src/*Bundle/Tests</directory>
+        </testsuite>
+    </testsuites>
 </phpunit>

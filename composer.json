@@ -32,11 +32,12 @@
         "pda/pheanstalk": "~2.1",
         "aws/aws-sdk-php": "2.7.*",
         "guzzlehttp/guzzle": "~5.0",
-        "sensio/buzz-bundle": "dev-master"
+        "sensio/buzz-bundle": "dev-master",
+        "phpunit/phpunit": "4.7.*"
     },
     "require-dev": {
+        "doctrine/doctrine-fixtures-bundle": "2.2.*",
         "sensio/generator-bundle": "~2.3",
-      "doctrine/doctrine-fixtures-bundle": "2.2.*",
         "squizlabs/php_codesniffer": "2.*",
       "escapestudios/symfony2-coding-standard":"~2.0"
 
