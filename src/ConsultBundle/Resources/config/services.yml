@@ -13,11 +13,6 @@ services:
         arguments:
           - @validator
 
-    consult.questionCommentValidator:
-        class: ConsultBundle\Validator\QuestionCommentValidator
-        arguments:
-          - @validator
-
     consult.questionBookmarkValidator:
         class: ConsultBundle\Validator\QuestionBookmarkValidator
         arguments:

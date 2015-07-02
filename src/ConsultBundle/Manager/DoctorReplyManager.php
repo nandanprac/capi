@@ -228,6 +228,8 @@ class DoctorReplyManager extends BaseManager
                 }
             }
 
+            $flag->setPractoAccountId($practoAccountId);
+           // $this->validate($flag);
             $this->helper->persist($flag);
             $changed = true;
 
