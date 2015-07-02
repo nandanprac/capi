@@ -49,13 +49,12 @@ class PrivateThreadController extends BaseConsultController
 
     /**
      * @param int $id
-     * @param \Symfony\Component\HttpFoundation\Request $request
      *
      * @Get("/private/thread/{id}")
      *
      * @return \ConsultBundle\Entity\Question|\FOS\RestBundle\View\View
      */
-    public function getPrivateThreadAction($id, Request $request)
+    public function getPrivateThreadAction($id)
     {
         $logger = $this->get('logger');
         $logger->info("Get Private Question ".$id);
@@ -63,11 +62,8 @@ class PrivateThreadController extends BaseConsultController
 
         $privateThreadManager = $this->get('consult.private_thread_manager');
 
-        try {
-            $privateThread = $privateThreadManager->load($id, $practoAccountId);
-        } catch (HttpException $e) {
-            return View::create($e->getMessage(), $e->getCode());
-        }
+        $privateThread = $privateThreadManager->load($id, $practoAccountId);
+
 
         if (null === $privateThread) {
             return View::create(null, Codes::HTTP_NOT_FOUND);
@@ -87,12 +83,8 @@ class PrivateThreadController extends BaseConsultController
     {
         $practoAccountId = $this->authenticate();
         $privateThreadManager = $this->get('consult.private_thread_manager');
+        $privateThreadList = $privateThreadManager->loadAll($practoAccountId, false);
 
-        try {
-            $privateThreadList = $privateThreadManager->loadAll($practoAccountId, false);
-        } catch (HttpException $e) {
-            return View::create($e->getMessage(), $e->getCode());
-        }
 
         if (null === $privateThreadList) {
             return View::create(null, Codes::HTTP_NOT_FOUND);
@@ -113,11 +105,8 @@ class PrivateThreadController extends BaseConsultController
         $practoAccountId = $this->authenticate();
         $privateThreadManager = $this->get('consult.private_thread_manager');
 
-        try {
-            $privateThreadList = $privateThreadManager->loadAll($practoAccountId, true);
-        } catch (HttpException $e) {
-            return View::create($e->getMessage(), $e->getCode());
-        }
+        $privateThreadList = $privateThreadManager->loadAll($practoAccountId, true);
+
 
         if (null === $privateThreadList) {
             return View::create(null, Codes::HTTP_NOT_FOUND);
