@@ -8,7 +8,7 @@
     </php>
     <testsuites>
         <testsuite name="Consult Api Test Suite">
-            <directory>../src/*Bundle/Tests</directory>
+            <directory>../src/*Bundle/Tests/Controller/NotificationControllerTest</directory>
         </testsuite>
     </testsuites>
 </phpunit>

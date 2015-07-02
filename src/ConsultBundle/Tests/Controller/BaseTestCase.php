@@ -13,13 +13,8 @@ use Symfony\Bundle\FrameworkBundle\Console\Application;
  */
 class BaseTestCase extends WebTestCase
 {
-
     protected static $application;
     protected $client;
-
-    /**
-     * Setup before
-     */
 
     /**
      * Setting up before each test case
@@ -27,9 +22,6 @@ class BaseTestCase extends WebTestCase
     public function setUp()
     {
         $this->client = static::createClient();
-        //$this->runCommand('doctrine:schema:create');
-        //$this->runCommand('doctrine:schema:update --force');
-
         $authenticateStub = $this->getMockBuilder('ConsultBundle\EventListener\SecurityListener')->disableOriginalConstructor()->getMock();
 
         $authenticateStub->expects($this->any())->method('onKernelRequest')->will(
@@ -52,7 +44,7 @@ class BaseTestCase extends WebTestCase
      */
     public function post($uri, array $data, $param = array())
     {
-        $headers = array('CONTENT_TYPE' => 'application/json');
+        $headers = array('Content-Type' => 'application/json');
         $content = json_encode($data);
         $this->client->request('POST', $uri, $param, array(), $headers, $content);
 
@@ -67,7 +59,7 @@ class BaseTestCase extends WebTestCase
      */
     public function get($uri, array $param = array())
     {
-        $headers = array('CONTENT_TYPE' => 'application/json');
+        $headers = array('Content-Type' => 'application/json', 'X-Profile-Token' => 'xxxxxx');
         $this->client->request('GET', $uri, $param, array(), $headers);
 
         return $this->client->getResponse();
@@ -79,9 +71,9 @@ class BaseTestCase extends WebTestCase
      *
      * @return array
      */
-    public function runCommand($command)
+    public static function runCommand($command)
     {
-        $command = sprintf('%s  --env=test --quiet', $command);
+        $command = sprintf('%s  --env=test', $command);
 
         return self::getApplication()->run(new StringInput($command));
     }
@@ -89,10 +81,11 @@ class BaseTestCase extends WebTestCase
     /**
      * @return application
      */
-    public function getApplication()
+    public static function getApplication()
     {
+        $client = static::createClient();
         if (null === self::$application) {
-            self::$application = new Application($this->client->getKernel());
+            self::$application = new Application($client->getKernel());
             self::$application->setAutoExit(false);
         }
 
