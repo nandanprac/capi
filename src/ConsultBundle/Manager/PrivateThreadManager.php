@@ -205,7 +205,7 @@ class PrivateThreadManager extends BaseManager
 
                     $privateThreadTmp['subject'] = $privateThread['subject'];
                     $privateThreadTmp['last_modified_time'] = $privateThread['last_modified_time'];
-                    $privateThreadTmp['question'] = $privateThread['question'];
+                    $privateThreadTmp['latest_question_text'] = $privateThread['question'];
                     $userInfo = $this->retrieveUserProfileUtil->retrieveUserProfileNew($privateThread['user_info']);
                     $privateThreadTmp['patient_name'] = $userInfo->getName();
                     $privateThreadTmp['patient_image'] = $userInfo->getProfilePicture();
