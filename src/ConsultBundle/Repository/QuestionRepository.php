@@ -4,6 +4,8 @@ namespace ConsultBundle\Repository;
 
 use ConsultBundle\Entity\Question;
 use ConsultBundle\Utility\Utility;
+use Symfony\Component\Validator\Constraints\DateTime;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use ConsultBundle\Constants\ConsultConstants;
 use Doctrine\ORM\EntityRepository;
@@ -139,9 +141,13 @@ class QuestionRepository extends EntityRepository
 
         if(isset($startDate) && isset($endDate))
         {
-            $qb->andWhere(':startDate =< q.createdAt =< :endDate');
-            $qb->setParameter('startDate', $startDate);
-            $qb->setParameter('endDate', $endDate);
+
+            $start= substr($startDate,0,10);
+            $end=substr($endDate,0,10);
+            $qb->andWhere(':startDate <= q.createdAt');
+            $qb->andWhere('q.createdAt <= :endDate');
+            $qb->setParameter('startDate', new \DateTime($start));
+            $qb->setParameter('endDate', new \DateTime($end));
         }
 
         if (isset($state)) {
@@ -168,15 +174,27 @@ class QuestionRepository extends EntityRepository
         if (isset($patientName))
         {
             $qb->leftJoin(ConsultConstants::USER_ENTITY_NAME, 'u', 'WITH', ' u=q.userInfo AND u.softDeleted = 0 ');
-            $qb->andWhere(' u.patientName = :patientName');
+            $qb->andWhere(' u.name = :patientName');
             $qb->setParameter('patientName', $patientName);
         }
 
 
         $questionList = $qb->getQuery()->getArrayResult();
 
+
         $paginator = new Paginator($qb->getQuery(), $fetchJoinCollection = true);
-        $count = count($paginator);
+        $totalCount = count($paginator);
+
+
+        $qbInvalid = $this->_em->createQueryBuilder();
+        $qbInvalid = $qb;
+        $qbInvalid->andWhere("q.state = 'INVALID'");
+        $invalidCount = count(new Paginator($qbInvalid->getQuery(), $fetchJoinCollection= true));
+
+
+
+        $count=array("totalCount"=>$totalCount,"invalidCount"=>$invalidCount);
+
 
         if (is_null($questionList)) {
             return null;

@@ -179,6 +179,25 @@ class DoctorQuestionRepository extends EntityRepository
 
         $qb->setParameter('question', $question);
 
+//        $qbViewed = $this->_em->createQueryBuilder();
+//        $qbViewed = $qb;
+//        $qbViewed->andWhere("dq.question.state = 'INVALID'");
+//        $viewedCount = count(new Paginator($qbViewed->getQuery(), $fetchJoinCollection= true));
+//
+//        $qbAnswered = $this->_em->createQueryBuilder();
+//        $qbAnswered = $qb;
+//        $qbAnswered->andWhere("dq.question.state = 'INVALID'");
+//        $answeredCount = count(new Paginator($qbAnswered->getQuery(), $fetchJoinCollection= true));
+//
+//        $qbRated = $this->_em->createQueryBuilder();
+//        $qbRated = $qb;
+//        $qbRated->andWhere("dq.question.state = 'INVALID'");
+//        $ratedCount = count(new Paginator($qbAnswered->getQuery(), $fetchJoinCollection= true));
+
+
+//        ,"viewedCount"=>$viewedCount,"answeredCount"=>$answeredCount
+
+
         $doctorQuestions = $qb->getQuery()->getArrayResult();
 
         return $doctorQuestions;

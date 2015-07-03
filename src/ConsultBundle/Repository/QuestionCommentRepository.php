@@ -71,4 +71,42 @@ class QuestionCommentRepository extends EntityRepository
 
         return array('comments' => $commentList, 'count' => $count);
     }
+
+
+    ///////////////////////////
+
+    public function getModerationComments($question)
+    {
+        // query for getting comment details with total votes
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select(
+            'c.id',
+            'c.practoAccountId as practo_account_id',
+            'c.identifier as identifier',
+            'c.text as text',
+            'c.createdAt as created_at',
+            'COALESCE(SUM(cv.vote), 0) as total_votes'
+        );
+
+        $qb->from(ConsultConstants::QUESTION_COMMENT_ENTITY_NAME, 'c')
+            ->leftJoin(ConsultConstants::QUESTION_COMMENT_VOTE_ENTITY_NAME, 'cv', 'WITH', 'c = cv.questionComment and cv.softDeleted = 0')
+            ->where('c.softDeleted = 0')
+            ->andWhere('c.question = :question')
+            ->setParameter('question', $question)
+            ->groupBy('c.id')
+            ->orderBy('c.createdAt', 'DESC');
+
+
+        $commentList = $qb->getQuery()->getArrayResult();
+
+        $countQuery = $qb->getQuery();
+        $countQuery->setFirstResult(null)->setMaxResults(null);
+        $count =  count($countQuery->getArrayResult());
+
+        if (empty($commentList)) {
+            return null;
+        }
+
+        return array('comments' => $commentList, 'count' => $count);
+    }
 }

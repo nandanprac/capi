@@ -67,8 +67,8 @@ class ModerationManager extends BaseManager
         $state = (array_key_exists('state', $request)) ? $request['state'] : null;//"NEW";
         $thisMonth=(array_key_exists('thisMonth',$request)) ? $request['thisMonth'] : false;
         $lastMonth=(array_key_exists('lastMonth',$request)) ? $request['lastMonth'] : false;
-        $startDate=(array_key_exists('startDate',$request)) ? $request['startMonth'] : null;
-        $endDate=(array_key_exists('endDate',$request)) ? $request['endMonth'] : null;
+        $startDate=(array_key_exists('startDate',$request)) ? $request['startDate'] : null;
+        $endDate=(array_key_exists('endDate',$request)) ? $request['endDate'] : null;
         $thisYear=(array_key_exists('thisYear',$request)) ? $request['thisYear'] : false;
         $limit=(array_key_exists('limit',$request)) ? $request['limit'] : null;
         $patientId=(array_key_exists('patientID',$request)) ? $request['patientID'] : null;
@@ -270,6 +270,16 @@ class ModerationManager extends BaseManager
         }
 
         return $question;
+    }
+
+
+    public function getComments($questionId)
+    {
+        $question = $this->helper->loadById($questionId, ConsultConstants::QUESTION_ENTITY_NAME);
+        $er=$this->helper->getRepository(ConsultConstants::QUESTION_COMMENT_ENTITY_NAME);
+        $replies=$er->getModerationComments($question);
+
+        return array('questionID'=>$questionId,'comments'=>$replies['comments'],'count'=>$replies['count']);
     }
 
 }

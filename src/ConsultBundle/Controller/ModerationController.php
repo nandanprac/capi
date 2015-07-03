@@ -59,6 +59,7 @@ class ModerationController extends BaseConsultController
         //var_dump(json_encode($quesArr, true));die;
         $response->setContent(json_encode($quesArr));
         $response->headers->set("access-control-allow-origin","*");
+        var_dump($response);die;
         return $response;
     }
 
@@ -139,6 +140,20 @@ class ModerationController extends BaseConsultController
         $response = new Response();
         $response->headers->set("access-control-allow-origin","*");
         $response->setContent(json_encode(array("state"=>"REJECTED")));
+        return $response;
+    }
+
+
+    public function getCommentsAction($questionId)
+    {
+        $moderationManager = $this->get('consult.moderation_manager');
+
+        $comments=$moderationManager->getComments($questionId);
+
+   //     $question= $moderationManager->helper->loadById($questionId,)
+        $response = new Response();
+        $response->headers->set("access-control-allow-origin","*");
+        $response->setContent(json_encode($comments));
         return $response;
     }
 
