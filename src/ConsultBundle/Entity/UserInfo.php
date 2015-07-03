@@ -413,6 +413,7 @@ class UserInfo extends BaseEntity
         if (empty($this->allergyStatus) || !$this->allergyStatus) {
             $this->setAllergies(null);
         }
+
     }
 
     /**
@@ -436,6 +437,7 @@ class UserInfo extends BaseEntity
         if (empty($this->medicationStatus) || !$this->medicationStatus) {
             $this->setMedications(null);
         }
+
     }
 
     /**
@@ -456,9 +458,12 @@ class UserInfo extends BaseEntity
     public function setDiagnosedConditionStatus($diagnosedConditionStatus)
     {
         $this->diagnosedConditionStatus = $this->toBool($diagnosedConditionStatus);
+
         if (empty($this->diagnosedConditionStatus) || !$this->diagnosedConditionStatus) {
-            $this->setDiagnosedConditionStatus(null);
+            $this->prevDiagnosedConditions = null;
         }
+
+
     }
 }
 
