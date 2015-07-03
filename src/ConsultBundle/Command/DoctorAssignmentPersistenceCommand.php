@@ -105,6 +105,7 @@ class DoctorAssignmentPersistenceCommand extends ContainerAwareCommand
                 } catch (\Exception $e) {
                     $output->writeln("Dropping the queue message: ".json_encode($jobData));
                     $output->writeln($e->getMessage());
+                    throw $e;
                 }
             }
         }

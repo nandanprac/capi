@@ -18,6 +18,7 @@ use ConsultBundle\Response\DetailQuestionResponseObject;
 use ConsultBundle\Response\DoctorQuestionResponseObject;
 use ConsultBundle\Response\ReplyResponseObject;
 use ConsultBundle\Utility\RetrieveUserProfileUtil;
+use ConsultBundle\Validator\ConsultValidatorInterface;
 use ConsultBundle\Validator\Validator;
 use ConsultBundle\Entity\BaseEntity;
 
@@ -37,7 +38,7 @@ class BaseManager
 
     /**
      * validator
-     * @var Validator
+     * @var ConsultValidatorInterface
      */
     protected $validator;
 
@@ -50,9 +51,9 @@ class BaseManager
     }
 
     /**
-     * @param  Validator $validator
+     * @param  ConsultValidatorInterface $validator
      */
-    public function setValidator(Validator $validator)
+    public function setValidator(ConsultValidatorInterface $validator)
     {
         $this->validator = $validator;
     }

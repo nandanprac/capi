@@ -49,6 +49,16 @@ class ReplyResponseObject extends ConsultResponseObject
     private $vote = 0;
 
     /**
+     * @var string
+     */
+    private $flagCode;
+
+    /**
+     * @var string
+     */
+    private $flagText;
+
+    /**
      * @param \ConsultBundle\Entity\DoctorReply $reply
      */
     public function __construct(DoctorReply $reply = null)
@@ -162,6 +172,39 @@ class ReplyResponseObject extends ConsultResponseObject
     {
         $this->practoAccountId = $practoAccountId;
     }
+
+    /**
+     * @return string
+     */
+    public function getFlagCode()
+    {
+        return $this->flagCode;
+    }
+
+    /**
+     * @param string $flagCode
+     */
+    public function setFlagCode($flagCode)
+    {
+        $this->flagCode = $flagCode;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFlagText()
+    {
+        return $this->flagText;
+    }
+
+    /**
+     * @param string $flagText
+     */
+    public function setFlagText($flagText)
+    {
+        $this->flagText = $flagText;
+    }
+
 
     /**
      * @param array $doctorQuestion
