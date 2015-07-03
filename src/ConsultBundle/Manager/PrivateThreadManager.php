@@ -174,6 +174,9 @@ class PrivateThreadManager extends BaseManager
     public function load($privateThreadId, $practoAccountId)
     {
         $privateThread = $this->helper->loadById($privateThreadId, ConsultConstants::PRIVATE_THREAD_ENTITY_NAME);
+        if (empty($privateThread)) {
+            return null;
+        }
         if ($practoAccountId != $privateThread->getUserInfo()->getPractoAccountId() && $practoAccountId != $privateThread->getDoctorId()) {
             throw new HttpException(Codes::HTTP_FORBIDDEN, 'You do not have access to view this question');
         }
