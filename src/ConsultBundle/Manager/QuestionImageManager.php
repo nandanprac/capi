@@ -94,7 +94,7 @@ class QuestionImageManager extends BaseManager
         $conversation->setImages($conversationImages);
 
         if ($conversationImages->count() > 0) {
-            $this->helper->persist($conversation, true);
+            $this->helper->persist($conversation);
         }
     }
 }
