@@ -81,14 +81,21 @@ class PrivateThreadRepository extends EntityRepository
               ->setMaxResults(1);
         $lastQuestion = $subqb->getQuery()->getArrayResult();
 
+        $question = null;
+        $imagesCount = 0;
+        if (count($lastQuestion) > 0) {
+            $question = $lastQuestion[0]['question'];
+            $imagesCount = $lastQuestion[0]['images_count'];
+        }
+
         $qb = $this->_em->createQueryBuilder();
         $qb->select('p.id', 'p.subject', 'p.modifiedAt as last_modified_time', '(:lastQuestion) as question', '(:imagesCount) as images_count', 'u as user_info')
             ->from(ConsultConstants::PRIVATE_THREAD_ENTITY_NAME, 'p')
             ->innerJoin(ConsultConstants::USER_ENTITY_NAME, 'u', 'WITH', 'u = p.userInfo AND u.softDeleted = 0')
             ->where('p.doctorId = :practoAccountId and p.softDeleted = 0')
             ->setParameter('practoAccountId', $practoAccountId)
-            ->setParameter('lastQuestion', $lastQuestion[0]['question'])
-            ->setParameter('imagesCount', $lastQuestion[0]['images_count']);
+            ->setParameter('lastQuestion', $question)
+            ->setParameter('imagesCount', $imagesCount);
 
         $privateThreadEntry = $qb->getQuery()->getResult();
 
