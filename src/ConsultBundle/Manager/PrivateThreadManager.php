@@ -102,6 +102,15 @@ class PrivateThreadManager extends BaseManager
                           throw new ValidationError($error);
                       }
                   }*/
+
+                $userInfoParams = array();
+                if (array_key_exists('user_info', $requestParams)) {
+                    $userInfoParams = $requestParams['user_info'];
+                    unset($requestParams['user_info']);
+                }
+                $userInfoParams['practo_account_id'] = $practoAccountId;
+                $userEntry = $this->userManager->add($userInfoParams, $profileToken);
+                $privateThread->setUserInfo($userEntry);
             }
 
             $conversation = new Conversation();
