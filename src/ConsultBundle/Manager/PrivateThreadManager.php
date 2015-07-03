@@ -281,6 +281,9 @@ class PrivateThreadManager extends BaseManager
         $patientInfo->setOccupation($userInfo->getOccupation());
         $patientInfo->setLocation($userInfo->getLocation());
         $patientInfo->setName($userInfo->getName());
+        $patientInfo->setAllergyStatus($userInfo->getAllergyStatus());
+        $patientInfo->setPrevDiagnosedConditionsStatus($userInfo->getDiagnosedConditionStatus());
+        $patientInfo->setMedicationStatus($userInfo->getMedicationStatus());
         $patientInfo->setProfilePicture($userInfo->getProfilePicture());
 
         return $patientInfo;

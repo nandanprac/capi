@@ -398,6 +398,9 @@ class UserInfo extends BaseEntity
      */
     public function getAllergyStatus()
     {
+        if (!empty($this->allergies)) {
+            return true;
+        }
         return $this->allergyStatus;
     }
 
@@ -417,6 +420,10 @@ class UserInfo extends BaseEntity
      */
     public function getMedicationStatus()
     {
+        if (!empty($this->medications)) {
+            return true;
+        }
+
         return $this->medicationStatus;
     }
 
@@ -436,6 +443,10 @@ class UserInfo extends BaseEntity
      */
     public function getDiagnosedConditionStatus()
     {
+        if (!empty($this->prevDiagnosedConditions)) {
+            return true;
+        }
+
         return $this->diagnosedConditionStatus;
     }
 
