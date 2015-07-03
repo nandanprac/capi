@@ -160,6 +160,12 @@ class PrivateThreadManager extends BaseManager
             $isDocReply = true;
         }
 
+        if (!$isDocReply) {
+            $this->sendPrivateNotify('doctor', $privateThread->getDoctorId(), $privateThread->getId(), $privateThread->getSubject());
+        } else {
+            $this->sendPrivateNotify('patient', $privateThread->getUserInfo()->getPractoAccountId(), $privateThread->getId(), $privateThread->getSubject());
+        }
+
         return $this->createThreadResponse($privateThread, $isDocReply);
     }
 
@@ -301,4 +307,29 @@ class PrivateThreadManager extends BaseManager
         return;
     }
 
+    /**
+     * Send private question assigned notify
+     *
+     * @param string $to          - Sending it to
+     * @param string $toAccountId - Sending it to account id
+     * @param string $questionId  - Question id
+     */
+    private function sendPrivateNotify($to, $toAccountId, $questionId, $subject)
+    {
+        if ($to == 'doctor') {
+            $this->queue->setQueueName(Queue::CONSULT_GCM)
+                ->sendMessage(json_encode(array(
+                    "type"=>"consult",
+                    "message"=>array('text'=>"A Private Question has been assigned to you.", 'question_id'=>$questionId, 'is_private'=>true, 'subject'=>$subject),
+                    "send_to"=>"synapse",
+                    "account_ids"=>array($toAccountId))));
+        } elseif ($to == 'patient') {
+            $this->queue->setQueueName(Queue::CONSULT_GCM)
+                ->sendMessage(json_encode(array(
+                    "type"=>"consult",
+                    "message"=>array('text'=>"Your question has been answered by doctor.", 'question_id'=>$questionId, 'is_private'=>true, 'subject'=>$subject),
+                    "send_to"=>"fabric",
+                    "account_ids"=>array($toAccountId))));
+        }
+    }
 }
