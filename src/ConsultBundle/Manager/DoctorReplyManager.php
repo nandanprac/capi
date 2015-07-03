@@ -158,9 +158,9 @@ class DoctorReplyManager extends BaseManager
             $this->queue->setQueueName(Queue::CONSULT_GCM)
                 ->sendMessage(json_encode(array(
                     "type"=>"consult",
-                    "message"=>array('text'=>"Your answer has been rated by doctor", 'question_id'=>$doctorReplyEntity->doctorQuestion()->getQuestion()->getId()),
+                    "message"=>array('text'=>"Your answer has been rated by doctor", 'question_id'=>$doctorReplyEntity->getDoctorQuestion()->getQuestion()->getId()),
                     "send_to"=>"synapse",
-                    "account_ids"=>array($doctorReplyEntity->doctorQuestion()->getPractoAccountId()))));
+                    "account_ids"=>array($doctorReplyEntity->getDoctorQuestion()->getPractoAccountId()))));
         }
 
         //Mark the answer as viewed
