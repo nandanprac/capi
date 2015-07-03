@@ -189,18 +189,20 @@ class PrivateThreadManager extends BaseManager
      *
      * @return array PrivateThread
      */
-    public function loadAll($practoAccountId, $is_doctor)
+    public function loadAll($practoAccountId, $isDoctor)
     {
+        /**
+         * @var PrivateThreadRepository $er
+         */
         $er = $this->helper->getRepository(ConsultConstants::PRIVATE_THREAD_ENTITY_NAME);
 
-        if ($is_doctor) {
-
+        if ($isDoctor) {
             $privateThreads = $er->getDoctorPrivateThreads($practoAccountId);
             if (!empty($privateThreads)) {
                 $privateThreadsTmp = array();
                 foreach ($privateThreads as $privateThread) {
                     $privateThreadTmp = array();
-
+                    $privateThreadTmp['id'] = $privateThread['id'];
                     $privateThreadTmp['subject'] = $privateThread['subject'];
                     $privateThreadTmp['last_modified_time'] = $privateThread['last_modified_time'];
                     $privateThreadTmp['latest_question_text'] = $privateThread['question'];
@@ -209,17 +211,17 @@ class PrivateThreadManager extends BaseManager
                     $privateThreadTmp['patient_image'] = $userInfo->getProfilePicture();
 
                     $userInfoList = array('bloodGroup', 'occupation', 'location', 'heightInCms', 'weightInKgs', 'allergies', 'medications', 'prevDiagnosedConditions');
-                    $has_additional_details = false;
+                    $hasAdditionalDetails = false;
                     foreach ($userInfoList as $option) {
                         $getter = 'get'.$option;
                         if (method_exists($userInfo, $getter)) {
                             if (!empty($userInfo->$getter())) {
-                                $has_additional_details = true;
+                                $hasAdditionalDetails = true;
                                 break;
                             }
                         }
                     }
-                    $privateThreadTmp['has_additional_details'] = $has_additional_details;
+                    $privateThreadTmp['has_additional_details'] = $hasAdditionalDetails;
 
                     $privateThreadsTmp[] = $privateThreadTmp;
                 }

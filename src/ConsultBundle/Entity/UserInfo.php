@@ -102,14 +102,29 @@ class UserInfo extends BaseEntity
     protected $allergies = null;
 
     /**
+     * @ORM\Column(type="boolean", name="allergy_status", nullable=true)
+     */
+    protected $allergyStatus = null;
+
+    /**
      * @ORM\Column(type="text", name="medications", nullable=true)
      */
     protected $medications = null;
 
     /**
+     * @ORM\Column(type="boolean", name="medication_status", nullable=true)
+     */
+    protected $medicationStatus = null;
+
+    /**
      * @ORM\Column(name="prev_diagnosed_conditions", type="text", nullable=true)
      */
     protected $prevDiagnosedConditions = null;
+
+    /**
+     * @ORM\Column(type="boolean", name="diagnosed_condition_status", nullable=true)
+     */
+    protected $diagnosedConditionStatus = null;
 
     /**
      * @ORM\Column(name="additional_details", type="text", nullable=true)
@@ -377,4 +392,53 @@ class UserInfo extends BaseEntity
     {
         $this->additionalDetails = $additionalDetails;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getAllergyStatus()
+    {
+        return $this->allergyStatus;
+    }
+
+    /**
+     * @param mixed $allergyStatus
+     */
+    public function setAllergyStatus($allergyStatus)
+    {
+        $this->allergyStatus = $this->toBool($allergyStatus);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMedicationStatus()
+    {
+        return $this->medicationStatus;
+    }
+
+    /**
+     * @param mixed $medicationStatus
+     */
+    public function setMedicationStatus($medicationStatus)
+    {
+        $this->medicationStatus = $this->toBool($medicationStatus);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDiagnosedConditionStatus()
+    {
+        return $this->diagnosedConditionStatus;
+    }
+
+    /**
+     * @param mixed $diagnosedConditionStatus
+     */
+    public function setDiagnosedConditionStatus($diagnosedConditionStatus)
+    {
+        $this->diagnosedConditionStatus = $this->toBool($diagnosedConditionStatus);
+    }
 }
+
