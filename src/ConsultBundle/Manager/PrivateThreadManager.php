@@ -153,7 +153,7 @@ class PrivateThreadManager extends BaseManager
         $this->helper->persist($conversation);
 
 
-        $this->questionImageManager->addConversationImage($conversation->getId(), $files);
+        $this->questionImageManager->addConversationImage($conversation, $files);
         $this->helper->persist($privateThread, 'true');
 
         $isDocReply = false;
