@@ -76,7 +76,9 @@ class PrivateThreadManager extends BaseManager
         $privateThreadId = array_key_exists('private_thread_id', $requestParams) ? $requestParams['private_thread_id'] : null;
 
         if (!empty($privateThreadId)) {
+
             $privateThread = $this->helper->loadById($privateThreadId, ConsultConstants::PRIVATE_THREAD_ENTITY_NAME);
+
             if (empty($privateThread)) {
                 @$error['error'] = 'Private thread with the provided id could not be found';
                 throw new ValidationError($error);
@@ -265,7 +267,11 @@ class PrivateThreadManager extends BaseManager
         $privateThreadResponse['subject'] = $privateThread->getSubject();
         $privateThreadResponse['base_question_id'] = $privateThread->getQuestion()->getId();
         $privateThreadResponse['conversation'] = $er->getAllConversationsForThread($privateThread);
-        $userInfo = $this->retrieveUserProfileUtil->retrieveUserProfileNew($privateThread->getUserInfo());
+        $userInfo = $privateThread->getUserInfo();
+        if (!$userInfo->isIsRelative()) {
+            $userInfo = $this->retrieveUserProfileUtil->retrieveUserProfileNew($privateThread->getUserInfo());
+        }
+
         $privateThreadResponse['patient'] = $this->populatePatientInfo($userInfo);
         if (!$isDoctor) {
             $practoAccountId = $privateThread->getUserInfo()->getPractoAccountId();
