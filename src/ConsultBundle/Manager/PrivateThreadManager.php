@@ -231,7 +231,7 @@ class PrivateThreadManager extends BaseManager
                     foreach ($userInfoList as $option) {
                         $getter = 'get'.$option;
                         if (method_exists($userInfo, $getter)) {
-                            if (!empty($userInfo->$getter())) {
+                            if (!empty($userInfo->$getter()) && $userInfo->$getter() != 'null') {
                                 $hasAdditionalDetails = true;
                                 break;
                             }
