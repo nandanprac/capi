@@ -247,6 +247,7 @@ class PrivateThreadManager extends BaseManager
     {
         $er = $this->helper->getRepository(ConsultConstants::PRIVATE_THREAD_ENTITY_NAME);
         $privateThreadResponse = array();
+        $privateThreadResponse['id'] = $privateThread->getId();
         $privateThreadResponse['subject'] = $privateThread->getSubject();
         $privateThreadResponse['base_question_id'] = $privateThread->getQuestion()->getId();
         $privateThreadResponse['conversation'] = $er->getAllConversationsForThread($privateThread);
