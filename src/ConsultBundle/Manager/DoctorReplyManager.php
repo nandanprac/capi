@@ -109,9 +109,8 @@ class DoctorReplyManager extends BaseManager
 
         $this->queue->setQueueName(Queue::CONSULT_GCM)
             ->sendMessage(json_encode(array(
-                "type"=>"query_answered",
-                "message"=>"Your Query has been answered",
-                "id"=>$doctorQuestion->getQuestion()->getId(),
+                "type"=>"consult",
+                "message"=>array('text'=>"Your Query has been answered", 'question_id'=>$doctorQuestion->getQuestion()->getId()),
                 "send_to"=>"fabric",
                 "account_ids"=>array($doctorQuestion->getQuestion()->getUserInfo()->getPractoAccountId()))));
 
@@ -162,6 +161,13 @@ class DoctorReplyManager extends BaseManager
 
             $doctorReplyEntity->setRating($doctorReply['rating']);
             $changed = true;
+
+            $this->queue->setQueueName(Queue::CONSULT_GCM)
+                ->sendMessage(json_encode(array(
+                    "type"=>"consult",
+                    "message"=>array('text'=>"Your answer has been rated by doctor", 'question_id'=>$doctorReplyEntity->doctorQuestion()->getQuestion()->getId()),
+                    "send_to"=>"synapse",
+                    "account_ids"=>array($doctorReplyEntity->doctorQuestion()->getPractoAccountId()))));
         }
 
         //Mark the answer as viewed

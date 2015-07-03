@@ -166,7 +166,7 @@ class QuestionManager extends BaseManager
 
         if (array_key_exists('bookmark', $requestParams)) {
             if (empty($practoAccountId)) {
-                throw new \HttpException('',Codes::HTTP_FORBIDDEN);
+                throw new \HttpException('', Codes::HTTP_FORBIDDEN);
             }
             if (Utility::toBool($requestParams['bookmark'])) {
                 try {
