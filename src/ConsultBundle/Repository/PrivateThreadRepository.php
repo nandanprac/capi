@@ -126,7 +126,7 @@ class PrivateThreadRepository extends EntityRepository
     public function getAllConversationsForThread($privateThread)
     {
         $qb = $this->_em->createQueryBuilder();
-        $qb->select('c.id', 'c.text', 'c.isDocReply', 'GROUP_CONCAT(ci.url separator \', \') as images')
+        $qb->select('c.id', 'c.text', 'c.isDocReply', 'c.createdAt', 'GROUP_CONCAT(ci.url separator \', \') as images')
             ->from(ConsultConstants::PRIVATE_THREAD_ENTITY_NAME, 'p')
             ->innerJoin(ConsultConstants::CONVERSATION_ENTITY_NAME, 'c', 'WITH', 'c.privateThread = p AND c.softDeleted = 0')
             ->leftJoin(ConsultConstants::CONVERSATION_IMAGE_ENTITY_NAME, 'ci', 'WITH', 'ci.conversation = c AND ci.softDeleted = 0')
