@@ -16,7 +16,7 @@ class PrivateThreadRepository extends EntityRepository
     const FOLLOW_UP_THRESHOLD = 5;
 
     /**
-     * @param $practoAccountId
+     * @param int $practoAccountId
      *
      * @return bool
      */
@@ -25,7 +25,7 @@ class PrivateThreadRepository extends EntityRepository
         $qb = $this->_em->createQueryBuilder();
         $qb->select('p')
             ->from(ConsultConstants::PRIVATE_THREAD_ENTITY_NAME, 'p')
-            ->innerJoin(ConsultConstants::USER_ENTITY_NAME, 'u', 'WITH', 'u = p.userInfo AND u.softDeleted = 0')
+            ->innerJoin(ConsultConstants::USER_ENTITY_NAME, 'u', 'WITH', 'u = p.userInfo')
             ->where('u.practoAccountId = :practoAccountId and p.softDeleted = 0')
             ->setParameter('practoAccountId', $practoAccountId);
 
@@ -46,7 +46,7 @@ class PrivateThreadRepository extends EntityRepository
     public function getPatientPrivateThreads($practoAccountId)
     {
         $qb = $this->_em->createQueryBuilder();
-        $qb->select('d.name as doctor_name', 'd.profilePicture as profile_picture', 'p.subject', 'p.modifiedAt as last_modified_time', '(:FOLLOW_UP_THRESHOLD - COUNT(c)) as follow_up_count')
+        $qb->select('p.id', 'd.name as doctor_name', 'd.profilePicture as profile_picture', 'p.subject', 'p.modifiedAt as last_modified_time', '(:FOLLOW_UP_THRESHOLD - COUNT(c)) as follow_up_count')
             ->from(ConsultConstants::PRIVATE_THREAD_ENTITY_NAME, 'p')
             ->innerJoin(ConsultConstants::USER_ENTITY_NAME, 'u', 'WITH', 'u = p.userInfo AND u.softDeleted = 0')
             ->leftJoin(ConsultConstants::CONVERSATION_ENTITY_NAME, 'c', 'WITH', 'c.privateThread = p and c.isDocReply = false and c.softDeleted = 0')
@@ -72,20 +72,30 @@ class PrivateThreadRepository extends EntityRepository
     public function getDoctorPrivateThreads($practoAccountId)
     {
         $subqb = $this->_em->createQueryBuilder();
-        $subqb->select('c.text as question')
+        $subqb->select('c.text as question', 'count(ci.id) as images_count')
               ->from(ConsultConstants::CONVERSATION_ENTITY_NAME, 'c')
+              ->leftJoin(ConsultConstants::CONVERSATION_IMAGE_ENTITY_NAME, 'ci', 'WITH', 'ci.conversation = c AND ci.softDeleted = 0')
               ->where('c.isDocReply = 0')
+              ->groupBy('c')
               ->orderBy('c.createdAt', 'DESC')
               ->setMaxResults(1);
         $lastQuestion = $subqb->getQuery()->getArrayResult();
 
+        $question = null;
+        $imagesCount = 0;
+        if (count($lastQuestion) > 0) {
+            $question = $lastQuestion[0]['question'];
+            $imagesCount = $lastQuestion[0]['images_count'];
+        }
+
         $qb = $this->_em->createQueryBuilder();
-        $qb->select('p.subject', 'p.modifiedAt as last_modified_time', '(:lastQuestion) as question', 'u as user_info')
+        $qb->select('p.id', 'p.subject', 'p.modifiedAt as last_modified_time', '(:lastQuestion) as question', '(:imagesCount) as images_count', 'u as user_info')
             ->from(ConsultConstants::PRIVATE_THREAD_ENTITY_NAME, 'p')
             ->innerJoin(ConsultConstants::USER_ENTITY_NAME, 'u', 'WITH', 'u = p.userInfo AND u.softDeleted = 0')
             ->where('p.doctorId = :practoAccountId and p.softDeleted = 0')
             ->setParameter('practoAccountId', $practoAccountId)
-            ->setParameter('lastQuestion', $lastQuestion);
+            ->setParameter('lastQuestion', $question)
+            ->setParameter('imagesCount', $imagesCount);
 
         $privateThreadEntry = $qb->getQuery()->getResult();
 
@@ -105,9 +115,9 @@ class PrivateThreadRepository extends EntityRepository
     public function checkFollowUpCount($practoAccountId, $privateThread)
     {
         $qb = $this->_em->createQueryBuilder();
-        $qb->select('COUNT(c)')
+        $qb->select('COUNT(c.id)')
             ->from(ConsultConstants::CONVERSATION_ENTITY_NAME, 'c')
-            ->leftJoin(ConsultConstants::PRIVATE_THREAD_ENTITY_NAME, 'p', 'WITH', 'p = c.privateThread')
+            ->innerJoin(ConsultConstants::PRIVATE_THREAD_ENTITY_NAME, 'p', 'WITH', 'p = c.privateThread')
             ->innerJoin(ConsultConstants::USER_ENTITY_NAME, 'u', 'WITH', 'u = p.userInfo AND u.softDeleted = 0')
             ->where('p = :privateThread')
             ->andWhere('u.practoAccountId = :practoAccountId')
@@ -126,7 +136,7 @@ class PrivateThreadRepository extends EntityRepository
     public function getAllConversationsForThread($privateThread)
     {
         $qb = $this->_em->createQueryBuilder();
-        $qb->select('c.id', 'c.text', 'c.isDocReply', 'GROUP_CONCAT(ci.url separator \', \') as images')
+        $qb->select('c.id', 'c.text', 'c.isDocReply', 'c.createdAt', 'GROUP_CONCAT(ci.url separator \', \') as images')
             ->from(ConsultConstants::PRIVATE_THREAD_ENTITY_NAME, 'p')
             ->innerJoin(ConsultConstants::CONVERSATION_ENTITY_NAME, 'c', 'WITH', 'c.privateThread = p AND c.softDeleted = 0')
             ->leftJoin(ConsultConstants::CONVERSATION_IMAGE_ENTITY_NAME, 'ci', 'WITH', 'ci.conversation = c AND ci.softDeleted = 0')

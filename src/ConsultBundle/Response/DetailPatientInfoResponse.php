@@ -32,7 +32,13 @@ class DetailPatientInfoResponse extends BasicPatientInfoResponse
 
     private $allergies = "";
 
+    private $allergyStatus;
+
     private $medications = "";
+
+    private $medicationStatus;
+
+    private $prevDiagnosedConditionsStatus;
 
     private $prevDiagnosedConditions = "";
 
@@ -211,5 +217,55 @@ class DetailPatientInfoResponse extends BasicPatientInfoResponse
         $this->location = $location;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getAllergyStatus()
+    {
+        return $this->allergyStatus;
+    }
+
+    /**
+     * @param mixed $allergyStatus
+     */
+    public function setAllergyStatus($allergyStatus)
+    {
+        $this->allergyStatus = $allergyStatus;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMedicationStatus()
+    {
+        return $this->medicationStatus;
+    }
+
+    /**
+     * @param mixed $medicationStatus
+     */
+    public function setMedicationStatus($medicationStatus)
+    {
+        $this->medicationStatus = $medicationStatus;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPrevDiagnosedConditionsStatus()
+    {
+        return $this->prevDiagnosedConditionsStatus;
+    }
+
+    /**
+     * @param mixed $prevDiagnosedConditionsStatus
+     */
+    public function setPrevDiagnosedConditionsStatus($prevDiagnosedConditionsStatus)
+    {
+        $this->prevDiagnosedConditionsStatus = $prevDiagnosedConditionsStatus;
+    }
 }
+
+
+
 

@@ -22,16 +22,22 @@ class PrivateThreadController extends BaseConsultController
      */
     public function postPrivateThreadAction(Request $request)
     {
+
         $logger = $this->get('logger');
         $logger->info("Private Thread ".$request);
         $this->authenticate();
 
         $postData = $request->request->get('question');
+
         $files = $request->files;
+
         $practoAccountId = $request->request->get('practo_account_id');
+
         $profileToken = $request->headers->get('X-Profile-Token');
 
+
         $privateThreadManager = $this->get('consult.private_thread_manager');
+
 
         try {
             $thread= $privateThreadManager->add((array) json_decode($postData, true), $practoAccountId, $files, $profileToken);
@@ -115,3 +121,4 @@ class PrivateThreadController extends BaseConsultController
     }
 
 }
+

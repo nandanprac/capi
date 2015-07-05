@@ -68,20 +68,17 @@ class QuestionImageManager extends BaseManager
         }
     }
     /**
-     * @param int     $conversationId
-     * @param FileBag $fileBag
+     * @param Conversation $conversation
+     * @param FileBag      $fileBag
      */
-    public function addConversationImage($conversationId, FileBag $fileBag)
+    public function addConversationImage($conversation, FileBag $fileBag)
     {
         if ($fileBag->count() > $this->maxNumCnvImage) {
             throw new HttpException(Codes::HTTP_BAD_REQUEST, "Too many Images");
         }
 
-        $urls = $this->fileUploadUtil->add($fileBag, "private".$conversationId);
-        /**
-         * @var Conversation $conversation
-         */
-        $conversation = $this->helper->loadById($conversationId, ConsultConstants::CONVERSATION_ENTITY_NAME);
+        $urls = $this->fileUploadUtil->add($fileBag, "private");
+
         $conversationImages = new ArrayCollection();
 
         foreach ($urls as $url) {
@@ -94,7 +91,7 @@ class QuestionImageManager extends BaseManager
         $conversation->setImages($conversationImages);
 
         if ($conversationImages->count() > 0) {
-            $this->helper->persist($conversation, true);
+            $this->helper->persist($conversation);
         }
     }
 }

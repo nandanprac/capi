@@ -76,7 +76,9 @@ class PrivateThreadManager extends BaseManager
         $privateThreadId = array_key_exists('private_thread_id', $requestParams) ? $requestParams['private_thread_id'] : null;
 
         if (!empty($privateThreadId)) {
+
             $privateThread = $this->helper->loadById($privateThreadId, ConsultConstants::PRIVATE_THREAD_ENTITY_NAME);
+
             if (empty($privateThread)) {
                 @$error['error'] = 'Private thread with the provided id could not be found';
                 throw new ValidationError($error);
@@ -102,6 +104,15 @@ class PrivateThreadManager extends BaseManager
                           throw new ValidationError($error);
                       }
                   }*/
+
+                $userInfoParams = array();
+                if (array_key_exists('user_info', $requestParams)) {
+                    $userInfoParams = $requestParams['user_info'];
+                    unset($requestParams['user_info']);
+                }
+                $userInfoParams['practo_account_id'] = $practoAccountId;
+                $userEntry = $this->userManager->add($userInfoParams, $profileToken);
+                $privateThread->setUserInfo($userEntry);
             }
 
             $conversation = new Conversation();
@@ -151,9 +162,10 @@ class PrivateThreadManager extends BaseManager
 
         $this->updateFields($conversation, $requestParams);
         $this->helper->persist($conversation);
-        $this->helper->persist($privateThread, 'true');
 
-        $this->questionImageManager->addConversationImage($conversation->getId(), $files);
+
+        $this->questionImageManager->addConversationImage($conversation, $files);
+        $this->helper->persist($privateThread, 'true');
 
         $isDocReply = false;
         if (Utility::toBool($conversation->getIsDocReply())) {
@@ -173,6 +185,9 @@ class PrivateThreadManager extends BaseManager
     public function load($privateThreadId, $practoAccountId)
     {
         $privateThread = $this->helper->loadById($privateThreadId, ConsultConstants::PRIVATE_THREAD_ENTITY_NAME);
+        if (empty($privateThread)) {
+            return null;
+        }
         if ($practoAccountId != $privateThread->getUserInfo()->getPractoAccountId() && $practoAccountId != $privateThread->getDoctorId()) {
             throw new HttpException(Codes::HTTP_FORBIDDEN, 'You do not have access to view this question');
         }
@@ -189,37 +204,40 @@ class PrivateThreadManager extends BaseManager
      *
      * @return array PrivateThread
      */
-    public function loadAll($practoAccountId, $is_doctor)
+    public function loadAll($practoAccountId, $isDoctor)
     {
+        /**
+         * @var PrivateThreadRepository $er
+         */
         $er = $this->helper->getRepository(ConsultConstants::PRIVATE_THREAD_ENTITY_NAME);
 
-        if ($is_doctor) {
-
+        if ($isDoctor) {
             $privateThreads = $er->getDoctorPrivateThreads($practoAccountId);
             if (!empty($privateThreads)) {
                 $privateThreadsTmp = array();
                 foreach ($privateThreads as $privateThread) {
                     $privateThreadTmp = array();
-
+                    $privateThreadTmp['id'] = $privateThread['id'];
                     $privateThreadTmp['subject'] = $privateThread['subject'];
                     $privateThreadTmp['last_modified_time'] = $privateThread['last_modified_time'];
                     $privateThreadTmp['latest_question_text'] = $privateThread['question'];
+                    $privateThreadTmp['has_images'] = $privateThread['images_count'] > 0;
                     $userInfo = $this->retrieveUserProfileUtil->retrieveUserProfileNew($privateThread['user_info']);
                     $privateThreadTmp['patient_name'] = $userInfo->getName();
                     $privateThreadTmp['patient_image'] = $userInfo->getProfilePicture();
 
                     $userInfoList = array('bloodGroup', 'occupation', 'location', 'heightInCms', 'weightInKgs', 'allergies', 'medications', 'prevDiagnosedConditions');
-                    $has_additional_details = false;
+                    $hasAdditionalDetails = false;
                     foreach ($userInfoList as $option) {
                         $getter = 'get'.$option;
                         if (method_exists($userInfo, $getter)) {
-                            if (!empty($userInfo->$getter())) {
-                                $has_additional_details = true;
+                            if (!empty($userInfo->$getter()) && $userInfo->$getter() != 'null') {
+                                $hasAdditionalDetails = true;
                                 break;
                             }
                         }
                     }
-                    $privateThreadTmp['has_additional_details'] = $has_additional_details;
+                    $privateThreadTmp['has_additional_details'] = $hasAdditionalDetails;
 
                     $privateThreadsTmp[] = $privateThreadTmp;
                 }
@@ -245,10 +263,15 @@ class PrivateThreadManager extends BaseManager
     {
         $er = $this->helper->getRepository(ConsultConstants::PRIVATE_THREAD_ENTITY_NAME);
         $privateThreadResponse = array();
+        $privateThreadResponse['id'] = $privateThread->getId();
         $privateThreadResponse['subject'] = $privateThread->getSubject();
         $privateThreadResponse['base_question_id'] = $privateThread->getQuestion()->getId();
         $privateThreadResponse['conversation'] = $er->getAllConversationsForThread($privateThread);
-        $userInfo = $this->retrieveUserProfileUtil->retrieveUserProfileNew($privateThread->getUserInfo());
+        $userInfo = $privateThread->getUserInfo();
+        if (!$userInfo->isIsRelative()) {
+            $userInfo = $this->retrieveUserProfileUtil->retrieveUserProfileNew($privateThread->getUserInfo());
+        }
+
         $privateThreadResponse['patient'] = $this->populatePatientInfo($userInfo);
         if (!$isDoctor) {
             $practoAccountId = $privateThread->getUserInfo()->getPractoAccountId();
@@ -278,6 +301,9 @@ class PrivateThreadManager extends BaseManager
         $patientInfo->setOccupation($userInfo->getOccupation());
         $patientInfo->setLocation($userInfo->getLocation());
         $patientInfo->setName($userInfo->getName());
+        $patientInfo->setAllergyStatus($userInfo->getAllergyStatus());
+        $patientInfo->setPrevDiagnosedConditionsStatus($userInfo->getDiagnosedConditionStatus());
+        $patientInfo->setMedicationStatus($userInfo->getMedicationStatus());
         $patientInfo->setProfilePicture($userInfo->getProfilePicture());
 
         return $patientInfo;
