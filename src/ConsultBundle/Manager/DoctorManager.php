@@ -95,7 +95,7 @@ class DoctorManager extends BaseManager
         /**
          * @var DoctorConsultSettings $doctor
          */
-        $doctor =  $result = $er->findOneBy(array(
+        $doctor  = $er->findOneBy(array(
                 "fabricDoctorId" => $postData['doctor_fabric_id'],
                 "softDeleted" => 0)
         );
@@ -122,6 +122,19 @@ class DoctorManager extends BaseManager
 
 
         $this->helper->persist($doctor, true);
+
+        $consultationDays = $doctor->getConsultationDays();
+        if (!empty($consultationDays)) {
+            $consultationDaysBin = decbin($consultationDays);
+            $len = strlen($consultationDaysBin);
+            $addedZeroes = "";
+            for (; $len < 7; $len++) {
+                $addedZeroes = "0".$addedZeroes;
+            }
+            $consultationDaysBin = $addedZeroes.$consultationDaysBin;
+            $doctor->setConsultationDaysStr($consultationDaysBin);
+            $doctor->setConsultationDays(null);
+        }
 
         return $doctor;
     }
@@ -157,6 +170,7 @@ class DoctorManager extends BaseManager
 
 
         $authenticatedPractoAccountId = $_SESSION['authenticated_user']['id'];
+
         $practoAccountId = $result->getPractoAccountId();
 
         if ($practoAccountId != $authenticatedPractoAccountId) {
@@ -174,6 +188,7 @@ class DoctorManager extends BaseManager
             $consultationDaysBin = $addedZeroes.$consultationDaysBin;
             $result->setConsultationDaysStr($consultationDaysBin);
             $result->setConsultationDays(null);
+
         }
 
         return $result;
@@ -222,6 +237,10 @@ class DoctorManager extends BaseManager
         return $doc;
     }
 
+
+
+
+
     public function testRepo()
     {
         /**
@@ -232,10 +251,11 @@ class DoctorManager extends BaseManager
     }
 
     /**
-     * @param string $city       - city of posted question/doctor to look from
-     * @param string $speciality - required speciality
+     * @param string $city
+     * @param string $speciality
      *
-     * @return array
+     * @return null
+     * @throws \Exception
      */
     public function getAppropriateDoctors($city, $speciality)
     {
@@ -250,6 +270,7 @@ class DoctorManager extends BaseManager
 
         return $doctors;
     }
+
 
     /**
      * @return \Doctrine\ORM\EntityRepository|null

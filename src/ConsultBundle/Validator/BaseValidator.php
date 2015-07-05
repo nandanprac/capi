@@ -8,7 +8,6 @@
 
 namespace ConsultBundle\Validator;
 
-
 use ConsultBundle\Entity\BaseEntity;
 use ConsultBundle\Manager\ValidationError;
 use Symfony\Component\Validator\ValidatorInterface;
@@ -18,7 +17,7 @@ use Symfony\Component\Validator\ValidatorInterface;
  *
  * @package ConsultBundle\Validator
  */
-class BaseValidator implements Validator
+class BaseValidator implements ConsultValidatorInterface
 {
     private $validator;
 
@@ -39,7 +38,8 @@ class BaseValidator implements Validator
     public function validate(BaseEntity $entity)
     {
         $errors = array();
-        $validationErrors = $this->validator->validate($entity);
+
+        /*$validationErrors = $this->validator->validate($entity);
         if (0 < count($validationErrors)) {
             foreach ($validationErrors as $validationError) {
                 $pattern = '/([a-z])([A-Z])/';
@@ -49,7 +49,7 @@ class BaseValidator implements Validator
                 $attribute = preg_replace_callback($pattern, $replace, $validationError->getPropertyPath());
                 @$errors[$attribute][] = $validationError->getMessage();
             }
-        }
+        }*/
 
         if (0 < count($errors)) {
             throw new ValidationError($errors);

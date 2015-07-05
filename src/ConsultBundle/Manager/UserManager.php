@@ -35,6 +35,7 @@ class UserManager extends BaseManager
     {
         $userEntry->setAttributes($requestParams);
 
+
         try {
             $this->validator->validate($userEntry);
         } catch (ValidationError $e) {
@@ -58,6 +59,7 @@ class UserManager extends BaseManager
             @$error['practo_account_id'] = 'This value cannot be blank';
             throw new ValidationError($error);
         }
+
 
         if (array_key_exists('id', $requestParams) and !empty($requestParams['id'])) {
             $userEntry = $this->helper->loadById($requestParams['id'], ConsultConstants::USER_ENTITY_NAME);
@@ -95,11 +97,16 @@ class UserManager extends BaseManager
                 }
 
             } else {
+
+
                 $er = $this->helper->getRepository(ConsultConstants::USER_ENTITY_NAME);
                 $entry = $er->findOneBy(array('practoAccountId' => $requestParams['practo_account_id'], 'isRelative' => 0));
+
                 if (!empty($entry)) {
                     $userEntry = $entry;
+
                 } else {
+
                     $userJson = $_SESSION['authenticated_user'];
                     if (empty($userJson['gender']) && (!array_key_exists('gender', $requestParams) or
                         (array_key_exists('gender', $requestParams) and empty($requestParams['gender'])))) {
@@ -112,14 +119,19 @@ class UserManager extends BaseManager
                     if (count($error) > 0) {
                         throw new ValidationError($error);
                     }
+
                 }
+
                 $this->updateAccountsUtil->updateAccountDetails($profileToken, $requestParams);
+
             }
         }
 
 
 
+
         $this->updateFields($userEntry, $requestParams);
+
         $this->helper->persist($userEntry, true);
 
         return $userEntry;

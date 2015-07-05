@@ -121,7 +121,6 @@ class BaseEntity
                 }
                 if (method_exists($this, $setter)) {
                     $this->$setter($value);
-
                 }
 
             } catch (\Exception $e) {

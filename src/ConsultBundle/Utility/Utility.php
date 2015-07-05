@@ -46,6 +46,7 @@ class Utility
             return false;
         }
 
+
         if (!is_string($var)) {
             return (bool) $var;
         }
