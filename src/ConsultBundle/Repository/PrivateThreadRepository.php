@@ -16,7 +16,7 @@ class PrivateThreadRepository extends EntityRepository
     const FOLLOW_UP_THRESHOLD = 5;
 
     /**
-     * @param $practoAccountId
+     * @param int $practoAccountId
      *
      * @return bool
      */
@@ -25,7 +25,7 @@ class PrivateThreadRepository extends EntityRepository
         $qb = $this->_em->createQueryBuilder();
         $qb->select('p')
             ->from(ConsultConstants::PRIVATE_THREAD_ENTITY_NAME, 'p')
-            ->innerJoin(ConsultConstants::USER_ENTITY_NAME, 'u', 'WITH', 'u = p.userInfo AND u.softDeleted = 0')
+            ->innerJoin(ConsultConstants::USER_ENTITY_NAME, 'u', 'WITH', 'u = p.userInfo')
             ->where('u.practoAccountId = :practoAccountId and p.softDeleted = 0')
             ->setParameter('practoAccountId', $practoAccountId);
 
@@ -103,8 +103,6 @@ class PrivateThreadRepository extends EntityRepository
             return null;
         }
 
-        //var_dump($privateThreadEntry);die;
-
         return $privateThreadEntry;
     }
 
@@ -117,9 +115,9 @@ class PrivateThreadRepository extends EntityRepository
     public function checkFollowUpCount($practoAccountId, $privateThread)
     {
         $qb = $this->_em->createQueryBuilder();
-        $qb->select('COUNT(c)')
+        $qb->select('COUNT(c.id)')
             ->from(ConsultConstants::CONVERSATION_ENTITY_NAME, 'c')
-            ->leftJoin(ConsultConstants::PRIVATE_THREAD_ENTITY_NAME, 'p', 'WITH', 'p = c.privateThread')
+            ->innerJoin(ConsultConstants::PRIVATE_THREAD_ENTITY_NAME, 'p', 'WITH', 'p = c.privateThread')
             ->innerJoin(ConsultConstants::USER_ENTITY_NAME, 'u', 'WITH', 'u = p.userInfo AND u.softDeleted = 0')
             ->where('p = :privateThread')
             ->andWhere('u.practoAccountId = :practoAccountId')

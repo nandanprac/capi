@@ -401,6 +401,7 @@ class UserInfo extends BaseEntity
         if (!empty($this->allergies)) {
             return true;
         }
+
         return $this->allergyStatus;
     }
 
