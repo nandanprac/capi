@@ -173,7 +173,8 @@ class QuestionRepository extends EntityRepository
 
         if (isset($patientName))
         {
-            $qb->leftJoin(ConsultConstants::USER_ENTITY_NAME, 'u', 'WITH', ' u=q.userInfo AND u.softDeleted = 0 ');
+            if(!(isset($patientId)))
+                $qb->leftJoin(ConsultConstants::USER_ENTITY_NAME, 'u', 'WITH', ' u=q.userInfo AND u.softDeleted = 0 ');
             $qb->andWhere(' u.name = :patientName');
             $qb->setParameter('patientName', $patientName);
         }
