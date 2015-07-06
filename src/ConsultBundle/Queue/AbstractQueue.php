@@ -1,6 +1,7 @@
 <?php
 
 namespace ConsultBundle\Queue;
+use ConsultBundle\ConsultDomain;
 
 /**
  * Abstract Queue
@@ -88,7 +89,7 @@ abstract class AbstractQueue
     /**
      * Set Practo Domain
      *
-     * @param PractoDomain $consultDomain - Practo Domain
+     * @param ConsultDomain $consultDomain - Practo Domain
      */
     public function setConsultDomain($consultDomain)
     {

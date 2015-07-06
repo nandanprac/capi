@@ -40,4 +40,9 @@ class ConsultConstants
     const CONVERSATION_ENTITY_NAME = "ConsultBundle:Conversation";
     const CONVERSATION_IMAGE_ENTITY_NAME = "ConsultBundle:ConversationImage";
 
+
+    //Consult Type for Notification
+    const PRIVATE_THREAD_NOTIFICATION_TYPE = "PRIVATE_THREAD";
+    const PUBLIC_QUESTION_NOTIFICATION_TYPE = "PUBLIC_QUESTION";
+
 }
