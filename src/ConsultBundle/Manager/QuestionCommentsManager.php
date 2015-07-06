@@ -38,6 +38,13 @@ class QuestionCommentsManager extends BaseManager
             throw new ValidationError($error);
         }
 
+        if (!array_key_exists('identifier', $requestParams) or
+            (array_key_exists('identifier', $requestParams) and empty($requestParams['identifier']))) {
+            @$error['identifier'] = 'This cannot be blank';
+            throw new ValidationError($error);
+
+        }
+
         $questionId = $requestParams['question_id'];
         $question = $this->helper->loadById($questionId, ConsultConstants::QUESTION_ENTITY_NAME);
 
@@ -80,6 +87,11 @@ class QuestionCommentsManager extends BaseManager
         $questionComment = $this->helper->loadById($requestParams['question_comment_id'], ConsultConstants::QUESTION_COMMENT_ENTITY_NAME);
         if (empty($questionComment)) {
             @$error['question_comment_id'] = 'Comment with this id doesnt exist';
+            throw new ValidationError($error);
+        }
+
+        if ($requestParams['practo_account_id'] == $questionComment->getPractoAccountId()) {
+            @$error['error'] = 'You cannot vote or flag your own comment!';
             throw new ValidationError($error);
         }
 
@@ -131,7 +143,8 @@ class QuestionCommentsManager extends BaseManager
             //return $flag;
         }
 
-        return new QuestionCommentResponse($questionComment);
+        $er = $this->helper->getRepository(ConsultConstants::QUESTION_COMMENT_ENTITY_NAME);
+        return $er->loadComment($requestParams['question_comment_id'], $requestParams['practo_account_id']);
 
     }
 

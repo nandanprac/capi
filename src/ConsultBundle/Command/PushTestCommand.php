@@ -10,7 +10,6 @@ use Symfony\Component\HttpFoundation\Request;
 use ConsultBundle\Queue\AbstractQueue as Queue;
 use ConsultBundle\ConsultDomain;
 
-
 /**
  * Command to merge the accounts and Make the necessary updates.
  */
@@ -58,7 +57,7 @@ class PushTestCommand extends ContainerAwareCommand
                 ->setQueueName(Queue::PUSH_TEST)
                 ->receiveMessage();
             if ($newJob) {
-                echo $newJob;
+                $output->writeln($newJob);
             }
             $this->queue->deleteMessage($newJob);
         }

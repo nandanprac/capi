@@ -2,22 +2,25 @@
 
 namespace ConsultBundle\Manager;
 
-use ConsultBundle\Manager\RedisClient;
+use ConsultBundle\Manager\WordManager;
+use ConsultBundle\Constants\ConsultConstants;
 
 /**
  * Question Speciality Classification
  */
 class ClassificationManager
 {
+    private $wordManager;
+
     /**
      * Constructor
      *
-     * @param RedisClient $redis - Redis Client
+     * @param WordManager $wordManager - Word Manager
      *
      */
-    public function __construct(RedisClient $redis)
+    public function __construct(WordManager $wordManager)
     {
-        $this->redis = $redis;
+        $this->wordManager = $wordManager;
     }
 
     /**
@@ -47,97 +50,43 @@ class ClassificationManager
      * Takes in sentence and return a list of words
      *
      * @param string $sentence - sentence containing user question and tags
+     * @param array  $stems    - sentence containing user question and tags
      *
      * @return array words
      */
-    public function sentenceWords($sentence)
+    public function sentenceWords($sentence, $stems = null)
     {
         $sentence = preg_replace('/[^A-Za-z]/', ' ', $sentence);
         $words = array();
         $sentence = preg_split('/\s+/', strtolower($sentence));
-        $stopWords = $this->redis->getKey('stop_words');
-        if (!$stopWords) {
-            $stopWords = array();
-        }
         foreach ($sentence as $word) {
-            if (!in_array($word, $words) and !in_array($words, $stopWords) and strlen($word) > 2)
-            {
-                //if (array_key_exists($word, $stemWords))
-                //    array_push($words, $stemWords[$word]);
-                //else
-                array_push($words, $word);
+            if (!in_array($word, $words) and strlen($word) > 2) {
+                if ($stems && in_array($word, $stems)) {
+                    array_push($words, $stems[$word]);
+                } else {
+                    array_push($words, $word);
+                }
             }
         }
+        $stopWords = $this->wordManager->lookupWord($words, ConsultConstants::STOP_WORDS_ENTITY_NAME);
+        $words = array_diff($words, $stopWords);
 
         return $words;
     }
 
     /**
-     * Takes in list of hash maps containing score hash map of each word
-     * Intersecting these hash maps will give us likelyhood of falling all words in one category.
-     *
-     * @param array listDataMap - array of associative array of all words
-     *
-     * @return array of most likely specialities
-     */
-    protected function intersectMapsForWords($listDataMap)
-    {
-        $weightTemp = array();
-        $formulaTemp = array();
-
-        foreach ($listDataMap as $map) {
-            foreach ($map as $speciality => $weights){
-                if(!array_key_exists($speciality, $weightTemp)){
-                    $weightTemp[$speciality] = $weights['weight_score'];
-                } else {
-                    $weightTemp[$speciality] += $weights['weight_score'];
-                }
-
-                if(!array_key_exists($speciality, $formulaTemp)){
-                    $formulaTemp[$speciality] = $weights['formula_score'];
-                } else {
-                    $formulaTemp[$speciality] += $weights['formula_score'];
-                }
-
-                if ($weights['weight_score'] == 0)
-                    unset($weightTemp[$speciality]);
-
-                if ($weights['formula_score'] == 0)
-                    unset($formulaTemp[$speciality]);
-            }
-        }
-        arsort($weightTemp, SORT_NUMERIC);
-        arsort($formulaTemp, SORT_NUMERIC);
-        return array(array_slice($weightTemp, 0, 2), array_slice($formulaTemp, 0, 2));
-    }
-
-    /**
      * Classification function.
      *
-     * @param string sentence
+     * @param string $sentence - Sentence to be classified
      *
-     * @return array classifcation
+     * @return array
      */
     public function classifi($sentence)
     {
         $words = $this->sentenceWords($sentence);
+        $scoreData = $this->wordManager->fetchScores($words);
 
-        $temp = array();
-        foreach ($words as $word){
-            if($this->redis->keyExists($word)){
-                try{
-                    $tempScoreData = $this->redis->getKey($word);
-                    $scoreData = json_decode($tempScoreData, true);
-                    if (!$scoreData) {
-                        $scoreData = json_decode($this->redis->getKey($tempScoreData));
-                    }
-                } catch(\Exception $e) {
-                    continue;
-                }
-                array_push($temp, $scoreData);
-            }
-        }
-        return $this->getAppropriateSpeciality($this->intersectMapsForWords($temp));
+        return $this->getAppropriateSpeciality($this->intersectMapsForWords($scoreData));
     }
 
     /**
@@ -147,7 +96,8 @@ class ClassificationManager
      *
      * @return null/string
      */
-    public function getAppropriateSpeciality(Array $intersectMap){
+    public function getAppropriateSpeciality(Array $intersectMap)
+    {
         if (count($intersectMap) == 2) {
             $a = array_keys($intersectMap[0]);
             $b = array_keys($intersectMap[1]);
@@ -166,16 +116,60 @@ class ClassificationManager
      *
      * @param array $map
      *
-     * $return array
+     * @return array
      */
-    public function formulaScoreUpdate($map){
+    public function formulaScoreUpdate($map)
+    {
         $termFreq = 0;
-        foreach(array_values($map) as $speciality){
+        foreach (array_values($map) as $speciality) {
             $termFreq += $speciality['weight_score'];
         }
-        foreach(array_keys($map) as $category){
+        foreach (array_keys($map) as $category) {
             $map[$category]['formula_score'] = floatval($map[$category]['weight_score'])/floatval($termFreq)* floatval(1)/floatval(1+log10($termFreq));
         }
+
         return $map;
+    }
+
+    /**
+     * Takes in list of hash maps containing score hash map of each word
+     * Intersecting these hash maps will give us likelyhood of falling all words in one category.
+     *
+     * @param array listDataMap - array of associative array of all words
+     *
+     * @return array of most likely specialities
+     */
+    protected function intersectMapsForWords($listDataMap)
+    {
+        $weightTemp = array();
+        $formulaTemp = array();
+
+        foreach ($listDataMap as $map) {
+            foreach ($map as $speciality => $weights) {
+                if (!array_key_exists($speciality, $weightTemp)) {
+                    $weightTemp[$speciality] = $weights['weight_score'];
+                } else {
+                    $weightTemp[$speciality] += $weights['weight_score'];
+                }
+
+                if (!array_key_exists($speciality, $formulaTemp)) {
+                    $formulaTemp[$speciality] = $weights['formula_score'];
+                } else {
+                    $formulaTemp[$speciality] += $weights['formula_score'];
+                }
+
+                if ($weights['weight_score'] == 0) {
+                    unset($weightTemp[$speciality]);
+                }
+
+                if ($weights['formula_score'] == 0) {
+                    unset($formulaTemp[$speciality]);
+                }
+            }
+        }
+        arsort($weightTemp, SORT_NUMERIC);
+        arsort($formulaTemp, SORT_NUMERIC);
+
+        return array(array_slice($weightTemp, 0, 2), array_slice($formulaTemp, 0, 2));
     }
 }

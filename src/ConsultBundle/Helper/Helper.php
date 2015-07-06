@@ -16,6 +16,7 @@ use Doctrine\ORM\EntityRepository;
 use FOS\RestBundle\Util\Codes;
 use ConsultBundle\Entity\BaseEntity;
 use Symfony\Bridge\Monolog\Logger;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Class Helper
@@ -49,9 +50,6 @@ class Helper
 
         $logger->info(json_encode($dLogger->queries));
 
-        //$loggerSymfony->debug($logger->queries);
-
-        //$this->cacheUtils = $cacheUtils;
 
     }
 
@@ -98,6 +96,9 @@ class Helper
      */
     public function getRepository($entityName)
     {
+        if (!$this->entityManager->getConnection()->isConnected()) {
+            $this->entityManager->getConnection()->connect();
+        }
 
         $entityRepository = $this->entityManager->getRepository($entityName);
 
@@ -147,14 +148,30 @@ class Helper
     {
         $errors = new ArrayCollection();
         foreach ($fields as $field) {
-            if (!array_key_exists($field, $data)) {
+            if (!array_key_exists($field, $data) || empty($data[$field])) {
                  $errors->add($field." is Mandatory");
             }
         }
 
         if ($errors->count() > 0) {
-            throw new \HttpException(json_encode($errors->getValues()), Codes::HTTP_BAD_REQUEST);
+            throw new HttpException(Codes::HTTP_BAD_REQUEST, json_encode($errors->getValues()));
         }
+    }
+
+    /**
+     * Flush for EM
+     */
+    public function flush()
+    {
+        $this->entityManager->flush();
+    }
+
+    /**
+     * Flush for EM
+     */
+    public function clear()
+    {
+        $this->entityManager->clear();
     }
 
     protected function getFromCache($entityId)

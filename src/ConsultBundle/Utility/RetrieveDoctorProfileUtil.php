@@ -8,11 +8,12 @@
 
 namespace ConsultBundle\Utility;
 
+use ConsultBundle\Entity\DoctorConsultSettings;
 use ConsultBundle\Entity\DoctorEntity;
 use ConsultBundle\Entity\Question;
+use ConsultBundle\Manager\DoctorManager;
 use ConsultBundle\Response\DetailQuestionResponseObject;
 use ConsultBundle\Response\ReplyResponseObject;
-use Elasticsearch\Client;
 
 /**
  * Class RetrieveDoctorProfileUtil
@@ -21,11 +22,27 @@ use Elasticsearch\Client;
  */
 class RetrieveDoctorProfileUtil
 {
+    private $host = "http://localhost:9200";
+
+    private $index = 'fabric_search';
 
     /**
      * @var Client $client
      */
     private $client;
+
+    /**
+     * @var DoctorManager $doctorManager
+     */
+    private $doctorManager;
+
+    /**
+     * @param \ConsultBundle\Manager\DoctorManager $doctorManager
+     */
+    public function __construct(DoctorManager $doctorManager)
+    {
+        $this->doctorManager = $doctorManager;
+    }
 
     /**
      * @param int $practoAccntId
@@ -34,9 +51,36 @@ class RetrieveDoctorProfileUtil
      */
     public function retrieveDoctorProfile($practoAccntId = 5)
     {
-        $this->client = new Client();
+        /**
+         * @var DoctorConsultSettings $docEntity
+         */
+        $docEntity = $this->doctorManager->getConsultSettingsByPractoAccountId($practoAccntId);
 
-        $params['index'] = 'fabric_search';
+        $doc = new DoctorEntity();
+        $doc->setFabricId($docEntity->getFabricDoctorId());
+        $doc->setName($docEntity->getName());
+        $doc->setProfilePicture($docEntity->getProfilePicture());
+        $doc->setSpeciality($docEntity->getSpeciality());
+
+        return $doc;
+
+
+    }
+
+
+
+
+
+    /**
+     * @param int $practoAccntId
+     *
+     * @return \ConsultBundle\Entity\DoctorEntity|null
+     */
+    public function retrieveDoctorProfileOld($practoAccntId = 5)
+    {
+        //$this->client = new Client();
+
+        $params['index'] = $this->index;
         $params['type']  = 'search';
         $params['_source']  = array('doctor_id', 'doctor_name', 'practo_account_id', 'specialties.specialty', 'profile_picture');
 

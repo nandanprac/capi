@@ -25,17 +25,18 @@ class QuestionsController extends BaseConsultController
         $logger->info("Post Question".$request);
         $this->authenticate();
         $postData = $request->request->get('question');
+        if (!is_array($postData)) {
+            $postData = json_decode($postData, true);
+        }
         $practoAccountId = $request->request->get('practo_account_id');
         $profileToken = $request->headers->get('X-Profile-Token');
 
         $questionManager = $this->get('consult.question_manager');
 
         try {
-            $question = $questionManager->add((array) json_decode($postData, true), $practoAccountId, $profileToken);
+            $question = $questionManager->add($postData, $practoAccountId, $profileToken);
 
         } catch (ValidationError $e) {
-            return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
-        } catch (\Exception $e) {
             return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
         }
 

@@ -18,7 +18,7 @@ class NotificationController extends BaseConsultController
      *
      * @return View
      */
-    public function getDoctorNotificationsAction(Request $request)
+    public function getDoctorNotificationAction(Request $request)
     {
         $this->authenticate();
         $requestParams = $request->query->all();

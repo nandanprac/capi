@@ -167,6 +167,13 @@ class RetrieveUserProfileUtil
 
         }
 
+        if (array_key_exists('name', $userProfile)) {
+            $user->setName($userProfile['name']);
+        }
+
+        if (array_key_exists('profile_picture', $userProfile)) {
+            $user->setName($userProfile['profilePicture']);
+        }
 
         return $user;
     }

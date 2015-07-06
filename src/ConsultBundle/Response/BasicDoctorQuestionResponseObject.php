@@ -46,7 +46,8 @@ class BasicDoctorQuestionResponseObject extends BasicQuestionResponseObject
 
             $reply = $doctorQuestion->getDoctorReplies();
             if (!empty($reply) && !$reply->isSoftDeleted()) {
-                $this->rating = $doctorQuestion->getDoctorReplies()->getRating();
+                $rating = $doctorQuestion->getDoctorReplies()->getRating();
+                $this->setRating($rating);
             }
 
         }
@@ -67,7 +68,7 @@ class BasicDoctorQuestionResponseObject extends BasicQuestionResponseObject
      */
     public function setVotes($votes)
     {
-        $this->votes = $votes;
+        $this->votes = $this->getInt($votes);
     }
 
     /**
@@ -83,7 +84,7 @@ class BasicDoctorQuestionResponseObject extends BasicQuestionResponseObject
      */
     public function setRating($rating)
     {
-        $this->rating = $rating;
+        $this->rating = $this->getInt($rating);
     }
 
     /**

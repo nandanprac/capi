@@ -31,4 +31,13 @@ class ConsultConstants
     const DOCTOR_NOTIFICATION_ENTITY_NAME = "ConsultBundle:DoctorNotification";
     const USER_NOTIFICATION_ENTITY_NAME = "ConsultBundle:UserNotification";
     const QUESTION_IMAGE_ENTITY_NAME = "ConsultBundle:QuestionImage";
+    const SYN_TAG_ENTITY_NAME = "ConsultBundle:SynTag";
+    const STOP_WORDS_ENTITY_NAME = "ConsultBundle:StopWord";
+    const WORD_SCORE_ENTITY_NAME = "ConsultBundle:WordScore";
+    const DOCTOR_SETTING_ENTITY_NAME = "ConsultBundle:DoctorConsultSettings";
+    const DOCTOR_REPLY_FLAG_ENTITY_NAME = "ConsultBundle:DoctorReplyFlag";
+    const PRIVATE_THREAD_ENTITY_NAME = "ConsultBundle:PrivateThread";
+    const CONVERSATION_ENTITY_NAME = "ConsultBundle:Conversation";
+    const CONVERSATION_IMAGE_ENTITY_NAME = "ConsultBundle:ConversationImage";
+
 }

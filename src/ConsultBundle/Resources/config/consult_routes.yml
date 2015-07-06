@@ -2,6 +2,10 @@ questions:
     resource: ConsultBundle\Controller\QuestionsController
     type:     rest
 
+privateQuestions:
+    resource: ConsultBundle\Controller\PrivateThreadController
+    type:     rest
+
 questionComments:
     resource: ConsultBundle\Controller\QuestionCommentsController
     type:     rest
@@ -30,4 +34,8 @@ moderation:
 
 master:
     resource: ConsultBundle\Controller\MasterController
+    type:      rest
+
+doctor:
+    resource: ConsultBundle\Controller\DoctorController
     type:      rest

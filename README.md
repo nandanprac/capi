@@ -27,11 +27,35 @@ server {
 
 Run following commands in Consult.
 
+composer install
+
+Set up following parameters in parameters.yml
+- Provide DB details
+- Provide Elastic search host
+- Provide accounts_host (URL to accounts)
+- Provide S3 details
+- Provide accounts signing key (same as used in ray)
+
+app/console doctrine:migrations:migrate
+
+app/console consult:question:classification:queue
 app/console consult:question:doctorassignment:queue
-app/console consult:assignmentpersist:doctorassignment:queue
+app/console consult:question:doctorassignment:queue
 
 Run following commands in Fabric to push GCM notifications.
 
 app/console fabric:consult:gcm:queue
+
+
+To Setup Classification, use data in trainingdata folder
+
+run following commands in order
+
+Command to insert stop words
+app/console consult:data:trainer:helper /tmp/stop_words.csv --action=stop
+
+Command to insert trained data. and use last file in array and stem option to include stem words
+app/console consult:data:trainer /tmp/trainset.csv /tmp/src/stem_list\(u\).csv --stem
+
 
 ```

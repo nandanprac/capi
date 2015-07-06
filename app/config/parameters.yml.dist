@@ -29,12 +29,6 @@ parameters:
     secret:            ThisTokenIsNotSoSecretChangeIt
     sentry.dsn: 'udp://a:b@localhost:12345/c'
     consult_queue.uri: 'beanstalk://localhost/dev-'
-
-    elastic_index_name: fabric_search
-    elastic_place_index_name: fabric_place_search
-    elasticsearch_hosts:
-        - 127.0.0.1
-
     s3_access_key: AKIAILIHTHVY2DNKUE2A
     s3_access_secret: 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
     s3_resources_bucket: dev-consult-question-images
@@ -42,6 +36,8 @@ parameters:
     scheme: https
     fileName: TREATMENTPHOTO
     tempUrl: /tmp/practo-consult-resources/
+    max_no_qs_image: 2
+    max_no_cnv_image: 2
     daa_debug: false
     accounts_host: http://accounts.practo.local
     accounts_signing_key: software-accounts-key

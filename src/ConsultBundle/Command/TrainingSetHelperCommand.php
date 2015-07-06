@@ -7,13 +7,20 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
+use ConsultBundle\Constants\ConsultConstants;
 
-
+/**
+ * This command consits of actions to create stop words, add stem words to tags and adjust stem words
+ */
 class TrainingSetHelperCommand extends ContainerAwareCommand
 {
 
-    private $ADJUSTMENT_WEIGHT = 100;
-    private $COMPROMISING_WEIGHT = 200;
+    private $ADJUSTMENTWEIGHT = 100;
+    private $COMPROMISINGWEIGHT = 200;
+
+    private $container;
+    private $classification;
+    private $wordManager;
 
     /**
      * Initialize Connections
@@ -25,7 +32,7 @@ class TrainingSetHelperCommand extends ContainerAwareCommand
         parent::initialize($input, $output);
         $this->container = $this->getContainer();
         $this->classification =$this->container->get('consult.classification');
-        $this->redis = $this->container->get('consult.redis');
+        $this->wordManager = $this->container->get('consult.word_manager');
     }
 
     /*
@@ -48,39 +55,29 @@ class TrainingSetHelperCommand extends ContainerAwareCommand
         if ($action == 'stop') {
             $words = array();
             foreach ($data as $each) {
-                array_push($words,$each[0]);
+                array_push($words, $each[0]);
             }
-            $this->redis->setKey('stop_words', json_encode($words));
+            $this->wordManager->addStopWords($words);
         } elseif ($action == 'stem') {
             foreach ($data as $each) {
-                $this->redis->setKey($each[0], $each[1]);
+                $synTag = $this->wordManager->loadByWord($each[1], ConsultConstants::SYN_TAG_ENTITY_NAME);
+                if (!empty($synTag)) {
+                    $this->wordManager->createSynTag($each[0], $synTag[0][1]);
+                }
             }
         } elseif ($action == 'adjust') {
             foreach ($data as $map) {
-                if ($this->redis->keyExists(strtolower($map[0]))) {
-                    $scoreData = $this->redis->getKey(strtolower($map[0]));
-                    try {
-                        $tempScoreData = json_decode($scoreData, true);
-                        if (!$tempScoreData) {
-                            $map[0] = $scoreData;
-                            $scoreData = $this->redis->getKey($map[0]);
-                            $scoreData = json_decode($scoreData, true);
-                        } else {
-                            $scoreData = $tempScoreData;
-                        }
-                    } catch (\Exception $e) {
-                        $output->writeln($map[0]);
-                        $output->writeln($e->getMessage());
-                        continue;
-                    }
+                $synTag = $this->wordManager->loadByWord($map[0], ConsultConstants::SYN_TAG_ENTITY_NAME);
+                if (count($synTag) == 1) {
+                    $scoreData = $synTag[0][2];
                     if (in_array($map[1], array_keys($scoreData))) {
-                        $scoreData[$map[1]]['weight_score'] += $this->ADJUSTMENT_WEIGHT;
+                        $scoreData[$map[1]]['weight_score'] += $this->ADJUSTMENTWEIGHT;
                         $scoreData = $this->classification->formulaScoreUpdate($scoreData);
                     } else {
-                        $scoreData[$map[1]]['weight_score'] = $this->COMPROMISING_WEIGHT;
+                        $scoreData[$map[1]]['weight_score'] = $this->COMPROMISINGWEIGHT;
                         $scoreData = $this->classification->formulaScoreUpdate($scoreData);
                     }
-                    $this->redis->setKey($map[0], json_encode($scoreData));
+                    $this->wordManager->updateScore($synTag[0][1], $scoreData);
                 }
             }
         } else {
@@ -88,5 +85,4 @@ class TrainingSetHelperCommand extends ContainerAwareCommand
         }
 
     }
-
 }

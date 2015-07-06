@@ -83,7 +83,7 @@ class QuestionCommentResponse extends ConsultResponseObject {
      */
     public function setVotes($votes)
     {
-        $this->votes = $votes;
+        $this->votes = $this->getInt($votes);
     }
 
     /**
@@ -99,7 +99,7 @@ class QuestionCommentResponse extends ConsultResponseObject {
      */
     public function setVote($vote)
     {
-        $this->vote = $vote;
+        $this->vote = $this->getInt($vote);
     }/**
  * @return mixed
  */

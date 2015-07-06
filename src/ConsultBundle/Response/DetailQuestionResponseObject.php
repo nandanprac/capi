@@ -10,6 +10,7 @@ namespace ConsultBundle\Response;
 
 use ConsultBundle\Entity\Question;
 use ConsultBundle\Entity\UserInfo;
+use ConsultBundle\Utility\Utility;
 
 /**
  * Class DetailQuestionResponseObject
@@ -36,6 +37,11 @@ class DetailQuestionResponseObject extends BasicQuestionResponseObject
     private $isBookmarked=false;
 
     /**
+     *  bool $isOwner
+     */
+    private $isOwner;
+
+    /**
      * @var array
      */
     private $comments;
@@ -46,12 +52,13 @@ class DetailQuestionResponseObject extends BasicQuestionResponseObject
     private $commentsCount;
 
     /**
-     * @param Question $question
+     * @param \ConsultBundle\Entity\Question $question
+     * @param null                           $practoAccountId
      */
-    public function __construct(Question $question)
+    public function __construct(Question $question, $practoAccountId = null)
     {
         parent::__construct($question);
-        $this->populatePatientInfo($question->getUserInfo());
+        $this->populatePatientInfo($question->getUserInfo(), $practoAccountId);
     }
 
     /**
@@ -125,7 +132,7 @@ class DetailQuestionResponseObject extends BasicQuestionResponseObject
      */
     public function setIsBookmarked($isBookmarked)
     {
-        $this->isBookmarked = $isBookmarked;
+        $this->isBookmarked = Utility::toBool($isBookmarked);
     }
 
 
@@ -158,10 +165,27 @@ class DetailQuestionResponseObject extends BasicQuestionResponseObject
      */
     public function setCommentsCount($commentsCount)
     {
-        $this->commentsCount = $commentsCount;
+        $this->commentsCount = $this->getInt($commentsCount);
     }
 
-    protected function populatePatientInfo(UserInfo $userInfo)
+    /**
+     * @return boolean
+     */
+    public function getIsOwner()
+    {
+        return $this->isOwner;
+    }
+
+    /**
+     * @param boolean $isOwner
+     */
+    public function setIsOwner($isOwner)
+    {
+        $this->isOwner = $isOwner;
+    }
+
+
+    protected function populatePatientInfo(UserInfo $userInfo, $practoAccountId = null)
     {
         $patientInfo = new BasicPatientInfoResponse();
         $patientInfo->setId($userInfo->getPractoAccountId());
@@ -170,5 +194,9 @@ class DetailQuestionResponseObject extends BasicQuestionResponseObject
         $patientInfo->setGender($userInfo->getGender());
         $patientInfo->setLocation($userInfo->getLocation());
         $this->patientInfo = $patientInfo;
+
+        if ($userInfo->getPractoAccountId() == $practoAccountId) {
+            $this->isOwner = true;
+        }
     }
 }

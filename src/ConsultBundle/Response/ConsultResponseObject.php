@@ -102,8 +102,6 @@ class ConsultResponseObject
                 if (method_exists($this, $setter)) {
                     $this->$setter($value);
 
-                } else {
-                    throw new \HttpException($attrCamel."is not a valid field in".__CLASS__, Codes::HTTP_INTERNAL_SERVER_ERROR);
                 }
 
             } catch (\Exception $e) {
@@ -123,5 +121,34 @@ class ConsultResponseObject
     public function setSoftDeleted($value)
     {
         //Do Nothing
+    }
+
+
+    /**
+     * @param mixed $value
+     *
+     * @return int
+     */
+    public function getInt($value)
+    {
+        if (is_numeric($value)) {
+            return intval($value);
+        } else {
+            return $value;
+        }
+    }
+
+    /**
+     * @param mixed $value
+     *
+     * @return int
+     */
+    public function getFloat($value)
+    {
+        if (is_float($value)) {
+            return floatval($value);
+        } else {
+            return $value;
+        }
     }
 }

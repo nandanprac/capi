@@ -140,7 +140,7 @@ class BasicQuestionResponseObject extends ConsultResponseObject
      */
     public function setViewCount($viewCount)
     {
-        $this->viewCount = $viewCount;
+        $this->viewCount = $this->getInt($viewCount);
     }
 
     /**
@@ -156,7 +156,7 @@ class BasicQuestionResponseObject extends ConsultResponseObject
      */
     public function setShareCount($shareCount)
     {
-        $this->shareCount = $shareCount;
+        $this->shareCount = $this->getInt($shareCount);
     }
 
     /**
@@ -173,9 +173,9 @@ class BasicQuestionResponseObject extends ConsultResponseObject
     public function setBookmarkCount($bookmarkCount)
     {
         if (!empty($bookmarkCount)) {
-            $this->bookmarkCount = $bookmarkCount;
+            $this->bookmarkCount = $this->getInt($bookmarkCount);
         }
-        $this->bookmarkCount = $bookmarkCount;
+       // $this->bookmarkCount = $bookmarkCount;
     }
 
     /**

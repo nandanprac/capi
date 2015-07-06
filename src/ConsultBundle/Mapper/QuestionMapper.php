@@ -113,6 +113,7 @@ class QuestionMapper
                 $doctorQuestionResponse = new BasicDoctorQuestionResponseObject($questionArray['doctorQuestion']);
                 $doctorQuestionResponse->setVotes($questionArray['votes']);
                 $doctorQuestionResponse->setRating($questionArray['rating']);
+                $doctorQuestionResponse->setBookmarkCount($questionArray['bookmarkCount']);
                 $doctorQuestionResponseList[] = $doctorQuestionResponse;
             }
 

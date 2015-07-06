@@ -16,13 +16,14 @@ class QuestionCommentRepository extends EntityRepository
 {
     /**
      * @param Question $question        - Question object
-     * @param integer $limit           - limit
-     * @param integer $offset          - offset
-     * @param integer $practoAccountId - practo account id
+     * @param integer  $limit           - limit
+     * @param integer  $offset          - offset
+     * @param integer  $practoAccountId - practo account id
      * @return array (comments, count)
      */
     public function getComments($question, $limit, $offset, $practoAccountId)
     {
+
         // query for getting comment details with total votes
         $qb = $this->_em->createQueryBuilder();
         $qb->select(
@@ -49,7 +50,7 @@ class QuestionCommentRepository extends EntityRepository
             $qb->setFirstResult($offset);
         }
 
-        if(!empty($practoAccountId)) {
+        if (!empty($practoAccountId)) {
             $qb->addSelect('COALESCE(cv1.vote, 0) as has_voted')
                ->leftJoin(ConsultConstants::QUESTION_COMMENT_VOTE_ENTITY_NAME, 'cv1', 'WITH', 'c = cv1.questionComment and cv1.practoAccountId = :practoAccountId and cv1.softDeleted = 0');
 
@@ -60,6 +61,7 @@ class QuestionCommentRepository extends EntityRepository
         }
 
         $commentList = $qb->getQuery()->getArrayResult();
+
 
         $countQuery = $qb->getQuery();
         $countQuery->setFirstResult(null)->setMaxResults(null);
@@ -109,4 +111,50 @@ class QuestionCommentRepository extends EntityRepository
 
         return array('comments' => $commentList, 'count' => $count);
     }
+
+
+    /**
+     * @param int $questionCommentId
+     * @param int $practoAccountId
+     *
+     * @return null
+     */
+    public function loadComment($questionCommentId, $practoAccountId)
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select(
+            'c.id',
+            'c.practoAccountId as practo_account_id',
+            'c.identifier as identifier',
+            'c.text as text',
+            'c.createdAt as created_at',
+            'COALESCE(SUM(cv.vote), 0) as total_votes'
+        );
+
+        $qb->from(ConsultConstants::QUESTION_COMMENT_ENTITY_NAME, 'c')
+            ->leftJoin(ConsultConstants::QUESTION_COMMENT_VOTE_ENTITY_NAME, 'cv', 'WITH', 'c = cv.questionComment and cv.softDeleted = 0')
+            ->where('c.softDeleted = 0')
+            ->andWhere('c.id = :questionCommentId')
+            ->setParameter('questionCommentId', $questionCommentId)
+            ->groupBy('c.id');
+
+        if (!empty($practoAccountId)) {
+            $qb->addSelect('COALESCE(cv1.vote, 0) as has_voted')
+               ->leftJoin(ConsultConstants::QUESTION_COMMENT_VOTE_ENTITY_NAME, 'cv1', 'WITH', 'c = cv1.questionComment and cv1.practoAccountId = :practoAccountId and cv1.softDeleted = 0');
+
+            $qb->addSelect('cf.flagCode as flag', 'cf.flagText as flag_text')
+                ->leftJoin(ConsultConstants::QUESTION_COMMENT_FLAG_ENTITY_NAME, 'cf', 'WITH', 'c = cf.questionComment and cf.practoAccountId = :practoAccountId and cf.softDeleted = 0');
+
+            $qb->setParameter('practoAccountId', $practoAccountId);
+        }
+
+        $comment = $qb->getQuery()->getArrayResult();
+
+        if (empty($comment)) {
+            return null;
+        }
+
+        return $comment[0];
+    }
+
 }

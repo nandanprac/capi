@@ -13,7 +13,7 @@ namespace ConsultBundle\Response;
  *
  * @package ConsultBundle\Response
  */
-class BasicPatientInfoResponse
+class BasicPatientInfoResponse extends ConsultResponseObject
 {
     /**
      * @var string
@@ -69,7 +69,7 @@ class BasicPatientInfoResponse
      */
     public function setAge($age)
     {
-        $this->age = $age;
+        $this->age = $this->getInt($age);
     }
 
     /**

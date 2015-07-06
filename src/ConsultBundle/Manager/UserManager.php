@@ -35,6 +35,7 @@ class UserManager extends BaseManager
     {
         $userEntry->setAttributes($requestParams);
 
+
         try {
             $this->validator->validate($userEntry);
         } catch (ValidationError $e) {
@@ -53,10 +54,12 @@ class UserManager extends BaseManager
      */
     public function add($requestParams, $profileToken)
     {
+        $error = array();
         if (!array_key_exists('practo_account_id', $requestParams)) {
             @$error['practo_account_id'] = 'This value cannot be blank';
             throw new ValidationError($error);
         }
+
 
         if (array_key_exists('id', $requestParams) and !empty($requestParams['id'])) {
             $userEntry = $this->helper->loadById($requestParams['id'], ConsultConstants::USER_ENTITY_NAME);
@@ -76,19 +79,59 @@ class UserManager extends BaseManager
 
         } else {
             $userEntry = new UserInfo();
-            if (!array_key_exists('is_relative', $requestParams) or
-                (array_key_exists('is_relative', $requestParams) and !(Utility::toBool($requestParams['is_relative'])))) {
+            if (array_key_exists('is_relative', $requestParams) and Utility::toBool($requestParams['is_relative'])) {
+                if (!array_key_exists('name', $requestParams) or
+                    (array_key_exists('name', $requestParams) and empty($requestParams['name']))) {
+                    @$error['name'] = 'This value cannot be blank when a new profile is being created';
+                }
+                if (!array_key_exists('gender', $requestParams) or
+                    (array_key_exists('gender', $requestParams) and empty($requestParams['gender']))) {
+                    @$error['gender'] = 'This value cannot be blank when a new profile is being created';
+                }
+                if (!array_key_exists('age', $requestParams) or
+                    (array_key_exists('age', $requestParams) and empty($requestParams['age']))) {
+                    @$error['age'] = 'This value cannot be blank when a new profile is being created';
+                }
+                if (count($error) > 0) {
+                    throw new ValidationError($error);
+                }
+
+            } else {
+
+
                 $er = $this->helper->getRepository(ConsultConstants::USER_ENTITY_NAME);
                 $entry = $er->findOneBy(array('practoAccountId' => $requestParams['practo_account_id'], 'isRelative' => 0));
+
                 if (!empty($entry)) {
                     $userEntry = $entry;
+
+                } else {
+
+                    $userJson = $_SESSION['authenticated_user'];
+                    if (empty($userJson['gender']) && (!array_key_exists('gender', $requestParams) or
+                        (array_key_exists('gender', $requestParams) and empty($requestParams['gender'])))) {
+                        @$error['gender'] = 'This value cannot be blank when a new profile is being created';
+                    }
+                    if (empty($userJson['dob']) && (!array_key_exists('age', $requestParams) or
+                        (array_key_exists('age', $requestParams) and empty($requestParams['age'])))) {
+                        @$error['age'] = 'This value cannot be blank when a new profile is being created';
+                    }
+                    if (count($error) > 0) {
+                        throw new ValidationError($error);
+                    }
+
                 }
+
                 $this->updateAccountsUtil->updateAccountDetails($profileToken, $requestParams);
+
             }
         }
 
-        $requestParams['gender'] = (array_key_exists('gender', $requestParams)) ? strtoupper($requestParams['gender']) : null;
+
+
+
         $this->updateFields($userEntry, $requestParams);
+
         $this->helper->persist($userEntry, true);
 
         return $userEntry;
@@ -117,6 +160,6 @@ class UserManager extends BaseManager
             return null;
         }
 
-        return $userEntries;
+        return array('user_profiles' => $userEntries);
     }
 }

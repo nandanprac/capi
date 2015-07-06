@@ -26,7 +26,7 @@ class ReplyResponseObject extends ConsultResponseObject
     /**
      * @var int
      */
-    private $doctorId;
+    private $practoAccountId;
 
     /**
      * @var string $text
@@ -49,13 +49,23 @@ class ReplyResponseObject extends ConsultResponseObject
     private $vote = 0;
 
     /**
+     * @var string
+     */
+    private $flagCode;
+
+    /**
+     * @var string
+     */
+    private $flagText;
+
+    /**
      * @param \ConsultBundle\Entity\DoctorReply $reply
      */
     public function __construct(DoctorReply $reply = null)
     {
         if (!empty($reply)) {
             parent::__construct($reply);
-            $this->doctorId = $reply->getDoctorQuestion()->getPractoAccountId();
+            $this->practoAccountId = $reply->getDoctorQuestion()->getPractoAccountId();
             $this->text = $reply->getText();
             $this->rating = $reply->getRating();
         }
@@ -75,7 +85,7 @@ class ReplyResponseObject extends ConsultResponseObject
      */
     public function setRating($rating)
     {
-        $this->rating = $rating;
+        $this->rating = $this->getInt($rating);
     }
 
     /**
@@ -123,24 +133,10 @@ class ReplyResponseObject extends ConsultResponseObject
      */
     public function setVotes($votes)
     {
-        $this->votes = $votes;
+        $this->votes = $this->getInt($votes);
     }
 
-    /**
-     * @return int
-     */
-    public function getDoctorId()
-    {
-        return $this->doctorId;
-    }
 
-    /**
-     * @param int $doctorId
-     */
-    public function setDoctorId($doctorId)
-    {
-        $this->doctorId = $doctorId;
-    }
 
     /**
      * @return mixed
@@ -156,8 +152,75 @@ class ReplyResponseObject extends ConsultResponseObject
     public function setVote($vote)
     {
         if (!empty($vote)) {
-            $this->vote = $vote;
+            $this->vote = $this->getInt($vote);
         }
 
     }
+
+    /**
+     * @return int
+     */
+    public function getPractoAccountId()
+    {
+        return $this->practoAccountId;
+    }
+
+    /**
+     * @param int $practoAccountId
+     */
+    public function setPractoAccountId($practoAccountId)
+    {
+        $this->practoAccountId = $practoAccountId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFlagCode()
+    {
+        return $this->flagCode;
+    }
+
+    /**
+     * @param string $flagCode
+     */
+    public function setFlagCode($flagCode)
+    {
+        $this->flagCode = $flagCode;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFlagText()
+    {
+        return $this->flagText;
+    }
+
+    /**
+     * @param string $flagText
+     */
+    public function setFlagText($flagText)
+    {
+        $this->flagText = $flagText;
+    }
+
+
+    /**
+     * @param array $doctorQuestion
+     */
+    public function setDoctorFromAttributes(array $doctorQuestion)
+    {
+        if (!empty($doctorQuestion)) {
+            $doc = new DoctorEntity();
+            $doc->setName($doctorQuestion['name']);
+            $doc->setSpeciality($doctorQuestion['speciality']);
+            $doc->setProfilePicture($doctorQuestion['profilePicture']);
+            $doc->setFabricId($doctorQuestion['doctorId']);
+
+            $this->setDoctor($doc);
+        }
+    }
+
+
 }
