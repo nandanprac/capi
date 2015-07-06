@@ -313,6 +313,7 @@ class PrivateThreadManager extends BaseManager
      * @param string $to          - Sending it to
      * @param string $toAccountId - Sending it to account id
      * @param string $questionId  - Question id
+     * @param string $subject
      */
     private function sendPrivateNotify($to, $toAccountId, $questionId, $subject)
     {
@@ -320,16 +321,18 @@ class PrivateThreadManager extends BaseManager
             $this->queue->setQueueName(Queue::CONSULT_GCM)
                 ->sendMessage(json_encode(array(
                     "type"=>"consult",
-                    "message"=>array('text'=>"A Private Question has been assigned to you.", 'question_id'=>$questionId, 'is_private'=>true, 'subject'=>$subject),
+                    "message"=>array('text'=>"A Private Question has been assigned to you.", 'question_id'=>$questionId, 'is_private'=>true, 'subject'=>$subject, 'consult_type'=>ConsultConstants::PUBLIC_QUESTION_NOTIFICATION_TYPE ),
                     "send_to"=>"synapse",
-                    "account_ids"=>array($toAccountId))));
+                    "account_ids"=>array($toAccountId),
+                    )));
         } elseif ($to == 'patient') {
             $this->queue->setQueueName(Queue::CONSULT_GCM)
                 ->sendMessage(json_encode(array(
                     "type"=>"consult",
-                    "message"=>array('text'=>"Your question has been answered by doctor.", 'question_id'=>$questionId, 'is_private'=>true, 'subject'=>$subject),
+                    "message"=>array('text'=>"Your question has been answered by doctor.", 'question_id'=>$questionId, 'is_private'=>true, 'subject'=>$subject, 'consult_type'=>ConsultConstants::PRIVATE_THREAD_NOTIFICATION_TYPE),
                     "send_to"=>"fabric",
-                    "account_ids"=>array($toAccountId))));
+                    "account_ids"=>array($toAccountId),
+                    )));
         }
     }
 }

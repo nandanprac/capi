@@ -93,6 +93,7 @@ class DoctorReplyManager extends BaseManager
         $doctorQuestion->getQuestion()->setState("ANSWERED");
         $doctorReply->setDoctorQuestion($doctorQuestion);
         $doctorReply->setText($answerText);
+        $this->helper->persist($doctorReply, true);
 
         $this->notification
             ->createPatientNotification($doctorQuestion->getQuestion()->getId(), $doctorQuestion->getQuestion()->getUserInfo()->getPractoAccountId(), "Your Query has been answered");
@@ -100,12 +101,16 @@ class DoctorReplyManager extends BaseManager
         $this->queue->setQueueName(Queue::CONSULT_GCM)
             ->sendMessage(json_encode(array(
                 "type"=>"consult",
-                "message"=>array('text'=>"Your Query has been answered", 'question_id'=>$doctorQuestion->getQuestion()->getId()),
+                "message"=>array(
+                    'text'=>"Your Query has been answered",
+                    'question_id'=>$doctorQuestion->getQuestion()->getId(),
+                    'subject'=>$doctorQuestion->getQuestion()->getSubject(),
+                    'consult_type'=>ConsultConstants::PUBLIC_QUESTION_NOTIFICATION_TYPE,
+                ),
                 "send_to"=>"fabric",
                 "account_ids"=>array($doctorQuestion->getQuestion()->getUserInfo()->getPractoAccountId()),
             )));
 
-        $this->helper->persist($doctorReply, true);
 
         return new ReplyResponseObject($doctorReply);
     }
@@ -158,9 +163,15 @@ class DoctorReplyManager extends BaseManager
             $this->queue->setQueueName(Queue::CONSULT_GCM)
                 ->sendMessage(json_encode(array(
                     "type"=>"consult",
-                    "message"=>array('text'=>"Your answer has been rated by doctor", 'question_id'=>$doctorReplyEntity->getDoctorQuestion()->getQuestion()->getId()),
+                    "message"=>array(
+                        'text'=>"Your answer has been rated by the Asker",
+                        'question_id'=>$doctorReplyEntity->getDoctorQuestion()->getQuestion()->getId(),
+                         'subject'=>$doctorReplyEntity->getDoctorQuestion()->getQuestion()->getSubject(),
+                        'consult_type'=>ConsultConstants::PUBLIC_QUESTION_NOTIFICATION_TYPE,
+                    ),
                     "send_to"=>"synapse",
-                    "account_ids"=>array($doctorReplyEntity->getDoctorQuestion()->getPractoAccountId()))));
+                    "account_ids"=>array($doctorReplyEntity->getDoctorQuestion()->getPractoAccountId()),
+                    )));
         }
 
         //Mark the answer as viewed
