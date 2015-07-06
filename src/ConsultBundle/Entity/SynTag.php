@@ -29,7 +29,7 @@ class SynTag extends BaseEntity
     /**
      * Set word
      *
-     * @param string $word
+     * @param  string $word
      * @return SynTag
      */
     public function setWord($word)
@@ -52,7 +52,7 @@ class SynTag extends BaseEntity
     /**
      * Set score
      *
-     * @param WordScore $score
+     * @param  WordScore $score
      * @return SynTag
      */
     public function setScore($score)

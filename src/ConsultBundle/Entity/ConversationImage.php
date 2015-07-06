@@ -20,7 +20,7 @@ class ConversationImage extends BaseEntity
 {
 
     /**
-     * @ORM\ManyToOne(targetEntity = "Conversation")
+     * @ORM\ManyToOne(targetEntity = "Conversation", inversedBy="images")
      * @ORM\JoinColumn(name = "conversation_id", referencedColumnName = "id")
      */
     private $conversation;

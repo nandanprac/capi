@@ -30,7 +30,6 @@ class RepliesController extends BaseConsultController
      * @return DoctorReply
      *
      * @View()
-     *
      */
     public function postDoctorReplyAction(Request $request)
     {

@@ -216,7 +216,7 @@ class DoctorQuestion extends BaseEntity
      */
     public function __construct()
     {
-     //   $this->doctorReply = new ArrayCollection();
+        //   $this->doctorReply = new ArrayCollection();
     }
 
     /**

@@ -23,7 +23,7 @@ class StopWord extends BaseEntity
     /**
      * Set word
      *
-     * @param string $word
+     * @param  string $word
      * @return StopWord
      */
     public function setWord($word)

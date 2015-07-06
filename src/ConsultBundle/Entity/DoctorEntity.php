@@ -36,8 +36,7 @@ class DoctorEntity
         $name = null,
         $speciality = null,
         $profilePicture = ''
-    )
-    {
+    ) {
         $this->name = $name;
         $this->speciality = $speciality;
         $this->profilePicture = $profilePicture;
@@ -106,6 +105,26 @@ class DoctorEntity
     public function setFabricId($fabricId)
     {
         $this->fabricId = $fabricId;
+    }
+
+    /**
+     * @param \ConsultBundle\Entity\DoctorConsultSettings $doctorConsultSettings
+     *
+     * @return \ConsultBundle\Entity\DoctorEntity|null
+     */
+    public static function getEntityFromConsultSettings(DoctorConsultSettings $doctorConsultSettings)
+    {
+        if (empty($doctorConsultSettings)) {
+            return null;
+        }
+
+        $doctorEntity = new DoctorEntity();
+        $doctorEntity->setName($doctorConsultSettings->getName());
+        $doctorEntity->setProfilePicture($doctorConsultSettings->getProfilePicture());
+        $doctorEntity->setSpeciality($doctorConsultSettings->getSpeciality());
+        $doctorEntity->setFabricId($doctorConsultSettings->getFabricDoctorId());
+
+        return $doctorEntity;
     }
 
 

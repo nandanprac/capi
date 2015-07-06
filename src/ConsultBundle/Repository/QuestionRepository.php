@@ -93,7 +93,7 @@ class QuestionRepository extends EntityRepository
     }
 
     /**
-     * @param array $search
+     * @param array   $search
      * @param integer $limit
      * @param integer $offset
      *

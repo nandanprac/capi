@@ -80,16 +80,19 @@ class UserManager extends BaseManager
         } else {
             $userEntry = new UserInfo();
             if (array_key_exists('is_relative', $requestParams) and Utility::toBool($requestParams['is_relative'])) {
-                if (!array_key_exists('name', $requestParams) or
-                    (array_key_exists('name', $requestParams) and empty($requestParams['name']))) {
+                if (!array_key_exists('name', $requestParams)
+                    or (array_key_exists('name', $requestParams) and empty($requestParams['name']))
+                ) {
                     @$error['name'] = 'This value cannot be blank when a new profile is being created';
                 }
-                if (!array_key_exists('gender', $requestParams) or
-                    (array_key_exists('gender', $requestParams) and empty($requestParams['gender']))) {
+                if (!array_key_exists('gender', $requestParams)
+                    or (array_key_exists('gender', $requestParams) and empty($requestParams['gender']))
+                ) {
                     @$error['gender'] = 'This value cannot be blank when a new profile is being created';
                 }
-                if (!array_key_exists('age', $requestParams) or
-                    (array_key_exists('age', $requestParams) and empty($requestParams['age']))) {
+                if (!array_key_exists('age', $requestParams)
+                    or (array_key_exists('age', $requestParams) and empty($requestParams['age']))
+                ) {
                     @$error['age'] = 'This value cannot be blank when a new profile is being created';
                 }
                 if (count($error) > 0) {
@@ -108,12 +111,14 @@ class UserManager extends BaseManager
                 } else {
 
                     $userJson = $_SESSION['authenticated_user'];
-                    if (empty($userJson['gender']) && (!array_key_exists('gender', $requestParams) or
-                        (array_key_exists('gender', $requestParams) and empty($requestParams['gender'])))) {
+                    if (empty($userJson['gender']) && (!array_key_exists('gender', $requestParams)
+                        or (array_key_exists('gender', $requestParams) and empty($requestParams['gender'])))
+                    ) {
                         @$error['gender'] = 'This value cannot be blank when a new profile is being created';
                     }
-                    if (empty($userJson['dob']) && (!array_key_exists('age', $requestParams) or
-                        (array_key_exists('age', $requestParams) and empty($requestParams['age'])))) {
+                    if (empty($userJson['dob']) && (!array_key_exists('age', $requestParams)
+                        or (array_key_exists('age', $requestParams) and empty($requestParams['age'])))
+                    ) {
                         @$error['age'] = 'This value cannot be blank when a new profile is being created';
                     }
                     if (count($error) > 0) {
@@ -140,7 +145,7 @@ class UserManager extends BaseManager
     /**
      * Load User's Additional Info By Id
      *
-     * @param array $requestParams
+     * @param  array $requestParams
      * @throws ValidationError
      * @return array userEntry
      */

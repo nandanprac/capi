@@ -58,7 +58,7 @@ class TestingCommand extends ContainerAwareCommand
         $this->container->set('consult.consult_domain', $consultDomain);
         $this->queue->setConsultDomain($consultDomain);
         $this->queue
-              ->setQueueName(Queue::CLASSIFY)
-              ->sendMessage(json_encode(array('question'=>$question ? $question : '', 'question_id'=>1, 'speciality'=>$speciality ? $speciality : '')));
+            ->setQueueName(Queue::CLASSIFY)
+            ->sendMessage(json_encode(array('question'=>$question ? $question : '', 'question_id'=>1, 'speciality'=>$speciality ? $speciality : '')));
     }
 }

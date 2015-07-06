@@ -98,12 +98,12 @@ class PrivateThreadRepository extends EntityRepository
     {
         $subqb = $this->_em->createQueryBuilder();
         $subqb->select('c.text as question', 'count(ci.id) as images_count')
-              ->from(ConsultConstants::CONVERSATION_ENTITY_NAME, 'c')
-              ->leftJoin(ConsultConstants::CONVERSATION_IMAGE_ENTITY_NAME, 'ci', 'WITH', 'ci.conversation = c AND ci.softDeleted = 0')
-              ->where('c.isDocReply = 0')
-              ->groupBy('c')
-              ->orderBy('c.createdAt', 'DESC')
-              ->setMaxResults(1);
+            ->from(ConsultConstants::CONVERSATION_ENTITY_NAME, 'c')
+            ->leftJoin(ConsultConstants::CONVERSATION_IMAGE_ENTITY_NAME, 'ci', 'WITH', 'ci.conversation = c AND ci.softDeleted = 0')
+            ->where('c.isDocReply = 0')
+            ->groupBy('c')
+            ->orderBy('c.createdAt', 'DESC')
+            ->setMaxResults(1);
         $lastQuestion = $subqb->getQuery()->getArrayResult();
 
         $question = null;
@@ -161,7 +161,8 @@ class PrivateThreadRepository extends EntityRepository
     public function getAllConversationsForThread($privateThread)
     {
         $qb = $this->_em->createQueryBuilder();
-        $qb->select('c.id', 'c.text', 'c.isDocReply', 'c.createdAt', 'GROUP_CONCAT(ci.url separator \', \') as images')
+        $qb->select('c.id as id', 'c.text as text', 'c.isDocReply as is_doc_reply', 'c.createdAt as created_at', 'GROUP_CONCAT(ci.url separator \', \') as images')
+
             ->from(ConsultConstants::PRIVATE_THREAD_ENTITY_NAME, 'p')
             ->innerJoin(ConsultConstants::CONVERSATION_ENTITY_NAME, 'c', 'WITH', 'c.privateThread = p AND c.softDeleted = 0')
             ->leftJoin(ConsultConstants::CONVERSATION_IMAGE_ENTITY_NAME, 'ci', 'WITH', 'ci.conversation = c AND ci.softDeleted = 0')

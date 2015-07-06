@@ -175,7 +175,7 @@ class BasicQuestionResponseObject extends ConsultResponseObject
         if (!empty($bookmarkCount)) {
             $this->bookmarkCount = $this->getInt($bookmarkCount);
         }
-       // $this->bookmarkCount = $bookmarkCount;
+        // $this->bookmarkCount = $bookmarkCount;
     }
 
     /**

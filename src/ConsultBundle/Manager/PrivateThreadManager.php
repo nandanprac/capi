@@ -3,6 +3,7 @@
 namespace ConsultBundle\Manager;
 
 use ConsultBundle\Entity\BaseEntity;
+use ConsultBundle\Entity\DoctorEntity;
 use ConsultBundle\Repository\PrivateThreadRepository;
 use FOS\RestBundle\Util\Codes;
 use ConsultBundle\Constants\ConsultConstants;
@@ -282,8 +283,7 @@ class PrivateThreadManager extends BaseManager
         if (!$isDoctor) {
             $practoAccountId = $privateThread->getUserInfo()->getPractoAccountId();
             $privateThreadResponse['followups_remaining'] = $er->checkFollowUpCount($practoAccountId, $privateThread);
-            $privateThreadResponse['doctor_name'] = $this->doctorManager->getConsultSettingsByPractoAccountId($privateThread->getDoctorId())->getName();
-            $privateThreadResponse['doctor_image'] = $this->doctorManager->getConsultSettingsByPractoAccountId($privateThread->getDoctorId())->getProfilePicture();
+            $privateThreadResponse['doctor'] = $this->populateDoctorInfo($privateThread->getDoctorId());
         }
 
         return $privateThreadResponse;
@@ -296,6 +296,7 @@ class PrivateThreadManager extends BaseManager
     private function populatePatientInfo(UserInfo $userInfo)
     {
         $patientInfo = new DetailPatientInfoResponse();
+        $patientInfo->setId($userInfo->getId());
         $patientInfo->setAllergies($userInfo->getAllergies());
         $patientInfo->setMedications($userInfo->getMedications());
         $patientInfo->setPrevDiagnosedConditions($userInfo->getPrevDiagnosedConditions());
@@ -313,6 +314,18 @@ class PrivateThreadManager extends BaseManager
         $patientInfo->setProfilePicture($userInfo->getProfilePicture());
 
         return $patientInfo;
+    }
+
+    /**
+     * @param $practoAccountId
+     *
+     * @return \ConsultBundle\Entity\DoctorEntity|null
+     */
+    private function populateDoctorInfo($practoAccountId)
+    {
+        $doctor = $this->doctorManager->getConsultSettingsByPractoAccountId($practoAccountId);
+
+        return DoctorEntity::getEntityFromConsultSettings($doctor);
     }
 
     /**
@@ -345,20 +358,28 @@ class PrivateThreadManager extends BaseManager
     {
         if ($to == 'doctor') {
             $this->queue->setQueueName(Queue::CONSULT_GCM)
-                ->sendMessage(json_encode(array(
-                    "type"=>"consult",
-                    "message"=>array('text'=>"A Private Question has been assigned to you.", 'question_id'=>$questionId, 'is_private'=>true, 'subject'=>$subject, 'consult_type'=>ConsultConstants::PUBLIC_QUESTION_NOTIFICATION_TYPE ),
-                    "send_to"=>"synapse",
-                    "account_ids"=>array($toAccountId),
-                    )));
+                ->sendMessage(
+                    json_encode(
+                        array(
+                        "type"=>"consult",
+                        "message"=>array('text'=>"A Private Question has been assigned to you.", 'question_id'=>$questionId, 'is_private'=>true, 'subject'=>$subject, 'consult_type'=>ConsultConstants::PUBLIC_QUESTION_NOTIFICATION_TYPE ),
+                        "send_to"=>"synapse",
+                        "account_ids"=>array($toAccountId),
+                        )
+                    )
+                );
         } elseif ($to == 'patient') {
             $this->queue->setQueueName(Queue::CONSULT_GCM)
-                ->sendMessage(json_encode(array(
-                    "type"=>"consult",
-                    "message"=>array('text'=>"Your question has been answered by doctor.", 'question_id'=>$questionId, 'is_private'=>true, 'subject'=>$subject, 'consult_type'=>ConsultConstants::PRIVATE_THREAD_NOTIFICATION_TYPE),
-                    "send_to"=>"fabric",
-                    "account_ids"=>array($toAccountId),
-                    )));
+                ->sendMessage(
+                    json_encode(
+                        array(
+                        "type"=>"consult",
+                        "message"=>array('text'=>"Your question has been answered by doctor.", 'question_id'=>$questionId, 'is_private'=>true, 'subject'=>$subject, 'consult_type'=>ConsultConstants::PRIVATE_THREAD_NOTIFICATION_TYPE),
+                        "send_to"=>"fabric",
+                        "account_ids"=>array($toAccountId),
+                        )
+                    )
+                );
         }
     }
 }

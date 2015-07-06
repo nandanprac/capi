@@ -18,7 +18,6 @@ class DoctorController extends BaseConsultController
 
     /**
      * @return ArrayCollection
-     *
      */
     public function getDoctorDashboardAction()
     {

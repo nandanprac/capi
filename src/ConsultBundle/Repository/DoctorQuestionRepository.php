@@ -36,13 +36,13 @@ class DoctorQuestionRepository extends EntityRepository
         $offset = array_key_exists('offset', $filters) ? $filters['offset'] : 0;
         try {
              $qb->select('dq AS doctorQuestion', 'r.rating AS rating', 'count(DISTINCT b.id) AS bookmarkCount', '(count(DISTINCT rv.id) - count(DISTINCT rvn.id)) AS votes')
-                ->from(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME, 'dq')
-                ->leftJoin(ConsultConstants::DOCTOR_REPLY_ENTITY_NAME, 'r', 'WITH', 'r.doctorQuestion = dq AND r.softDeleted = 0')
-                ->leftJoin(ConsultConstants::DOCTOR_REPLY_VOTE_ENTITY, 'rv', 'WITH', 'rv.reply = r AND  rv.vote = 1 AND rv.softDeleted = 0')
-                ->leftJoin(ConsultConstants::DOCTOR_REPLY_VOTE_ENTITY, 'rvn', 'WITH', 'rvn.reply = r AND rvn.vote = -1 AND rvn.softDeleted = 0')
-                ->leftJoin(ConsultConstants::QUESTION_BOOKMARK_ENTITY_NAME, 'b', 'WITH', 'dq.question = b.question AND b.softDeleted = 0 ')
-                ->where('dq.softDeleted = 0')
-                ->groupBy('dq.id');
+                 ->from(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME, 'dq')
+                 ->leftJoin(ConsultConstants::DOCTOR_REPLY_ENTITY_NAME, 'r', 'WITH', 'r.doctorQuestion = dq AND r.softDeleted = 0')
+                 ->leftJoin(ConsultConstants::DOCTOR_REPLY_VOTE_ENTITY, 'rv', 'WITH', 'rv.reply = r AND  rv.vote = 1 AND rv.softDeleted = 0')
+                 ->leftJoin(ConsultConstants::DOCTOR_REPLY_VOTE_ENTITY, 'rvn', 'WITH', 'rvn.reply = r AND rvn.vote = -1 AND rvn.softDeleted = 0')
+                 ->leftJoin(ConsultConstants::QUESTION_BOOKMARK_ENTITY_NAME, 'b', 'WITH', 'dq.question = b.question AND b.softDeleted = 0 ')
+                 ->where('dq.softDeleted = 0')
+                 ->groupBy('dq.id');
 
             if ($doctorId != -1) {
                 $qb->andWhere(' dq.practoAccountId = :doctorId');

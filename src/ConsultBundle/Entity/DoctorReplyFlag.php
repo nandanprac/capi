@@ -42,7 +42,6 @@ class DoctorReplyFlag extends BaseEntity
      * @var string
      *
      * @ORM\Column(name="flag_text", type="string", nullable=true)
-     *
      */
     private $flagText;
 
