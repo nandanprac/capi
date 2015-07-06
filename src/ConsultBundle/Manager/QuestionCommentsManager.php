@@ -38,8 +38,9 @@ class QuestionCommentsManager extends BaseManager
             throw new ValidationError($error);
         }
 
-        if (!array_key_exists('identifier', $requestParams) or
-            (array_key_exists('identifier', $requestParams) and empty($requestParams['identifier']))) {
+        if (!array_key_exists('identifier', $requestParams)
+            or (array_key_exists('identifier', $requestParams) and empty($requestParams['identifier']))
+        ) {
             @$error['identifier'] = 'This cannot be blank';
             throw new ValidationError($error);
 
@@ -110,14 +111,14 @@ class QuestionCommentsManager extends BaseManager
                 $vote->setCount($vote->getCount() + 1);
                 $this->helper->persist($vote, true);
 
-               // return $vote;
+                // return $vote;
             } else {
                 $commentVote = new QuestionCommentVote();
                 $commentVote->setQuestionComment($questionComment);
                 $this->updateFields($commentVote, $requestParams);
                 $this->helper->persist($commentVote, true);
 
-               // return $commentVote;
+                // return $commentVote;
             }
         }
 
@@ -183,7 +184,7 @@ class QuestionCommentsManager extends BaseManager
 
     /**
      * @param QuestionComment $questionComment - comment object
-     * @param array            $data           - data to be updated
+     * @param array           $data            - data to be updated
      * @throws ValidationError
      */
     private function updateFields($entity, $data)

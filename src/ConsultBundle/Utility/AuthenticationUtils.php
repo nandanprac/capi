@@ -24,7 +24,7 @@ class AuthenticationUtils
     /**
      * @var array
      */
-   // private static $authenticationMap;
+    // private static $authenticationMap;
 
     private $accountHost;
 

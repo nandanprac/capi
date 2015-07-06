@@ -11,7 +11,8 @@ namespace ConsultBundle\Response;
 
 use ConsultBundle\Entity\QuestionComment;
 
-class QuestionCommentResponse extends ConsultResponseObject {
+class QuestionCommentResponse extends ConsultResponseObject
+{
 
     private $text;
 

@@ -195,6 +195,7 @@ class DetailQuestionResponseObject extends BasicQuestionResponseObject
 
         if ($userInfo->getPractoAccountId() == $practoAccountId) {
             $this->isOwner = true;
+            $this->setId($userInfo->getId());
         }
     }
 }

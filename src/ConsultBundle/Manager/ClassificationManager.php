@@ -16,7 +16,6 @@ class ClassificationManager
      * Constructor
      *
      * @param WordManager $wordManager - Word Manager
-     *
      */
     public function __construct(WordManager $wordManager)
     {

@@ -23,7 +23,7 @@ class WordScore extends BaseEntity
     /**
      * Set score
      *
-     * @param array $score
+     * @param  array $score
      * @return WordScore
      */
     public function setScore($score)

@@ -95,7 +95,8 @@ class DoctorManager extends BaseManager
         /**
          * @var DoctorConsultSettings $doctor
          */
-        $doctor  = $er->findOneBy(array(
+        $doctor  = $er->findOneBy(
+            array(
                 "fabricDoctorId" => $postData['doctor_fabric_id'],
                 "softDeleted" => 0)
         );
@@ -158,7 +159,8 @@ class DoctorManager extends BaseManager
         /**
          * @var DoctorConsultSettings $result
          */
-        $result =  $result = $er->findOneBy(array(
+        $result =  $result = $er->findOneBy(
+            array(
                 "fabricDoctorId" => $id,
                 "softDeleted" => 0)
         );
@@ -210,7 +212,8 @@ class DoctorManager extends BaseManager
          */
         $er = $this->getRepository();
 
-        $result =  $result = $er->findOneBy(array(
+        $result =  $result = $er->findOneBy(
+            array(
                 "practoAccountId" => $id,
                 "softDeleted" => 0)
         );

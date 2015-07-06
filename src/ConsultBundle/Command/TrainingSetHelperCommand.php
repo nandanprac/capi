@@ -24,7 +24,7 @@ class TrainingSetHelperCommand extends ContainerAwareCommand
 
     /**
      * Initialize Connections
-     * @param InputInterface  $input input
+     * @param InputInterface  $input  input
      * @param OutputInterface $output output
      */
     protected function initialize(InputInterface $input, OutputInterface $output)

@@ -82,7 +82,7 @@ class QuestionMapper
                  * @var DoctorQuestion $doctorQuestionEntity
                  */
                 if (!empty($doctorQuestionEntity)||$doctorQuestionEntity->isSoftDeleted()||empty($doctorQuestionEntity->getDoctorReplies()
-                        ||$doctorQuestionEntity->getDoctorReplies()->isSoftDeleted())
+                    ||$doctorQuestionEntity->getDoctorReplies()->isSoftDeleted())
                 ) {
                     $reply = new ReplyResponseObject();
                     self::mapDoctorQuestion($doctorQuestionEntity, $reply);

@@ -145,7 +145,7 @@ class QuestionManager extends BaseManager
             $question->setViewCount($question->getViewCount() + 1);
             if (!empty($practoAccountId)) {
                 $viewEntry = $this->helper->getRepository(ConsultConstants::QUESTION_VIEW_ENTITY_NAME)
-                                  ->findBy(array('question' => $question, 'practoAccountId' => $practoAccountId, 'softDeleted' => 0));
+                    ->findBy(array('question' => $question, 'practoAccountId' => $practoAccountId, 'softDeleted' => 0));
                 if (empty($viewEntry)) {
                     $view = new QuestionView();
                     $view->setQuestion($question);
@@ -317,8 +317,7 @@ class QuestionManager extends BaseManager
 
     /**
      * @param Question $question - Question object
-     * @param string $tags - text for the tags
-     *
+     * @param string   $tags     - text for the tags
      */
     private function setQuestionTags($question, $tags)
     {
