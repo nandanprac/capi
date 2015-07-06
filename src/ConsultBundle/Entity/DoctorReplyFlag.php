@@ -33,7 +33,7 @@ class DoctorReplyFlag extends BaseEntity
      *
      * @ORM\Column(name="flag_code", type="string")
      *
-     * @Assert\Choice(choices = {"IAP","NOH","OTH"}, message="Not a valid flag code")
+     * @Assert\Choice(choices = {"NRQ", "ABV", "SPM", "ADV", "OTH"}, message="Not a valid flag code")
      * @Assert\NotBlank()
      */
     private $flagCode;
@@ -42,6 +42,7 @@ class DoctorReplyFlag extends BaseEntity
      * @var string
      *
      * @ORM\Column(name="flag_text", type="string", nullable=true)
+     *
      */
     private $flagText;
 
