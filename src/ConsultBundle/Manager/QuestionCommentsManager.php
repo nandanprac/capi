@@ -6,6 +6,7 @@ use ConsultBundle\Constants\ConsultConstants;
 use ConsultBundle\Entity\QuestionCommentVote;
 use ConsultBundle\Entity\QuestionCommentFlag;
 use ConsultBundle\Response\QuestionCommentResponse;
+use ConsultBundle\Utility\Utility;
 use FOS\RestBundle\Util\Codes;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 use Symfony\Component\Validator\ValidatorInterface;
@@ -111,18 +112,18 @@ class QuestionCommentsManager extends BaseManager
                 $vote->setCount($vote->getCount() + 1);
                 $this->helper->persist($vote, true);
 
-                // return $vote;
+               // return $vote;
             } else {
                 $commentVote = new QuestionCommentVote();
                 $commentVote->setQuestionComment($questionComment);
                 $this->updateFields($commentVote, $requestParams);
                 $this->helper->persist($commentVote, true);
 
-                // return $commentVote;
+               // return $commentVote;
             }
         }
 
-        if (array_key_exists('flag', $requestParams)) {
+        if (array_key_exists('flag', $requestParams) && Utility::toBool($requestParams['flag'])) {
             $er = $this->helper->getRepository(ConsultConstants::QUESTION_COMMENT_FLAG_ENTITY_NAME);
             $flag = $er->findBy(array('questionComment' => $questionComment, 'practoAccountId' => $requestParams['practo_account_id'], 'softDeleted' => 0));
             if (!empty($flag[0])) {
@@ -132,7 +133,7 @@ class QuestionCommentsManager extends BaseManager
 
             $flag = new QuestionCommentFlag();
             $flag->setQuestionComment($questionComment);
-            $requestParams['flag_code'] = strtoupper($requestParams['flag']);
+            $requestParams['flag_code'] = strtoupper($requestParams['flag_code']);
             $requestParams['flag_text'] = (array_key_exists('text', $requestParams)) ? $requestParams['text'] : null ;
             unset($requestParams['flag']);
             if (array_key_exists('text', $requestParams)) {
@@ -184,7 +185,7 @@ class QuestionCommentsManager extends BaseManager
 
     /**
      * @param QuestionComment $questionComment - comment object
-     * @param array           $data            - data to be updated
+     * @param array            $data           - data to be updated
      * @throws ValidationError
      */
     private function updateFields($entity, $data)
