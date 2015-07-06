@@ -166,7 +166,7 @@ class QuestionManager extends BaseManager
 
         if (array_key_exists('bookmark', $requestParams)) {
             if (empty($practoAccountId)) {
-                throw new \HttpException('',Codes::HTTP_FORBIDDEN);
+                throw new \HttpException('', Codes::HTTP_FORBIDDEN);
             }
             if (Utility::toBool($requestParams['bookmark'])) {
                 try {
@@ -304,12 +304,15 @@ class QuestionManager extends BaseManager
      * @param integer $questionId - Question Id
      * @param string  $tags       - text for the tag
      *
+     * @return mixed
      */
     public function setTagsByQuestionId($questionId, $tags)
     {
         $question = $this->helper->loadById($questionId, ConsultConstants::QUESTION_ENTITY_NAME);
         $this->setQuestionTags($question, $tags);
         $this->helper->persist($question, 'true');
+
+        return $question;
     }
 
     /**

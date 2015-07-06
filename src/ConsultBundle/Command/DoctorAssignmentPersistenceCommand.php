@@ -2,6 +2,7 @@
 
 namespace ConsultBundle\Command;
 
+use ConsultBundle\Constants\ConsultConstants;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -80,13 +81,18 @@ class DoctorAssignmentPersistenceCommand extends ContainerAwareCommand
                     } elseif ($jobData['state'] == 'ASSIGNED') {
                         $this->doctorQuestionManager->setDoctorsForAQuestions($jobData['question_id'], $jobData['doctors']);
                         $this->questionManager->setState($jobData['question_id'], $jobData['state']);
-                        $this->questionManager->setTagsByQuestionId($jobData['question_id'], array_merge(array($jobData['speciality']), $jobData['tags']));
+                        $question = $this->questionManager->setTagsByQuestionId($jobData['question_id'], array_merge(array($jobData['speciality']), $jobData['tags']));
                         if ($jobData['user_classified'] == 0) {
                             $this->questionManager->setSpeciality($jobData['question_id'], $jobData['speciality']);
                         }
-                        $jobData['type'] = 'new_question';
+                        $jobData['type'] = 'consult';
                         $jobData['account_ids'] = $jobData['doctors'];
-                        $jobData['message'] = $jobData['question_id'];
+                        $jobData['message'] = array(
+                            'text'=>'A question has been assigned to you',
+                            'question_id'=>$jobData['question_id'],
+                            'subject'=>$question->getSubject(),
+                            'consult_type'=>ConsultConstants::PUBLIC_QUESTION_NOTIFICATION_TYPE,
+                            );
                         unset($jobData['doctors']);
                         unset($jobData['state']);
                         unset($jobData['speciality']);
