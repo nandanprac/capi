@@ -10,6 +10,7 @@ namespace ConsultBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation\VirtualProperty;
 
 /**
  * @ORM\Table(name="user_info")
@@ -465,6 +466,15 @@ class UserInfo extends BaseEntity
         }
 
 
+    }
+
+    /**
+     * @return mixed
+     * @VirtualProperty()
+     */
+    public function getId()
+    {
+        return $this->id;
     }
 }
 
