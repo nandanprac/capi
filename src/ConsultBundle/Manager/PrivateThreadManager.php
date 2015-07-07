@@ -150,7 +150,7 @@ class PrivateThreadManager extends BaseManager
 
             $privateThread->setQuestion($reply->getDoctorQuestion()->getQuestion());
             $privateThread->setDoctorId($reply->getDoctorQuestion()->getPractoAccountId());
-            $subject = array_key_exists('subject', $requestParams) ? $requestParams['subject'] : $reply->getDoctorQuestion()->getQuestion()->getSubject();
+            $subject =  $reply->getDoctorQuestion()->getQuestion()->getSubject();
             $privateThread->setSubject($subject);
 
             $conversation = new Conversation();
