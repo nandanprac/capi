@@ -274,6 +274,7 @@ class PrivateThreadManager extends BaseManager
         $privateThreadResponse['id'] = $privateThread->getId();
         $privateThreadResponse['subject'] = $privateThread->getSubject();
         $privateThreadResponse['base_question_id'] = $privateThread->getQuestion()->getId();
+        $privateThreadResponse['created_at'] = $privateThread->getCreatedAt();
         $privateThreadResponse['conversation'] = $ecr->findBy(array('privateThread' => $privateThread, 'softDeleted' => 0));
         $userInfo = $privateThread->getUserInfo();
         if (!$userInfo->isIsRelative()) {
