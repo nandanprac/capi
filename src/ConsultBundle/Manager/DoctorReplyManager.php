@@ -102,15 +102,15 @@ class DoctorReplyManager extends BaseManager
             ->sendMessage(
                 json_encode(
                     array(
-                    "type"=>"consult",
-                    "message"=>array(
-                    'text'=>"Your Query has been answered",
-                    'question_id'=>$doctorQuestion->getQuestion()->getId(),
-                    'subject'=>$doctorQuestion->getQuestion()->getSubject(),
-                    'consult_type'=>ConsultConstants::PUBLIC_QUESTION_NOTIFICATION_TYPE,
-                    ),
-                    "send_to"=>"fabric",
-                    "account_ids"=>array($doctorQuestion->getQuestion()->getUserInfo()->getPractoAccountId()),
+                        "type"=>"consult",
+                        "message"=>array(
+                            'text'=>"Your Query has been answered",
+                            'question_id'=>$doctorQuestion->getQuestion()->getId(),
+                            'subject'=>$doctorQuestion->getQuestion()->getSubject(),
+                            'consult_type'=>ConsultConstants::PUBLIC_QUESTION_NOTIFICATION_TYPE,
+                        ),
+                        "send_to"=>"fabric",
+                        "account_ids"=>array($doctorQuestion->getQuestion()->getUserInfo()->getPractoAccountId()),
                     )
                 )
             );

@@ -364,7 +364,7 @@ class PrivateThreadManager extends BaseManager
                     json_encode(
                         array(
                         "type"=>"consult",
-                        "message"=>array('text'=>"A Private Question has been assigned to you.", 'question_id'=>$questionId, 'is_private'=>true, 'subject'=>$subject, 'consult_type'=>ConsultConstants::PUBLIC_QUESTION_NOTIFICATION_TYPE ),
+                        "message"=>array('text'=>"A Private Question has been assigned to you.", 'question_id'=>$questionId, 'is_private'=>true, 'subject'=>$subject, 'consult_type'=>ConsultConstants::PRIVATE_THREAD_NOTIFICATION_TYPE ),
                         "send_to"=>"synapse",
                         "account_ids"=>array($toAccountId),
                         )
