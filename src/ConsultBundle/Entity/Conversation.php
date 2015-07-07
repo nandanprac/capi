@@ -4,6 +4,8 @@ namespace ConsultBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Accessor;
+use JMS\Serializer\Annotation\AccessType;
 use Symfony\Component\Validator\Constraints as Assert;
 use JMS\Serializer\Annotation\Exclude;
 
@@ -12,6 +14,7 @@ use JMS\Serializer\Annotation\Exclude;
  * @ORM\Table(name="conversations")
  * @ORM\HasLifecycleCallbacks()
  * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
+ * @AccessType("public_methods")
  */
 class Conversation extends BaseEntity
 {
@@ -42,6 +45,11 @@ class Conversation extends BaseEntity
      * @var ArrayCollection $images
      */
     private $images;
+
+    /**
+     * @Accessor(getter="getCreatedAt")
+     */
+    private $created_at;
 
     /**
      * @return mixed
@@ -109,6 +117,14 @@ class Conversation extends BaseEntity
     public function setImages($images)
     {
         $this->images = $images;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
     }
 
 
