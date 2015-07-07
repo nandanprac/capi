@@ -23,11 +23,13 @@ class UpdateAccountsUtil
 
     private $accountHost;
 
-    private static $fieldsToUpdate = array('weight_in_kgs' => 'weight_in_kgs',
-                                     'height_in_cms' => 'height_in_cms',
-                                      'age' => 'dob',
-                                     'gender' => 'gender',
-                                      'blood_group' => 'blood_group');
+    private static $fieldsToUpdate = array(
+        'weight_in_kgs' => 'weight_in_kgs',
+        'height_in_cms' => 'height_in_cms',
+        'age' => 'dob',
+        'gender' => 'gender',
+        'blood_group' => 'blood_group',
+        );
 
     /**
      * @param string $accountHost
