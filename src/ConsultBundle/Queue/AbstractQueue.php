@@ -10,6 +10,7 @@ abstract class AbstractQueue
 {
     private $queueName;
     private $queuePrefix = '';
+    private $fabricQueuePrefix = '';
     private $consultDomain;
 
     const PUSH_TEST              = 'push_tester';
@@ -55,6 +56,7 @@ abstract class AbstractQueue
     public function __construct($queuePrefix = '')
     {
         $this->queuePrefix = $queuePrefix;
+        $this->fabricQueuePrefix = str_replace('consult', 'fabric', $queuePrefix);
     }
 
     /**
@@ -68,6 +70,10 @@ abstract class AbstractQueue
         $parts = parse_url($host);
         $subdomain = explode('.', $parts['host'])[0];
         $queueName = str_replace('consult', $this->queueName, $subdomain);
+        if ($this->queueName == self::CONSULT_GCM) {
+            return $this->fabricQueuePrefix.$queueName;
+        }
+
 
         return $this->queuePrefix.$queueName;
     }
