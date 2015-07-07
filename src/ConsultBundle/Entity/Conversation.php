@@ -8,6 +8,7 @@ use JMS\Serializer\Annotation\Accessor;
 use JMS\Serializer\Annotation\AccessType;
 use Symfony\Component\Validator\Constraints as Assert;
 use JMS\Serializer\Annotation\Exclude;
+use JMS\Serializer\Annotation\VirtualProperty;
 
 /**
  * @ORM\Entity
@@ -45,11 +46,7 @@ class Conversation extends BaseEntity
      * @var ArrayCollection $images
      */
     private $images;
-
-    /**
-     * @Accessor(getter="getCreatedAt")
-     */
-    private $created_at;
+    
 
     /**
      * @return mixed
@@ -120,6 +117,7 @@ class Conversation extends BaseEntity
     }
 
     /**
+     * @VirtualProperty
      * @return mixed
      */
     public function getCreatedAt()
