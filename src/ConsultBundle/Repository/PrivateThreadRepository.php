@@ -160,6 +160,7 @@ class PrivateThreadRepository extends EntityRepository
      */
     public function getAllConversationsForThread($privateThread)
     {
+
         $qb = $this->_em->createQueryBuilder();
         $qb->select('c.id as id', 'c.text as text', 'c.isDocReply as is_doc_reply', 'c.createdAt as created_at', 'GROUP_CONCAT(ci.url separator \', \') as images')
 

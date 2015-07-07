@@ -5,6 +5,7 @@ namespace ConsultBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation\Exclude;
 
 /**
  * @ORM\Entity
@@ -24,6 +25,7 @@ class Conversation extends BaseEntity
     private $text;
 
     /**
+     * @Exclude()
      * @ORM\ManyToOne(targetEntity = "PrivateThread", fetch="EXTRA_LAZY", cascade={"persist", "remove"})
      * @ORM\JoinColumn(name = "private_thread_id", referencedColumnName = "id")
      */

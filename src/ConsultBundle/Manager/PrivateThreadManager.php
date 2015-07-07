@@ -269,11 +269,12 @@ class PrivateThreadManager extends BaseManager
     private function createThreadResponse($privateThread, $isDoctor)
     {
         $er = $this->helper->getRepository(ConsultConstants::PRIVATE_THREAD_ENTITY_NAME);
+        $ecr = $this->helper->getRepository(ConsultConstants::CONVERSATION_ENTITY_NAME);
         $privateThreadResponse = array();
         $privateThreadResponse['id'] = $privateThread->getId();
         $privateThreadResponse['subject'] = $privateThread->getSubject();
         $privateThreadResponse['base_question_id'] = $privateThread->getQuestion()->getId();
-        $privateThreadResponse['conversation'] = $er->getAllConversationsForThread($privateThread);
+        $privateThreadResponse['conversation'] = $ecr->findBy(array('privateThread' => $privateThread, 'softDeleted' => 0));
         $userInfo = $privateThread->getUserInfo();
         if (!$userInfo->isIsRelative()) {
             $userInfo = $this->retrieveUserProfileUtil->retrieveUserProfileNew($privateThread->getUserInfo());

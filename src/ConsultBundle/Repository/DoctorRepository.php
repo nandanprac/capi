@@ -55,7 +55,7 @@ class DoctorRepository extends EntityRepository
 
              $result = $qb->getQuery()->getArrayResult();
             if ($result != null) {
-                $results['avg_rating'] = floatval($result[0]['avg_rating']);
+                $results['avg_rating'] = round(floatval($result[0]['avg_rating'], 1));
             } else {
                 $results['avg_rating'] = 0.0;
             }
