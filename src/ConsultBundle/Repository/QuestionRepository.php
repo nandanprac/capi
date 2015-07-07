@@ -40,7 +40,7 @@ class QuestionRepository extends EntityRepository
             ->from(ConsultConstants::QUESTION_ENTITY_NAME, 'q')
             ->leftJoin(ConsultConstants::QUESTION_BOOKMARK_ENTITY_NAME, 'b', 'WITH', 'q = b.question AND b.softDeleted = 0 ')
             ->where('q.softDeleted = 0')
-            ->orderBy('q.modifiedAt', 'DESC')
+            ->orderBy('q.createdAt', 'DESC')
             ->groupBy('q')
             ->setMaxResults($limit)
             ->setFirstResult($offset);
