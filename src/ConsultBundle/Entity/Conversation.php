@@ -23,7 +23,7 @@ class Conversation extends BaseEntity
     /**
      * @var string
      *
-     * @ORM\Column(name="text", type="string", length=32)
+     * @ORM\Column(name="text", type="text")
      * @Assert\NotBlank()
      */
     private $text;
