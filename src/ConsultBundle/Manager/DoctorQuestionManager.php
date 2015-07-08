@@ -54,7 +54,7 @@ class DoctorQuestionManager extends BaseManager
         $doctorQuestions = array();
         foreach ($doctorsId as $doctorId) {
             $doctorQuestion = $this->createDoctorQuestionEntity($question, $doctorId);
-            $this->notification->createDoctorNotification($question, $doctorId);
+            $this->notification->createDoctorNotification($doctorQuestion, $doctorId);
             $doctorQuestions[] = $doctorQuestion;
         }
 
