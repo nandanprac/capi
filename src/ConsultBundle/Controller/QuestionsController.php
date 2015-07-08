@@ -129,4 +129,10 @@ class QuestionsController extends BaseConsultController
         );
 
     }
+
+    public function deleteQuestionAction($id)
+    {
+        $questionManager = $this->get('consult.question_manager');
+        $questionManager->delete($id);
+    }
 }

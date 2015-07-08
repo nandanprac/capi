@@ -316,6 +316,16 @@ class QuestionManager extends BaseManager
     }
 
     /**
+     * @param $id
+     */
+    public function delete($id)
+    {
+        $question = $this->helper->loadById($id, ConsultConstants::QUESTION_ENTITY_NAME);
+        $this->helper->remove($question);
+
+    }
+
+    /**
      * @param Question $question - Question object
      * @param string   $tags     - text for the tags
      */
