@@ -16,7 +16,7 @@ namespace ConsultBundle\Response;
 class BasicPatientInfoResponse extends ConsultResponseObject
 {
     /**
-     * @var int
+     * @var float
      */
     private $age;
 
@@ -39,11 +39,11 @@ class BasicPatientInfoResponse extends ConsultResponseObject
     }
 
     /**
-     * @param int $age
+     * @param float $age
      */
     public function setAge($age)
     {
-        $this->age = $this->getInt($age);
+        $this->age = $this->getFloat($age);
     }
 
     /**

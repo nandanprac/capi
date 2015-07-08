@@ -49,7 +49,7 @@ class UserInfo extends BaseEntity
     /**
      * @var integer
      *
-     * @ORM\Column(name="age", type="integer", nullable=true)
+     * @ORM\Column(name="age", type="float", nullable=true)
      */
     private $age;
 
