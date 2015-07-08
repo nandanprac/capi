@@ -171,7 +171,7 @@ class DoctorReplyManager extends BaseManager
                         "type"=>"consult",
                         "message"=>array(
                         'text'=>"Your answer has been rated by the Asker",
-                        'question_id'=>$doctorReplyEntity->getDoctorQuestion()->getQuestion()->getId(),
+                        'question_id'=>$doctorReplyEntity->getDoctorQuestion()->getId(),
                          'subject'=>$doctorReplyEntity->getDoctorQuestion()->getQuestion()->getSubject(),
                         'consult_type'=>ConsultConstants::PUBLIC_QUESTION_NOTIFICATION_TYPE,
                         ),
