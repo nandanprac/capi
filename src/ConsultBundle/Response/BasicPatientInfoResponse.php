@@ -23,7 +23,7 @@ class BasicPatientInfoResponse extends ConsultResponseObject
     /**
      * @var int
      */
-    private $id;
+    protected $id;
 
     /**
      * @var int

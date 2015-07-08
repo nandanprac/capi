@@ -97,7 +97,7 @@ class QuestionRepository extends EntityRepository
 
     ////////////// Queries  ///////////
 
-    public function findModerationQuestionsByFilters($thisMonth, $lastMonth, $state, $startDate, $endDate, $thisYear,$limit,$patientId,$patientName,$questionID)
+    public function findModerationQuestionsByFilters($thisMonth,  $lastMonth, $state, $startDate, $endDate, $thisYear,$limit,$patientId,$patientName,$questionID)
     {
         $qb = $this->_em->createQueryBuilder();
         $qb->select('q as question','count(b.id) AS bookmarkCount')
@@ -189,7 +189,7 @@ class QuestionRepository extends EntityRepository
 
         $qbInvalid = $this->_em->createQueryBuilder();
         $qbInvalid = $qb;
-        $qbInvalid->andWhere("q.state = 'INVALID'");
+        $qbInvalid->andWhere("q.state = 'REJECTED' or q.state='DOCNOTFOUND'");
         $invalidCount = count(new Paginator($qbInvalid->getQuery(), $fetchJoinCollection= true));
 
 

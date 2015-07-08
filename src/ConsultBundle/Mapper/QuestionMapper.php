@@ -15,6 +15,7 @@ use ConsultBundle\Response\BasicPatientInfoResponse;
 use ConsultBundle\Response\BasicQuestionResponseObject;
 use ConsultBundle\Response\DetailQuestionResponseObject;
 use ConsultBundle\Response\ReplyResponseObject;
+use ConsultBundle\Entity\DoctorEntity;
 
 /**
  * Class QuestionMapper
@@ -150,7 +151,7 @@ class QuestionMapper
     public static function mapToModerationArray(DetailQuestionResponseObject $question)
     {
         $response=array();
-        $response['replies']=$question->getReplies();
+        $response['replies']=array();
         $patientInfo = new BasicPatientInfoResponse();
         $patientInfo = $question->getPatientInfo();
 
@@ -158,6 +159,21 @@ class QuestionMapper
         $patientArr['name']=$patientInfo->getName();
         $patientArr['age']=$patientInfo->getAge();
         $patientArr['id']=$patientInfo->getId();
+
+        foreach($question->getReplies() as $replies)
+        {
+            $replyArr=array();
+            $docInfo=$replies->getDoctor();
+            $docInfoArr=array();
+            $docInfoArr['name']=$docInfo->getname();
+            $docInfoArr['speciality']=$docInfo->getspeciality();
+            $replyArr['doctor']=$docInfoArr;
+            $replyArr['text']=$replies->gettext();
+            $replyArr['rating']=$replies->getrating();
+            $replyArr['flagCode']=$replies->getflagText();
+            array_push($response['replies'],$replyArr);
+        }
+
 //        $patientArr['email']=$patientInfo->getEmail();
 
         //encode info object if needed

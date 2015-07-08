@@ -11,6 +11,7 @@ namespace ConsultBundle\Manager;
 use ConsultBundle\Constants\ConsultConstants;
 use ConsultBundle\Entity\DoctorQuestion;
 use ConsultBundle\Entity\Question;
+use ConsultBundle\Entity\UserInfo;
 use ConsultBundle\Helper\Helper;
 use ConsultBundle\Repository\DoctorQuestionRepository;
 use ConsultBundle\Repository\QuestionCommentRepository;
@@ -85,9 +86,13 @@ class BaseManager
     protected function fetchDetailQuestionObject(Question $questionEntity, $practoAccountId, DetailQuestionResponseObject $question = null)
     {
 
+
         if (!empty($questionEntity) && empty($question)) {
             if (!$questionEntity->getUserInfo()->isIsRelative()) {
-                $this->userProfileUtil->retrieveUserProfileNew($questionEntity->getUserInfo());
+
+                $userInfo = new UserInfo();
+                $userInfo = $questionEntity->getUserInfo();
+
             }
 
             $question = new DetailQuestionResponseObject($questionEntity, $practoAccountId);

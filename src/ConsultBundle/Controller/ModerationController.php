@@ -59,7 +59,6 @@ class ModerationController extends BaseConsultController
         //var_dump(json_encode($quesArr, true));die;
         $response->setContent(json_encode($quesArr));
         $response->headers->set("access-control-allow-origin","*");
-        var_dump($response);die;
         return $response;
     }
 
@@ -81,6 +80,7 @@ class ModerationController extends BaseConsultController
 
         try {
             $questionList = $moderationManager->loadByFilters($request);
+
         } catch (AccessDeniedException $e) {
             return View::create($e->getMessage(), Codes::HTTP_FORBIDDEN);
         }
@@ -144,16 +144,19 @@ class ModerationController extends BaseConsultController
     }
 
 
-    public function getCommentsAction($questionId)
+
+    public function getFlagDeleteAction($commentID)
     {
         $moderationManager = $this->get('consult.moderation_manager');
-
-        $comments=$moderationManager->getComments($questionId);
-
-   //     $question= $moderationManager->helper->loadById($questionId,)
+        try{
+            $moderationManager->softDeleteComment($commentID);
+        } catch (ValidationError $e)
+        {
+            return View::create($e->getMessage(), Codes::HTTP_FORBIDDEN);
+        }
         $response = new Response();
         $response->headers->set("access-control-allow-origin","*");
-        $response->setContent(json_encode($comments));
+        $response->setContent(json_encode(array("result"=>"Soft Deleted Comment")));
         return $response;
     }
 

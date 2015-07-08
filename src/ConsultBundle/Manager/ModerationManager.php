@@ -64,10 +64,14 @@ class ModerationManager extends BaseManager
      */
     public function loadByFilters($request)
     {
+
+        $er = $this->helper->getRepository(ConsultConstants::QUESTION_ENTITY_NAME);
+
         $state = (array_key_exists('state', $request)) ? $request['state'] : null;//"NEW";
         $thisMonth=(array_key_exists('thisMonth',$request)) ? $request['thisMonth'] : false;
         $lastMonth=(array_key_exists('lastMonth',$request)) ? $request['lastMonth'] : false;
         $startDate=(array_key_exists('startDate',$request)) ? $request['startDate'] : null;
+        $offset=(array_key_exists('offset',$request)) ? $request['offset'] : null;
         $endDate=(array_key_exists('endDate',$request)) ? $request['endDate'] : null;
         $thisYear=(array_key_exists('thisYear',$request)) ? $request['thisYear'] : false;
         $limit=(array_key_exists('limit',$request)) ? $request['limit'] : null;
@@ -76,10 +80,40 @@ class ModerationManager extends BaseManager
        // $patientEmail=(array_key_exists('patientID',$request)) ? $request['patientID'] : null;
         $patientName=(array_key_exists('patientName',$request)) ? $request['patientName'] : null;
 
-        /**
-         * @var QuestionRepository $er
-         */
-        $er = $this->helper->getRepository(ConsultConstants::QUESTION_ENTITY_NAME);
+
+
+        if (array_key_exists('search', $request)) {
+            //$search = $this->classification->sentenceWords($request['search']);
+            $search = preg_split('/\s+/', strtolower($request['search']));
+            $questionList = $er->findSearchQuestions($search, $limit, $offset);
+            if (empty($questionList)) {
+                return null;
+            }
+            $questionResponseList = QuestionMapper::mapQuestionList($questionList['questions']);
+
+            $detailQuestions = array();
+
+
+            foreach ($questionResponseList as $baseQuestion) {
+
+                $question = $this->load($baseQuestion->getId());
+
+                $quesArr=QuestionMapper::mapToModerationArray($question);
+                //$question = QuestionMapper::mapToModerationArray($this->load($baseQuestion->getId()));
+
+                ///////////// Verification Controls /////////////
+
+                array_push($detailQuestions,$quesArr);
+
+
+            }
+
+            return array("questions" => $detailQuestions, "count" => $questionList['count']);
+        }
+
+
+
+
 
         $questionList = $er->findModerationQuestionsByFilters($thisMonth, $lastMonth, $state, $startDate, $endDate, $thisYear,$limit,$patientId,$patientName,$questionID);
         if (empty($questionList)) {
@@ -89,11 +123,13 @@ class ModerationManager extends BaseManager
         $questionResponseList = QuestionMapper::mapQuestionList($questionList['questions']);
 
         $detailQuestions = array();
+        $commentsArr = array();
 
 
         foreach ($questionResponseList as $baseQuestion) {
 
             $question = $this->load($baseQuestion->getId());
+            $comments = $this->getComments($baseQuestion->getId());
 
             $quesArr=QuestionMapper::mapToModerationArray($question);
             //$question = QuestionMapper::mapToModerationArray($this->load($baseQuestion->getId()));
@@ -101,11 +137,13 @@ class ModerationManager extends BaseManager
             ///////////// Verification Controls /////////////
 
             array_push($detailQuestions,$quesArr);
+            if($comments['questionId']!=null)
+                array_push($commentsArr,$comments);
 
 
         }
 
-        return array("questions" => $detailQuestions, "count" => $questionList['count']);
+        return array("questions" => $detailQuestions, "count" => $questionList['count'], "comments"=>$commentsArr);
     }
 
 
@@ -159,48 +197,42 @@ class ModerationManager extends BaseManager
          */
         $question = $this->helper->loadById($questionId, ConsultConstants::QUESTION_ENTITY_NAME);
 
-        return $this->fetchDetailQuestionObject($question);
+        return $this->fetchDetailQuestionObject($question,$question->getUserInfo()->getId());
     }
 
-    /**
-     * @param \ConsultBundle\Entity\Question $questionEntity
-     *
-     * @return \ConsultBundle\Response\DetailQuestionResponseObject
-     * @throws \HttpException
-     * @internal param int $practoAccountid
-     *
-     */
-    private function fetchDetailQuestionObject(Question $questionEntity)
-    {
 
-        $question = null;
-        if (!empty($questionEntity)) {
-            if (!$questionEntity->getUserInfo()->isIsRelative()) {
-                $this->retrieveUserProfileUtil->retrieveUserProfileNew($questionEntity->getUserInfo());
-            }
-
-
-            $question = new DetailQuestionResponseObject($questionEntity);
-
-            /**
-             * @var DoctorQuestionRepository $er
-             */
-            $er = $this->helper->getRepository(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME);
-            $doctorQuestions = $er->findModerationReplies($questionEntity);
-            $replies = array();
-            foreach ($doctorQuestions as $doctorQuestion) {
-                $reply = new ReplyResponseObject();
-                $reply->setAttributes($doctorQuestion);
-                $doc = $this->retrieveDoctorProfileUtil->retrieveDoctorProfile($reply->getDoctorId());
-                $reply->setDoctor($doc);
-                $replies[] = $reply;
-            }
-
-            $question->setReplies($replies);
-        }
-
-        return $question;
-    }
+//    private function fetchDetailQuestion(Question $questionEntity)
+//    {
+//
+//        $question = null;
+//        if (!empty($questionEntity)) {
+//            if (!$questionEntity->getUserInfo()->isIsRelative()) {
+//                $this->retrieveUserProfileUtil->retrieveUserProfileNew($questionEntity->getUserInfo());
+//            }
+//
+//
+//
+//            $question = new DetailQuestionResponseObject($questionEntity);
+//
+//            /**
+//             * @var DoctorQuestionRepository $er
+//             */
+//            $er = $this->helper->getRepository(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME);
+//            $doctorQuestions = $er->findModerationReplies($questionEntity);
+//            $replies = array();
+//            foreach ($doctorQuestions as $doctorQuestion) {
+//                $reply = new ReplyResponseObject();
+//                $reply->setAttributes($doctorQuestion);
+//                $doc = $this->retrieveDoctorProfileUtil->retrieveDoctorProfile($reply->getDoctor());
+//                $reply->setDoctor($doc);
+//                $replies[] = $reply;
+//            }
+//
+//            $question->setReplies($replies);
+//        }
+//
+//        return $question;
+//    }
 
 
     /**
@@ -248,6 +280,7 @@ class ModerationManager extends BaseManager
                     $this->helper->persist($question,'true');
                     /////////////////////////////
                     $job = array();
+
                     $job['speciality'] = $question->getSpeciality();
                     $job['question_id'] = $question->getId();
                     $job['question'] = $question->getText();
@@ -278,8 +311,19 @@ class ModerationManager extends BaseManager
         $question = $this->helper->loadById($questionId, ConsultConstants::QUESTION_ENTITY_NAME);
         $er=$this->helper->getRepository(ConsultConstants::QUESTION_COMMENT_ENTITY_NAME);
         $replies=$er->getModerationComments($question);
+        return array('questionId'=>$replies['questionID'],'comments'=>$replies['comments'],'replyCount'=>$replies['count']);
+    }
 
-        return array('questionID'=>$questionId,'comments'=>$replies['comments'],'count'=>$replies['count']);
+    public function softDeleteComment($commentID)
+    {
+        $comment = $this->helper->loadById($commentID,ConsultConstants::QUESTION_COMMENT_ENTITY_NAME);
+        if (null === $comment)
+        {
+            @$error['commentID'] = 'Comment with this id does not exist';
+            throw new ValidationError($error);
+        }
+        $comment->setsoftDeleted(1);
+        $this->helper->persist($comment,'true');
     }
 
 }

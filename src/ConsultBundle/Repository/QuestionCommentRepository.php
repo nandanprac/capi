@@ -77,8 +77,13 @@ class QuestionCommentRepository extends EntityRepository
 
     ///////////////////////////
 
+    /**
+     * @param Question $question        - Question object
+     * @return array (comments, count)
+     */
     public function getModerationComments($question)
     {
+
         // query for getting comment details with total votes
         $qb = $this->_em->createQueryBuilder();
         $qb->select(
@@ -98,21 +103,25 @@ class QuestionCommentRepository extends EntityRepository
             ->groupBy('c.id')
             ->orderBy('c.createdAt', 'DESC');
 
+        $qb->addSelect('cf.flagCode as flag', 'cf.flagText as flag_text','cf.createdAt as flag_create','cf.id as flagID')
+            ->leftJoin(ConsultConstants::QUESTION_COMMENT_FLAG_ENTITY_NAME, 'cf', 'WITH', 'c = cf.questionComment and cf.softDeleted = 0');
 
         $commentList = $qb->getQuery()->getArrayResult();
 
-        $countQuery = $qb->getQuery();
-        $countQuery->setFirstResult(null)->setMaxResults(null);
-        $count =  count($countQuery->getArrayResult());
+        $count =  count($commentList);
+
 
         if (empty($commentList)) {
             return null;
         }
 
-        return array('comments' => $commentList, 'count' => $count);
+        return array('questionID'=>$question->getId(),'comments' => $commentList, 'count' => $count);
     }
 
 
+
+
+    ///////////////////////////
     /**
      * @param int $questionCommentId
      * @param int $practoAccountId

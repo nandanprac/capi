@@ -65,6 +65,7 @@ class RetrieveUserProfileUtil
      */
     public function retrieveUserProfileNew(UserInfo $userInfo)
     {
+        var_dump("hereh");die;
         if (empty($userInfo) || empty($userInfo->getPractoAccountId())) {
             return null;
         }

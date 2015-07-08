@@ -75,13 +75,8 @@ doctrine:
                             year: ConsultBundle\DQL\Year
                             day: ConsultBundle\DQL\Day
                             week: ConsultBundle\DQL\Week
-
-        auto_mapping: true
-
-        auto_mapping: true
-        dql:
-                    string_functions:
-                        GROUP_CONCAT: ConsultBundle\Custom\Doctrine\GroupConcat
+                        string_functions:
+                            GROUP_CONCAT: ConsultBundle\Custom\Doctrine\GroupConcat
 
 
 
