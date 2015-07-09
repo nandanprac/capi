@@ -103,10 +103,16 @@ class Question extends BaseEntity
     private $doctorQuestions;
 
     /**
-     * @ORM\OneToMany(targetEntity="QuestionTag", mappedBy="question", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="QuestionTag", mappedBy="question", fetch="EXTRA_LAZY", cascade={"persist", "remove"})
      * @var ArrayCollection $tags
      */
      protected $tags;
+
+    /**
+     * @ORM\OneToMany(targetEntity="UserNotification", mappedBy="question",fetch="EXTRA_LAZY", cascade={"persist", "remove"})
+     * @var ArrayCollection $tags
+     */
+    protected $patientNotifications;
 
     /**
      * @return mixed
@@ -426,4 +432,21 @@ class Question extends BaseEntity
     {
         $this->tags = new ArrayCollection();
     }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getPatientNotifications()
+    {
+        return $this->patientNotifications;
+    }
+
+    /**
+     * @param ArrayCollection $patientNotifications
+     */
+    public function setPatientNotifications($patientNotifications)
+    {
+        $this->patientNotifications = $patientNotifications;
+    }
+
 }
