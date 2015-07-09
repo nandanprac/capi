@@ -52,7 +52,7 @@ class DoctorQuestion extends BaseEntity
     protected $viewedAt;
 
     /**
-     * @ORM\OneToOne(targetEntity = "DoctorReply", mappedBy = "doctorQuestion")
+     * @ORM\OneToOne(targetEntity = "DoctorReply", mappedBy = "doctorQuestion", cascade={"persist", "remove"})
      */
     protected $doctorReply;
 
