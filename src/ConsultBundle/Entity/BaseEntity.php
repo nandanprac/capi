@@ -174,6 +174,8 @@ class BaseEntity
         } else {
             return ('true' === $value);
         }
+
+        return false;
     }
 
     /**

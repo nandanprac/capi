@@ -46,7 +46,7 @@ class Conversation extends BaseEntity
      * @var ArrayCollection $images
      */
     private $images;
-    
+
 
     /**
      * @return mixed
