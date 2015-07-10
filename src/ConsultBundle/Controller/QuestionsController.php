@@ -135,7 +135,7 @@ class QuestionsController extends BaseConsultController
     {
         $practoAccountId = $this->authenticate();
 
-        if ($practoAccountId != ) {
+        if ($practoAccountId != 123412) {
            throw new HttpException(Codes::HTTP_FORBIDDEN, "Unauthorised Access");
         }
 
