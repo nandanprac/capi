@@ -202,9 +202,14 @@ class QuestionManager extends BaseManager
     public function load($questionId, $practoAccountId = null)
     {
         /**
+         * @var QuestionRepository $er
+         */
+        $er =  $this->helper->getRepository(ConsultConstants::QUESTION_ENTITY_NAME);
+
+        /**
          * @var Question $question
          */
-        $question = $this->helper->loadById($questionId, ConsultConstants::QUESTION_ENTITY_NAME);
+        $question = $er->findOneBy(array("id" => $questionId, "softDeleted" => 0));
 
         if (empty($question)) {
             return null;
@@ -316,18 +321,22 @@ class QuestionManager extends BaseManager
     }
 
     /**
-     * @param $id
+     * @param integer $id
      */
     public function delete($id)
     {
+        /**
+         * @var Question $question
+         */
         $question = $this->helper->loadById($id, ConsultConstants::QUESTION_ENTITY_NAME);
-        $this->helper->remove($question);
+        $question->setSoftDeleted(true);
+        $this->helper->persist($question, true);
 
     }
 
     /**
      * @param Question $question - Question object
-     * @param string   $tags     - text for the tags
+     * @param array    $tags     - text for the tags
      */
     private function setQuestionTags($question, $tags)
     {
