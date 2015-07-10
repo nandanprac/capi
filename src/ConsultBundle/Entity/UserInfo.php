@@ -9,6 +9,7 @@
 namespace ConsultBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\AccessType;
 use Symfony\Component\Validator\Constraints as Assert;
 use JMS\Serializer\Annotation\VirtualProperty;
 
@@ -16,6 +17,7 @@ use JMS\Serializer\Annotation\VirtualProperty;
  * @ORM\Table(name="user_info")
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks()
+ * @AccessType("public_methods")
  */
 class UserInfo extends BaseEntity
 {
