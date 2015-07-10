@@ -209,7 +209,7 @@ class QuestionManager extends BaseManager
         /**
          * @var Question $question
          */
-        $question = $er->findBy(array("id"=>$questionId, "softDeleted"=>0));
+        $question = $er->findOneBy(array("id"=>$questionId, "softDeleted"=>0));
 
 
         if (empty($question)) {
