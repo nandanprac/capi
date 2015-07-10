@@ -9,6 +9,7 @@ use FOS\RestBundle\View\View;
 use FOS\RestBundle\Util\Codes;
 use ConsultBundle\Manager\ValidationError;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Doctor Controller
@@ -83,6 +84,14 @@ class DoctorController extends BaseConsultController
 
     public function postDoctorSettingsAction(Request $request)
     {
+        $profileToken = $request->headers->get('X-Profile-Token');
+        $authenticationUtils = $this->get('consult.account_authenticator_util');
+        $userId = $authenticationUtils->validateWithProfileToken($profileToken);
+
+        if (empty($userId)) {
+            throw new HttpException(Codes::HTTP_FORBIDDEN, "Unauthorised Access");
+        }
+
         $postData = $request->request->all();
         $doctorManager = $this->get('consult.doctor_manager');
         try {
