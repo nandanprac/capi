@@ -205,10 +205,11 @@ class QuestionManager extends BaseManager
          * @var QuestionRepository $er
          */
         $er =  $this->helper->getRepository(ConsultConstants::QUESTION_ENTITY_NAME);
+
         /**
          * @var Question $question
          */
-        $question = $er->findOneBy(array("id" => $questionId, "softDeleted" => 0));
+        $question = $er->findBy(array("id"=>$questionId, "softDeleted"=>0));
 
 
         if (empty($question)) {
