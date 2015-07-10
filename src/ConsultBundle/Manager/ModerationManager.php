@@ -326,4 +326,15 @@ class ModerationManager extends BaseManager
         $this->helper->persist($comment,'true');
     }
 
+    public function softDeleteFlag($flagID)
+    {
+        $flag = $this->helper->loadById($flagID,ConsultConstants::QUESTION_COMMENT_FLAG_ENTITY_NAME);
+        if (null === $flag)
+        {
+            @$error['flagID'] = 'Flag with this id does not exist';
+            throw new ValidationError($error);
+        }
+        $flag->setsoftDeleted(1);
+        $this->helper->persist($flag,'true');
+    }
 }

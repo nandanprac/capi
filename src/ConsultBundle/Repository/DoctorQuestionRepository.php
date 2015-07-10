@@ -210,6 +210,15 @@ class DoctorQuestionRepository extends EntityRepository
         return $doctorQuestions;
     }
 
+
+    public function findDocModerationByFilter()
+    {
+        
+    }
+
+
+
+
     /**
      * @param int $replyId
      * @param int $practoAccountId

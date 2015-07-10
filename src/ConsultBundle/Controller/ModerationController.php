@@ -27,6 +27,7 @@ class ModerationController extends BaseConsultController
     }
 
     /**
+     * @param Request $request
      * @return int customCount
      */
 
@@ -73,8 +74,8 @@ class ModerationController extends BaseConsultController
     {
         $moderationManager = $this->get('consult.moderation_manager');
         $request = $requestRec->query->all();
-
-
+        $response = new Response();
+        $response->headers->set("access-control-allow-origin","*");
 
         //FILTERS WILL GO HERE AND GET PUSHED INTO THE ARRAY
 
@@ -82,16 +83,17 @@ class ModerationController extends BaseConsultController
             $questionList = $moderationManager->loadByFilters($request);
 
         } catch (AccessDeniedException $e) {
-            return View::create($e->getMessage(), Codes::HTTP_FORBIDDEN);
+            $response->setContent(json_encode($e->getMessage()));
+            return $response;
         }
 
         if (null === $questionList) {
-            return View::create(null, Codes::HTTP_NOT_FOUND);
+
+            $response->setContent(json_encode(array('error'=>Codes::HTTP_NOT_FOUND)));
+            return $response;
         }
 
-        $response = new Response();
         $response->setContent(json_encode($questionList));
-        $response->headers->set("access-control-allow-origin","*");
         return $response;
 
 
@@ -109,15 +111,15 @@ class ModerationController extends BaseConsultController
 
         $response = new Response();
         $response->headers->set("access-control-allow-origin","*");
-        $response->setContent(json_encode(array("state"=>"ACCEPTED")));
         $moderationManager = $this->get('consult.moderation_manager');
         try {
             $state="ACCEPT";
             $questionFinal = $moderationManager->changeState(array('question_id'=>$questionId,'state'=>$state));
         } catch (ValidationError $e) {
-            return View::create($e->getMessage(), Codes::HTTP_FORBIDDEN);
-
+            $response->setContent(json_encode($e->getMessage()));
+            return $response;
         }
+        $response->setContent(json_encode(array("state"=>"ACCEPTED")));
         return $response;
     }
 
@@ -130,35 +132,52 @@ class ModerationController extends BaseConsultController
     {
 
         $moderationManager = $this->get('consult.moderation_manager');
+        $response = new Response();
+        $response->headers->set("access-control-allow-origin","*");
         try {
             $state="REJECT";
             $questionFinal = $moderationManager->changeState(array('question_id'=>$questionId,'state'=>$state));
         } catch (ValidationError $e) {
-            return View::create($e->getMessage(), Codes::HTTP_FORBIDDEN);
+            $response->setContent(json_encode($e->getMessage()));
+            return $response;
 
         }
-        $response = new Response();
-        $response->headers->set("access-control-allow-origin","*");
         $response->setContent(json_encode(array("state"=>"REJECTED")));
         return $response;
     }
 
 
 
-    public function getFlagDeleteAction($commentID)
+    public function getCommentDeleteAction($commentID)
     {
+        $response = new Response();
+        $response->headers->set("access-control-allow-origin","*");
         $moderationManager = $this->get('consult.moderation_manager');
         try{
             $moderationManager->softDeleteComment($commentID);
         } catch (ValidationError $e)
         {
-            return View::create($e->getMessage(), Codes::HTTP_FORBIDDEN);
+            $response->setContent(json_encode($e->getMessage()));
+            return $response;
         }
-        $response = new Response();
-        $response->headers->set("access-control-allow-origin","*");
+
         $response->setContent(json_encode(array("result"=>"Soft Deleted Comment")));
         return $response;
     }
 
+    public function getFlagDeleteAction($flagID)
+    {
+        $response = new Response();
+        $response->headers->set("access-control-allow-origin","*");
+        $moderationManager = $this->get('consult.moderation_manager');
+        try{
+            $moderationManager->softDeleteFlag($flagID);
+        } catch (ValidationError $e){
+            $response->setContent(json_encode($e->getMessage()));
+            return $response;
+        }
+        $response->setContent(json_encode(array("result"=>"Soft Deleted Flag")));
+        return $response;
+    }
 
 }
