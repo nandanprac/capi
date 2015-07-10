@@ -127,7 +127,7 @@ class Question extends BaseEntity
      */
     public function setSubject($subject)
     {
-        $this->subject = $subject;
+        $this->subject = trim($subject);
     }
 
 
