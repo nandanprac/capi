@@ -45,4 +45,7 @@ class ConsultConstants
     const PRIVATE_THREAD_NOTIFICATION_TYPE = "PRIVATE_THREAD";
     const PUBLIC_QUESTION_NOTIFICATION_TYPE = "PUBLIC_QUESTION";
 
+    //DevTools
+    const ADMIN_TABLE = "ConsultBundle:Admin";
+
 }

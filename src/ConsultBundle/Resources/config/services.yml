@@ -210,3 +210,9 @@ services:
             - [setHelper, ["@consult.helper"]]
             - [setValidator, ["@consult.baseValidator"]]
 
+    consult.dev_tools_manager:
+         class: ConsultBundle\Manager\DevToolManager
+         calls:
+            - [setHelper, ["@consult.helper"]]
+            - [setValidator, ["@consult.baseValidator"]]
+
