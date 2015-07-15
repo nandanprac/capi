@@ -35,3 +35,8 @@ master:
 doctor:
     resource: ConsultBundle\Controller\DoctorController
     type:      rest
+
+devTools:
+    resource: ConsultBundle\Controller\DevToolsController
+    type:      rest
+

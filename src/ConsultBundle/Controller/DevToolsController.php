@@ -15,9 +15,10 @@ class DevToolsController extends BaseConsultController{
     /**
      * @param \Symfony\Component\HttpFoundation\Request $request
      */
-    public function postSQLQueryAction(Request $request)
+    public function postSqlQueryAction(Request $request)
     {
-       $postData = $request->request->all();
+        $practoAccountId = $this->authenticate();
+        $postData = $request->request->all();
         $devToolsManager = $this->get('consult.dev_tools_manager');
         $result = $devToolsManager->executeQuery($postData);
         return $result;

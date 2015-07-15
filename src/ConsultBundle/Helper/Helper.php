@@ -11,6 +11,7 @@ namespace ConsultBundle\Helper;
 //use ConsultBundle\Utility\CacheUtils;
 use Doctrine\Bundle\DoctrineBundle\Registry as Doctrine;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityRepository;
 use FOS\RestBundle\Util\Codes;
@@ -62,7 +63,6 @@ class Helper
     {
 
         $entity = $this->entityManager->getRepository($entityName)->findBy(array('softDeleted' => 0));
-
 
         if (empty($entity)) {
             return null;
@@ -176,6 +176,30 @@ class Helper
     {
         $this->entityManager->clear();
     }
+
+    /**
+     * @param $sqlQuery
+     * @return array
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    public function executeNativeSQLQuery($sqlQuery)
+    {
+        try
+        {
+            $sqlQueryResult = $this->entityManager->getConnection()->query($sqlQuery)->fetchAll();
+        }
+        catch(DBALException $ex)
+        {
+            throw new DBALException($ex->getMessage());
+        }
+
+        if(empty($sqlQueryResult))
+            return null;
+
+        return $sqlQueryResult;
+    }
+
+
 
     protected function getFromCache($entityId)
     {
