@@ -9,6 +9,7 @@
 namespace ConsultBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use ConsultBundle\Entity\SubSpeciality;
 
 /**
  * @ORM\Entity
@@ -19,7 +20,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Speciality extends BaseEntity
 {
     /**
-     * @ORM\Column(name="name", type="string", length="32")
+     * @ORM\Column(name="name", type="string", length=32)
      */
     private $name;
 
@@ -27,6 +28,11 @@ class Speciality extends BaseEntity
      * @ORM\Column(name="description", type="string")
      */
     private $description;
+
+    /**
+     * @ORM\OneToMany(targetEntity="SubSpeciality", mappedBy="speciality", fetch="EXTRA_LAZY", cascade={"persist", "remove"})
+     */
+    private $subSpecialities;
 
     /**
      * @return mixed
