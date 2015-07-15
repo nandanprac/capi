@@ -1,12 +1,10 @@
 {
-    "name": "anshuman/consult-api",
+    "name": "practo/consult-api",
     "license": "proprietary",
     "type": "project",
+    "description": "REST base API's for Practo Consult",
     "autoload": {
-        "psr-0": {
-            "": "src/",
-            "SymfonyStandard": "app/"
-        }
+        "psr-0": {"": "src/"}
     },
     "require": {
         "php": ">=5.5",
@@ -27,13 +25,14 @@
         "jms/serializer-bundle": "0.13.*",
         "friendsofsymfony/rest-bundle": "~1.5",
         "elasticsearch/elasticsearch": "~1.0",
-        "practo/sentry-bundle": "dev-master",
         "aws/aws-sdk-php": "2.7.*",
         "pda/pheanstalk": "~2.1",
         "aws/aws-sdk-php": "2.7.*",
         "guzzlehttp/guzzle": "~5.0",
         "sensio/buzz-bundle": "dev-master",
-      "practo/sentry-bundle": "dev-master"
+        "practo/sentry-bundle": "dev-master",
+        "practo/gelf-php": "dev-master",
+        "oldsound/rabbitmq-bundle": "1.*"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",

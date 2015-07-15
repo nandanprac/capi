@@ -376,7 +376,7 @@ class PrivateThreadManager extends BaseManager
                     json_encode(
                         array(
                         "type"=>"consult",
-                        "message"=>array('text'=>"Your question has been answered by doctor.", 'question_id'=>$questionId, 'is_private'=>true, 'subject'=>$subject, 'consult_type'=>ConsultConstants::PRIVATE_THREAD_NOTIFICATION_TYPE),
+                        "message"=>array('text'=>"Your Private Query has been answered.", 'question_id'=>$questionId, 'is_private'=>true, 'subject'=>$subject, 'consult_type'=>ConsultConstants::PRIVATE_THREAD_NOTIFICATION_TYPE),
                         "send_to"=>"fabric",
                         "account_ids"=>array($toAccountId),
                         )
