@@ -337,4 +337,11 @@ class ModerationManager extends BaseManager
         $flag->setsoftDeleted(1);
         $this->helper->persist($flag,'true');
     }
+
+    public function getDoctorDetails($request)
+    {
+        $er = $this->helper->getRepository(ConsultConstants::DOCTOR_SETTING_ENTITY_NAME);
+        $details = $er->getDoctorDetails();
+        return $details;
+    }
 }

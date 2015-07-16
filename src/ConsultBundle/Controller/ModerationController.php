@@ -180,4 +180,20 @@ class ModerationController extends BaseConsultController
         return $response;
     }
 
+    public function getDoctorDetailsAction(Request $requestRec)
+    {
+        $request = $requestRec->query->all();
+        $response = new Response();
+        $response->headers->set("access-control-allow-origin","*");
+        $moderationManager = $this->get('consult.moderation_manager');
+        try{
+            $docDetails = $moderationManager->getDoctorDetails($request);
+        } catch (ValidationError $e){
+            $response->setContent(json_encode($e->getMessage()));
+            return $response;
+        }
+        $response->setContent(json_encode(array("doctor_details"=>$docDetails)));
+        return $response;
+    }
+
 }
