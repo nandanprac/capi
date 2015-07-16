@@ -195,8 +195,7 @@ class DoctorRepository extends EntityRepository
            ->setParameter('state1', "UNANSWERED")
            ->setParameter('state2', "ANSWERED")
            ->setParameter('state3', "REJECTED")
-            ->groupBy('d.practoAccountId')
-            ->addGroupBy('dq.state');
+            ->groupBy('d.practoAccountId');
 
         $details = $qb->getQuery()->getArrayResult();
         return $details;
