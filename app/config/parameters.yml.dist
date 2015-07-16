@@ -28,6 +28,10 @@ parameters:
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt
     sentry.dsn: 'udp://a:b@localhost:12345/c'
+    sentry.environments:
+                - prod
+                - dev
+    graylog_gelf_host: localhost
     consult_queue.uri: 'beanstalk://localhost/dev-'
     s3_access_key: AKIAILIHTHVY2DNKUE2A
     s3_access_secret: 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
@@ -42,3 +46,4 @@ parameters:
     accounts_host: http://accounts.practo.local
     accounts_signing_key: software-accounts-key
     kernel.debug: true
+

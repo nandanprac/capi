@@ -364,7 +364,7 @@ class PrivateThreadManager extends BaseManager
                     json_encode(
                         array(
                         "type"=>"consult",
-                        "message"=>array('text'=>"A Private Question has been assigned to you.", 'question_id'=>$questionId, 'is_private'=>true, 'subject'=>$subject, 'consult_type'=>ConsultConstants::PUBLIC_QUESTION_NOTIFICATION_TYPE ),
+                        "message"=>array('text'=>"A Private Question has been assigned to you.", 'question_id'=>$questionId, 'is_private'=>true, 'subject'=>$subject, 'consult_type'=>ConsultConstants::PRIVATE_THREAD_NOTIFICATION_TYPE ),
                         "send_to"=>"synapse",
                         "account_ids"=>array($toAccountId),
                         )
@@ -376,7 +376,7 @@ class PrivateThreadManager extends BaseManager
                     json_encode(
                         array(
                         "type"=>"consult",
-                        "message"=>array('text'=>"Your question has been answered by doctor.", 'question_id'=>$questionId, 'is_private'=>true, 'subject'=>$subject, 'consult_type'=>ConsultConstants::PRIVATE_THREAD_NOTIFICATION_TYPE),
+                        "message"=>array('text'=>"Your Private Query has been answered.", 'question_id'=>$questionId, 'is_private'=>true, 'subject'=>$subject, 'consult_type'=>ConsultConstants::PRIVATE_THREAD_NOTIFICATION_TYPE),
                         "send_to"=>"fabric",
                         "account_ids"=>array($toAccountId),
                         )

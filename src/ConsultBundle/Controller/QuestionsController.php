@@ -5,6 +5,7 @@ namespace ConsultBundle\Controller;
 use FOS\RestBundle\View\View;
 use FOS\RestBundle\Util\Codes;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use ConsultBundle\Manager\ValidationError;
 
@@ -128,5 +129,17 @@ class QuestionsController extends BaseConsultController
             Codes::HTTP_CREATED
         );
 
+    }
+
+    public function deleteQuestionAction($id)
+    {
+        $practoAccountId = $this->authenticate();
+
+        if ($practoAccountId != 123412) {
+           throw new HttpException(Codes::HTTP_FORBIDDEN, "Unauthorised Access");
+        }
+
+        $questionManager = $this->get('consult.question_manager');
+        $questionManager->delete($id);
     }
 }

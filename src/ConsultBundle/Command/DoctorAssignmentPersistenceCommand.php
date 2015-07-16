@@ -3,6 +3,7 @@
 namespace ConsultBundle\Command;
 
 use ConsultBundle\Constants\ConsultConstants;
+use ConsultBundle\Entity\DoctorQuestion;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -79,12 +80,31 @@ class DoctorAssignmentPersistenceCommand extends ContainerAwareCommand
                     if ($jobData['state'] == 'UNCLASSIFIED' || $jobData['state'] == 'MISMATCH') {
                         $this->questionManager->setState($jobData['question_id'], $jobData['state']);
                     } elseif ($jobData['state'] == 'ASSIGNED') {
-                        $this->doctorQuestionManager->setDoctorsForAQuestions($jobData['question_id'], $jobData['doctors']);
+                        $doctorQuestions = $this->doctorQuestionManager->setDoctorsForAQuestions($jobData['question_id'], $jobData['doctors']);
                         $this->questionManager->setState($jobData['question_id'], $jobData['state']);
                         $question = $this->questionManager->setTagsByQuestionId($jobData['question_id'], array_merge(array($jobData['speciality']), $jobData['tags']));
                         if ($jobData['user_classified'] == 0) {
                             $this->questionManager->setSpeciality($jobData['question_id'], $jobData['speciality']);
                         }
+
+                        /**
+                         * @var DoctorQuestion $doctorQuestion
+                         */
+                        foreach ($doctorQuestions as $doctorQuestion) {
+                            $jobData['type'] = 'consult';
+                            $jobData['account_ids'] = array($doctorQuestion->getPractoAccountId());
+                            $jobData['message'] = array(
+                                'text'=>'A question has been assigned to you',
+                                'question_id'=>$doctorQuestion->getId(),
+                                'subject'=>$question->getSubject(),
+                                'consult_type'=>ConsultConstants::PUBLIC_QUESTION_NOTIFICATION_TYPE,
+                            );
+                            $this->queue
+                                ->setQueueName(Queue::CONSULT_GCM)
+                                ->sendMessage(json_encode($jobData));
+                        }
+
+                        /**
                         $jobData['type'] = 'consult';
                         $jobData['account_ids'] = $jobData['doctors'];
                         $jobData['message'] = array(
@@ -92,13 +112,13 @@ class DoctorAssignmentPersistenceCommand extends ContainerAwareCommand
                             'question_id'=>$jobData['question_id'],
                             'subject'=>$question->getSubject(),
                             'consult_type'=>ConsultConstants::PUBLIC_QUESTION_NOTIFICATION_TYPE,
-                            );
+                            );**/
+
+
                         unset($jobData['doctors']);
                         unset($jobData['state']);
                         unset($jobData['speciality']);
-                        $this->queue
-                            ->setQueueName(Queue::CONSULT_GCM)
-                            ->sendMessage(json_encode($jobData));
+
                     } elseif ($jobData['state'] == 'GENERIC'  || $jobData['state'] == 'DOCNOTFOUND') {
                         if ($jobData['user_classified'] == 0) {
                             $this->questionManager->setSpeciality($jobData['question_id'], $jobData['speciality']);

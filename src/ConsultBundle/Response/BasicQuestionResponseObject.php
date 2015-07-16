@@ -73,6 +73,7 @@ class BasicQuestionResponseObject extends ConsultResponseObject
             $this->setSubject($questionEntity->getSubject());
             $this->setText($questionEntity->getText());
             $this->viewedAt = $questionEntity->getViewedAt();
+            $this->setShareCount($questionEntity->getShareCount());
         }
 
     }

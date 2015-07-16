@@ -51,12 +51,16 @@ class DoctorQuestionManager extends BaseManager
     public function setDoctorsForAQuestions($questionId, Array $doctorsId)
     {
         $question = $this->helper->loadById($questionId, ConsultConstants::QUESTION_ENTITY_NAME);
+        $doctorQuestions = array();
         foreach ($doctorsId as $doctorId) {
-            $this->createDoctorQuestionEntity($question, $doctorId);
-            $this->notification->createDoctorNotification($question, $doctorId);
+            $doctorQuestion = $this->createDoctorQuestionEntity($question, $doctorId);
+            $this->notification->createDoctorNotification($doctorQuestion, $doctorId);
+            $doctorQuestions[] = $doctorQuestion;
         }
 
         $this->helper->persist(null, true);
+
+        return $doctorQuestions;
     }
 
     /**
@@ -167,6 +171,8 @@ class DoctorQuestionManager extends BaseManager
         $doctorQuestion->setQuestion($question);
         $doctorQuestion->setPractoAccountId($doctorId);
         $this->helper->persist($doctorQuestion);
+
+        return $doctorQuestion;
     }
 
     /**

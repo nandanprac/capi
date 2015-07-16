@@ -52,9 +52,15 @@ class DoctorQuestion extends BaseEntity
     protected $viewedAt;
 
     /**
-     * @ORM\OneToOne(targetEntity = "DoctorReply", mappedBy = "doctorQuestion")
+     * @ORM\OneToOne(targetEntity = "DoctorReply", mappedBy = "doctorQuestion", cascade={"persist", "remove"})
      */
     protected $doctorReply;
+
+    /**
+     * @var ArrayCollection
+     * @ORM\OneToMany(targetEntity="DoctorNotification", mappedBy="question", fetch="EXTRA_LAZY", cascade={"persist", "remove"})
+     */
+    protected $doctorNotifications;
 
 
     /**
@@ -248,5 +254,31 @@ class DoctorQuestion extends BaseEntity
     {
         $this->doctorReply = $doctorReply;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getDoctorReply()
+    {
+        return $this->doctorReply;
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getDoctorNotifications()
+    {
+        return $this->doctorNotifications;
+    }
+
+    /**
+     * @param ArrayCollection $doctorNotifications
+     */
+    public function setDoctorNotifications($doctorNotifications)
+    {
+        $this->doctorNotifications = $doctorNotifications;
+    }
+
+
 
 }
