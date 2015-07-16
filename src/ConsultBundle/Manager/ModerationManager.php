@@ -132,16 +132,18 @@ class ModerationManager extends BaseManager
             $comments = $this->getComments($baseQuestion->getId());
 
             $quesArr=QuestionMapper::mapToModerationArray($question);
-            //$question = QuestionMapper::mapToModerationArray($this->load($baseQuestion->getId()));
 
             ///////////// Verification Controls /////////////
 
             array_push($detailQuestions,$quesArr);
             if($comments['questionId']!=null)
                 array_push($commentsArr,$comments);
-
-
         }
+
+        $er1 = $this->helper->getRepository(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME);
+        $counts = $er1->findDoctorQuestionCounts($thisMonth, $lastMonth, $state, $startDate, $endDate, $thisYear,$limit,$patientId,$patientName,$questionID);
+        $questionList['count']['viewedCount'] = intval($counts[0]['view_count']);
+        $questionList['count']['ratedCount'] = intval($counts[0]['rated_count']);
 
         return array("questions" => $detailQuestions, "count" => $questionList['count'], "comments"=>$commentsArr);
     }
@@ -199,40 +201,6 @@ class ModerationManager extends BaseManager
 
         return $this->fetchDetailQuestionObject($question,$question->getUserInfo()->getId());
     }
-
-
-//    private function fetchDetailQuestion(Question $questionEntity)
-//    {
-//
-//        $question = null;
-//        if (!empty($questionEntity)) {
-//            if (!$questionEntity->getUserInfo()->isIsRelative()) {
-//                $this->retrieveUserProfileUtil->retrieveUserProfileNew($questionEntity->getUserInfo());
-//            }
-//
-//
-//
-//            $question = new DetailQuestionResponseObject($questionEntity);
-//
-//            /**
-//             * @var DoctorQuestionRepository $er
-//             */
-//            $er = $this->helper->getRepository(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME);
-//            $doctorQuestions = $er->findModerationReplies($questionEntity);
-//            $replies = array();
-//            foreach ($doctorQuestions as $doctorQuestion) {
-//                $reply = new ReplyResponseObject();
-//                $reply->setAttributes($doctorQuestion);
-//                $doc = $this->retrieveDoctorProfileUtil->retrieveDoctorProfile($reply->getDoctor());
-//                $reply->setDoctor($doc);
-//                $replies[] = $reply;
-//            }
-//
-//            $question->setReplies($replies);
-//        }
-//
-//        return $question;
-//    }
 
 
     /**

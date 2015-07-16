@@ -158,6 +158,74 @@ class DoctorQuestionRepository extends EntityRepository
     }
 
 
+    public function findDoctorQuestionCounts($thisMonth,  $lastMonth, $state, $startDate, $endDate, $thisYear,$limit,$patientId,$patientName,$questionID)
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('COALESCE(SUM(case when dq.viewedAt is not null then 1 else 0 end), 0) as view_count', 'COALESCE(SUM(case when r.rating is not null then 1 else 0 end), 0) as rated_count')
+            ->from(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME, 'dq')
+            ->leftJoin(ConsultConstants::DOCTOR_REPLY_ENTITY_NAME, 'r', 'WITH', 'r.doctorQuestion = dq AND r.softDeleted = 0')
+            ->leftJoin(ConsultConstants::QUESTION_ENTITY_NAME, 'q', 'WITH', 'q = dq.question and q.softDeleted = 0')
+           ->where('dq.softDeleted = 0');
+
+
+        if(isset($questionID))
+        {
+            $qb->andWhere('q.id = :questionID');
+            $qb->setParameter('questionID',$questionID);
+        }
+
+        if ($thisMonth) {
+            $qb->andWhere('month(q.createdAt)= :month');
+            $datetime = new \DateTime("now");
+            $month = $datetime->format('m');
+            $qb->setParameter('month', $month);
+        }
+
+        if ($lastMonth) {
+            $qb->andWhere('month(q.createdAt)= :month');
+            $datetime = new \DateTime("last month");
+            $month = $datetime->format('m');
+            $qb->setParameter('month', $month);
+        }
+
+        if ($thisYear) {
+            $qb->andWhere('year(q.createdAt)= :year');
+            $datetime = new \DateTime("now");
+            $year = $datetime->format('Y');
+            $qb->setParameter('year', $year);
+        }
+
+        if(isset($startDate) && isset($endDate))
+        {
+            $start= substr($startDate,0,10);
+            $end=substr($endDate,0,10);
+            $qb->andWhere(':startDate <= q.createdAt');
+            $qb->andWhere('q.createdAt <= :endDate');
+            $qb->setParameter('startDate', new \DateTime($start));
+            $qb->setParameter('endDate', new \DateTime($end));
+        }
+
+        if (isset($state)) {
+            $qb->andWhere('q.state IN(:state)');
+            $qb->setParameter('state', $state);
+        }
+
+        if (isset($category)) {
+            $qb->innerJoin(ConsultConstants::QUESTION_TAG_ENTITY_NAME, 't', 'WITH', 'q = t.question');
+            $qb->andWhere('t.tag IN(:category)');
+            $qb->setParameter('category', $category);
+        }
+
+        if (isset($patientId)) {
+                $qb->leftJoin(ConsultConstants::USER_ENTITY_NAME, 'u', 'WITH', ' u=q.userInfo AND u.softDeleted = 0 ');
+                $qb->andWhere(' u.practoAccountId = :practoAccountId');
+                $qb->setParameter('practoAccountId', $patientId);
+       }
+
+        $counts = $qb->getQuery()->getArrayResult();
+        return $counts;
+    }
+
 
     /**
      * @param \ConsultBundle\Entity\Question $question
@@ -185,38 +253,10 @@ class DoctorQuestionRepository extends EntityRepository
 
         $qb->setParameter('question', $question);
 
-//        $qbViewed = $this->_em->createQueryBuilder();
-//        $qbViewed = $qb;
-//        $qbViewed->andWhere("dq.question.state = 'INVALID'");
-//        $viewedCount = count(new Paginator($qbViewed->getQuery(), $fetchJoinCollection= true));
-//
-//        $qbAnswered = $this->_em->createQueryBuilder();
-//        $qbAnswered = $qb;
-//        $qbAnswered->andWhere("dq.question.state = 'INVALID'");
-//        $answeredCount = count(new Paginator($qbAnswered->getQuery(), $fetchJoinCollection= true));
-//
-//        $qbRated = $this->_em->createQueryBuilder();
-//        $qbRated = $qb;
-//        $qbRated->andWhere("dq.question.state = 'INVALID'");
-//        $ratedCount = count(new Paginator($qbAnswered->getQuery(), $fetchJoinCollection= true));
-
-
-//        ,"viewedCount"=>$viewedCount,"answeredCount"=>$answeredCount
-
-
         $doctorQuestions = $qb->getQuery()->getArrayResult();
-        //var_dump($doctorQuestions);die;
 
         return $doctorQuestions;
     }
-
-
-    public function findDocModerationByFilter()
-    {
-        
-    }
-
-
 
 
     /**
