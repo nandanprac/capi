@@ -12,6 +12,7 @@ use ConsultBundle\Utility\AuthenticationUtils;
 use Symfony\Bridge\Monolog\Logger;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use FOS\RestBundle\Util\Codes;
 
 /**
  * Class SecurityListener
@@ -43,6 +44,7 @@ class SecurityListener
         $request = $event->getRequest();
         $request->getSession()->all();
         $_SESSION['validated'] = false;
+
         $this->logger->info($event->getRequestType()." ".$request->getHost()." ".$request);
 
         $profileToken = $request->headers->get('X-PROFILE-TOKEN');
@@ -52,25 +54,19 @@ class SecurityListener
             $practoAccountId = $request->query->get('practo_account_id');
         }
 
-
-
         if (is_null($profileToken) || is_null($practoAccountId)) {
             $_SESSION['validated'] = false;
-
             return false;
-
         }
 
         try {
-            $this->authenticationUtils
+            return $this->authenticationUtils
                 ->authenticateWithAccounts($practoAccountId, $profileToken);
         } catch (\Exception $e) {
             $responseRet = new Response();
             $responseRet->setStatusCode(Response::HTTP_FORBIDDEN);
-            $responseRet->setContent("Unauthorised Access");
+            $responseRet->setContent(json_encode(array('code' =>Codes::HTTP_FORBIDDEN, 'message' => "Unauthorised Access")));
             $event->setResponse($responseRet);
         }
-
-
     }
 }

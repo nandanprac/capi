@@ -69,18 +69,16 @@ class AuthenticationUtils
      */
     private function validateWithTokenNew($practoAccountId, $profileToken)
     {
-        $pId = intval($practoAccountId);
+        $sessionFlag = true;
+
         if (array_key_exists('authenticated_user', $_SESSION)) {
             $userJson = $_SESSION['authenticated_user'];
 
             if (!empty($userJson) && array_key_exists("id", $userJson)) {
-                $id = $userJson['id'];
-                if ($id == $pId) {
-                    $_SESSION['validated'] = true;
 
-                    return true;
+                if ($userJson['id'] != $practoAccountId) {
+                    $sessionFlag = false;
                 }
-
             }
         }
 
@@ -90,21 +88,19 @@ class AuthenticationUtils
         );
         $res = $client->get('/get_profile_with_token');
 
-
         $userJson = $res->json();
 
         $userId = $userJson["id"];
 
+        $code = (String)$res->getStatusCode();
 
-        $code = $res->getStatusCode();
-
-        if (!(empty($userId) || $userId != $practoAccountId || $code[0] > 3)) {
+        if (!(empty($userId) || $userId != $practoAccountId || $code[0] > 3) && $sessionFlag = true) {
             $_SESSION['validated'] = true;
             $_SESSION['authenticated_user'] = $userJson;
+            return true;
         }
 
-        return true;
-
+        return false;
     }
 
     public function validateWithProfileToken($profileToken)
