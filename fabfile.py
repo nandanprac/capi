@@ -202,7 +202,10 @@ def polish():
 
         with settings(hide('running')):
             info('Running tests...')
-       #     result = local('./bin/test.sh')
+            result = local(
+                       ' sudo phpunit -c app'
+
+                       )
             found_errors = found_errors or result.return_code != 0
     if found_errors:
         sys.exit(1)

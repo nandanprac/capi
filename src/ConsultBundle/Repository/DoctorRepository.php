@@ -138,7 +138,7 @@ class DoctorRepository extends EntityRepository
      * @return array
      * @throws \Exception
      */
-    public function findBySpecialityandCity($city, $speciality)
+    public function findBySpecialityAndCity($city, $speciality)
     {
         $doctorIds = array();
         $curdate = new \DateTime();
@@ -146,31 +146,44 @@ class DoctorRepository extends EntityRepository
         $city = strtoupper($city);
         $speciality = strtoupper($speciality);
         $qb = $this->_em->createQueryBuilder();
+        $qb2= $this->_em->createQueryBuilder();
+
 
         try {
             $qb->select('dcs.name as doctorName', 'dcs.practoAccountId as doctorId', 'count(dq.id) as givenQuestions', 'dcs.numQuesDay as questionPerDay')
                 ->from(ConsultConstants::DOCTOR_SETTING_ENTITY_NAME, 'dcs')
                 ->leftJoin(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME, 'dq', 'WITH', 'dq.practoAccountId = dcs.practoAccountId AND dq.createdAt > :curdate')
-                ->leftJoin(ConsultConstants::SPECIALITY_ENTITY_NAME, 'spc', 'WITH', 'upper(spc.name) = :speciality and spc.softDeleted = 0 ')
-                ->leftJoin(ConsultConstants::SUB_SPECIALITY_ENTITY_NAME, 'sub_spc', 'WITH', 'sub_spc.speciality_id = spc.id and sub_spc.softDeleted = 0')
-                ->where('upper(dcs.speciality) = :speciality')
-                ->orWhere('upper(dcs.speciality) IN sub_spc.subSpeciality');
+                ->add(
+                    'where',
+                    $qb->expr()->orX(
+                        $qb->expr()->eq('upper(dcs.speciality)', ':speciality'),
+                        $qb->expr()->in(
+                            'upper(dcs.speciality)',
+                            $qb2->select('upper(sub_spc.subSpeciality)')
+                                ->from(ConsultConstants::SPECIALITY_ENTITY_NAME, 'spc')
+                                ->innerJoin(ConsultConstants::SUB_SPECIALITY_ENTITY_NAME, 'sub_spc', 'WITH', 'sub_spc.speciality = spc and sub_spc.softDeleted = 0')
+                                ->where('spc.softDeleted = 0')
+                                ->andWhere('upper(spc.name) = :speciality')
+                                ->getDQL()
+                        )
+                    )
+                )
+                ->andWhere('dcs.activated = 1')
+                ->andWhere('dcs.consentGiven = 1');
 
             if (!empty($city)) {
                 $qb->andWhere('upper(dcs.location) = :city')
                     ->setParameter('city', $city);
             }
 
-            $qb->groupBy('dq.practoAccountId')
+            $qb->groupBy('dcs.practoAccountId')
                 ->having('givenQuestions < dcs.numQuesDay OR dcs.numQuesDay is null')
                 ->setParameter('curdate', $curdate)
                 ->setParameter('speciality', $speciality);
 
-
             $doctors = $qb->getQuery()->getArrayResult();
-
-            if (empty($doctors)) {
-                $doctors = $this->findBySpecialityandCity(null, $speciality);
+            if (empty($doctors) && !empty($city)) {
+                $doctors = $this->findBySpecialityAndCity(null, $speciality);
             }
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());

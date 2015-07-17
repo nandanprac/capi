@@ -3,10 +3,12 @@
 namespace ConsultBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Index;
+use Doctrine\ORM\Mapping\UniqueConstraint;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Table(name="doctor_consult_settings")
+ * @ORM\Table(name="doctor_consult_settings", uniqueConstraints={@UniqueConstraint(name="account_idx", columns={"practo_account_id"}), @UniqueConstraint(name="doctorId_idx", columns={"fabric_doctor_id"})})
  * @ORM\Entity(repositoryClass="ConsultBundle\Repository\DoctorRepository")
  * @ORM\HasLifecycleCallbacks()
  * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")

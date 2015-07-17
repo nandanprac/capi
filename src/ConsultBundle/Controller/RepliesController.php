@@ -33,7 +33,7 @@ class RepliesController extends BaseConsultController
      */
     public function postDoctorReplyAction(Request $request)
     {
-        $this->authenticate();
+        $this->authenticateForDoctor();
         $postData = $request->request->all();
         $doctorReplyManager = $this->get('consult.doctorReplyManager');
 

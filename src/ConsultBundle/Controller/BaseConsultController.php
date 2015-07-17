@@ -36,4 +36,22 @@ class BaseConsultController extends Controller
         return null;
 
     }
+
+
+    protected function authenticateForDoctor($throwException = true)
+    {
+        $practoAccountId = $this->authenticate($throwException);
+        $doctorManager = $this->get('consult.doctor_manager');
+        $doctor = $doctorManager->getConsultSettingsByPractoAccountId($practoAccountId);
+
+        if (empty($doctor)) {
+            throw new HttpException(Codes::HTTP_FORBIDDEN, "Unauthorised Access");
+        }
+
+        if (!$doctor->isConsentGiven()) {
+            throw new HttpException(Codes::HTTP_FORBIDDEN, "Consent not given for using Consult");
+        }
+
+        return $practoAccountId;
+    }
 }

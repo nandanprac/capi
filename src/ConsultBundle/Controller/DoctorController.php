@@ -82,6 +82,11 @@ class DoctorController extends BaseConsultController
         return $settings;
     }
 
+    /**
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *
+     * @return \FOS\RestBundle\View\View
+     */
     public function postDoctorSettingsAction(Request $request)
     {
         $profileToken = $request->headers->get('X-Profile-Token');
@@ -105,9 +110,4 @@ class DoctorController extends BaseConsultController
         return $settings;
     }
 
-    public function getDoctorSettingsTestAction()
-    {
-        $doctorManager = $this->get('consult.doctor_manager');
-        $doctorManager->getAppropriateDoctors('Bangalore', 'Dentist');
-    }
 }
