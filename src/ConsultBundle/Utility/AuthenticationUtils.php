@@ -50,6 +50,28 @@ class AuthenticationUtils
     }
 
     /**
+     * @param string $profileToken
+     *
+     * @return mixed
+     */
+    public function validateWithProfileToken($profileToken)
+    {
+        $client = new Client(
+            array('base_url' => $this->accountHost,
+                'defaults' => array('headers' => array('X-Profile-Token' => $profileToken)),
+            )
+        );
+        $res = $client->get('/get_profile_with_token');
+
+
+        $userJson = $res->json();
+
+        $userId = $userJson["id"];
+
+        return $userId;
+    }
+
+    /**
      * @param $practoAccountId
      * @param $profileToken
      *
@@ -86,7 +108,8 @@ class AuthenticationUtils
 
         $client = new Client(
             array('base_url' => $this->accountHost,
-                'defaults' => array('headers' => array('X-Profile-Token' => $profileToken)))
+                'defaults' => array('headers' => array('X-Profile-Token' => $profileToken)),
+                )
         );
         $res = $client->get('/get_profile_with_token');
 
@@ -107,19 +130,5 @@ class AuthenticationUtils
 
     }
 
-    public function validateWithProfileToken($profileToken)
-    {
-        $client = new Client(
-            array('base_url' => $this->accountHost,
-                'defaults' => array('headers' => array('X-Profile-Token' => $profileToken)))
-        );
-        $res = $client->get('/get_profile_with_token');
 
-
-        $userJson = $res->json();
-
-        $userId = $userJson["id"];
-
-        return $userId;
-    }
 }

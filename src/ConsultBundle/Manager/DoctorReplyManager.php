@@ -73,7 +73,7 @@ class DoctorReplyManager extends BaseManager
             ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME
         );
 
-        if (is_null($doctorQuestion->getQuestion())) {
+        if (is_null($doctorQuestion)) {
             throw new \HttpException("Error:Doctor has not been assigned the question", Codes::HTTP_BAD_REQUEST);
         }
 

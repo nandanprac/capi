@@ -218,9 +218,9 @@ class DoctorManager extends BaseManager
                 "softDeleted" => 0)
         );
 
-        if (empty($result)) {
+       /* if (empty($result)) {
             $result = $this->helper->loadById(1, ConsultConstants::DOCTOR_SETTING_ENTITY_NAME);
-        }
+        }*/
 
         return $result;
     }
@@ -240,19 +240,6 @@ class DoctorManager extends BaseManager
         return $doc;
     }
 
-
-
-
-
-    public function testRepo()
-    {
-        /**
-         * @var DoctorRepository $er
-         */
-        $er = $this->getRepository();
-        $result = $er->findBySpeciality('Bangalore', 'Dentist');
-    }
-
     /**
      * @param string $city
      * @param string $speciality
@@ -263,7 +250,7 @@ class DoctorManager extends BaseManager
     public function getAppropriateDoctors($city, $speciality)
     {
         try {
-            $doctors = $this->getRepository()->findBySpecialityandCity($city, $speciality);
+            $doctors = $this->getRepository()->findBySpecialityAndCity($city, $speciality);
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
         }
