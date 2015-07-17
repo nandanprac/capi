@@ -20,7 +20,7 @@ class NotificationController extends BaseConsultController
      */
     public function getDoctorNotificationAction(Request $request)
     {
-        $this->authenticate();
+        $this->authenticateForDoctor(true, false);
         $requestParams = $request->query->all();
 
         try {
@@ -42,7 +42,7 @@ class NotificationController extends BaseConsultController
      */
     public function patchDoctorNotificationAction()
     {
-        $this->authenticate();
+        $this->authenticateForDoctor();
         $requestParams = $this->getRequest()->request->all();
 
         try {
