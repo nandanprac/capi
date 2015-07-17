@@ -26,7 +26,7 @@ class QuestionCommentFlag extends BaseEntity
      *
      * @ORM\Column(name="flag_code", type="string")
      *
-     * @Assert\Choice(choices = {"IAP","SPM","ABV","IDL","OTH"}, message="Not a valid flag code")
+     * @Assert\Choice(choices = {"IAP","SPM","ABV", "ADV", "OTH"}, message="Not a valid flag code")
      * @Assert\NotBlank
      */
     private $flagCode;

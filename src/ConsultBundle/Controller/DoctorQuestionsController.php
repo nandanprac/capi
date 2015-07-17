@@ -25,7 +25,6 @@ class DoctorQuestionsController extends BaseConsultController
 
     /**
      * @return ArrayCollection
-     *
      */
     public function getDoctorQuestionsAction()
     {

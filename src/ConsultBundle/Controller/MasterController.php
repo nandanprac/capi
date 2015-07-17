@@ -18,7 +18,7 @@ class MasterController extends BaseConsultController
      *
      * @return View
      */
-    public function getMasterSpecialtiesAction(Request $request)
+    public function getMasterSpecialitiesAction(Request $request)
     {
         $requestParams = $request->query->all();
 

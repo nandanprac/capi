@@ -1,6 +1,7 @@
 <?php
 
 namespace ConsultBundle\Queue;
+use ConsultBundle\ConsultDomain;
 
 /**
  * Abstract Queue
@@ -9,6 +10,7 @@ abstract class AbstractQueue
 {
     private $queueName;
     private $queuePrefix = '';
+    private $fabricQueuePrefix = '';
     private $consultDomain;
 
     const PUSH_TEST              = 'push_tester';
@@ -54,6 +56,7 @@ abstract class AbstractQueue
     public function __construct($queuePrefix = '')
     {
         $this->queuePrefix = $queuePrefix;
+        $this->fabricQueuePrefix = str_replace('consult', 'fabric', $queuePrefix);
     }
 
     /**
@@ -67,6 +70,10 @@ abstract class AbstractQueue
         $parts = parse_url($host);
         $subdomain = explode('.', $parts['host'])[0];
         $queueName = str_replace('consult', $this->queueName, $subdomain);
+        if ($this->queueName == self::CONSULT_GCM) {
+            return $this->fabricQueuePrefix.$queueName;
+        }
+
 
         return $this->queuePrefix.$queueName;
     }
@@ -88,7 +95,7 @@ abstract class AbstractQueue
     /**
      * Set Practo Domain
      *
-     * @param PractoDomain $consultDomain - Practo Domain
+     * @param ConsultDomain $consultDomain - Practo Domain
      */
     public function setConsultDomain($consultDomain)
     {
@@ -103,9 +110,9 @@ abstract class AbstractQueue
     public function getVisibilityTimeout()
     {
         switch ($this->queueName) {
-            case self::PUSH_TEST:
-            default:
-                return 60;
+        case self::PUSH_TEST:
+        default:
+            return 60;
         }
     }
 

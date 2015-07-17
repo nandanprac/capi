@@ -61,7 +61,6 @@ class DoctorConsultSettings extends BaseEntity
      * @var integer
      *
      * @ORM\Column(name="num_ques_day", type="integer", nullable=true)
-     *
      */
     private $numQuesDay;
 
@@ -127,7 +126,7 @@ class DoctorConsultSettings extends BaseEntity
     /**
      * Set name
      *
-     * @param string $name
+     * @param  string $name
      * @return DoctorConsultSettings
      */
     public function setName($name)
@@ -151,7 +150,6 @@ class DoctorConsultSettings extends BaseEntity
      * Set profilePicture
      *
      * @param string $profilePicture
-     *
      */
     public function setProfilePicture($profilePicture)
     {
@@ -171,7 +169,7 @@ class DoctorConsultSettings extends BaseEntity
     /**
      * Set location
      *
-     * @param string $location
+     * @param  string $location
      * @return DoctorConsultSettings
      */
     public function setLocation($location)
@@ -194,7 +192,7 @@ class DoctorConsultSettings extends BaseEntity
     /**
      * Set timezone
      *
-     * @param string $timezone
+     * @param  string $timezone
      * @return DoctorConsultSettings
      */
     public function setTimezone($timezone)
@@ -217,7 +215,7 @@ class DoctorConsultSettings extends BaseEntity
     /**
      * Set numQuesDay
      *
-     * @param integer $numQuesDay
+     * @param  integer $numQuesDay
      * @return DoctorConsultSettings
      */
     public function setNumQuesDay($numQuesDay)
@@ -240,7 +238,7 @@ class DoctorConsultSettings extends BaseEntity
     /**
      * Set preferredConsultationTimings
      *
-     * @param integer $preferredConsultationTimings
+     * @param  integer $preferredConsultationTimings
      * @return DoctorConsultSettings
      */
     public function setPreferredConsultationTimings($preferredConsultationTimings)
@@ -263,7 +261,7 @@ class DoctorConsultSettings extends BaseEntity
     /**
      * Set consultationDays
      *
-     * @param integer $consultationDays
+     * @param  integer $consultationDays
      * @return DoctorConsultSettings
      */
     public function setConsultationDays($consultationDays)
@@ -286,7 +284,7 @@ class DoctorConsultSettings extends BaseEntity
     /**
      * Set speciality
      *
-     * @param string $speciality
+     * @param  string $speciality
      * @return DoctorConsultSettings
      */
     public function setSpeciality($speciality)
@@ -345,7 +343,7 @@ class DoctorConsultSettings extends BaseEntity
     /**
      * Set status
      *
-     * @param string $status
+     * @param  string $status
      * @return DoctorConsultSettings
      */
     public function setStatus($status)

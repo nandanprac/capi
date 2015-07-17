@@ -9,12 +9,16 @@
 namespace ConsultBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Accessor;
+use JMS\Serializer\Annotation\AccessType;
 use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation\VirtualProperty;
 
 /**
  * @ORM\Table(name="user_info")
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks()
+ * @AccessType("public_methods")
  */
 class UserInfo extends BaseEntity
 {
@@ -103,6 +107,7 @@ class UserInfo extends BaseEntity
 
     /**
      * @ORM\Column(type="boolean", name="allergy_status", nullable=true)
+     * @Accessor(getter="getAllergyStatus")
      */
     protected $allergyStatus = null;
 
@@ -113,16 +118,19 @@ class UserInfo extends BaseEntity
 
     /**
      * @ORM\Column(type="boolean", name="medication_status", nullable=true)
+     * @Accessor(getter="getMedicationStatus")
      */
     protected $medicationStatus = null;
 
     /**
      * @ORM\Column(name="prev_diagnosed_conditions", type="text", nullable=true)
+     *
      */
     protected $prevDiagnosedConditions = null;
 
     /**
      * @ORM\Column(type="boolean", name="diagnosed_condition_status", nullable=true)
+     * @Accessor(getter="getDiagnosedConditionStatus")
      */
     protected $diagnosedConditionStatus = null;
 
@@ -465,6 +473,15 @@ class UserInfo extends BaseEntity
         }
 
 
+    }
+
+    /**
+     * @return mixed
+     * @VirtualProperty()
+     */
+    public function getId()
+    {
+        return $this->id;
     }
 }
 

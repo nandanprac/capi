@@ -193,10 +193,14 @@ class DetailQuestionResponseObject extends BasicQuestionResponseObject
         $patientInfo->setAge($userInfo->getAge());
         $patientInfo->setGender($userInfo->getGender());
         $patientInfo->setLocation($userInfo->getLocation());
-        $this->patientInfo = $patientInfo;
+
+
 
         if ($userInfo->getPractoAccountId() == $practoAccountId) {
             $this->isOwner = true;
+            $patientInfo->setId($userInfo->getId());
         }
+
+        $this->patientInfo = $patientInfo;
     }
 }

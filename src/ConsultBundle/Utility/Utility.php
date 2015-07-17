@@ -52,14 +52,14 @@ class Utility
         }
 
         switch (strtolower($var)) {
-            case '1':
-            case 'true':
-            case 'on':
-            case 'yes':
-            case 'y':
-                return true;
-            default:
-                return false;
+        case '1':
+        case 'true':
+        case 'on':
+        case 'yes':
+        case 'y':
+            return true;
+        default:
+            return false;
         }
 
     }

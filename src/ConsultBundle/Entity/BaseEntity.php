@@ -9,6 +9,8 @@ namespace ConsultBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use FOS\RestBundle\Util\Codes;
+use JMS\Serializer\Annotation\Exclude;
+use JMS\Serializer\Annotation\ExclusionPolicy;
 use Symfony\Component\Validator\Constraints as Assert;
 use ConsultBundle\Manager\ValidationError;
 
@@ -16,6 +18,7 @@ use ConsultBundle\Manager\ValidationError;
  * ConsultBundle\Entity\BaseEntity
  *
  * @ORM\MappedSuperclass()
+ * @ExclusionPolicy("all")
  */
 class BaseEntity
 {
@@ -38,6 +41,7 @@ class BaseEntity
 
 
     /**
+     * @Exclude()
      * @ORM\Column(type="smallint", name="soft_deleted")
      */
     protected $softDeleted = 0;
@@ -170,6 +174,8 @@ class BaseEntity
         } else {
             return ('true' === $value);
         }
+
+        return false;
     }
 
     /**

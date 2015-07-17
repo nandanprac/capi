@@ -15,7 +15,6 @@ class WordManager extends BaseManager
 {
     /**
      * Constructor
-     *
      */
     public function __construct()
     {

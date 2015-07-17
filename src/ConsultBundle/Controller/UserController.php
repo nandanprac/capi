@@ -45,7 +45,7 @@ class UserController extends FOSRestController
     /**
      * Load additional info of a User
      *
-     * @param Request $request
+     * @param  Request $request
      * @return View
      */
     public function getUserInfoAction(Request $request)

@@ -122,3 +122,17 @@ jms_serializer:
         # class: My\FooBundle\Entity\User
         # expected path: @MyFooBundle/Resources/config/serializer/Entity.User.(yml|xml|php)
         auto_detection: true
+
+
+kunstmaan_sentry:
+    environments: %sentry.environments%
+
+
+old_sound_rabbit_mq:
+    connections:
+        graylog:
+            host:   %graylog_gelf_host%
+    producers:
+        log:
+            connection: graylog
+            exchange_options: {name: 'gelf_log', type: fanout}

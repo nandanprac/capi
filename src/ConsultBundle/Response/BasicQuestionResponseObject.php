@@ -73,6 +73,7 @@ class BasicQuestionResponseObject extends ConsultResponseObject
             $this->setSubject($questionEntity->getSubject());
             $this->setText($questionEntity->getText());
             $this->viewedAt = $questionEntity->getViewedAt();
+            $this->setShareCount($questionEntity->getShareCount());
         }
 
     }
@@ -175,7 +176,7 @@ class BasicQuestionResponseObject extends ConsultResponseObject
         if (!empty($bookmarkCount)) {
             $this->bookmarkCount = $this->getInt($bookmarkCount);
         }
-       // $this->bookmarkCount = $bookmarkCount;
+        // $this->bookmarkCount = $bookmarkCount;
     }
 
     /**

@@ -52,7 +52,7 @@ class DoctorReplyVote extends BaseEntity
     /**
      * Set practoAccountId
      *
-     * @param integer $practoAccountId
+     * @param  integer $practoAccountId
      * @return DoctorReplyVote
      */
     public function setPractoAccountId($practoAccountId)
@@ -75,7 +75,7 @@ class DoctorReplyVote extends BaseEntity
     /**
      * Set vote
      *
-     * @param integer $vote
+     * @param  integer $vote
      * @return DoctorReplyVote
      */
     public function setVote($vote)

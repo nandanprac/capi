@@ -3,6 +3,7 @@
 namespace ConsultBundle\Manager;
 
 use ConsultBundle\Constants\ConsultConstants;
+use ConsultBundle\Entity\DoctorQuestion;
 use ConsultBundle\Entity\UserNotification;
 use ConsultBundle\Entity\DoctorNotification;
 use ConsultBundle\Response\DoctorNotificationResponseObject;
@@ -34,7 +35,7 @@ class NotificationManager extends BaseManager
     }
 
     /**
-     * @param Question $question        - Question Object
+     * @param DoctorQuestion $question        - Question Object
      * @param integer  $practoAccountId - Practo Account Id of Doctor
      * @param string   $text            - Message to be sent to doctor
      */

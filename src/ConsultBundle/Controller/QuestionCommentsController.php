@@ -39,7 +39,7 @@ class QuestionCommentsController extends BaseConsultController
     /**
      * Patch Question Comment Action
      *
-     * @param Request $request - the Request object
+     * @param  Request $request - the Request object
      * @return View
      */
     public function patchQuestionCommentAction(Request $request)

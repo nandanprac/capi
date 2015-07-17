@@ -24,7 +24,7 @@ class AuthenticationUtils
     /**
      * @var array
      */
-   // private static $authenticationMap;
+    // private static $authenticationMap;
 
     private $accountHost;
 
@@ -105,5 +105,21 @@ class AuthenticationUtils
 
         return true;
 
+    }
+
+    public function validateWithProfileToken($profileToken)
+    {
+        $client = new Client(
+            array('base_url' => $this->accountHost,
+                'defaults' => array('headers' => array('X-Profile-Token' => $profileToken)))
+        );
+        $res = $client->get('/get_profile_with_token');
+
+
+        $userJson = $res->json();
+
+        $userId = $userJson["id"];
+
+        return $userId;
     }
 }

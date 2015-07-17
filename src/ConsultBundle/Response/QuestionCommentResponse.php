@@ -11,7 +11,8 @@ namespace ConsultBundle\Response;
 
 use ConsultBundle\Entity\QuestionComment;
 
-class QuestionCommentResponse extends ConsultResponseObject {
+class QuestionCommentResponse extends ConsultResponseObject
+{
 
     private $text;
 
@@ -25,6 +26,8 @@ class QuestionCommentResponse extends ConsultResponseObject {
 
     private $flagText;
 
+    private $practoAccountId;
+
     /**
      * @param \ConsultBundle\Entity\QuestionComment $questionComment
      */
@@ -34,8 +37,25 @@ class QuestionCommentResponse extends ConsultResponseObject {
             parent::__construct($questionComment);
             $this->text = $questionComment->getText();
             $this->identifier = $questionComment->getIdentifier();
+            $this->practoAccountId = $questionComment->getPractoAccountId();
         }
 
+    }
+
+    /**
+     * @param interger $practoAccountId
+     */
+    public function setPractoAccountId($practoAccountId)
+    {
+        $this->practoAccountId = $practoAccountId;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getPractoAccountId()
+    {
+        return $this->practoAccountId;
     }
 
     /**

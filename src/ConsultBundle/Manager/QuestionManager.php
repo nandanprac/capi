@@ -145,7 +145,7 @@ class QuestionManager extends BaseManager
             $question->setViewCount($question->getViewCount() + 1);
             if (!empty($practoAccountId)) {
                 $viewEntry = $this->helper->getRepository(ConsultConstants::QUESTION_VIEW_ENTITY_NAME)
-                                  ->findBy(array('question' => $question, 'practoAccountId' => $practoAccountId, 'softDeleted' => 0));
+                    ->findBy(array('question' => $question, 'practoAccountId' => $practoAccountId, 'softDeleted' => 0));
                 if (empty($viewEntry)) {
                     $view = new QuestionView();
                     $view->setQuestion($question);
@@ -166,7 +166,7 @@ class QuestionManager extends BaseManager
 
         if (array_key_exists('bookmark', $requestParams)) {
             if (empty($practoAccountId)) {
-                throw new \HttpException('',Codes::HTTP_FORBIDDEN);
+                throw new \HttpException('', Codes::HTTP_FORBIDDEN);
             }
             if (Utility::toBool($requestParams['bookmark'])) {
                 try {
@@ -202,9 +202,15 @@ class QuestionManager extends BaseManager
     public function load($questionId, $practoAccountId = null)
     {
         /**
+         * @var QuestionRepository $er
+         */
+        $er =  $this->helper->getRepository(ConsultConstants::QUESTION_ENTITY_NAME);
+
+        /**
          * @var Question $question
          */
-        $question = $this->helper->loadById($questionId, ConsultConstants::QUESTION_ENTITY_NAME);
+        $question = $er->findOneBy(array("id"=>$questionId, "softDeleted"=>0));
+
 
         if (empty($question)) {
             return null;
@@ -232,7 +238,7 @@ class QuestionManager extends BaseManager
         $limit = (array_key_exists('limit', $request)) ? $request['limit'] : 30;
         $offset = (array_key_exists('offset', $request)) ? $request['offset'] : 0;
 
-        if (array_key_exists('search', $request)) {
+        if (array_key_exists('search', $request) && !empty($request['search'])) {
             //$search = $this->classification->sentenceWords($request['search']);
             $search = preg_split('/\s+/', strtolower($request['search']));
             $questionList = $er->findSearchQuestions($search, $limit, $offset);
@@ -304,18 +310,34 @@ class QuestionManager extends BaseManager
      * @param integer $questionId - Question Id
      * @param string  $tags       - text for the tag
      *
+     * @return mixed
      */
     public function setTagsByQuestionId($questionId, $tags)
     {
         $question = $this->helper->loadById($questionId, ConsultConstants::QUESTION_ENTITY_NAME);
         $this->setQuestionTags($question, $tags);
         $this->helper->persist($question, 'true');
+
+        return $question;
+    }
+
+    /**
+     * @param integer $id
+     */
+    public function delete($id)
+    {
+        /**
+         * @var Question $question
+         */
+        $question = $this->helper->loadById($id, ConsultConstants::QUESTION_ENTITY_NAME);
+        $question->setSoftDeleted(true);
+        $this->helper->persist($question, true);
+
     }
 
     /**
      * @param Question $question - Question object
-     * @param string $tags - text for the tags
-     *
+     * @param array    $tags     - text for the tags
      */
     private function setQuestionTags($question, $tags)
     {
@@ -327,6 +349,4 @@ class QuestionManager extends BaseManager
             $question->addTag($tagObj);
         }
     }
-
-
 }

@@ -91,7 +91,7 @@ class QuestionComment extends BaseEntity
     /**
      * Set identifier
      *
-     * @param  string $identifier
+     * @param string $identifier
      */
     public function setIdentifier($identifier)
     {

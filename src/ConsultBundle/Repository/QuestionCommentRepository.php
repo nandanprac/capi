@@ -41,7 +41,7 @@ class QuestionCommentRepository extends EntityRepository
             ->andWhere('c.question = :question')
             ->setParameter('question', $question)
             ->groupBy('c.id')
-            ->orderBy('c.createdAt', 'DESC');
+            ->orderBy('c.createdAt', 'ASC');
 
         if (!empty($limit)) {
             $qb->setMaxResults($limit);

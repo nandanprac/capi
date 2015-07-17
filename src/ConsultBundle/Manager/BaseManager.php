@@ -116,9 +116,11 @@ class BaseManager
         $question->setComments($questionCommentList);
 
         if (!empty($practoAccountId)) {
-            $bookmark = $er->findOneBy(array("practoAccountId" => $practoAccountId,
+            $bookmark = $er->findOneBy(
+                array("practoAccountId" => $practoAccountId,
                 "question" => $questionEntity,
-                "softDeleted" => 0));
+                "softDeleted" => 0)
+            );
 
             if (!empty($bookmark)) {
                 $question->setIsBookmarked(true);

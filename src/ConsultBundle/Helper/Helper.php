@@ -164,7 +164,10 @@ class Helper
     public function flush()
     {
         $this->entityManager->flush();
+
     }
+
+
 
     /**
      * Flush for EM

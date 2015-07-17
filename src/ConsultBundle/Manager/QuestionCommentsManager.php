@@ -6,6 +6,7 @@ use ConsultBundle\Constants\ConsultConstants;
 use ConsultBundle\Entity\QuestionCommentVote;
 use ConsultBundle\Entity\QuestionCommentFlag;
 use ConsultBundle\Response\QuestionCommentResponse;
+use ConsultBundle\Utility\Utility;
 use FOS\RestBundle\Util\Codes;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 use Symfony\Component\Validator\ValidatorInterface;
@@ -38,8 +39,9 @@ class QuestionCommentsManager extends BaseManager
             throw new ValidationError($error);
         }
 
-        if (!array_key_exists('identifier', $requestParams) or
-            (array_key_exists('identifier', $requestParams) and empty($requestParams['identifier']))) {
+        if (!array_key_exists('identifier', $requestParams)
+            or (array_key_exists('identifier', $requestParams) and empty($requestParams['identifier']))
+        ) {
             @$error['identifier'] = 'This cannot be blank';
             throw new ValidationError($error);
 
@@ -121,7 +123,7 @@ class QuestionCommentsManager extends BaseManager
             }
         }
 
-        if (array_key_exists('flag', $requestParams)) {
+        if (array_key_exists('flag', $requestParams) && Utility::toBool($requestParams['flag'])) {
             $er = $this->helper->getRepository(ConsultConstants::QUESTION_COMMENT_FLAG_ENTITY_NAME);
             $flag = $er->findBy(array('questionComment' => $questionComment, 'practoAccountId' => $requestParams['practo_account_id'], 'softDeleted' => 0));
             if (!empty($flag[0])) {
@@ -131,7 +133,7 @@ class QuestionCommentsManager extends BaseManager
 
             $flag = new QuestionCommentFlag();
             $flag->setQuestionComment($questionComment);
-            $requestParams['flag_code'] = strtoupper($requestParams['flag']);
+            $requestParams['flag_code'] = strtoupper($requestParams['flag_code']);
             $requestParams['flag_text'] = (array_key_exists('text', $requestParams)) ? $requestParams['text'] : null ;
             unset($requestParams['flag']);
             if (array_key_exists('text', $requestParams)) {

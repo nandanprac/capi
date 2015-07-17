@@ -31,98 +31,98 @@ class DoctorRepository extends EntityRepository
         try {
              $qb = $this->_em->createQueryBuilder();
              $qb->select('sum(rv.vote) as total_votes')
-                ->from(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME, 'dq')
-                ->leftJoin(ConsultConstants::DOCTOR_REPLY_ENTITY_NAME, 'r', 'WITH', 'r.doctorQuestion = dq AND r.softDeleted = 0')
-                ->leftJoin(ConsultConstants::DOCTOR_REPLY_VOTE_ENTITY, 'rv', 'WITH', 'rv.reply = r AND rv.softDeleted = 0')
-                ->where('dq.softDeleted = 0')
-                ->andWhere('dq.practoAccountId = :doctorId')
-                ->setParameter('doctorId', $doctorId);
+                 ->from(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME, 'dq')
+                 ->leftJoin(ConsultConstants::DOCTOR_REPLY_ENTITY_NAME, 'r', 'WITH', 'r.doctorQuestion = dq AND r.softDeleted = 0')
+                 ->leftJoin(ConsultConstants::DOCTOR_REPLY_VOTE_ENTITY, 'rv', 'WITH', 'rv.reply = r AND rv.softDeleted = 0')
+                 ->where('dq.softDeleted = 0')
+                 ->andWhere('dq.practoAccountId = :doctorId')
+                 ->setParameter('doctorId', $doctorId);
 
              $result = $qb->getQuery()->getArrayResult();
-             if ($result != null) {
-                 $results['total_votes'] = intval($result[0]['total_votes']);
-             } else {
-                 $results['total_votes'] = 0;
-             }
+            if ($result != null) {
+                $results['total_votes'] = intval($result[0]['total_votes']);
+            } else {
+                $results['total_votes'] = 0;
+            }
 
              $qb = $this->_em->createQueryBuilder();
              $qb->select('avg(r.rating) as avg_rating')
-                ->from(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME, 'dq')
-                ->innerJoin(ConsultConstants::DOCTOR_REPLY_ENTITY_NAME, 'r', 'WITH', 'r.doctorQuestion = dq AND r.softDeleted = 0')
-                ->where('dq.softDeleted = 0')
-                ->andWhere('dq.practoAccountId = :doctorId')
-                ->setParameter('doctorId', $doctorId);
+                 ->from(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME, 'dq')
+                 ->innerJoin(ConsultConstants::DOCTOR_REPLY_ENTITY_NAME, 'r', 'WITH', 'r.doctorQuestion = dq AND r.softDeleted = 0')
+                 ->where('dq.softDeleted = 0')
+                 ->andWhere('dq.practoAccountId = :doctorId')
+                 ->setParameter('doctorId', $doctorId);
 
              $result = $qb->getQuery()->getArrayResult();
-             if ($result != null) {
-                 $results['avg_rating'] = floatval($result[0]['avg_rating']);
-             } else {
-                 $results['avg_rating'] = 0.0;
-             }
+            if ($result != null) {
+                $results['avg_rating'] = round(floatval($result[0]['avg_rating']), 1);
+            } else {
+                $results['avg_rating'] = 0.0;
+            }
 
              $qb = $this->_em->createQueryBuilder();
              $qb->select('sum(q.viewCount) as view_count')
-                ->from(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME, 'dq')
-                ->innerJoin(ConsultConstants::QUESTION_ENTITY_NAME, 'q', 'WITH', 'q = dq.question AND q.softDeleted = 0')
-                ->where('dq.softDeleted = 0')
-                ->andWhere('dq.practoAccountId = :doctorId')
-                ->andWhere('dq.state = :state')
-                ->setParameter('doctorId', $doctorId)
-                ->setParameter('state', 'ANSWERED');
+                 ->from(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME, 'dq')
+                 ->innerJoin(ConsultConstants::QUESTION_ENTITY_NAME, 'q', 'WITH', 'q = dq.question AND q.softDeleted = 0')
+                 ->where('dq.softDeleted = 0')
+                 ->andWhere('dq.practoAccountId = :doctorId')
+                 ->andWhere('dq.state = :state')
+                 ->setParameter('doctorId', $doctorId)
+                 ->setParameter('state', 'ANSWERED');
 
              $result = $qb->getQuery()->getArrayResult();
-             if ($result != null) {
-                 $results['view_count'] = intval($result[0]['view_count']);
-             } else {
-                 $results['view_count'] = 0;
-             }
+            if ($result != null) {
+                $results['view_count'] = intval($result[0]['view_count']);
+            } else {
+                $results['view_count'] = 0;
+            }
 
              $qb = $this->_em->createQueryBuilder();
              $qb->select('count(distinct dn.id) as notification_count')
-                ->from(ConsultConstants::DOCTOR_NOTIFICATION_ENTITY_NAME, 'dn')
-                ->where('dn.softDeleted = 0')
-                ->andWhere('dn.viewed = 0')
-                ->andWhere('dn.practoAccountId = :doctorId')
-                ->setParameter('doctorId', $doctorId);
+                 ->from(ConsultConstants::DOCTOR_NOTIFICATION_ENTITY_NAME, 'dn')
+                 ->where('dn.softDeleted = 0')
+                 ->andWhere('dn.viewed = 0')
+                 ->andWhere('dn.practoAccountId = :doctorId')
+                 ->setParameter('doctorId', $doctorId);
 
              $result = $qb->getQuery()->getArrayResult();
-             if ($result != null) {
-                 $results['notification_count'] = intval($result[0]['notification_count']);
-             } else {
-                 $results['notification_count'] = 0;
-             }
+            if ($result != null) {
+                $results['notification_count'] = intval($result[0]['notification_count']);
+            } else {
+                $results['notification_count'] = 0;
+            }
 
              $qb = $this->_em->createQueryBuilder();
              $qb->select('count(dq.id) as answered_count')
-                ->from(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME, 'dq')
-                ->where('dq.softDeleted = 0')
-                ->andWhere('dq.practoAccountId = :doctorId')
-                ->andWhere('dq.state = :state')
-                ->setParameter('doctorId', $doctorId)
-                ->setParameter('state', "ANSWERED");
+                 ->from(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME, 'dq')
+                 ->where('dq.softDeleted = 0')
+                 ->andWhere('dq.practoAccountId = :doctorId')
+                 ->andWhere('dq.state = :state')
+                 ->setParameter('doctorId', $doctorId)
+                 ->setParameter('state', "ANSWERED");
 
              $result = $qb->getQuery()->getArrayResult();
-             if ($result != null) {
-                 $results['answered_count'] = intval($result[0]['answered_count']);
-             } else {
-                 $results['answered_count'] = 0;
-             }
+            if ($result != null) {
+                $results['answered_count'] = intval($result[0]['answered_count']);
+            } else {
+                $results['answered_count'] = 0;
+            }
 
              $qb = $this->_em->createQueryBuilder();
              $qb->select('count(dq.id) as assigned_count')
-                ->from(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME, 'dq')
-                ->where('dq.softDeleted = 0')
-                ->andWhere('dq.practoAccountId = :doctorId')
-                ->andWhere('dq.state = :state')
-                ->setParameter('doctorId', $doctorId)
-                ->setParameter('state', "UNANSWERED");
+                 ->from(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME, 'dq')
+                 ->where('dq.softDeleted = 0')
+                 ->andWhere('dq.practoAccountId = :doctorId')
+                 ->andWhere('dq.state = :state')
+                 ->setParameter('doctorId', $doctorId)
+                 ->setParameter('state', "UNANSWERED");
 
              $result = $qb->getQuery()->getArrayResult();
-             if ($result != null) {
-                 $results['assigned_count'] = intval($result[0]['assigned_count']);
-             } else {
-                 $results['assigned_count'] = 0;
-             }
+            if ($result != null) {
+                $results['assigned_count'] = intval($result[0]['assigned_count']);
+            } else {
+                $results['assigned_count'] = 0;
+            }
 
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
@@ -134,6 +134,7 @@ class DoctorRepository extends EntityRepository
     /**
      * Takes in city and speciality, based on consult settings of doctors returns three available
      * doctors
+     *
      * @param string $city       - city of doctor
      * @param strign $speciality - doctor speciality
      *
