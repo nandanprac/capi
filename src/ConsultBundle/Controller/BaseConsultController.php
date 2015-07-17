@@ -38,7 +38,7 @@ class BaseConsultController extends Controller
     }
 
 
-    protected function authenticateForDoctor($throwException = true)
+    protected function authenticateForDoctor($throwException = true, $checkForConsent = true)
     {
         $practoAccountId = $this->authenticate($throwException);
         $doctorManager = $this->get('consult.doctor_manager');
@@ -48,7 +48,7 @@ class BaseConsultController extends Controller
             throw new HttpException(Codes::HTTP_FORBIDDEN, "Unauthorised Access");
         }
 
-        if (!$doctor->isConsentGiven()) {
+        if (!$doctor->isConsentGiven() && $checkForConsent) {
             throw new HttpException(Codes::HTTP_FORBIDDEN, "Consent not given for using Consult");
         }
 

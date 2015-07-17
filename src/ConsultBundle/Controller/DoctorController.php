@@ -68,7 +68,7 @@ class DoctorController extends BaseConsultController
      */
     public function putDoctorConsultSettingsAction(Request $request)
     {
-        $this->authenticate();
+        $this->authenticateForDoctor(true, false);
         $postData = $request->request->all();
         $doctorManager = $this->get('consult.doctor_manager');
         try {
