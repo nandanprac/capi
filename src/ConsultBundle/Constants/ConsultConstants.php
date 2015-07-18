@@ -39,6 +39,8 @@ class ConsultConstants
     const PRIVATE_THREAD_ENTITY_NAME = "ConsultBundle:PrivateThread";
     const CONVERSATION_ENTITY_NAME = "ConsultBundle:Conversation";
     const CONVERSATION_IMAGE_ENTITY_NAME = "ConsultBundle:ConversationImage";
+    const SPECIALITY_ENTITY_NAME = "ConsultBundle:Speciality";
+    const SUB_SPECIALITY_ENTITY_NAME = "ConsultBundle:SubSpeciality";
 
 
     //Consult Type for Notification

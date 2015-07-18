@@ -23,7 +23,7 @@ class UserNotification extends BaseEntity
     protected $practoAccountId;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Question")
+     * @ORM\ManyToOne(targetEntity="Question", inversedBy="patientNotifications")
      * @ORM\JoinColumn(name="question_id", referencedColumnName="id")
      */
     protected $question;

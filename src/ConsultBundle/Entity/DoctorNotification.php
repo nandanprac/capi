@@ -25,7 +25,7 @@ class DoctorNotification extends BaseEntity
     /**
      * @var Question $question
      *
-     * @ORM\ManyToOne(targetEntity="DoctorQuestion")
+     * @ORM\ManyToOne(targetEntity="DoctorQuestion", inversedBy="doctorNotifications")
      * @ORM\JoinColumn(name="doctor_question_id", referencedColumnName="id")
      */
     protected $question;
