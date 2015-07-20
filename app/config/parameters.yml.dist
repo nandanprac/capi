@@ -26,7 +26,7 @@ parameters:
     locale:            en
 
     # A secret key that's used to generate certain security-related tokens
-    secret:            ThisTokenIsNotSoSecretChangeIt
+    secret:            SecretKeyAddedtoRemoveSensioIssue
     sentry.dsn: 'udp://a:b@localhost:12345/c'
     sentry.environments:
                 - prod
