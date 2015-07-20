@@ -75,10 +75,8 @@ class QuestionCommentRepository extends EntityRepository
     }
 
 
-    ///////////////////////////
-
     /**
-     * @param Question $question        - Question object
+     * @param Question $question - Question object
      * @return array (comments, count)
      */
     public function getModerationComments($question)
@@ -103,7 +101,7 @@ class QuestionCommentRepository extends EntityRepository
             ->groupBy('c.id')
             ->orderBy('c.createdAt', 'DESC');
 
-        $qb->addSelect('cf.flagCode as flag', 'cf.flagText as flag_text','cf.createdAt as flag_create','cf.id as flagID')
+        $qb->addSelect('cf.flagCode as flag', 'cf.flagText as flag_text', 'cf.createdAt as flag_create', 'cf.id as flagID')
             ->leftJoin(ConsultConstants::QUESTION_COMMENT_FLAG_ENTITY_NAME, 'cf', 'WITH', 'c = cf.questionComment and cf.softDeleted = 0');
 
         $commentList = $qb->getQuery()->getArrayResult();
@@ -115,7 +113,7 @@ class QuestionCommentRepository extends EntityRepository
             return null;
         }
 
-        return array('questionID'=>$question->getId(),'comments' => $commentList, 'count' => $count);
+        return array('questionID' => $question->getId(), 'comments' => $commentList, 'count' => $count);
     }
 
 
@@ -165,5 +163,4 @@ class QuestionCommentRepository extends EntityRepository
 
         return $comment[0];
     }
-
 }

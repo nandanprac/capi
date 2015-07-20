@@ -36,7 +36,7 @@ class Week extends FunctionNode
      */
     public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
     {
-        return "WEEK(" . $sqlWalker->walkArithmeticPrimary($this->date) . ")";
+        return "WEEK(".$sqlWalker->walkArithmeticPrimary($this->date).")";
     }
 
     /**

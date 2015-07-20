@@ -47,15 +47,18 @@ class PrivateThreadRepository extends EntityRepository
     {
         $qb = $this->_em->createQueryBuilder();
         $qb->select(
-            'p.id', 'd.name as doctor_name',
+            'p.id',
+            'd.name as doctor_name',
             'd.profilePicture as profile_picture',
-            'p.subject', 'p.modifiedAt as last_modified_time',
+            'p.subject',
+            'p.modifiedAt as last_modified_time',
             '(:FOLLOW_UP_THRESHOLD - COUNT(c)) as followups_remaining'
         )
             ->from(ConsultConstants::PRIVATE_THREAD_ENTITY_NAME, 'p')
             ->innerJoin(
                 ConsultConstants::USER_ENTITY_NAME,
-                'u', 'WITH',
+                'u',
+                'WITH',
                 'u = p.userInfo AND u.softDeleted = 0'
             )
             ->innerJoin(

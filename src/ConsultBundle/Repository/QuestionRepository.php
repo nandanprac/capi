@@ -95,27 +95,38 @@ class QuestionRepository extends EntityRepository
     }
 
 
-    ////////////// Queries  ///////////
-
-    public function findModerationQuestionsByFilters($thisMonth,  $lastMonth, $state, $startDate, $endDate, $thisYear,$limit,$patientId,$patientName,$questionID)
+    /**
+     * @param string   $thisMonth
+     * @param string   $lastMonth
+     * @param string   $state
+     * @param DateTime $startDate
+     * @param DateTime $endDate
+     * @param string   $thisYear
+     * @param integer  $limit
+     * @param integer  $patientId
+     * @param string   $patientName
+     * @param integer  $questionID
+     *
+     * @return array
+     *
+     */
+    public function findModerationQuestionsByFilters($thisMonth, $lastMonth, $state, $startDate, $endDate, $thisYear, $limit, $patientId, $patientName, $questionID)
     {
         $qb = $this->_em->createQueryBuilder();
-        $qb->select('q as question','count(b.id) AS bookmarkCount')
+        $qb->select('q as question', 'count(b.id) AS bookmarkCount')
             ->from(ConsultConstants::QUESTION_ENTITY_NAME, 'q')
             ->leftJoin(ConsultConstants::QUESTION_BOOKMARK_ENTITY_NAME, 'b', 'WITH', 'q = b.question AND b.softDeleted = 0 ')
             ->where('q.softDeleted = 0')
             ->orderBy('q.modifiedAt', 'DESC')
             ->groupBy('q');
 
-        if(isset($questionID))
-        {
+        if (isset($questionID)) {
             $qb->andWhere('q.id = :questionID');
-            $qb->setParameter('questionID',$questionID);
+            $qb->setParameter('questionID', $questionID);
         }
 
-        if(isset($limit))
-        {
-           $qb->setMaxResults($limit);
+        if (isset($limit)) {
+            $qb->setMaxResults($limit);
         }
 
         if ($thisMonth) {
@@ -139,11 +150,9 @@ class QuestionRepository extends EntityRepository
             $qb->setParameter('year', $year);
         }
 
-        if(isset($startDate) && isset($endDate))
-        {
-
-            $start= substr($startDate,0,10);
-            $end=substr($endDate,0,10);
+        if (isset($startDate) && isset($endDate)) {
+            $start= substr($startDate, 0, 10);
+            $end=substr($endDate, 0, 10);
             $qb->andWhere(':startDate <= q.createdAt');
             $qb->andWhere('q.createdAt <= :endDate');
             $qb->setParameter('startDate', new \DateTime($start));
@@ -162,19 +171,18 @@ class QuestionRepository extends EntityRepository
         }
 
         if (isset($patientId)) {
-
                 $qb->leftJoin(ConsultConstants::USER_ENTITY_NAME, 'u', 'WITH', ' u=q.userInfo AND u.softDeleted = 0 ');
                 //$qb->leftJoin(ConsultConstants::QUESTION_BOOKMARK_ENTITY_NAME, 'b', 'WITH', 'q = b.question AND b.softDeleted = 0 ');
                 $qb->andWhere(' u.practoAccountId = :practoAccountId');
 
                 $qb->setParameter('practoAccountId', $patientId);
 
-       }
+        }
 
-        if (isset($patientName))
-        {
-            if(!(isset($patientId)))
+        if (isset($patientName)) {
+            if (!(isset($patientId))) {
                 $qb->leftJoin(ConsultConstants::USER_ENTITY_NAME, 'u', 'WITH', ' u=q.userInfo AND u.softDeleted = 0 ');
+            }
             $qb->andWhere(' u.name = :patientName');
             $qb->setParameter('patientName', $patientName);
         }
@@ -190,12 +198,9 @@ class QuestionRepository extends EntityRepository
         $qbInvalid = $this->_em->createQueryBuilder();
         $qbInvalid = $qb;
         $qbInvalid->andWhere("q.state = 'REJECTED' or q.state='DOCNOTFOUND'");
-        $invalidCount = count(new Paginator($qbInvalid->getQuery(), $fetchJoinCollection= true));
+        $invalidCount = count(new Paginator($qbInvalid->getQuery(), $fetchJoinCollection = true));
 
-
-
-        $count=array("totalCount"=>$totalCount,"invalidCount"=>$invalidCount);
-
+        $count = array("totalCount" => $totalCount, "invalidCount" => $invalidCount);
 
         if (is_null($questionList)) {
             return null;
@@ -209,13 +214,13 @@ class QuestionRepository extends EntityRepository
     /**
      * @return int
      */
-
     public function totalCount()
     {
         $qb =$this->_em->createQueryBuilder();
         $qb->select('count(q.id)');
-        $qb->from (ConsultConstants::QUESTION_ENTITY_NAME, 'q');
+        $qb->from(ConsultConstants::QUESTION_ENTITY_NAME, 'q');
         $count = $qb->getQuery()->getSingleScalarResult();
+
         return $count;
     }
 
@@ -226,54 +231,52 @@ class QuestionRepository extends EntityRepository
     {
         $qb =$this->_em->createQueryBuilder();
         $qb->select('count(q.id)');
-        $qb->from (ConsultConstants::QUESTION_ENTITY_NAME, 'q');
+        $qb->from(ConsultConstants::QUESTION_ENTITY_NAME, 'q');
         $qb->where('month(q.createdAt)= :month');
         $datetime = new \DateTime("now");
         $month = $datetime->format('m');
         $qb->setParameter('month', $month);
         $count = $qb->getQuery()->getSingleScalarResult();
+
         return $count;
     }
 
     /**
      * @return int
      */
-
     public function lastMonthCount()
     {
         $qb =$this->_em->createQueryBuilder();
         $qb->select('count(q.id)');
-        $qb->from (ConsultConstants::QUESTION_ENTITY_NAME, 'q');
+        $qb->from(ConsultConstants::QUESTION_ENTITY_NAME, 'q');
         $qb->where('month(q.createdAt)= :month');
         $datetime = new \DateTime("last month");
         $month = $datetime->format('m');
         $qb->setParameter('month', $month);
         $count = $qb->getQuery()->getSingleScalarResult();
+
         return $count;
     }
 
 
     /**
-     * @param \DateTime $startDate   - time for the filter
+     * @param \DateTime $startDate - time for the filter
      * @param \DateTime $endDate   - time for the filter
      * @return int
      */
-
-    public function customCount($startDate,$endDate)
+    public function customCount($startDate, $endDate)
     {
         $qb =$this->_em->createQueryBuilder();
         $qb->select('count(q.id)');
-        $qb->from (ConsultConstants::QUESTION_ENTITY_NAME, 'q');
+        $qb->from(ConsultConstants::QUESTION_ENTITY_NAME, 'q');
         $qb->where(':startDate =< q.createdAt =< :endDate');
         $qb->setParameter('startDate', $startDate);
         $qb->setParameter('endDate', $endDate);
         $count = $qb->getQuery()->getSingleScalarResult();
+
         return $count;
     }
 
-
-
-    //////////////////////////////////////////
 
     /**
      * @param array   $search
@@ -319,7 +322,7 @@ class QuestionRepository extends EntityRepository
     }
 
     /**
-     * @param $question
+     * @param Question $question
      *
      * @return array
      */
@@ -337,7 +340,6 @@ class QuestionRepository extends EntityRepository
         if (count($result) == 0) {
             return 0;
         }
-
 
         return $result[0][1];
 
@@ -389,6 +391,4 @@ class QuestionRepository extends EntityRepository
     {
         return  $this->get('database_connection');
     }
-
-
 }

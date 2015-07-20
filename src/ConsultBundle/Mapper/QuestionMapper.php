@@ -84,7 +84,7 @@ class QuestionMapper
                  * @var DoctorQuestion $doctorQuestionEntity
                  */
                 if (!empty($doctorQuestionEntity)||$doctorQuestionEntity->isSoftDeleted()||empty($doctorQuestionEntity->getDoctorReplies()
-                    ||$doctorQuestionEntity->getDoctorReplies()->isSoftDeleted())
+                ||$doctorQuestionEntity->getDoctorReplies()->isSoftDeleted())
                 ) {
                     $reply = new ReplyResponseObject();
                     self::mapDoctorQuestion($doctorQuestionEntity, $reply);
@@ -125,29 +125,10 @@ class QuestionMapper
     }
 
 
-    private static function mapBasicQuestion(Question $questionEntity, BasicQuestionResponseObject $question)
-    {
-        $question->setId($questionEntity->getId());
-        $question->setSpeciality($questionEntity->getSpeciality());
-        $question->setViewCount($questionEntity->getViewCount());
-        $question->setShareCount($questionEntity->getSpeciality());
-        $question->setSubject($questionEntity->getSubject());
-        $question->setText($questionEntity->getText());
-        $question->setModifiedAt($questionEntity->getModifiedAt());
-        $question->setCreatedAt($questionEntity->getCreatedAt());
-        $question->setCreatedAt($questionEntity->getCreatedAt());
-    }
-
-    private static function mapDoctorQuestion(DoctorQuestion $doctorQuestionEntity, ReplyResponseObject $reply)
-    {
-
-    }
-
     /**
      * @param DetailQuestionResponseObject $question
      * @return array Response;
      */
-
     public static function mapToModerationArray(DetailQuestionResponseObject $question)
     {
         $response=array();
@@ -160,8 +141,7 @@ class QuestionMapper
         $patientArr['age']=$patientInfo->getAge();
         $patientArr['id']=$patientInfo->getId();
 
-        foreach($question->getReplies() as $replies)
-        {
+        foreach ($question->getReplies() as $replies) {
             $replyArr=array();
             $docInfo=$replies->getDoctor();
             $docInfoArr=array();
@@ -171,10 +151,10 @@ class QuestionMapper
             $replyArr['text']=$replies->gettext();
             $replyArr['rating']=$replies->getrating();
             $replyArr['flagCode']=$replies->getflagText();
-            array_push($response['replies'],$replyArr);
+            array_push($response['replies'], $replyArr);
         }
 
-//        $patientArr['email']=$patientInfo->getEmail();
+        //        $patientArr['email']=$patientInfo->getEmail();
 
         //encode info object if needed
 
@@ -197,5 +177,16 @@ class QuestionMapper
         return $response;
     }
 
-
+    private static function mapBasicQuestion(Question $questionEntity, BasicQuestionResponseObject $question)
+    {
+        $question->setId($questionEntity->getId());
+        $question->setSpeciality($questionEntity->getSpeciality());
+        $question->setViewCount($questionEntity->getViewCount());
+        $question->setShareCount($questionEntity->getSpeciality());
+        $question->setSubject($questionEntity->getSubject());
+        $question->setText($questionEntity->getText());
+        $question->setModifiedAt($questionEntity->getModifiedAt());
+        $question->setCreatedAt($questionEntity->getCreatedAt());
+        $question->setCreatedAt($questionEntity->getCreatedAt());
+    }
 }

@@ -158,7 +158,22 @@ class DoctorQuestionRepository extends EntityRepository
     }
 
 
-    public function findDoctorQuestionCounts($thisMonth,  $lastMonth, $state, $startDate, $endDate, $thisYear,$limit,$patientId,$patientName,$questionID)
+    /**
+     * @param string   $thisMonth
+     * @param string   $lastMonth
+     * @param string   $state
+     * @param DateTime $startDate
+     * @param DateTime $endDate
+     * @param string   $thisYear
+     * @param integer  $limit
+     * @param integer  $patientId
+     * @param string   $patientName
+     * @param integer  $questionID
+     *
+     * @return array
+     *
+     */
+    public function findDoctorQuestionCounts($thisMonth, $lastMonth, $state, $startDate, $endDate, $thisYear, $limit, $patientId, $patientName, $questionID)
     {
         $qb = $this->_em->createQueryBuilder();
         $qb->select('COALESCE(SUM(case when dq.viewedAt is not null then 1 else 0 end), 0) as view_count', 'COALESCE(SUM(case when r.rating is not null then 1 else 0 end), 0) as rated_count')
@@ -168,10 +183,9 @@ class DoctorQuestionRepository extends EntityRepository
            ->where('dq.softDeleted = 0');
 
 
-        if(isset($questionID))
-        {
+        if (isset($questionID)) {
             $qb->andWhere('q.id = :questionID');
-            $qb->setParameter('questionID',$questionID);
+            $qb->setParameter('questionID', $questionID);
         }
 
         if ($thisMonth) {
@@ -195,10 +209,9 @@ class DoctorQuestionRepository extends EntityRepository
             $qb->setParameter('year', $year);
         }
 
-        if(isset($startDate) && isset($endDate))
-        {
-            $start= substr($startDate,0,10);
-            $end=substr($endDate,0,10);
+        if (isset($startDate) && isset($endDate)) {
+            $start= substr($startDate, 0, 10);
+            $end=substr($endDate, 0, 10);
             $qb->andWhere(':startDate <= q.createdAt');
             $qb->andWhere('q.createdAt <= :endDate');
             $qb->setParameter('startDate', new \DateTime($start));
@@ -220,9 +233,10 @@ class DoctorQuestionRepository extends EntityRepository
                 $qb->leftJoin(ConsultConstants::USER_ENTITY_NAME, 'u', 'WITH', ' u=q.userInfo AND u.softDeleted = 0 ');
                 $qb->andWhere(' u.practoAccountId = :practoAccountId');
                 $qb->setParameter('practoAccountId', $patientId);
-       }
+        }
 
         $counts = $qb->getQuery()->getArrayResult();
+
         return $counts;
     }
 
@@ -236,7 +250,7 @@ class DoctorQuestionRepository extends EntityRepository
     {
         $qb = $this->_em->createQueryBuilder();
 
-        $qb->select('dq.practoAccountId AS doctorId', 'r.id AS id', 'r.text AS text', 'r.rating', 'r.createdAt AS createdAt' , 'COALESCE(SUM(rv.vote),0) AS votes')
+        $qb->select('dq.practoAccountId AS doctorId', 'r.id AS id', 'r.text AS text', 'r.rating', 'r.createdAt AS createdAt', 'COALESCE(SUM(rv.vote),0) AS votes')
             ->from(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME, 'dq')
             ->innerJoin(ConsultConstants::DOCTOR_REPLY_ENTITY_NAME, 'r', 'WITH', 'r.doctorQuestion = dq AND r.softDeleted = 0 ')
             ->leftJoin(

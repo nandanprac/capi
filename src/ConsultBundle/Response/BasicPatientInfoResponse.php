@@ -48,9 +48,9 @@ class BasicPatientInfoResponse extends ConsultResponseObject
         return $this->name;
     }
 
-//    /**
-//     * @params string $name
-//     */
+    /**
+     * @params string $name
+    */
     public function setName($name)
     {
         $this->name=$name;

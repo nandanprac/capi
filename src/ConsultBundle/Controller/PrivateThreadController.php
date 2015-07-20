@@ -119,6 +119,4 @@ class PrivateThreadController extends BaseConsultController
 
         return $privateThreadList;
     }
-
 }
-

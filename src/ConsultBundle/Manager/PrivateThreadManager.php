@@ -77,7 +77,6 @@ class PrivateThreadManager extends BaseManager
         $privateThreadId = array_key_exists('private_thread_id', $requestParams) ? $requestParams['private_thread_id'] : null;
 
         if (!empty($privateThreadId)) {
-
             $privateThread = $this->helper->loadById($privateThreadId, ConsultConstants::PRIVATE_THREAD_ENTITY_NAME);
 
             if (empty($privateThread)) {
@@ -203,12 +202,13 @@ class PrivateThreadManager extends BaseManager
             throw new ValidationError($error);
         }
         $isDoctor = ($practoAccountId == $privateThread->getUserInfo()->getPractoAccountId()) ? false : true;
+
         return $this->createThreadResponse($privateThread, $isDoctor);
     }
 
     /**
      * @param integer $practoAccountId
-     *
+     * @param bool    $isDoctor
      * @return array PrivateThread
      */
     public function loadAll($practoAccountId, $isDoctor)

@@ -195,6 +195,9 @@ class DoctorRepository extends EntityRepository
         return $doctorIds;
     }
 
+    /**
+     * @return array $details
+     */
     public function getDoctorDetails()
     {
         $qb = $this->_em->createQueryBuilder();
@@ -209,8 +212,8 @@ class DoctorRepository extends EntityRepository
             ->groupBy('d.practoAccountId');
 
         $details = $qb->getQuery()->getArrayResult();
+
         return $details;
 
     }
-
 }

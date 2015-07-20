@@ -50,7 +50,7 @@ class PrivateThreadControllerTest extends WebTestCase
         $this->client->getContainer()->set('consult.account_authenticator_util', $authenticationStub);
 
         $securityStub = $this->getMockBuilder('ConsultBundle\EventListener\SecurityListener')->disableOriginalConstructor()->getMock();
-        #$securityStub->expects($this->any())->method('onKernelRequest')->willReturn(true);
+        //$securityStub->expects($this->any())->method('onKernelRequest')->willReturn(true);
         $securityStub->expects($this->any())->method('onKernelRequest')->will(
             $this->returnCallback(
                 function () {
@@ -58,7 +58,7 @@ class PrivateThreadControllerTest extends WebTestCase
                     $_SESSION['authenticated_user']['id'] = 1;
                 }
             )
-            );
+        );
         $this->client->getContainer()->set('listener.security_listener', $securityStub);
 
     }
@@ -90,5 +90,4 @@ class PrivateThreadControllerTest extends WebTestCase
             "Expected error - Access forbidden was not recieved"
         );
     }
-
 }
