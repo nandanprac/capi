@@ -51,7 +51,7 @@ class DoctorQuestionsController extends BaseConsultController
      */
     public function patchDoctorQuestionAction(Request $request)
     {
-         $this->authenticate();
+         $this->authenticateForDoctor();
         $updateData = $request->request->all();
         $doctorQuestionManager = $this->get('consult.doctorQuestionManager');
 
@@ -73,7 +73,7 @@ class DoctorQuestionsController extends BaseConsultController
      */
     public function getDoctorQuestionAction($id)
     {
-        $this->authenticate();
+        $this->authenticateForDoctor();
         $doctorQuestionManager = $this->get('consult.doctorQuestionManager');
         try {
             //$doctorQuestionManager = $this->get('consult.doctorQuestionManager');
@@ -95,7 +95,7 @@ class DoctorQuestionsController extends BaseConsultController
      */
     public function getAnsweredDoctorQuestionsAction($doctorId)
     {
-        $this->authenticate();
+        $this->authenticateForDoctor();
         $doctorQuestionManager = $this->get('consult.doctorQuestionManager');
         $questions =  $doctorQuestionManager->getAnsweredDoctorQuestionsForDoctor($doctorId);
 
