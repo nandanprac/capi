@@ -58,7 +58,6 @@ class ModerationController extends BaseConsultController
 
         $response = new Response();
         $quesArr=QuestionMapper::mapToModerationArray($question);
-        //var_dump(json_encode($quesArr, true));die;
         $response->setContent(json_encode($quesArr));
         $response->headers->set("access-control-allow-origin", "*");
 

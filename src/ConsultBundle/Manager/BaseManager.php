@@ -89,10 +89,7 @@ class BaseManager
 
         if (!empty($questionEntity) && empty($question)) {
             if (!$questionEntity->getUserInfo()->isIsRelative()) {
-
-                $userInfo = new UserInfo();
-                $userInfo = $questionEntity->getUserInfo();
-
+                $this->userProfileUtil->retrieveUserProfileNew($questionEntity->getUserInfo());
             }
 
             $question = new DetailQuestionResponseObject($questionEntity, $practoAccountId);

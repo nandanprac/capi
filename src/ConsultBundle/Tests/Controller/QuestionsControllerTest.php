@@ -219,7 +219,6 @@ class QuestionsControllerTest extends WebTestCase
             '/questions/1'
         );
         $response = $this->client->getResponse();
-        echo $response->getContent();
         $this->assertEquals(
             Codes::HTTP_OK,
             $response->getStatusCode(),
@@ -245,7 +244,6 @@ class QuestionsControllerTest extends WebTestCase
             '/questions'
         );
         $response = $this->client->getResponse();
-        //        echo $response->getContent();
         $this->assertEquals(
             Codes::HTTP_OK,
             $response->getStatusCode(),
