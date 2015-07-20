@@ -51,9 +51,9 @@ class ModerationManager extends BaseManager
     {
         $this->userManager = $userManager;
         $this->queue = $queue;
-        $this->retrieveUserProfileUtil = $retrieveUserProfileUtil;
         $this->retrieveDoctorProfileUtil = $retrieveDoctorProfileUtil;
         $this->questionBookmarkManager = $questionBookmarkManager;
+        parent::__construct($retrieveUserProfileUtil);
     }
 
     /**
@@ -179,7 +179,7 @@ class ModerationManager extends BaseManager
          */
         $question = $this->helper->loadById($questionId, ConsultConstants::QUESTION_ENTITY_NAME);
 
-        return $this->fetchDetailQuestionObject($question, $question->getUserInfo()->getId());
+        return $this->fetchDetailQuestionObject($question, $question->getUserInfo()->getPractoAccountId());
     }
 
 
