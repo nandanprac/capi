@@ -86,6 +86,28 @@ class DoctorController extends BaseConsultController
      * @param \Symfony\Component\HttpFoundation\Request $request
      *
      * @return \FOS\RestBundle\View\View
+     * @throws \Exception
+     */
+    public function postDoctorConsultSettingsAction(Request $request)
+    {
+        $this->authenticate();
+        $postData = $request->request->all();
+        $doctorManager = $this->get('consult.doctor_manager');
+        try {
+            $settings = $doctorManager->putConsultSettings($postData, true);
+        } catch (ValidationError $e) {
+            return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
+        } catch (\Exception $e) {
+            throw $e;
+        }
+
+        return $settings;
+    }
+
+    /**
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *
+     * @return \FOS\RestBundle\View\View
      */
     public function postDoctorSettingsAction(Request $request)
     {
@@ -100,7 +122,7 @@ class DoctorController extends BaseConsultController
         $postData = $request->request->all();
         $doctorManager = $this->get('consult.doctor_manager');
         try {
-            $settings = $doctorManager->postConsultSettings($postData);
+            $settings = $doctorManager->postConsultSettings($postData, true);
         } catch (ValidationError $e) {
             return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
         } catch (\Exception $e) {
