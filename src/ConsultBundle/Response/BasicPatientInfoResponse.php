@@ -49,7 +49,7 @@ class BasicPatientInfoResponse extends ConsultResponseObject
     }
 
     /**
-     * @params string $name
+     * @param string $name
     */
     public function setName($name)
     {
