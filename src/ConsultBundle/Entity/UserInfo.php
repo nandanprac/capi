@@ -139,6 +139,26 @@ class UserInfo extends BaseEntity
      */
     protected $additionalDetails = null;
 
+    /**
+     * @ORM\Column(name="is_enabled", type="boolean", nullable=true)
+     */
+    protected $isEnabled = false;
+
+    /**
+     * @return boolean
+     */
+    public function getIsEnabled()
+    {
+        return $this->isEnabled;
+    }
+
+    /**
+     * @param boolean $enabled
+     */
+    public function setIsEnabled($enabled)
+    {
+        $this->isEnabled = $enabled;
+    }
 
     /**
      * @return int

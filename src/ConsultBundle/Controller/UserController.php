@@ -18,7 +18,7 @@ use ConsultBundle\Manager\ValidationError;
 /**
  * Controller for User's profile info updation
  */
-class UserController extends FOSRestController
+class UserController extends BaseConsultController
 {
     /**
      * @param Request $request
@@ -66,5 +66,31 @@ class UserController extends FOSRestController
         }
 
         return $userProfiles;
+    }
+
+    /**
+     * @param Request $request
+     * @return View
+     */
+    public function getUserConsentAction(Request $request)
+    {
+        $practoAccountId = $this->authenticate(true);
+        $userManager = $this->get('consult.user_manager');
+
+        $userConsent = $userManager->checkConsultEnabled($practoAccountId);
+        return View::create(array("consent" => $userConsent));
+    }
+
+    /**
+     * @param Request $request
+     * @return View
+     */
+    public function postUserConsentAction(Request $request)
+    {
+        $practoAccountId = $this->authenticate(true);
+        $userManager = $this->get('consult.user_manager');
+
+        $userConsent = $userManager->setConsultEnabled($practoAccountId);
+        return View::create(array("consent" => $userConsent));
     }
 }

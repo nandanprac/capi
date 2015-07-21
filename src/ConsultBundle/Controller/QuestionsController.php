@@ -24,12 +24,17 @@ class QuestionsController extends BaseConsultController
     {
         $logger = $this->get('logger');
         $logger->info("Post Question".$request);
-        $this->authenticate();
+        $practoAccountId = $this->authenticate();
+        $this->checkPatientConsent($practoAccountId, true);
+
         $postData = $request->request->get('question');
+        if (empty($postData)) {
+            return View::create("Key question not found", Codes::HTTP_BAD_REQUEST);
+        }
         if (!is_array($postData)) {
             $postData = json_decode($postData, true);
         }
-        $practoAccountId = $request->request->get('practo_account_id');
+        //$practoAccountId = $request->request->get('practo_account_id');
         $profileToken = $request->headers->get('X-Profile-Token');
 
         $questionManager = $this->get('consult.question_manager');
@@ -113,6 +118,8 @@ class QuestionsController extends BaseConsultController
     public function patchQuestionAction(Request $request)
     {
         $practoAccountId = $this->authenticate(false);
+        $this->checkPatientConsent($practoAccountId, true);
+
         $questionManager = $this->get('consult.question_manager');
         $request = $request->request->all();
 
