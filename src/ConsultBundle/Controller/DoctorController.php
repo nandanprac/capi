@@ -75,8 +75,10 @@ class DoctorController extends BaseConsultController
             $settings = $doctorManager->putConsultSettings($postData);
         } catch (ValidationError $e) {
             return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
+        } catch (HttpException $he) {
+            return View::create($he->getMessage(), $he->getStatusCode());
         } catch (\Exception $e) {
-            return View::create(json_encode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
+            return View::create($e->getMessage(), $e->getCode());
         }
 
         return $settings;
@@ -97,8 +99,10 @@ class DoctorController extends BaseConsultController
             $settings = $doctorManager->putConsultSettings($postData, true);
         } catch (ValidationError $e) {
             return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
+        } catch (HttpException $he) {
+            return View::create($he->getMessage(), $he->getStatusCode());
         } catch (\Exception $e) {
-            throw $e;
+            return View::create($e->getMessage(), $e->getCode());
         }
 
         return $settings;
