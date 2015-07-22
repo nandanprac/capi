@@ -17,7 +17,7 @@ class PrivateThread extends BaseEntity
 
     /**
      * @ORM\ManyToOne(targetEntity="ConsultBundle\Entity\UserInfo", fetch="EXTRA_LAZY")
-     * @ORM\JoinColumn(name="user_info_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="user_info_id", referencedColumnName="id", nullable = false)
      */
     private $userInfo;
 
@@ -39,7 +39,7 @@ class PrivateThread extends BaseEntity
 
     /**
      * @ORM\ManyToOne(targetEntity = "Question")
-     * @ORM\JoinColumn(name = "question_id", referencedColumnName = "id")
+     * @ORM\JoinColumn(name = "question_id", referencedColumnName = "id", nullable = false)
      */
     protected $question;
 
