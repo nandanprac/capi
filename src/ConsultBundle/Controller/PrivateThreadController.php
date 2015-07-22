@@ -26,7 +26,6 @@ class PrivateThreadController extends BaseConsultController
         $logger = $this->get('logger');
         $logger->info("Private Thread ".$request);
         $practoAccountId = $this->authenticate();
-        $this->checkPatientConsent($practoAccountId, true);
 
         $postData = $request->request->get('question');
 
