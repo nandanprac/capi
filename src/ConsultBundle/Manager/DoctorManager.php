@@ -73,14 +73,18 @@ class DoctorManager extends BaseManager
      * "consultation_days": "1111100"
      * }
      *
-     * @param array $postData
-     *
+     * @param array   $postData
+     * @param boolean $post
      * @return \ConsultBundle\Entity\DoctorConsultSettings
      */
-    public function putConsultSettings(array $postData)
+    public function putConsultSettings(array $postData, $post = false)
     {
         if (empty($postData)) {
             throw new HttpException("Data is empty", Codes::HTTP_BAD_REQUEST);
+        }
+
+        if (array_key_exists('doctor_fabric_id', $postData)) {
+            $postData['fabric_doctor_id'] = $postData['doctor_fabric_id'];
         }
 
         //check for mandatory fields
@@ -98,18 +102,37 @@ class DoctorManager extends BaseManager
         $doctor  = $er->findOneBy(
             array(
                 "fabricDoctorId" => $postData['doctor_fabric_id'],
-                "softDeleted" => 0)
+                "softDeleted" => 0,
+            )
         );
 
-        if (empty($doctor)) {
-            throw new HttpException("Instance doesn't exist", Codes::HTTP_BAD_REQUEST);
+        if (!$post) {
+            if (empty($doctor)) {
+                throw new HttpException(Codes::HTTP_BAD_REQUEST, "Instance doesn't exist");
+            }
+
+            $practoAccountId = $postData['practo_account_id'];
+
+            if ($doctor->getPractoAccountId() != $practoAccountId) {
+                throw new HttpException("Account Id is not same", Codes::HTTP_BAD_REQUEST);
+            }
+        } elseif (!empty ($doctor)) {
+            throw new HttpException(Codes::HTTP_BAD_REQUEST, "Doctor already exist in system: Duplicate doctor_fabric_id");
+        } else {
+            $doctor  = $er->findOneBy(
+                array(
+                    "practoAccountId" => $postData['practo_account_id'],
+                    "softDeleted" => 0,
+                )
+            );
+
+            if (!empty($doctor)) {
+                throw new HttpException(Codes::HTTP_BAD_REQUEST, "Doctor already exist in system: Duplicate practo_account_id");
+            }
+
+            $doctor = new DoctorConsultSettings();
         }
 
-        $practoAccountId = $postData['practo_account_id'];
-
-        if ($doctor->getPractoAccountId() != $practoAccountId) {
-            throw new HttpException("Account Id is not same", Codes::HTTP_BAD_REQUEST);
-        }
 
 
         if (array_key_exists('consultation_days', $postData) && !empty($postData['consultation_days'])) {
@@ -125,6 +148,7 @@ class DoctorManager extends BaseManager
         $this->helper->persist($doctor, true);
 
         $consultationDays = $doctor->getConsultationDays();
+
         if (!empty($consultationDays)) {
             $consultationDaysBin = decbin($consultationDays);
             $len = strlen($consultationDaysBin);
@@ -218,26 +242,31 @@ class DoctorManager extends BaseManager
                 "softDeleted" => 0)
         );
 
-       /* if (empty($result)) {
-            $result = $this->helper->loadById(1, ConsultConstants::DOCTOR_SETTING_ENTITY_NAME);
-        }*/
+        /* if (empty($result)) {
+             $result = $this->helper->loadById(1, ConsultConstants::DOCTOR_SETTING_ENTITY_NAME);
+         }*/
 
         return $result;
     }
 
     /**
-     * @param $postData
-     *
+     * @param array   $postData
+     * @param boolean $dev
      * @return \ConsultBundle\Entity\DoctorConsultSettings
      * @throws \ConsultBundle\Manager\ValidationError
      */
-    public function postConsultSettings($postData)
+    public function postConsultSettings($postData, $dev=false)
     {
-        $doc = new DoctorConsultSettings();
-        $this->updateFields($doc, $postData);
-        $this->helper->persist($doc, true);
+        if ($dev) {
+            $doc = new DoctorConsultSettings();
+            $this->updateFields($doc, $postData);
+            $this->helper->persist($doc, true);
 
-        return $doc;
+            return $doc;
+        } else {
+            $this->putConsultSettings($postData);
+        }
+
     }
 
     /**
