@@ -504,4 +504,3 @@ class UserInfo extends BaseEntity
         return $this->id;
     }
 }
-

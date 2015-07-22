@@ -127,7 +127,7 @@ class QuestionsController extends BaseConsultController
             $questionFinal = $questionManager->patch($request, $practoAccountId);
         } catch (ValidationError $e) {
             return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
-        } catch(\HttpException $e) {
+        } catch (\HttpException $e) {
             return View::create(json_decode($e->getMessage(), true), $e->getCode());
         }
 
@@ -143,7 +143,7 @@ class QuestionsController extends BaseConsultController
         $practoAccountId = $this->authenticate();
 
         if ($practoAccountId != 123412) {
-           throw new HttpException(Codes::HTTP_FORBIDDEN, "Unauthorised Access");
+            throw new HttpException(Codes::HTTP_FORBIDDEN, "Unauthorised Access");
         }
 
         $questionManager = $this->get('consult.question_manager');

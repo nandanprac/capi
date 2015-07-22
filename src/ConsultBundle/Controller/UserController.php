@@ -78,6 +78,7 @@ class UserController extends BaseConsultController
         $userManager = $this->get('consult.user_manager');
 
         $userConsent = $userManager->checkConsultEnabled($practoAccountId);
+
         return View::create(array("consent" => $userConsent));
     }
 
@@ -91,6 +92,7 @@ class UserController extends BaseConsultController
         $userManager = $this->get('consult.user_manager');
 
         $userConsent = $userManager->setConsultEnabled($practoAccountId);
+
         return View::create(array("consent" => $userConsent));
     }
 }

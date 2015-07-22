@@ -100,8 +100,6 @@ class UserManager extends BaseManager
                 }
 
             } else {
-
-
                 $er = $this->helper->getRepository(ConsultConstants::USER_ENTITY_NAME);
                 $entry = $er->findOneBy(array('practoAccountId' => $requestParams['practo_account_id'], 'isRelative' => 0));
 
@@ -109,7 +107,6 @@ class UserManager extends BaseManager
                     $userEntry = $entry;
 
                 } else {
-
                     $userJson = $_SESSION['authenticated_user'];
                     if (empty($userJson['gender']) && (!array_key_exists('gender', $requestParams)
                         or (array_key_exists('gender', $requestParams) and empty($requestParams['gender'])))

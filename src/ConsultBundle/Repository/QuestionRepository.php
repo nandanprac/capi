@@ -136,7 +136,7 @@ class QuestionRepository extends EntityRepository
     }
 
     /**
-     * @param $question
+     * @param Question $question
      *
      * @return array
      */
