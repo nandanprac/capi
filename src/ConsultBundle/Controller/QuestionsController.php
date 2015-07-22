@@ -138,6 +138,10 @@ class QuestionsController extends BaseConsultController
 
     }
 
+    /**
+     * For dev use only
+     * @param int $id
+     */
     public function deleteQuestionAction($id)
     {
         $practoAccountId = $this->authenticate();

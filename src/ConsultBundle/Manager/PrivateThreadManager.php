@@ -77,7 +77,6 @@ class PrivateThreadManager extends BaseManager
         $privateThreadId = array_key_exists('private_thread_id', $requestParams) ? $requestParams['private_thread_id'] : null;
 
         if (!empty($privateThreadId)) {
-
             $privateThread = $this->helper->loadById($privateThreadId, ConsultConstants::PRIVATE_THREAD_ENTITY_NAME);
 
             if (empty($privateThread)) {
