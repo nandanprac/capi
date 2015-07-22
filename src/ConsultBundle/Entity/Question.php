@@ -21,7 +21,7 @@ class Question extends BaseEntity
 
     /**
      * @ORM\ManyToOne(targetEntity="ConsultBundle\Entity\UserInfo", fetch="EXTRA_LAZY")
-     * @ORM\JoinColumn(name="user_info_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="user_info_id", referencedColumnName="id", nullable = false)
      */
     private $userInfo;
 
