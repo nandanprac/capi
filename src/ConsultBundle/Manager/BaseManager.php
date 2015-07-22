@@ -114,9 +114,9 @@ class BaseManager
         if (!empty($practoAccountId)) {
             $bookmark = $er->findOneBy(
                 array("practoAccountId" => $practoAccountId,
-                    "question" => $questionEntity,
-                    "softDeleted" => 0,
-                )
+                "question" => $questionEntity,
+                "softDeleted" => 0,
+                    )
             );
 
             if (!empty($bookmark)) {

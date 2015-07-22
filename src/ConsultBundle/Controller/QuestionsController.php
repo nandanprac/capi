@@ -51,6 +51,8 @@ class QuestionsController extends BaseConsultController
 
         try {
             $questionImageManager->add($question->getId(), $files);
+        } catch (HttpException $he) {
+            return View::create($he->getMessage(), $he->getStatusCode());
         } catch (\Exception $e) {
             return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
         }
@@ -138,6 +140,10 @@ class QuestionsController extends BaseConsultController
 
     }
 
+    /**
+     * For dev use only
+     * @param int $id
+     */
     public function deleteQuestionAction($id)
     {
         $practoAccountId = $this->authenticate();
