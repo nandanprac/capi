@@ -89,6 +89,8 @@ class DoctorReplyManager extends BaseManager
             throw new \HttpException("The doctor is not allowed to answer this question", Codes::HTTP_BAD_REQUEST);
         }
 
+        $question = $doctorQuestion->getQuestion();
+        $question->setViewedAt(null);
         $doctorQuestion->setState("ANSWERED");
         $doctorQuestion->getQuestion()->setState("ANSWERED");
         $doctorReply->setDoctorQuestion($doctorQuestion);

@@ -22,7 +22,7 @@ class DoctorController extends BaseConsultController
      */
     public function getDoctorDashboardAction()
     {
-        //$this->authenticate();
+        $this->authenticateForDoctor();
         $request = $this->get('request');
         $queryParams = $request->query->all();
         try {
@@ -103,34 +103,6 @@ class DoctorController extends BaseConsultController
             return View::create($he->getMessage(), $he->getStatusCode());
         } catch (\Exception $e) {
             return View::create($e->getMessage(), $e->getCode());
-        }
-
-        return $settings;
-    }
-
-    /**
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     *
-     * @return \FOS\RestBundle\View\View
-     */
-    public function postDoctorSettingsAction(Request $request)
-    {
-        $profileToken = $request->headers->get('X-Profile-Token');
-        $authenticationUtils = $this->get('consult.account_authenticator_util');
-        $userId = $authenticationUtils->validateWithProfileToken($profileToken);
-
-        if (empty($userId)) {
-            throw new HttpException(Codes::HTTP_FORBIDDEN, "Unauthorised Access");
-        }
-
-        $postData = $request->request->all();
-        $doctorManager = $this->get('consult.doctor_manager');
-        try {
-            $settings = $doctorManager->postConsultSettings($postData, true);
-        } catch (ValidationError $e) {
-            return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
-        } catch (\Exception $e) {
-            return View::create(json_encode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
         }
 
         return $settings;
