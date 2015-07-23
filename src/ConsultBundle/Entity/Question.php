@@ -142,7 +142,7 @@ class Question extends BaseEntity
     /**
      * @param mixed $viewedAt
      */
-    public function setViewedAt(\DateTime $viewedAt)
+    public function setViewedAt($viewedAt)
     {
         $this->viewedAt = $viewedAt;
     }
