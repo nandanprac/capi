@@ -20,7 +20,6 @@ class Version20150722104649 extends AbstractMigration
 
         $this->addSql('ALTER TABLE question_views CHANGE question_id question_id INT NOT NULL');
         $this->addSql('ALTER TABLE conversations CHANGE private_thread_id private_thread_id INT NOT NULL');
-        $this->addSql('ALTER TABLE user_info ADD is_enabled TINYINT(1) DEFAULT NULL');
         $this->addSql('ALTER TABLE questions_comments_votes CHANGE question_comment_id question_comment_id INT NOT NULL');
         $this->addSql('ALTER TABLE question_tags CHANGE question_id question_id INT NOT NULL');
         $this->addSql('ALTER TABLE questions_comments_flag CHANGE question_comment_id question_comment_id INT NOT NULL');
