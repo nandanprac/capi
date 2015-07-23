@@ -25,7 +25,15 @@ class QuestionsControllerTest extends WebTestCase
      */
     public static function setUpBeforeClass()
     {
-        print "==== Starting QuestionsControllerTest ====";
+        print "\n==== Starting QuestionsControllerTest ====\n";
+    }
+
+    /**
+     * teardown after all testcases execution
+     */
+    public static function tearDownAfterClass()
+    {
+        print "\n==== Ending QuestionsControllerTest ====\n";
     }
 
     /**
@@ -39,31 +47,58 @@ class QuestionsControllerTest extends WebTestCase
         $practoAccountId = 1;
         $profileToken = 'junk_value';
 
-        $authenticationStub = $this->getMockBuilder('ConsultBundle\Utility\AuthenticationUtils')->setMethods(['authenticateWithAccounts'])->disableOriginalConstructor()->getMock();
-        $authenticationStub->expects($this->any())->method('authenticateWithAccounts')->will(
+        $securityStub = $this->getMockBuilder('ConsultBundle\EventListener\SecurityListener')->setMethods(['onKernelRequest'])->disableOriginalConstructor()->getMock();
+        $securityStub->expects($this->any())->method('onKernelRequest')->will(
             $this->returnCallback(
                 function ($practoAccountId, $profileToken) {
+                    $_SESSION['validated'] = true;
+                    $_SESSION['authenticated_user']['id'] = 1;
                     return true;
                 }
             )
         );
-        $this->client->getContainer()->set('consult.account_authenticator_util', $authenticationStub);
-
-        $securityStub = $this->getMockBuilder('ConsultBundle\EventListener\SecurityListener')->disableOriginalConstructor()->getMock();
-        $securityStub->expects($this->any())->method('onKernelRequest')->willReturn(true);
-        //$securityStub->expects($this->once())->method('onKernelRequest')->will($this->returnValue($authenticationStub));
         $this->client->getContainer()->set('listener.security_listener', $securityStub);
-
-
     }
 
     /**
-     * Teardown
-     *
-     * @return null
+     * get consent for practo_account_id = 1
      */
-    public static function tearDownAfterClass()
+    public function testGetConsultConsentAPI()
     {
+        $crawler = $this->client->request(
+            'GET',
+            '/user/consent?practo_account_id=1',
+            array(),
+            array(),
+            array('X-PROFILE-TOKEN' => 'junk_value')
+        );
+        $response = $this->client->getResponse();
+        $this->assertContains(
+            "false",
+            $response->getContent(),
+            "Consent is true - this cannot happen"
+        );
+    }
+
+    /**
+     * set consent for practo_account_id = 1
+     */
+    public function testSetConsultConsentAPI()
+    {
+        $crawler = $this->client->request(
+            'POST',
+            '/users/consents',
+            array('practo_account_id' => 1),
+            array(),
+            array('X-PROFILE-TOKEN' => 'junk_value')
+        );
+        $response = $this->client->getResponse();
+        $this->assertContains(
+            "true",
+            $response->getContent(),
+            "something is wrong - you just consented!"
+        );
+
     }
 
     /**
@@ -107,7 +142,7 @@ class QuestionsControllerTest extends WebTestCase
             "Expected error - Bad request was not recieved"
         );
         $this->assertContains(
-            "This value should not be blank",
+            "Key question not found",
             $response->getContent(),
             "Bad request error did not show up"
         );
@@ -187,8 +222,10 @@ class QuestionsControllerTest extends WebTestCase
             '/questions',
             array('question' => '{"subject":"question subject","text":"test question",
                                   "user_info":{"is_relative":true,
-                                                          "medications":"abcd",
-                                                          "gender":"M"}}',
+                                                "name":"myname",
+                                                "age":50,
+                                                "medications":"abcd",
+                                                "gender":"M"}}',
                     'practo_account_id' => '1', ),
             array(),
             array()
@@ -219,7 +256,6 @@ class QuestionsControllerTest extends WebTestCase
             '/questions/1'
         );
         $response = $this->client->getResponse();
-        echo $response->getContent();
         $this->assertEquals(
             Codes::HTTP_OK,
             $response->getStatusCode(),
@@ -245,7 +281,6 @@ class QuestionsControllerTest extends WebTestCase
             '/questions'
         );
         $response = $this->client->getResponse();
-        //        echo $response->getContent();
         $this->assertEquals(
             Codes::HTTP_OK,
             $response->getStatusCode(),

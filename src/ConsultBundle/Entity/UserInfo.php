@@ -140,7 +140,7 @@ class UserInfo extends BaseEntity
     protected $additionalDetails = null;
 
     /**
-     * @ORM\Column(name="is_enabled", type="boolean", nullable=true)
+     * @ORM\Column(name="is_enabled", type="boolean")
      */
     protected $isEnabled = false;
 

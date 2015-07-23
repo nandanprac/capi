@@ -8,7 +8,7 @@ use Doctrine\DBAL\Schema\Schema;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-class Version20150722085749 extends AbstractMigration
+class Version20150722110358 extends AbstractMigration
 {
     /**
      * @param Schema $schema
@@ -18,7 +18,7 @@ class Version20150722085749 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() != 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE doctor_questions CHANGE question_id question_id INT NOT NULL');
+        $this->addSql('ALTER TABLE user_info ADD is_enabled TINYINT(1) NOT NULL');
     }
 
     /**
@@ -29,6 +29,6 @@ class Version20150722085749 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() != 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE doctor_questions CHANGE question_id question_id INT DEFAULT NULL');
+        $this->addSql('ALTER TABLE user_info DROP is_enabled');
     }
 }
