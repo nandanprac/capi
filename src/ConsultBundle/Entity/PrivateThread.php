@@ -24,7 +24,7 @@ class PrivateThread extends BaseEntity
     /**
      * @var string
      *
-     * @ORM\Column(name="subject", type="string", length=32)
+     * @ORM\Column(name="subject", type="text")
      * @Assert\NotBlank()
      */
     private $subject;

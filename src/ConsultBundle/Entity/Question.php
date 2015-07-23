@@ -28,13 +28,13 @@ class Question extends BaseEntity
     /**
      * @var string
      *
-     * @ORM\Column(name="subject", type="string", length=32, nullable=true)
+     * @ORM\Column(name="subject", type="text", nullable=true)
      * @Assert\NotBlank()
      */
     private $subject;
 
     /**
-     * @ORM\Column(length=360, name="text")
+     * @ORM\Column(name="text", type="text")
      *
      * @Assert\NotBlank
      */
