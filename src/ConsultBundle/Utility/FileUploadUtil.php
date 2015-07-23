@@ -65,10 +65,6 @@ class FileUploadUtil
         if (!(is_null($tempUrl))) {
             $this->tempUrl = $tempUrl;
         }
-
-
-
-
     }
 
     /**
@@ -160,17 +156,41 @@ class FileUploadUtil
         $uploadedUri = $uploadsSubPath.DIRECTORY_SEPARATOR.$safeFileName;
 
 
-
         $response = $this->uploadFile($uploadedUri, $localFile);
-
-
-
-
-
+        $this->uploadAdditionalImages($localFile, $uploadedUri);
 
         unlink($localFile);
 
         return $response->get('ObjectURL');
+    }
+
+    /**
+     * @param string $localFile
+     * @param string $uri
+     */
+    private function uploadAdditionalImages($localFile, $uri)
+    {
+        $image = new \Imagick($localFile);
+        $image->scaleImage(640, 640, true);
+        $fileLarge = Utility::strReplace(".", "-large.", $localFile);
+        $image->writeImage($fileLarge);
+        $this->uploadFile(Utility::strReplace(".", "/large.", $uri), $fileLarge);
+        unlink($fileLarge);
+
+        $fileMed = Utility::strReplace(".", "-medium.", $localFile);
+        $image->scaleImage(300, 300, true);
+        $image->writeImage($fileMed);
+        $this->uploadFile(Utility::strReplace(".", "/medium.", $uri), $fileMed);
+        unlink($fileMed);
+
+        $fileThumb = Utility::strReplace(".", "-thumbnail.", $localFile);
+        $image->scaleImage(150, 150, true);
+        $image->writeImage($fileThumb);
+        $this->uploadFile(Utility::strReplace(".", "/thumbnail.", $uri), $fileThumb);
+        unlink($fileThumb);
+
+        $image->clear();
+        $image->destroy();
     }
 
     /**
@@ -182,7 +202,8 @@ class FileUploadUtil
             array('key' => $this->s3Key,
             'secret' => $this->s3Secret,
             'region' => Region::AP_SOUTHEAST_1,
-            'scheme' => 'https')
+            'scheme' => 'https',
+                )
         );
 
         return $s3Client;
@@ -207,7 +228,7 @@ class FileUploadUtil
                 'Bucket'     => $this->s3ResourcesBucket,
                 'Key'        => $uploadedUri,
                 'SourceFile' => $localFile,
-                'ACL'    => 'public-read'
+                'ACL'    => 'public-read',
             )
         );
 
