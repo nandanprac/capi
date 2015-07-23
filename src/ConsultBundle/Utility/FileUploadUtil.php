@@ -143,13 +143,13 @@ class FileUploadUtil
         if ('application/x-base64-jpeg' === $uploadedFile->getClientMimeType()) {
             $base64Image = file_get_contents($localFile);
             unlink($localFile);
-            $safeFileName = sha1($bits.time().microtime()).'.jpg';
+            $safeFileName = sha1($bits.time().microtime();
             $localFile = $tmpDir.DIRECTORY_SEPARATOR.$safeFileName;
             file_put_contents($localFile, base64_decode($base64Image));
         } elseif ('application/x-base64-png' === $uploadedFile->getClientMimeType()) {
             $base64Image = file_get_contents($localFile);
             unlink($localFile);
-            $safeFileName = sha1($bits.time().microtime()).'.png';
+            $safeFileName = sha1($bits.time().microtime());
             $localFile = $tmpDir.DIRECTORY_SEPARATOR.$safeFileName;
             file_put_contents($localFile, base64_decode($base64Image));
         }
@@ -174,19 +174,19 @@ class FileUploadUtil
         $image->scaleImage(640, 640, true);
         $fileLarge = Utility::strReplace(".", "-large.", $localFile);
         $image->writeImage($fileLarge);
-        $this->uploadFile(Utility::strReplace(".", "/large.", $uri), $fileLarge);
+        $this->uploadFile($uri."/large", $fileLarge);
         unlink($fileLarge);
 
         $fileMed = Utility::strReplace(".", "-medium.", $localFile);
         $image->scaleImage(300, 300, true);
         $image->writeImage($fileMed);
-        $this->uploadFile(Utility::strReplace(".", "/medium.", $uri), $fileMed);
+        $this->uploadFile($uri."/medium", $fileMed);
         unlink($fileMed);
 
         $fileThumb = Utility::strReplace(".", "-thumbnail.", $localFile);
         $image->scaleImage(150, 150, true);
         $image->writeImage($fileThumb);
-        $this->uploadFile(Utility::strReplace(".", "/thumbnail.", $uri), $fileThumb);
+        $this->uploadFile($uri."/thumbnail", $fileThumb);
         unlink($fileThumb);
 
         $image->clear();
