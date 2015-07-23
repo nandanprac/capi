@@ -12,6 +12,7 @@ use ConsultBundle\Constants\ConsultConstants;
 use ConsultBundle\Repository\DoctorRepository;
 use FOS\RestBundle\Util\Codes;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use ConsultBundle\Entity\DoctorConsultSettings;
 
 /**
  * Doctor manager
