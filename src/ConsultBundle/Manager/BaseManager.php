@@ -38,6 +38,7 @@ class BaseManager
 
     /**
      * validator
+     *
      * @var ConsultValidatorInterface
      */
     protected $validator;
@@ -126,8 +127,6 @@ class BaseManager
 
         return $question;
     }
-
-
 
 
     /**

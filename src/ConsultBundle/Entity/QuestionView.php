@@ -18,7 +18,7 @@ class QuestionView extends BaseEntity
 {
     /**
      * @ORM\ManyToOne(targetEntity = "Question", inversedBy="views")
-     * @ORM\JoinColumn(name = "question_id", referencedColumnName = "id")
+     * @ORM\JoinColumn(name = "question_id", referencedColumnName = "id", nullable = false)
      */
     protected $question;
 

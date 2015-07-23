@@ -129,6 +129,4 @@ class AuthenticationUtils
         return true;
 
     }
-
-
 }
