@@ -143,7 +143,7 @@ class FileUploadUtil
         if ('application/x-base64-jpeg' === $uploadedFile->getClientMimeType()) {
             $base64Image = file_get_contents($localFile);
             unlink($localFile);
-            $safeFileName = sha1($bits.time().microtime();
+            $safeFileName = sha1($bits.time().microtime());
             $localFile = $tmpDir.DIRECTORY_SEPARATOR.$safeFileName;
             file_put_contents($localFile, base64_decode($base64Image));
         } elseif ('application/x-base64-png' === $uploadedFile->getClientMimeType()) {
