@@ -38,6 +38,7 @@ class BaseManager
 
     /**
      * validator
+     *
      * @var ConsultValidatorInterface
      */
     protected $validator;
@@ -114,7 +115,8 @@ class BaseManager
             $bookmark = $er->findOneBy(
                 array("practoAccountId" => $practoAccountId,
                 "question" => $questionEntity,
-                "softDeleted" => 0)
+                "softDeleted" => 0,
+                    )
             );
 
             if (!empty($bookmark)) {
@@ -125,8 +127,6 @@ class BaseManager
 
         return $question;
     }
-
-
 
 
     /**

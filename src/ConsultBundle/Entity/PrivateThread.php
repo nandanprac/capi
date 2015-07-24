@@ -17,14 +17,14 @@ class PrivateThread extends BaseEntity
 
     /**
      * @ORM\ManyToOne(targetEntity="ConsultBundle\Entity\UserInfo", fetch="EXTRA_LAZY")
-     * @ORM\JoinColumn(name="user_info_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="user_info_id", referencedColumnName="id", nullable = false)
      */
     private $userInfo;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="subject", type="string", length=32)
+     * @ORM\Column(name="subject", type="text")
      * @Assert\NotBlank()
      */
     private $subject;
@@ -39,7 +39,7 @@ class PrivateThread extends BaseEntity
 
     /**
      * @ORM\ManyToOne(targetEntity = "Question")
-     * @ORM\JoinColumn(name = "question_id", referencedColumnName = "id")
+     * @ORM\JoinColumn(name = "question_id", referencedColumnName = "id", nullable = false)
      */
     protected $question;
 

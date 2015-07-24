@@ -25,13 +25,13 @@ class PrivateThreadController extends BaseConsultController
 
         $logger = $this->get('logger');
         $logger->info("Private Thread ".$request);
-        $this->authenticate();
+        $practoAccountId = $this->authenticate();
 
         $postData = $request->request->get('question');
 
         $files = $request->files;
 
-        $practoAccountId = $request->request->get('practo_account_id');
+        //$practoAccountId = $request->request->get('practo_account_id');
 
         $profileToken = $request->headers->get('X-Profile-Token');
 

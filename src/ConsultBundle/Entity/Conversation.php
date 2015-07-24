@@ -31,7 +31,7 @@ class Conversation extends BaseEntity
     /**
      * @Exclude()
      * @ORM\ManyToOne(targetEntity = "PrivateThread", fetch="EXTRA_LAZY", cascade={"persist", "remove"})
-     * @ORM\JoinColumn(name = "private_thread_id", referencedColumnName = "id")
+     * @ORM\JoinColumn(name = "private_thread_id", referencedColumnName = "id", nullable = false)
      */
     private $privateThread;
 

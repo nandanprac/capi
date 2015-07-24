@@ -20,7 +20,7 @@ class QuestionBookmark extends BaseEntity
 {
     /**
      * @ORM\ManyToOne(targetEntity = "Question", inversedBy="bookmarks")
-     * @ORM\JoinColumn(name = "question_id", referencedColumnName = "id")
+     * @ORM\JoinColumn(name = "question_id", referencedColumnName = "id", nullable = false)
      */
     protected $question;
 
