@@ -103,7 +103,7 @@ class PrivateThreadRepository extends EntityRepository
         $subqb->select('c.text as question', 'count(ci.id) as images_count')
             ->from(ConsultConstants::CONVERSATION_ENTITY_NAME, 'c')
             ->leftJoin(ConsultConstants::CONVERSATION_IMAGE_ENTITY_NAME, 'ci', 'WITH', 'ci.conversation = c AND ci.softDeleted = 0')
-            ->where('c.isDocReply = 0')
+            //->where('c.isDocReply = 0')
             ->groupBy('c')
             ->orderBy('c.createdAt', 'DESC')
             ->setMaxResults(1);

@@ -120,7 +120,6 @@ class QuestionsController extends BaseConsultController
     public function patchQuestionAction(Request $request)
     {
         $practoAccountId = $this->authenticate(false);
-        $this->checkPatientConsent($practoAccountId, true);
 
         $questionManager = $this->get('consult.question_manager');
         $request = $request->request->all();
