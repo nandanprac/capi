@@ -35,6 +35,13 @@ class Speciality extends BaseEntity
     private $subSpecialities;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="is_activated", type="boolean")
+     */
+    private $activated = false;
+
+    /**
      * @return mixed
      */
     public function getName()
@@ -66,5 +73,19 @@ class Speciality extends BaseEntity
         $this->description = $description;
     }
 
+    /**
+     * @return boolean
+     */
+    public function isActivated()
+    {
+        return $this->activated;
+    }
 
+    /**
+     * @param boolean $activated
+     */
+    public function setActivated($activated)
+    {
+        $this->activated = $activated;
+    }
 }

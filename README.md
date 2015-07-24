@@ -58,4 +58,11 @@ Command to insert trained data. and use last file in array and stem option to in
 app/console consult:data:trainer /tmp/trainset.csv /tmp/src/stem_list\(u\).csv --stem
 
 
+Fixtures
+
+- Install Specialities and Sub-Specialities for assignment and classfication
+-
+
+sh run-fixtures.sh DATABASE_USER_NAME DATABASE_PASSWORD DATABASE_NAME
+
 ```
