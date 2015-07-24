@@ -61,9 +61,8 @@ app/console consult:data:trainer /tmp/trainset.csv /tmp/src/stem_list\(u\).csv -
 Fixtures
 
 - Install Specialities and Sub-Specialities for assignment and classfication
-- 
+-
 
-app/console doctrine:fixtures:load --append ( WARNING!!  DONT RUN WITHOUT --append.)
-
+sh run-fixtures.sh DATABASE_USER_NAME DATABASE_PASSWORD DATABASE_NAME
 
 ```
