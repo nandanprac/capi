@@ -63,7 +63,7 @@ class DoctorNotification extends BaseEntity
     /**
      * Set Question
      *
-     * @param Question $question - Question
+     * @param DoctorQuestion $question - Question
      */
     public function setQuestion($question)
     {
