@@ -282,8 +282,11 @@ class ModerationManager extends BaseManager
      */
     public function getDoctorDetails($request)
     {
+        $startDate=(array_key_exists('startDate', $request)) ? $request['startDate'] : null;
+        $endDate=(array_key_exists('endDate', $request)) ? $request['endDate'] : null;
+
         $er = $this->helper->getRepository(ConsultConstants::DOCTOR_SETTING_ENTITY_NAME);
-        $details = $er->getDoctorDetails();
+        $details = $er->getDoctorDetails($startDate, $endDate);
 
         return $details;
     }

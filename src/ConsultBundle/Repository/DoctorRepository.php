@@ -196,14 +196,23 @@ class DoctorRepository extends EntityRepository
     }
 
     /**
+     * @param DateTime $startDate
+     * @param DateTime $endDate
      * @return array $details
      */
-    public function getDoctorDetails()
+    public function getDoctorDetails($startDate, $endDate)
     {
+        $filters = '';
+        if (isset($startDate) && isset($endDate)) {
+            $start= substr($startDate, 0, 10);
+            $end=substr($endDate, 0, 10);
+            $filters .= ' and :startDate <= dq.createdAt and dq.createdAt <= :endDate';
+        }
+
         $qb = $this->_em->createQueryBuilder();
         $qb->select('d.practoAccountId as id', 'd.name as name', 'SUM(case when dq.state = :state1 then 1 else 0 end) as assigned_count', 'SUM(case when dq.state = :state2 then 1 else 0 end) as answered_count', 'SUM(case when dq.state = :state3 then 1 else 0 end) as rejected_count', 'COALESCE(avg(r.rating), 0) as avg_rating')
             ->from(ConsultConstants::DOCTOR_SETTING_ENTITY_NAME, 'd')
-            ->leftJoin(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME, 'dq', 'WITH', 'dq.practoAccountId = d.practoAccountId and dq.softDeleted = 0')
+            ->leftJoin(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME, 'dq', 'WITH', 'dq.practoAccountId = d.practoAccountId and dq.softDeleted = 0'.$filters)
             ->leftJoin(ConsultConstants::DOCTOR_REPLY_ENTITY_NAME, 'r', 'WITH', 'r.doctorQuestion = dq AND r.softDeleted = 0')
             ->where('d.softDeleted = 0')
            ->setParameter('state1', "UNANSWERED")
@@ -211,6 +220,12 @@ class DoctorRepository extends EntityRepository
            ->setParameter('state3', "REJECTED")
             ->groupBy('d.practoAccountId');
 
+        if (isset($startDate) && isset($endDate)) {
+            $start= substr($startDate, 0, 10);
+            $end=substr($endDate, 0, 10);
+            $qb->setParameter('startDate', new \DateTime($start));
+            $qb->setParameter('endDate', new \DateTime($end));
+        }
         $details = $qb->getQuery()->getArrayResult();
 
         return $details;
