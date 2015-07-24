@@ -46,7 +46,6 @@ class QuestionCommentsController extends BaseConsultController
     public function patchQuestionCommentAction(Request $request)
     {
         $practoAccountId = $this->authenticate();
-        $this->checkPatientConsent($practoAccountId, true);
         $postData = $request->request->all();
         $questionCommentsManager = $this->get('consult.question_comment_manager');
 
