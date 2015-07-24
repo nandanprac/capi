@@ -168,6 +168,9 @@ class QuestionManager extends BaseManager
             if (empty($practoAccountId)) {
                 throw new \HttpException('', Codes::HTTP_FORBIDDEN);
             }
+            if(!$this->userManager->checkConsultEnabled($practoAccountId)) {
+                throw new HttpException(Codes::HTTP_FORBIDDEN, "User has not consented to use Consult");
+            }
             if (Utility::toBool($requestParams['bookmark'])) {
                 try {
                     $questionBookmark = $this->questionBookmarkManager->add($requestParams);
