@@ -25,6 +25,9 @@ parameters:
 
     locale:            en
 
+    # Question moderation should be enabled or not
+    auto_assignment : true
+
     # A secret key that's used to generate certain security-related tokens
     secret:            SecretKeyAddedtoRemoveSensioIssue
     sentry.dsn: 'udp://a:b@localhost:12345/c'
