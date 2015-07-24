@@ -100,8 +100,6 @@ class UserManager extends BaseManager
                 }
 
             } else {
-
-
                 $er = $this->helper->getRepository(ConsultConstants::USER_ENTITY_NAME);
                 $entry = $er->findOneBy(array('practoAccountId' => $requestParams['practo_account_id'], 'isRelative' => 0));
 
@@ -109,7 +107,6 @@ class UserManager extends BaseManager
                     $userEntry = $entry;
 
                 } else {
-
                     $userJson = $_SESSION['authenticated_user'];
                     if (empty($userJson['gender']) && (!array_key_exists('gender', $requestParams)
                         or (array_key_exists('gender', $requestParams) and empty($requestParams['gender'])))
@@ -166,5 +163,60 @@ class UserManager extends BaseManager
         }
 
         return array('user_profiles' => $userEntries);
+    }
+
+    /**
+     * @param integer $practoAccountId
+     * @return boolean
+     */
+    public function checkConsultEnabled($practoAccountId)
+    {
+        $userEntry = $this->helper->getRepository(ConsultConstants::USER_ENTITY_NAME)->findBy(
+            array('practoAccountId' => $practoAccountId, 'isRelative' => 0),
+            array('createdAt' => 'ASC')
+        );
+
+        if (empty($userEntry)) {
+            return false;
+        }
+        if (is_null($userEntry[0]->getIsEnabled())) {
+            return false;
+        }
+
+        return $userEntry[0]->getIsEnabled();
+    }
+
+    /**
+     * @param integer $practoAccountId
+     * @return boolean
+     */
+    public function setConsultEnabled($practoAccountId)
+    {
+        $userEntry = $this->helper->getRepository(ConsultConstants::USER_ENTITY_NAME)->findBy(
+            array('practoAccountId' => $practoAccountId, 'isRelative' => 0),
+            array('createdAt' => 'ASC')
+        );
+
+        if (empty($userEntry)) {
+            $userEntry = new UserInfo();
+            $userEntry->setPractoAccountId($practoAccountId);
+        } else {
+            $userEntry = $userEntry[0];
+        }
+
+        $userEntry->setIsEnabled(true);
+        $this->helper->persist($userEntry, true);
+
+        $userEntry = $this->helper->getRepository(ConsultConstants::USER_ENTITY_NAME)->findBy(
+            array('practoAccountId' => $practoAccountId, 'isRelative' => 0),
+            array('createdAt' => 'ASC')
+        );
+
+        if (empty($userEntry)) {
+            @$error['error'] = 'No entry was made';
+            throw new ValidationError($error);
+        }
+
+        return $userEntry[0]->getIsEnabled();
     }
 }

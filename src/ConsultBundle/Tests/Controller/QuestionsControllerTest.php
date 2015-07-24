@@ -5,67 +5,44 @@
   */
 namespace ConsultBundle\Tests\Controller;
 
-use ConsultBundle\Utility\AuthenticationUtils;
-use ConsultBundle\EventListener\SecurityListener;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use FOS\RestBundle\Util\Codes;
 
 /**
   * This class has testcases for all question related APIs
   */
-class QuestionsControllerTest extends WebTestCase
+class QuestionsControllerTest extends BaseTestController
 {
-    private $pdo = null;
-    private $conn = null;
-
-    /**
-     * Setup the class
-     *
-     * @return null
-     */
-    public static function setUpBeforeClass()
-    {
-        print "==== Starting QuestionsControllerTest ====";
-    }
 
     /**
      * Setup
-     *
-     * @return null
      */
     public function setUp()
     {
+        $this->mocker();
+    }
+
+    /**
+     * mocks the security listener
+     */
+    public function mocker()
+    {
         $this->client = static::createClient();
-        $practoAccountId = 1;
         $profileToken = 'junk_value';
 
-        $authenticationStub = $this->getMockBuilder('ConsultBundle\Utility\AuthenticationUtils')->setMethods(['authenticateWithAccounts'])->disableOriginalConstructor()->getMock();
-        $authenticationStub->expects($this->any())->method('authenticateWithAccounts')->will(
+        $securityStub = $this->getMockBuilder('ConsultBundle\EventListener\SecurityListener')->setMethods(['onKernelRequest'])->disableOriginalConstructor()->getMock($cloneArguments = FALSE);
+        $securityStub->expects($this->any())->method('onKernelRequest')->will(
             $this->returnCallback(
-                function ($practoAccountId, $profileToken) {
+                function ($event, $str) {
+                    $_SESSION['validated'] = true;
+                    $_SESSION['authenticated_user']['id'] = 1;
                     return true;
                 }
             )
         );
-        $this->client->getContainer()->set('consult.account_authenticator_util', $authenticationStub);
-
-        $securityStub = $this->getMockBuilder('ConsultBundle\EventListener\SecurityListener')->disableOriginalConstructor()->getMock();
-        $securityStub->expects($this->any())->method('onKernelRequest')->willReturn(true);
-        //$securityStub->expects($this->once())->method('onKernelRequest')->will($this->returnValue($authenticationStub));
         $this->client->getContainer()->set('listener.security_listener', $securityStub);
-
-
     }
 
     /**
-     * Teardown
-     *
-     * @return null
-     */
-    public static function tearDownAfterClass()
-    {
-    }
-
     /**
      * Test for access forbidden
      *
@@ -107,7 +84,7 @@ class QuestionsControllerTest extends WebTestCase
             "Expected error - Bad request was not recieved"
         );
         $this->assertContains(
-            "This value should not be blank",
+            "Key question not found",
             $response->getContent(),
             "Bad request error did not show up"
         );
@@ -120,7 +97,6 @@ class QuestionsControllerTest extends WebTestCase
      */
     public function testPostQuestionBasicPositive()
     {
-        //$client = static::createClient();
         $crawler = $this->client->request(
             'POST',
             '/questions',
@@ -137,7 +113,7 @@ class QuestionsControllerTest extends WebTestCase
         $this->assertContains(
             "id",
             $response->getContent(),
-            "A valid entry did not get created"
+            "A valid entry of new question did not get created"
         );
     }
 
@@ -149,7 +125,6 @@ class QuestionsControllerTest extends WebTestCase
      */
     public function testPostQuestionDetailsYourselfPositive()
     {
-        //$client = static::createClient();
         $crawler = $this->client->request(
             'POST',
             '/questions',
@@ -170,7 +145,7 @@ class QuestionsControllerTest extends WebTestCase
         $this->assertContains(
             "id",
             $response->getContent(),
-            "A valid entry did not get created"
+            "A valid entry of new question did not get created"
         );
     }
 
@@ -181,14 +156,15 @@ class QuestionsControllerTest extends WebTestCase
      */
     public function testPostQuestionDetailsSomeoneElsePositive()
     {
-        //$client = static::createClient();
         $crawler = $this->client->request(
             'POST',
             '/questions',
             array('question' => '{"subject":"question subject","text":"test question",
                                   "user_info":{"is_relative":true,
-                                                          "medications":"abcd",
-                                                          "gender":"M"}}',
+                                                "name":"myname",
+                                                "age":50,
+                                                "medications":"abcd",
+                                                "gender":"M"}}',
                     'practo_account_id' => '1', ),
             array(),
             array()
@@ -202,7 +178,7 @@ class QuestionsControllerTest extends WebTestCase
         $this->assertContains(
             "id",
             $response->getContent(),
-            "A valid entry did not get created"
+            "A valid entry of new question did not get created"
         );
     }
 
@@ -213,7 +189,6 @@ class QuestionsControllerTest extends WebTestCase
      */
     public function testGetQuestionById()
     {
-        //$client = static::createClient();
         $crawler = $this->client->request(
             'GET',
             '/questions/1'
@@ -238,7 +213,6 @@ class QuestionsControllerTest extends WebTestCase
      */
     public function testGetAllQuestions()
     {
-        //$client = static::createClient();
         $crawler = $this->client->request(
             'GET',
             '/questions'
@@ -253,6 +227,33 @@ class QuestionsControllerTest extends WebTestCase
             "id",
             $response->getContent(),
             "Valid response was not sent"
+        );
+    }
+
+    /**
+     * Patch question - bookmark
+     */
+    public function testPatchBookmark()
+    {
+        $crawler = $this->client->request(
+            'PATCH',
+            '/question',
+            array('practo_account_id' => '2',
+                    'question_id' => '1',
+                    'bookmark' => true),
+            array(),
+            array()
+        );
+        $response = $this->client->getResponse();
+        $this->assertEquals(
+            Codes::HTTP_CREATED,
+            $response->getStatusCode(),
+            "Success is expected here"
+        );
+        $this->assertContains(
+            "id",
+            $response->getContent(),
+            "Bookmarking the question resulted in some error"
         );
     }
 }

@@ -77,6 +77,7 @@ class DoctorConsultSettings extends BaseEntity
      * @var integer
      *
      * @ORM\Column(name="consultation_days", type="integer", nullable=true)
+     * @Assert\LessThan(128)
      */
     private $consultationDays;
 

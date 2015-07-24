@@ -19,7 +19,7 @@ class QuestionTag extends BaseEntity
 {
     /**
      * @ORM\ManyToOne(targetEntity = "Question", inversedBy="tags")
-     * @ORM\JoinColumn(name = "question_id", referencedColumnName = "id")
+     * @ORM\JoinColumn(name = "question_id", referencedColumnName = "id", nullable = false)
      */
     private $question;
 

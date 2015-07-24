@@ -52,15 +52,33 @@ class Utility
         }
 
         switch (strtolower($var)) {
-        case '1':
-        case 'true':
-        case 'on':
-        case 'yes':
-        case 'y':
-            return true;
-        default:
-            return false;
+            case '1':
+            case 'true':
+            case 'on':
+            case 'yes':
+            case 'y':
+                return true;
+            default:
+                return false;
         }
 
+    }
+
+    /**
+     * @param string $search
+     * @param string $replace
+     * @param string $subject
+     *
+     * @return mixed
+     */
+    public static function strReplace($search, $replace, $subject)
+    {
+        $pos = strrpos($subject, $search);
+
+        if ($pos !== false) {
+            $subject = substr_replace($subject, $replace, $pos, strlen($search));
+        }
+
+        return $subject;
     }
 }

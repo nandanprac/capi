@@ -37,6 +37,17 @@ class BaseConsultController extends Controller
 
     }
 
+    protected function checkPatientConsent($practoAccountId, $throwException = true)
+    {
+        $userManager = $this->get('consult.user_manager');
+        $userConsent = $userManager->checkConsultEnabled($practoAccountId);
+        if (!$userConsent && $throwException) {
+            throw new HttpException(Codes::HTTP_FORBIDDEN, "User has not consented to use Consult ");
+        }
+
+        return $userConsent;
+    }
+
 
     protected function authenticateForDoctor($throwException = true, $checkForConsent = true)
     {

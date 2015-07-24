@@ -140,6 +140,10 @@ class ClassificationManager
      */
     protected function intersectMapsForWords($listDataMap)
     {
+        if (empty($listDataMap)) {
+            return array();
+        }
+
         $weightTemp = array();
         $formulaTemp = array();
 
