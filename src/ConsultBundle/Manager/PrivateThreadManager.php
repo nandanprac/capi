@@ -70,6 +70,7 @@ class PrivateThreadManager extends BaseManager
      */
     public function add($requestParams, $practoAccountId, FileBag $files, $profileToken = null)
     {
+
         /**
          * @var PrivateThreadRepository $er
          */
@@ -89,6 +90,9 @@ class PrivateThreadManager extends BaseManager
                     throw new HttpException(Codes::HTTP_FORBIDDEN, 'You are not allowed to answer this question');
                 }
             } else {
+                if(!$this->userManager->checkConsultEnabled($practoAccountId)) {
+                    throw new HttpException(Codes::HTTP_FORBIDDEN, "User has not consented to use Consult");
+                }
                 if ($privateThread->getUserInfo()->getPractoAccountId() != $practoAccountId) {
                     throw new HttpException(Codes::HTTP_FORBIDDEN, 'You are not allowed to ask any question here');
                 }
