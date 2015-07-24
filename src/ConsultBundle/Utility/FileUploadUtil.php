@@ -178,7 +178,7 @@ class FileUploadUtil
         unlink($fileLarge);
 
         $fileMed = Utility::strReplace(".", "-medium.", $localFile);
-        $image->scaleImage(300, 300, true);
+        $image->scaleImage(320, 320, true);
         $image->writeImage($fileMed);
         $this->uploadFile($uri."/medium", $fileMed);
         unlink($fileMed);
