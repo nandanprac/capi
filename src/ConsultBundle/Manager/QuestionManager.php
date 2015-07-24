@@ -85,7 +85,7 @@ class QuestionManager extends BaseManager
      * @return \ConsultBundle\Entity\Question
      * @throws \ConsultBundle\Manager\ValidationError
      */
-    public function add($requestParams, $practoAccountId, $profileToken = null)
+    public function add($requestParams, $practoAccountId, $profileToken = null, $autoAssign)
     {
         $question = new Question();
         $question->setSoftDeleted(false);
@@ -114,7 +114,9 @@ class QuestionManager extends BaseManager
         $job['question'] = $question->getText();
         $job['subject'] = $question->getSubject();
 
-        $this->queue->setQueueName(Queue::CLASSIFY)->sendMessage(json_encode($job));
+        if ($autoAssign) {
+            $this->queue->setQueueName(Queue::CLASSIFY)->sendMessage(json_encode($job));
+        }
 
         return $this->fetchDetailQuestionObject($question, $practoAccountId);
     }

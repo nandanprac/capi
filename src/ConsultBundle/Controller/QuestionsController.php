@@ -40,7 +40,7 @@ class QuestionsController extends BaseConsultController
         $questionManager = $this->get('consult.question_manager');
 
         try {
-            $question = $questionManager->add($postData, $practoAccountId, $profileToken);
+            $question = $questionManager->add($postData, $practoAccountId, $profileToken, $this->container->getParameter('auto_assignment'));
 
         } catch (ValidationError $e) {
             return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
