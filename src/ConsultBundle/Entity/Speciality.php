@@ -65,6 +65,4 @@ class Speciality extends BaseEntity
     {
         $this->description = $description;
     }
-
-
 }
