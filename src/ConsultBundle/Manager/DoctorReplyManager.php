@@ -9,6 +9,7 @@
 namespace ConsultBundle\Manager;
 
 use ConsultBundle\Constants\ConsultConstants;
+use ConsultBundle\Entity\DoctorNotification;
 use ConsultBundle\Entity\DoctorReplyFlag;
 use ConsultBundle\Manager\NotificationManager;
 use ConsultBundle\Entity\DoctorQuestion;
@@ -182,6 +183,12 @@ class DoctorReplyManager extends BaseManager
                         )
                     )
                 );
+
+            $doctorNotification = new DoctorNotification();
+            $doctorNotification->setPractoAccountId($doctorReplyEntity->getDoctorQuestion()->getPractoAccountId());
+            $doctorNotification->setQuestion($doctorReplyEntity->getDoctorQuestion());
+            $doctorNotification->setText("Your answer has been rated by the Asker");
+            $this->helper->persist($doctorNotification);
         }
 
         //Mark the answer as viewed
