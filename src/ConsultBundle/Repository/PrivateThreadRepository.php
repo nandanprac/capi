@@ -43,7 +43,7 @@ class PrivateThreadRepository extends EntityRepository
      *
      * @return array|null
      */
-    public function getPatientPrivateThreads($practoAccountId)
+    public function getPatientPrivateThreads($practoAccountId, $limit, $offset)
     {
         $qb = $this->_em->createQueryBuilder();
         $qb->select(
@@ -75,7 +75,9 @@ class PrivateThreadRepository extends EntityRepository
             )
             ->where('u.practoAccountId = :practoAccountId and p.softDeleted = 0')
             ->setParameter('practoAccountId', $practoAccountId)
-            ->setParameter('FOLLOW_UP_THRESHOLD', self::FOLLOW_UP_THRESHOLD);
+            ->setParameter('FOLLOW_UP_THRESHOLD', self::FOLLOW_UP_THRESHOLD)
+            ->setMaxResults($limit)
+            ->setFirstResult($offset);
 
         $privateThreadEntry = $qb->getQuery()->getArrayResult();
 
@@ -97,7 +99,7 @@ class PrivateThreadRepository extends EntityRepository
      *
      * @return array|null
      */
-    public function getDoctorPrivateThreads($practoAccountId)
+    public function getDoctorPrivateThreads($practoAccountId, $limit, $offset)
     {
         $subqb = $this->_em->createQueryBuilder();
         $subqb->select('c.text as question', 'count(ci.id) as images_count')
@@ -123,7 +125,9 @@ class PrivateThreadRepository extends EntityRepository
             ->where('p.doctorId = :practoAccountId and p.softDeleted = 0')
             ->setParameter('practoAccountId', $practoAccountId)
             ->setParameter('lastQuestion', $question)
-            ->setParameter('imagesCount', $imagesCount);
+            ->setParameter('imagesCount', $imagesCount)
+            ->setMaxResults($limit)
+            ->setFirstResult($offset);
 
         $privateThreadEntry = $qb->getQuery()->getResult();
 

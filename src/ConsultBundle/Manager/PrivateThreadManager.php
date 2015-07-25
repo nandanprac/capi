@@ -211,18 +211,23 @@ class PrivateThreadManager extends BaseManager
 
     /**
      * @param integer $practoAccountId
+     * @param boolean $isDoctor
+     * @param Request $request
      *
      * @return array PrivateThread
      */
-    public function loadAll($practoAccountId, $isDoctor)
+    public function loadAll($practoAccountId, $isDoctor, $request)
     {
+        $limit = (array_key_exists('limit', $request)) ? $request['limit'] : 30;
+        $offset = (array_key_exists('offset', $request)) ? $request['offset'] : 0;
+
         /**
          * @var PrivateThreadRepository $er
          */
         $er = $this->helper->getRepository(ConsultConstants::PRIVATE_THREAD_ENTITY_NAME);
 
         if ($isDoctor) {
-            $privateThreads = $er->getDoctorPrivateThreads($practoAccountId);
+            $privateThreads = $er->getDoctorPrivateThreads($practoAccountId, $limit, $offset);
             if (!empty($privateThreads)) {
                 $privateThreadsTmp = array();
                 foreach ($privateThreads as $privateThread) {
@@ -255,7 +260,7 @@ class PrivateThreadManager extends BaseManager
             }
 
         } else {
-            $privateThreads = $er->getPatientPrivateThreads($practoAccountId);
+            $privateThreads = $er->getPatientPrivateThreads($practoAccountId, $limit, $offset);
         }
 
         if (empty($privateThreads)) {
