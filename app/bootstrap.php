@@ -56,4 +56,4 @@ $input = new ArrayInput(array(
     'sql' => "INSERT INTO user_info(practo_account_id, is_enabled) VALUES(1, 1),(2, 1);"
 ));
 $command->run($input, new ConsoleOutput());
- 
+
