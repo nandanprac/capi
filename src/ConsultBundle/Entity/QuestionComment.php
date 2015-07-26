@@ -40,7 +40,7 @@ class QuestionComment extends BaseEntity
 
     /**
      * @ORM\ManyToOne(targetEntity = "Question", inversedBy = "comments")
-     * @ORM\JoinColumn(name = "question_id", referencedColumnName = "id")
+     * @ORM\JoinColumn(name = "question_id", referencedColumnName = "id", nullable = false)
      */
     protected $question;
 

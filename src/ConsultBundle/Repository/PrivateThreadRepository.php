@@ -43,19 +43,22 @@ class PrivateThreadRepository extends EntityRepository
      *
      * @return array|null
      */
-    public function getPatientPrivateThreads($practoAccountId)
+    public function getPatientPrivateThreads($practoAccountId, $limit, $offset)
     {
         $qb = $this->_em->createQueryBuilder();
         $qb->select(
-            'p.id', 'd.name as doctor_name',
+            'p.id',
+            'd.name as doctor_name',
             'd.profilePicture as profile_picture',
-            'p.subject', 'p.modifiedAt as last_modified_time',
+            'p.subject',
+            'p.modifiedAt as last_modified_time',
             '(:FOLLOW_UP_THRESHOLD - COUNT(c)) as followups_remaining'
         )
             ->from(ConsultConstants::PRIVATE_THREAD_ENTITY_NAME, 'p')
             ->innerJoin(
                 ConsultConstants::USER_ENTITY_NAME,
-                'u', 'WITH',
+                'u',
+                'WITH',
                 'u = p.userInfo AND u.softDeleted = 0'
             )
             ->innerJoin(
@@ -72,7 +75,9 @@ class PrivateThreadRepository extends EntityRepository
             )
             ->where('u.practoAccountId = :practoAccountId and p.softDeleted = 0')
             ->setParameter('practoAccountId', $practoAccountId)
-            ->setParameter('FOLLOW_UP_THRESHOLD', self::FOLLOW_UP_THRESHOLD);
+            ->setParameter('FOLLOW_UP_THRESHOLD', self::FOLLOW_UP_THRESHOLD)
+            ->setMaxResults($limit)
+            ->setFirstResult($offset);
 
         $privateThreadEntry = $qb->getQuery()->getArrayResult();
 
@@ -94,13 +99,13 @@ class PrivateThreadRepository extends EntityRepository
      *
      * @return array|null
      */
-    public function getDoctorPrivateThreads($practoAccountId)
+    public function getDoctorPrivateThreads($practoAccountId, $limit, $offset)
     {
         $subqb = $this->_em->createQueryBuilder();
         $subqb->select('c.text as question', 'count(ci.id) as images_count')
             ->from(ConsultConstants::CONVERSATION_ENTITY_NAME, 'c')
             ->leftJoin(ConsultConstants::CONVERSATION_IMAGE_ENTITY_NAME, 'ci', 'WITH', 'ci.conversation = c AND ci.softDeleted = 0')
-            ->where('c.isDocReply = 0')
+            //->where('c.isDocReply = 0')
             ->groupBy('c')
             ->orderBy('c.createdAt', 'DESC')
             ->setMaxResults(1);
@@ -120,7 +125,9 @@ class PrivateThreadRepository extends EntityRepository
             ->where('p.doctorId = :practoAccountId and p.softDeleted = 0')
             ->setParameter('practoAccountId', $practoAccountId)
             ->setParameter('lastQuestion', $question)
-            ->setParameter('imagesCount', $imagesCount);
+            ->setParameter('imagesCount', $imagesCount)
+            ->setMaxResults($limit)
+            ->setFirstResult($offset);
 
         $privateThreadEntry = $qb->getQuery()->getResult();
 

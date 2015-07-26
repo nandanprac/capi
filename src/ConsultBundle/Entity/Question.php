@@ -21,20 +21,20 @@ class Question extends BaseEntity
 
     /**
      * @ORM\ManyToOne(targetEntity="ConsultBundle\Entity\UserInfo", fetch="EXTRA_LAZY")
-     * @ORM\JoinColumn(name="user_info_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="user_info_id", referencedColumnName="id", nullable = false)
      */
     private $userInfo;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="subject", type="string", length=32, nullable=true)
+     * @ORM\Column(name="subject", type="text", nullable=true)
      * @Assert\NotBlank()
      */
     private $subject;
 
     /**
-     * @ORM\Column(length=360, name="text")
+     * @ORM\Column(name="text", type="text")
      *
      * @Assert\NotBlank
      */
@@ -142,7 +142,7 @@ class Question extends BaseEntity
     /**
      * @param mixed $viewedAt
      */
-    public function setViewedAt(\DateTime $viewedAt)
+    public function setViewedAt($viewedAt)
     {
         $this->viewedAt = $viewedAt;
     }

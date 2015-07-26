@@ -9,14 +9,10 @@
 namespace ConsultBundle\Manager;
 
 use ConsultBundle\Constants\ConsultConstants;
-use ConsultBundle\Entity\DoctorConsultSettings;
-use ConsultBundle\Entity\DoctorQuestion;
 use ConsultBundle\Repository\DoctorRepository;
-use ConsultBundle\Utility\Utility;
-use Doctrine\Common\Collections\ArrayCollection;
-use ConsultBundle\Manager\ValidationError;
 use FOS\RestBundle\Util\Codes;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use ConsultBundle\Entity\DoctorConsultSettings;
 
 /**
  * Doctor manager
@@ -24,13 +20,14 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 class DoctorManager extends BaseManager
 {
 
-    private static $mandataoryFieldsForPostDoctorConsult = array(
+    private static $mandatoryFieldsForPostDoctorConsult = array(
         "practo_account_id",
         "doctor_fabric_id",
         "name",
         "speciality",
         "location",
-        "timezone");
+        "timezone",
+        );
     /**
      * @param array $queryParams
      *
@@ -88,7 +85,7 @@ class DoctorManager extends BaseManager
         }
 
         //check for mandatory fields
-        $this->helper->checkForMandatoryFields(self::$mandataoryFieldsForPostDoctorConsult, $postData);
+        $this->helper->checkForMandatoryFields(self::$mandatoryFieldsForPostDoctorConsult, $postData);
 
         /**
          * @var DoctorRepository $er
@@ -186,7 +183,8 @@ class DoctorManager extends BaseManager
         $result =  $result = $er->findOneBy(
             array(
                 "fabricDoctorId" => $id,
-                "softDeleted" => 0)
+                "softDeleted" => 0,
+                )
         );
 
         if (empty($result)) {
@@ -239,7 +237,8 @@ class DoctorManager extends BaseManager
         $result =  $result = $er->findOneBy(
             array(
                 "practoAccountId" => $id,
-                "softDeleted" => 0)
+                "softDeleted" => 0,
+                )
         );
 
         /* if (empty($result)) {
@@ -250,8 +249,16 @@ class DoctorManager extends BaseManager
     }
 
     /**
+<<<<<<< HEAD
+     * @param array $postData
+     *
+||||||| merged common ancestors
+     * @param $postData
+     *
+=======
      * @param array   $postData
      * @param boolean $dev
+>>>>>>> user_consent
      * @return \ConsultBundle\Entity\DoctorConsultSettings
      * @throws \ConsultBundle\Manager\ValidationError
      */

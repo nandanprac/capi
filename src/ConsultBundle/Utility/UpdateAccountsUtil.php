@@ -125,7 +125,6 @@ class UpdateAccountsUtil
 
                     }
                 } catch (\Exception $e) {
-
                 }
 
             }

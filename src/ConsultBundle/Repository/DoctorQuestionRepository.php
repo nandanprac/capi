@@ -122,7 +122,7 @@ class DoctorQuestionRepository extends EntityRepository
     {
         $qb = $this->_em->createQueryBuilder();
 
-        $qb->select('dq.practoAccountId AS practoAccountId', 'r.id AS id', 'r.text AS text', 'r.rating', 'r.createdAt AS createdAt', 'count(DISTINCT rv.id) AS votes', 'rv1.vote as vote', 'ds.name as name', 'ds.profilePicture as profilePicture', 'ds.location as location', 'ds.fabricDoctorId as doctorId', 'ds.speciality as speciality', 'rf.flagCode as flagCode', 'rf.flagText as flagText')
+        $qb->select('dq.practoAccountId AS practoAccountId', 'r.id AS id', 'r.text AS text', 'r.rating', 'r.createdAt AS createdAt', 'count(DISTINCT rv.id) AS votes', 'rv1.vote as vote', 'ds.name as name', 'ds.profilePicture as profilePicture', 'ds.location as location', 'ds.fabricDoctorId as doctorId', 'ds.speciality as speciality', 'ds.activated as activated', 'rf.flagCode as flagCode', 'rf.flagText as flagText')
             ->from(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME, 'dq')
             ->innerJoin(ConsultConstants::DOCTOR_SETTING_ENTITY_NAME, 'ds', 'WITH', 'dq.practoAccountId = ds.practoAccountId AND ds.softDeleted = 0 ')
             ->innerJoin(ConsultConstants::DOCTOR_REPLY_ENTITY_NAME, 'r', 'WITH', 'r.doctorQuestion = dq AND r.softDeleted = 0 ')
@@ -167,7 +167,7 @@ class DoctorQuestionRepository extends EntityRepository
     {
         $qb = $this->_em->createQueryBuilder();
 
-        $qb->select('dq.practoAccountId AS practoAccountId', 'r.id AS id', 'r.text AS text', 'r.rating', 'r.createdAt AS createdAt', 'COALESCE(SUM(rv.vote),0) AS votes', 'rv1.vote as vote', 'ds.name as name', 'ds.profilePicture as profilePicture', 'ds.location as location', 'ds.fabricDoctorId as doctorId', 'ds.speciality as speciality', 'rf.flagCode as flagCode', 'rf.flagText as flagText')
+        $qb->select('dq.practoAccountId AS practoAccountId', 'r.id AS id', 'r.text AS text', 'r.rating', 'r.createdAt AS createdAt', 'COALESCE(SUM(rv.vote),0) AS votes', 'rv1.vote as vote', 'ds.name as name', 'ds.profilePicture as profilePicture', 'ds.location as location', 'ds.fabricDoctorId as doctorId', 'ds.speciality as speciality', 'rf.flagCode as flagCode', 'rf.flagText as flagText', 'ds.activated as activated')
             ->from(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME, 'dq')
             ->innerJoin(ConsultConstants::DOCTOR_SETTING_ENTITY_NAME, 'ds', 'WITH', 'dq.practoAccountId = ds.practoAccountId AND ds.softDeleted = 0 ')
             ->innerJoin(ConsultConstants::DOCTOR_REPLY_ENTITY_NAME, 'r', 'WITH', 'r.doctorQuestion = dq AND r.softDeleted = 0 ')

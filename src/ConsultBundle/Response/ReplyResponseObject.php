@@ -10,6 +10,7 @@ namespace ConsultBundle\Response;
 
 use ConsultBundle\Entity\DoctorEntity;
 use ConsultBundle\Entity\DoctorReply;
+use ConsultBundle\Utility\Utility;
 
 /**
  * Class ReplyResponseObject
@@ -217,6 +218,7 @@ class ReplyResponseObject extends ConsultResponseObject
             $doc->setSpeciality($doctorQuestion['speciality']);
             $doc->setProfilePicture($doctorQuestion['profilePicture']);
             $doc->setFabricId($doctorQuestion['doctorId']);
+            $doc->setActivated($doctorQuestion['activated']);
 
             $this->setDoctor($doc);
         }
