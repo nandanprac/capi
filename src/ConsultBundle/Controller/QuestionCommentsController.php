@@ -20,7 +20,8 @@ class QuestionCommentsController extends BaseConsultController
      */
     public function postQuestionCommentAction(Request $request)
     {
-        $this->authenticate();
+        $practoAccountId = $this->authenticate();
+        $this->checkPatientConsent($practoAccountId, true);
         $postData = $request->request->all();
         $questionCommentsManager = $this->get('consult.question_comment_manager');
 
@@ -44,7 +45,7 @@ class QuestionCommentsController extends BaseConsultController
      */
     public function patchQuestionCommentAction(Request $request)
     {
-        $this->authenticate();
+        $practoAccountId = $this->authenticate();
         $postData = $request->request->all();
         $questionCommentsManager = $this->get('consult.question_comment_manager');
 

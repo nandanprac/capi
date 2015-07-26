@@ -7,6 +7,7 @@
  */
 
 namespace ConsultBundle\Entity;
+use ConsultBundle\Utility\Utility;
 
 /**
  * Class DoctorEntity
@@ -26,6 +27,9 @@ class DoctorEntity
     private $speciality;
 
     private $profilePicture;
+
+    private $activated;
+
 
     /**
      * @param null   $name
@@ -123,9 +127,27 @@ class DoctorEntity
         $doctorEntity->setProfilePicture($doctorConsultSettings->getProfilePicture());
         $doctorEntity->setSpeciality($doctorConsultSettings->getSpeciality());
         $doctorEntity->setFabricId($doctorConsultSettings->getFabricDoctorId());
+        $doctorEntity->setActivated($doctorConsultSettings->isActivated());
 
         return $doctorEntity;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getActivated()
+    {
+        return $this->activated;
+    }
+
+    /**
+     * @param mixed $activated
+     */
+    public function setActivated($activated)
+    {
+        $this->activated = Utility::toBool($activated);
+    }
+
 
 
 }

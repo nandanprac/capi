@@ -9,6 +9,7 @@
 namespace ConsultBundle\Manager;
 
 use ConsultBundle\Constants\ConsultConstants;
+use ConsultBundle\Entity\DoctorNotification;
 use ConsultBundle\Entity\DoctorReplyFlag;
 use ConsultBundle\Manager\NotificationManager;
 use ConsultBundle\Entity\DoctorQuestion;
@@ -89,6 +90,8 @@ class DoctorReplyManager extends BaseManager
             throw new \HttpException("The doctor is not allowed to answer this question", Codes::HTTP_BAD_REQUEST);
         }
 
+        $question = $doctorQuestion->getQuestion();
+        $question->setViewedAt(null);
         $doctorQuestion->setState("ANSWERED");
         $doctorQuestion->getQuestion()->setState("ANSWERED");
         $doctorReply->setDoctorQuestion($doctorQuestion);
@@ -180,6 +183,12 @@ class DoctorReplyManager extends BaseManager
                         )
                     )
                 );
+
+            $doctorNotification = new DoctorNotification();
+            $doctorNotification->setPractoAccountId($doctorReplyEntity->getDoctorQuestion()->getPractoAccountId());
+            $doctorNotification->setQuestion($doctorReplyEntity->getDoctorQuestion());
+            $doctorNotification->setText("Your answer has been rated by the Asker");
+            $this->helper->persist($doctorNotification);
         }
 
         //Mark the answer as viewed

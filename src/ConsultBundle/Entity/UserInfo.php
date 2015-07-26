@@ -139,6 +139,26 @@ class UserInfo extends BaseEntity
      */
     protected $additionalDetails = null;
 
+    /**
+     * @ORM\Column(name="is_enabled", type="boolean")
+     */
+    protected $isEnabled = false;
+
+    /**
+     * @return boolean
+     */
+    public function getIsEnabled()
+    {
+        return $this->isEnabled;
+    }
+
+    /**
+     * @param boolean $enabled
+     */
+    public function setIsEnabled($enabled)
+    {
+        $this->isEnabled = $enabled;
+    }
 
     /**
      * @return int
@@ -484,4 +504,3 @@ class UserInfo extends BaseEntity
         return $this->id;
     }
 }
-

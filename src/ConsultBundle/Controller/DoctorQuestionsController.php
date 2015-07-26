@@ -28,6 +28,7 @@ class DoctorQuestionsController extends BaseConsultController
      */
     public function getDoctorQuestionsAction()
     {
+        $this->authenticateForDoctor();
         $request = $this->get('request');
         $queryParams = $request->query->all();
         try {

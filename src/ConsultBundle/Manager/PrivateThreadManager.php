@@ -70,6 +70,7 @@ class PrivateThreadManager extends BaseManager
      */
     public function add($requestParams, $practoAccountId, FileBag $files, $profileToken = null)
     {
+
         /**
          * @var PrivateThreadRepository $er
          */
@@ -77,7 +78,6 @@ class PrivateThreadManager extends BaseManager
         $privateThreadId = array_key_exists('private_thread_id', $requestParams) ? $requestParams['private_thread_id'] : null;
 
         if (!empty($privateThreadId)) {
-
             $privateThread = $this->helper->loadById($privateThreadId, ConsultConstants::PRIVATE_THREAD_ENTITY_NAME);
 
             if (empty($privateThread)) {
@@ -90,6 +90,9 @@ class PrivateThreadManager extends BaseManager
                     throw new HttpException(Codes::HTTP_FORBIDDEN, 'You are not allowed to answer this question');
                 }
             } else {
+                if(!$this->userManager->checkConsultEnabled($practoAccountId)) {
+                    throw new HttpException(Codes::HTTP_FORBIDDEN, "User has not consented to use Consult");
+                }
                 if ($privateThread->getUserInfo()->getPractoAccountId() != $practoAccountId) {
                     throw new HttpException(Codes::HTTP_FORBIDDEN, 'You are not allowed to ask any question here');
                 }
@@ -208,18 +211,23 @@ class PrivateThreadManager extends BaseManager
 
     /**
      * @param integer $practoAccountId
+     * @param boolean $isDoctor
+     * @param Request $request
      *
      * @return array PrivateThread
      */
-    public function loadAll($practoAccountId, $isDoctor)
+    public function loadAll($practoAccountId, $isDoctor, $request)
     {
+        $limit = (array_key_exists('limit', $request)) ? $request['limit'] : 30;
+        $offset = (array_key_exists('offset', $request)) ? $request['offset'] : 0;
+
         /**
          * @var PrivateThreadRepository $er
          */
         $er = $this->helper->getRepository(ConsultConstants::PRIVATE_THREAD_ENTITY_NAME);
 
         if ($isDoctor) {
-            $privateThreads = $er->getDoctorPrivateThreads($practoAccountId);
+            $privateThreads = $er->getDoctorPrivateThreads($practoAccountId, $limit, $offset);
             if (!empty($privateThreads)) {
                 $privateThreadsTmp = array();
                 foreach ($privateThreads as $privateThread) {
@@ -252,7 +260,7 @@ class PrivateThreadManager extends BaseManager
             }
 
         } else {
-            $privateThreads = $er->getPatientPrivateThreads($practoAccountId);
+            $privateThreads = $er->getPatientPrivateThreads($practoAccountId, $limit, $offset);
         }
 
         if (empty($privateThreads)) {

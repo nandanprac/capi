@@ -48,7 +48,7 @@ class SubSpeciality extends BaseEntity
      */
     public function setSpeciality($speciality)
     {
-        $this->speciality = trim($speciality);
+        $this->speciality = $speciality;
     }
 
     /**

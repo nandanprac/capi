@@ -24,12 +24,17 @@ class QuestionsController extends BaseConsultController
     {
         $logger = $this->get('logger');
         $logger->info("Post Question".$request);
-        $this->authenticate();
+        $practoAccountId = $this->authenticate();
+        $this->checkPatientConsent($practoAccountId, true);
+
         $postData = $request->request->get('question');
+        if (empty($postData)) {
+            return View::create("Key question not found", Codes::HTTP_BAD_REQUEST);
+        }
         if (!is_array($postData)) {
             $postData = json_decode($postData, true);
         }
-        $practoAccountId = $request->request->get('practo_account_id');
+        //$practoAccountId = $request->request->get('practo_account_id');
         $profileToken = $request->headers->get('X-Profile-Token');
 
         $questionManager = $this->get('consult.question_manager');
@@ -46,8 +51,10 @@ class QuestionsController extends BaseConsultController
 
         try {
             $questionImageManager->add($question->getId(), $files);
+        } catch (HttpException $he) {
+            return View::create($he->getMessage(), $he->getStatusCode());
         } catch (\Exception $e) {
-            return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
+            return View::create($e->getMessage(), $e->getCode());
         }
 
         return View::create(
@@ -113,6 +120,7 @@ class QuestionsController extends BaseConsultController
     public function patchQuestionAction(Request $request)
     {
         $practoAccountId = $this->authenticate(false);
+
         $questionManager = $this->get('consult.question_manager');
         $request = $request->request->all();
 
@@ -120,7 +128,7 @@ class QuestionsController extends BaseConsultController
             $questionFinal = $questionManager->patch($request, $practoAccountId);
         } catch (ValidationError $e) {
             return View::create(json_decode($e->getMessage(), true), Codes::HTTP_BAD_REQUEST);
-        } catch(\HttpException $e) {
+        } catch (\HttpException $e) {
             return View::create(json_decode($e->getMessage(), true), $e->getCode());
         }
 
@@ -131,12 +139,16 @@ class QuestionsController extends BaseConsultController
 
     }
 
+    /**
+     * For dev use only
+     * @param int $id
+     */
     public function deleteQuestionAction($id)
     {
         $practoAccountId = $this->authenticate();
 
         if ($practoAccountId != 123412) {
-           throw new HttpException(Codes::HTTP_FORBIDDEN, "Unauthorised Access");
+            throw new HttpException(Codes::HTTP_FORBIDDEN, "Unauthorised Access");
         }
 
         $questionManager = $this->get('consult.question_manager');
