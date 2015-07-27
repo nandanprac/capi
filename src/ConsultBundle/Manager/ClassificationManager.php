@@ -148,7 +148,7 @@ class ClassificationManager extends BaseManager
             return true;
         }
 
-        if (trim($question->getSubject()) == trim($subject)) {
+        if (trim($question->getState()) === 'NEW') {
             return false;
         }
 
