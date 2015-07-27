@@ -101,36 +101,35 @@ class PrivateThreadRepository extends EntityRepository
      */
     public function getDoctorPrivateThreads($practoAccountId, $limit, $offset)
     {
-        $subqb = $this->_em->createQueryBuilder();
-        $subqb->select('c.text as question', 'count(ci.id) as images_count')
-            ->from(ConsultConstants::CONVERSATION_ENTITY_NAME, 'c')
-            ->leftJoin(ConsultConstants::CONVERSATION_IMAGE_ENTITY_NAME, 'ci', 'WITH', 'ci.conversation = c AND ci.softDeleted = 0')
-            //->where('c.isDocReply = 0')
-            ->groupBy('c')
-            ->orderBy('c.createdAt', 'DESC')
-            ->setMaxResults(1);
-        $lastQuestion = $subqb->getQuery()->getArrayResult();
-
-        $question = null;
-        $imagesCount = 0;
-        if (count($lastQuestion) > 0) {
-            $question = $lastQuestion[0]['question'];
-            $imagesCount = $lastQuestion[0]['images_count'];
-        }
 
         $qb = $this->_em->createQueryBuilder();
-        $qb->select('p.id', 'p.subject', 'p.modifiedAt as last_modified_time', '(:lastQuestion) as question', '(:imagesCount) as images_count', 'u as user_info')
+        $qb2= $this->_em->createQueryBuilder();
+        $qb->select('p.id', 'p.subject', 'p.modifiedAt as last_modified_time', 'c1.text as question', 'count(DISTINCT ci.id) as images_count', 'u as user_info')
             ->from(ConsultConstants::PRIVATE_THREAD_ENTITY_NAME, 'p')
             ->innerJoin(ConsultConstants::USER_ENTITY_NAME, 'u', 'WITH', 'u = p.userInfo AND u.softDeleted = 0')
-            ->where('p.doctorId = :practoAccountId and p.softDeleted = 0')
+            ->innerJoin(ConsultConstants::CONVERSATION_ENTITY_NAME, 'c1', 'WITH', 'c1.privateThread = p and c1.softDeleted = 0')
+            ->leftJoin(ConsultConstants::CONVERSATION_ENTITY_NAME, 'c', 'WITH', 'c.privateThread = p and c.softDeleted = 0')
+            ->leftJoin(ConsultConstants::CONVERSATION_IMAGE_ENTITY_NAME, 'ci', 'WITH', 'ci.conversation = c and ci.softDeleted = 0')
+            ->add(
+                'where',
+                $qb->expr()->in(
+                    'c1.id',
+                    $qb2->select('max(c2.id)')
+                        ->from(ConsultConstants::CONVERSATION_ENTITY_NAME, 'c2')
+                        ->where('c2.privateThread = p')
+                        ->getDQL())
+            )
+            ->andwhere('p.doctorId = :practoAccountId and p.softDeleted = 0')
+            ->groupBy('p.id')
             ->setParameter('practoAccountId', $practoAccountId)
-            ->setParameter('lastQuestion', $question)
-            ->setParameter('imagesCount', $imagesCount)
             ->setMaxResults($limit)
             ->setFirstResult($offset);
 
-        $privateThreadEntry = $qb->getQuery()->getResult();
 
+        $query = $qb->getQuery()->getSQL();
+        //var_dump($query);
+        $privateThreadEntry = $qb->getQuery()->getResult();
+        //var_dump($privateThreadEntry);
         if (empty($privateThreadEntry)) {
             return null;
         }
