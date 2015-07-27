@@ -87,8 +87,10 @@ class PrivateThreadController extends BaseConsultController
     public function getPrivateThreadsAction(Request $requestRec)
     {
         $practoAccountId = $this->authenticate();
+        $request = $requestRec->query->all();
+
         $privateThreadManager = $this->get('consult.private_thread_manager');
-        $privateThreadList = $privateThreadManager->loadAll($practoAccountId, false);
+        $privateThreadList = $privateThreadManager->loadAll($practoAccountId, false, $request);
 
 
         if (null === $privateThreadList) {
@@ -108,9 +110,10 @@ class PrivateThreadController extends BaseConsultController
     public function getDoctorPrivateThreadsAction(Request $requestRec)
     {
         $practoAccountId = $this->authenticate();
+        $request = $requestRec->query->all();
         $privateThreadManager = $this->get('consult.private_thread_manager');
 
-        $privateThreadList = $privateThreadManager->loadAll($practoAccountId, true);
+        $privateThreadList = $privateThreadManager->loadAll($practoAccountId, true, $request);
 
 
         if (null === $privateThreadList) {
