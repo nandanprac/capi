@@ -210,7 +210,7 @@ class DoctorRepository extends EntityRepository
         }
 
         $qb = $this->_em->createQueryBuilder();
-        $qb->select('d.practoAccountId as id', 'd.name as name', 'SUM(case when dq.state = :state1 then 1 else 0 end) as assigned_count', 'SUM(case when dq.state = :state2 then 1 else 0 end) as answered_count', 'SUM(case when dq.state = :state3 then 1 else 0 end) as rejected_count', 'COALESCE(avg(r.rating), 0) as avg_rating')
+        $qb->select('d.practoAccountId as id', 'd.name as name', 'SUM(case when dq.state = :state1 then 1 else 0 end) as assigned_count', 'SUM(case when dq.state = :state2 then 1 else 0 end) as answered_count', 'SUM(case when dq.state = :state3 then 1 else 0 end) as rejected_count', 'COALESCE(avg(r.rating), 0) as avg_rating', 'COALESCE(AVG(TIME_DIFF(r.createdAt, dq.createdAt))/60, 0) as response_time')
             ->from(ConsultConstants::DOCTOR_SETTING_ENTITY_NAME, 'd')
             ->leftJoin(ConsultConstants::DOCTOR_QUESTION_ENTITY_NAME, 'dq', 'WITH', 'dq.practoAccountId = d.practoAccountId and dq.softDeleted = 0'.$filters)
             ->leftJoin(ConsultConstants::DOCTOR_REPLY_ENTITY_NAME, 'r', 'WITH', 'r.doctorQuestion = dq AND r.softDeleted = 0')

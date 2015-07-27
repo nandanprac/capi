@@ -75,6 +75,8 @@ doctrine:
                             year: ConsultBundle\DQL\Year
                             day: ConsultBundle\DQL\Day
                             week: ConsultBundle\DQL\Week
+                            time_to_sec: ConsultBundle\DQL\TimeToSec
+                            time_diff: ConsultBundle\DQL\TimeDiff
                         string_functions:
                             GROUP_CONCAT: ConsultBundle\Custom\Doctrine\GroupConcat
 
