@@ -52,15 +52,17 @@ class DoctorQuestionManager extends BaseManager
     {
         $question = $this->helper->loadById($questionId, ConsultConstants::QUESTION_ENTITY_NAME);
         $doctorQuestions = array();
+        $notifications = array();
         foreach ($doctorsId as $doctorId) {
             $doctorQuestion = $this->createDoctorQuestionEntity($question, $doctorId);
-            $this->notification->createDoctorNotification($doctorQuestion, $doctorId);
+            $notificationId = $this->notification->createDoctorNotification($doctorQuestion, $doctorId);
             $doctorQuestions[] = $doctorQuestion;
+            $notifications[] = $notificationId;
         }
 
         $this->helper->persist(null, true);
 
-        return $doctorQuestions;
+        return array($doctorQuestions, $notifications);
     }
 
     /**

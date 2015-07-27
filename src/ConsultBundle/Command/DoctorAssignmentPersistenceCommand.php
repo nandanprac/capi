@@ -80,28 +80,27 @@ class DoctorAssignmentPersistenceCommand extends ContainerAwareCommand
                     if ($jobData['state'] == 'UNCLASSIFIED' || $jobData['state'] == 'MISMATCH') {
                         $this->questionManager->setState($jobData['question_id'], $jobData['state']);
                     } elseif ($jobData['state'] == 'ASSIGNED') {
-                        $doctorQuestions = $this->doctorQuestionManager->setDoctorsForAQuestions($jobData['question_id'], $jobData['doctors']);
+                        list($doctorQuestions, $notifications) = $this->doctorQuestionManager->setDoctorsForAQuestions($jobData['question_id'], $jobData['doctors']);
                         $this->questionManager->setState($jobData['question_id'], $jobData['state']);
                         $question = $this->questionManager->setTagsByQuestionId($jobData['question_id'], array_merge(array($jobData['speciality']), $jobData['tags']));
                         if ($jobData['user_classified'] == 0) {
                             $this->questionManager->setSpeciality($jobData['question_id'], $jobData['speciality']);
                         }
 
-                        /**
-                         * @var DoctorQuestion $doctorQuestion
-                         */
-                        foreach ($doctorQuestions as $doctorQuestion) {
+                        for ($i=0; $i < count($doctorQuestions); $i++) {
                             $jobData['type'] = 'consult';
-                            $jobData['account_ids'] = array($doctorQuestion->getPractoAccountId());
+                            $jobData['account_ids'] = array($doctorQuestions[$i]->getPractoAccountId());
                             $jobData['message'] = array(
+                                'notification_id'=>$notifications[$i],
                                 'text'=>'A question has been assigned to you',
-                                'question_id'=>$doctorQuestion->getId(),
+                                'question_id'=>$doctorQuestions[$i]->getId(),
                                 'subject'=>$question->getSubject(),
                                 'consult_type'=>ConsultConstants::PUBLIC_QUESTION_NOTIFICATION_TYPE,
                             );
                             $this->queue
                                 ->setQueueName(Queue::CONSULT_GCM)
                                 ->sendMessage(json_encode($jobData));
+                            $output->writeln("Push Message Sent: ".json_encode($jobData));
                         }
 
                         /**
@@ -118,6 +117,7 @@ class DoctorAssignmentPersistenceCommand extends ContainerAwareCommand
                         unset($jobData['doctors']);
                         unset($jobData['state']);
                         unset($jobData['speciality']);
+                        unset($jobData['message']);
 
                     } elseif ($jobData['state'] == 'GENERIC'  || $jobData['state'] == 'DOCNOTFOUND') {
                         if ($jobData['user_classified'] == 0) {

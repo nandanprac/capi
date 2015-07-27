@@ -132,4 +132,31 @@ class QuestionBookmarkManager extends BaseManager
 
         return $questionBookmark;
     }
+
+    /**
+     * Load practoAccountId By questionId
+     *
+     * @param integer $questionId
+     *
+     * @return QuestionBookmark
+     */
+    public function loadPractoAccountIdByQuestionId($questionId)
+    {
+        $users = array();
+        $questionBookmark = $this->helper
+                                  ->getRepository(ConsultConstants::QUESTION_BOOKMARK_ENTITY_NAME)
+                                  ->findBy(
+                                      array('question'=>$questionId, 'softDeleted'=>0)
+                                  );
+
+        if (is_null($questionBookmark)) {
+            $users = array();
+        } else {
+            foreach ($questionBookmark as $bookmark) {
+                array_push($users, $bookmark->getPractoAccountId());
+            }
+        }
+
+        return $users;
+    }
 }

@@ -94,6 +94,8 @@ services:
         arguments:
           - @consult.consult_queue
           - @consult.notification_manager
+          - @consult.question_bookmark_manager
+          - @consult.doctor_manager
 
     consult.doctorQuestionManager:
         class: ConsultBundle\Manager\DoctorQuestionManager
@@ -209,4 +211,3 @@ services:
         calls:
             - [setHelper, ["@consult.helper"]]
             - [setValidator, ["@consult.baseValidator"]]
-

@@ -18,6 +18,8 @@ class NotificationManager extends BaseManager
      * @param integer $questionId      - Id of Question Object
      * @param integer $practoAccountId - Practo Account Id of Patient
      * @param string  $text            - Message that was sent to user.
+     *
+     * @return integer
      */
     public function createPatientNotification($questionId, $practoAccountId, $text)
     {
@@ -32,12 +34,16 @@ class NotificationManager extends BaseManager
         $patientNotification->setText($text);
 
         $this->helper->persist($patientNotification, true);
+
+        return $patientNotification->getId();
     }
 
     /**
      * @param DoctorQuestion $question        - Question Object
-     * @param integer  $practoAccountId - Practo Account Id of Doctor
-     * @param string   $text            - Message to be sent to doctor
+     * @param integer        $practoAccountId - Practo Account Id of Doctor
+     * @param string         $text            - Message to be sent to doctor
+     *
+     * @return integer
      */
     public function createDoctorNotification($question, $practoAccountId, $text = "A question has been assigned to you")
     {
@@ -48,6 +54,8 @@ class NotificationManager extends BaseManager
         $doctorNotification->setText($text);
 
         $this->helper->persist($doctorNotification, true);
+
+        return $doctorNotification->getId();
     }
 
     /**

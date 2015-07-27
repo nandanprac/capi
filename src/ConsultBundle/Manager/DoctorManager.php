@@ -249,20 +249,12 @@ class DoctorManager extends BaseManager
     }
 
     /**
-<<<<<<< HEAD
-     * @param array $postData
-     *
-||||||| merged common ancestors
-     * @param $postData
-     *
-=======
      * @param array   $postData
      * @param boolean $dev
->>>>>>> user_consent
      * @return \ConsultBundle\Entity\DoctorConsultSettings
      * @throws \ConsultBundle\Manager\ValidationError
      */
-    public function postConsultSettings($postData, $dev=false)
+    public function postConsultSettings($postData, $dev = false)
     {
         if ($dev) {
             $doc = new DoctorConsultSettings();
@@ -297,6 +289,24 @@ class DoctorManager extends BaseManager
         return $doctors;
     }
 
+    /**
+     * @param string $doctorId
+     *
+     * @return null
+     * @throws \Exception
+     */
+    public function isDoctorActivated($doctorId)
+    {
+        try {
+            $activated = $this->getRepository()
+                              ->findOneBy(array('practoAccountId'=>$doctorId))
+                              ->isActivated();
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+
+        return $activated;
+    }
 
     /**
      * @return \Doctrine\ORM\EntityRepository|null

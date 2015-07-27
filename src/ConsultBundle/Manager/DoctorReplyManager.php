@@ -12,6 +12,8 @@ use ConsultBundle\Constants\ConsultConstants;
 use ConsultBundle\Entity\DoctorNotification;
 use ConsultBundle\Entity\DoctorReplyFlag;
 use ConsultBundle\Manager\NotificationManager;
+use ConsultBundle\Manager\QuestionBookmarkManager;
+use ConsultBundle\Manager\DoctorManager;
 use ConsultBundle\Entity\DoctorQuestion;
 use ConsultBundle\Entity\DoctorReply;
 use ConsultBundle\Entity\DoctorReplyRating;
@@ -39,17 +41,26 @@ class DoctorReplyManager extends BaseManager
         "text",
     );
 
+    private $queue;
+    private $notification;
+    private $questionBookmarkManager;
+    private $doctorManager;
+
     /**
-     * @param \ConsultBundle\Queue\AbstractQueue         $queue
-     * @param \ConsultBundle\Manager\NotificationManager $notification
+     * @param \ConsultBundle\Queue\AbstractQueue             $queue
+     * @param \ConsultBundle\Manager\NotificationManager     $notification
+     * @param \ConsultBundle\Manager\QuestionBookmarkManager $questionBookmarkManager
+     * @param \ConsultBundle\Manager\DoctorManager           $doctorManager
      */
-    public function __construct(Queue $queue, NotificationManager $notification)
+    public function __construct(Queue $queue, NotificationManager $notification, QuestionBookmarkManager $questionBookmarkManager, DoctorManager $doctorManager)
     {
         if (!isset(self::$mandatoryFields)) {
             self::$mandatoryFields = array("id");
         }
         $this->queue = $queue;
         $this->notification = $notification;
+        $this->questionBookmarkManager = $questionBookmarkManager;
+        $this->doctorManager = $doctorManager;
     }
 
     /**
@@ -98,7 +109,7 @@ class DoctorReplyManager extends BaseManager
         $doctorReply->setText($answerText);
         $this->helper->persist($doctorReply, true);
 
-        $this->notification
+        $notificationId = $this->notification
             ->createPatientNotification($doctorQuestion->getQuestion()->getId(), $doctorQuestion->getQuestion()->getUserInfo()->getPractoAccountId(), "Your Query has been answered");
 
         $this->queue->setQueueName(Queue::CONSULT_GCM)
@@ -107,6 +118,7 @@ class DoctorReplyManager extends BaseManager
                     array(
                         "type"=>"consult",
                         "message"=>array(
+                            'notification_id'=>$notificationId,
                             'text'=>"Your Query has been answered",
                             'question_id'=>$doctorQuestion->getQuestion()->getId(),
                             'subject'=>$doctorQuestion->getQuestion()->getSubject(),
@@ -118,6 +130,31 @@ class DoctorReplyManager extends BaseManager
                 )
             );
 
+
+        $users = $this->questionBookmarkManager->loadPractoAccountIdByQuestionId($doctorQuestion->getQuestion()->getId());
+
+        for ($i=0; $i < count($users); $i++) {
+            $notificationId = $this->notification
+                ->createPatientNotification($doctorQuestion->getQuestion()->getId(), $users[$i], "Question you bookmarked has been answered");
+
+            $this->queue->setQueueName(Queue::CONSULT_GCM)
+                ->sendMessage(
+                    json_encode(
+                        array(
+                            "type"=>"consult",
+                            "message"=>array(
+                                'notification_id'=>$notificationId,
+                                'text'=>"Question you bookmarked has been answered",
+                                'question_id'=>$doctorQuestion->getQuestion()->getId(),
+                                'subject'=>$doctorQuestion->getQuestion()->getSubject(),
+                                'consult_type'=>ConsultConstants::PUBLIC_QUESTION_NOTIFICATION_TYPE,
+                            ),
+                            "send_to"=>"fabric",
+                            "account_ids"=>array($users[$i]),
+                        )
+                    )
+                );
+        }
 
         return new ReplyResponseObject($doctorReply);
     }
@@ -167,28 +204,31 @@ class DoctorReplyManager extends BaseManager
             $doctorReplyEntity->setRating($doctorReply['rating']);
             $changed = true;
 
-            $this->queue->setQueueName(Queue::CONSULT_GCM)
-                ->sendMessage(
-                    json_encode(
-                        array(
-                        "type"=>"consult",
-                        "message"=>array(
-                        'text'=>"Your answer has been rated by the Asker",
-                        'question_id'=>$doctorReplyEntity->getDoctorQuestion()->getId(),
-                         'subject'=>$doctorReplyEntity->getDoctorQuestion()->getQuestion()->getSubject(),
-                        'consult_type'=>ConsultConstants::PUBLIC_QUESTION_NOTIFICATION_TYPE,
-                        ),
-                        "send_to"=>"synapse",
-                        "account_ids"=>array($doctorReplyEntity->getDoctorQuestion()->getPractoAccountId()),
-                        )
-                    )
-                );
+            if ($this->doctorManager->isDoctorActivated($doctorReplyEntity->getDoctorQuestion()->getPractoAccountId())) {
+                $doctorNotification = new DoctorNotification();
+                $doctorNotification->setPractoAccountId($doctorReplyEntity->getDoctorQuestion()->getPractoAccountId());
+                $doctorNotification->setQuestion($doctorReplyEntity->getDoctorQuestion());
+                $doctorNotification->setText("Your answer has been rated by the Asker");
+                $this->helper->persist($doctorNotification, true);
 
-            $doctorNotification = new DoctorNotification();
-            $doctorNotification->setPractoAccountId($doctorReplyEntity->getDoctorQuestion()->getPractoAccountId());
-            $doctorNotification->setQuestion($doctorReplyEntity->getDoctorQuestion());
-            $doctorNotification->setText("Your answer has been rated by the Asker");
-            $this->helper->persist($doctorNotification);
+                $this->queue->setQueueName(Queue::CONSULT_GCM)
+                    ->sendMessage(
+                        json_encode(
+                            array(
+                            "notification_id"=>$doctorNotification->getId(),
+                            "type"=>"consult",
+                            "message"=>array(
+                            'text'=>"Your answer has been rated by the Asker",
+                            'question_id'=>$doctorReplyEntity->getDoctorQuestion()->getId(),
+                             'subject'=>$doctorReplyEntity->getDoctorQuestion()->getQuestion()->getSubject(),
+                            'consult_type'=>ConsultConstants::PUBLIC_QUESTION_NOTIFICATION_TYPE,
+                            ),
+                            "send_to"=>"synapse",
+                            "account_ids"=>array($doctorReplyEntity->getDoctorQuestion()->getPractoAccountId()),
+                            )
+                        )
+                    );
+            }
         }
 
         //Mark the answer as viewed
