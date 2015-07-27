@@ -2,13 +2,14 @@
 
 namespace ConsultBundle\Manager;
 
+use ConsultBundle\Entity\Question;
 use ConsultBundle\Manager\WordManager;
 use ConsultBundle\Constants\ConsultConstants;
 
 /**
  * Question Speciality Classification
  */
-class ClassificationManager
+class ClassificationManager extends BaseManager
 {
     private $wordManager;
 
@@ -128,6 +129,30 @@ class ClassificationManager
         }
 
         return $map;
+    }
+
+    /**
+     * @param integer $qId
+     * @param string  $subject
+     *
+     * @return bool
+     */
+    public function isJunkQuestion($qId, $subject)
+    {
+        /**
+         * @var Question $question
+         */
+        $question  = $this->helper->loadById($qId, ConsultConstants::QUESTION_ENTITY_NAME);
+
+        if (empty($question)) {
+            return true;
+        }
+
+        if (trim($question->getState()) === 'NEW') {
+            return false;
+        }
+
+        return true;
     }
 
     /**
