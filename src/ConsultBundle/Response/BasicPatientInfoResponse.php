@@ -16,16 +16,6 @@ namespace ConsultBundle\Response;
 class BasicPatientInfoResponse extends ConsultResponseObject
 {
     /**
-     * @var string
-     */
-    private $name;
-
-    /**
-     * @var int
-     */
-    protected $id;
-
-    /**
      * @var int
      */
     private $age;
@@ -39,22 +29,6 @@ class BasicPatientInfoResponse extends ConsultResponseObject
      * @var string
      */
     private $location;
-
-    /**
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * @param string $name
-    */
-    public function setName($name)
-    {
-        $this->name=$name;
-    }
 
     /**
      * @return int
@@ -72,21 +46,6 @@ class BasicPatientInfoResponse extends ConsultResponseObject
         $this->age = $this->getInt($age);
     }
 
-    /**
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * @param int $id
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-    }
     /**
      * @return string
      */

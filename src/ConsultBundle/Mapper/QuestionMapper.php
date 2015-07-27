@@ -137,7 +137,6 @@ class QuestionMapper
         $patientInfo = $question->getPatientInfo();
 
         $patientArr=array();
-        $patientArr['name']=$patientInfo->getName();
         $patientArr['age']=$patientInfo->getAge();
         $patientArr['id']=$patientInfo->getId();
 
@@ -151,6 +150,7 @@ class QuestionMapper
             $replyArr['text']=$replies->gettext();
             $replyArr['rating']=$replies->getrating();
             $replyArr['flagCode']=$replies->getflagText();
+            $replyArr['replyTime']=$replies->getCreatedAt();
             array_push($response['replies'], $replyArr);
         }
 
