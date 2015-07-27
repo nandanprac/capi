@@ -2,6 +2,7 @@
 
 namespace ConsultBundle\Command;
 
+use ConsultBundle\Manager\ClassificationManager;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -18,6 +19,9 @@ class ClassificationCommand extends ContainerAwareCommand
 {
     private $container;
     private $queue;
+    /**
+     * @var ClassificationManager $classification
+     */
     private $classification;
 
     /**
@@ -69,6 +73,14 @@ class ClassificationCommand extends ContainerAwareCommand
                     $subject = array_key_exists('subject', $jobData) ? $jobData['subject'] : null;
                     $question = array_key_exists('question', $jobData) ? $jobData['question'] : null;
                     $userSpeciality = array_key_exists('speciality', $jobData) ? $jobData['speciality'] : null;
+                    $questionId = array_key_exists('question_id', $jobData) ? $jobData['question_id'] : null;
+
+                    if ($this->classification->isJunkQuestion(intval($questionId), $subject)) {
+                        $output->writeln("Clearing junk data ".json_encode($jobData));
+                        $this->queue->setQueueName(Queue::CLASSIFY)->deleteMessage($newJob);
+                        continue;
+                    }
+
                     $speciality = '';
                     $jobData['tags'] = $this->classification->sentenceWords($subject.' '.$question);
                     if (!$userSpeciality) {
@@ -92,9 +104,11 @@ class ClassificationCommand extends ContainerAwareCommand
                         ->setQueueName(Queue::DAA)
                         ->sendMessage(json_encode($jobData));
                     $this->queue->setQueueName(Queue::CLASSIFY)->deleteMessage($newJob);
+                    $output->writeln("Classification done for ".json_encode($jobData));
                 } catch (\Exception $e) {
-                    $output->writeln($e->getMessage());
-                    $output->writeln($newJob);
+                    $output->writeln("Classification error for ".json_encode($jobData));
+                    $output->writeln("Error ".$e->getMessage());
+                    $output->writeln("Stacktrace ".$e->getTraceAsString());
                     throw $e;
                 }
             }
