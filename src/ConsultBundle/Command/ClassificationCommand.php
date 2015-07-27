@@ -75,7 +75,7 @@ class ClassificationCommand extends ContainerAwareCommand
                     $userSpeciality = array_key_exists('speciality', $jobData) ? $jobData['speciality'] : null;
                     $questionId = array_key_exists('question_id', $jobData) ? $jobData['question_id'] : null;
 
-                    if ($this->classification->isJunkQuestion($questionId, $subject)) {
+                    if ($this->classification->isJunkQuestion(intval($questionId), $subject)) {
                         $output->writeln("Clearing junk data ".json_encode($jobData));
                         $this->queue->setQueueName(Queue::CLASSIFY)->deleteMessage($newJob);
                         continue;
